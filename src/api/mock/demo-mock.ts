@@ -15,7 +15,7 @@ let mockDemoItems: MockDemoItem[] = [
   {
     id: "1",
     name: "Mock Item A",
-    remark: "Seed data for template",
+    remark: "Seed data for Newlife Portal demo",
     age: 22,
     gender: 1,
     created_at: new Date().toISOString(),

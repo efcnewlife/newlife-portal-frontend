@@ -1,5 +1,4 @@
-import Button from "@/components/ui/button";
-import Radio from "@/components/ui/radio";
+import { Button, Radio } from "newlife-ui";
 import type { ResourceMenuItem } from "@/types/resource";
 import { useState } from "react";
 

@@ -1,6 +1,4 @@
-import Badge from "@/components/ui/badge/Badge";
-import Button from "@/components/ui/button";
-import ButtonGroup from "@/components/ui/buttons-group";
+import { Badge, Button, ButtonGroup } from "newlife-ui";
 import NavigationButtons from "./NavigationButtons";
 import { CalendarView, DateRange } from "./types";
 import { formatDate, formatWeekday, getEndOfWeek, getStartOfWeek } from "./utils";

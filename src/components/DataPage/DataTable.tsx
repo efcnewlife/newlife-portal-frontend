@@ -4,7 +4,7 @@ import DataTableFooter from "@/components/DataPage/DataTableFooter";
 import DataTableHeader from "@/components/DataPage/DataTableHeader";
 import { CommonMenuButton } from "@/components/DataPage/MenuButtonTypes";
 import { useContextMenu } from "@/components/DataPage/useContextMenu";
-import { Table } from "@/components/ui/table";
+import { Table } from "newlife-ui";
 import { usePermissions } from "@/context/AuthContext";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DataTablePagedData, DataTableProps, MenuButtonType } from "./types";

@@ -1,7 +1,4 @@
-import Checkbox from "@/components/ui/checkbox";
-import Spinner from "@/components/ui/spinner";
-import { TableBody, TableCell, TableRow } from "@/components/ui/table";
-import Tooltip from "@/components/ui/tooltip";
+import { Checkbox, Spinner, TableBody, TableCell, TableRow, Tooltip } from "newlife-ui";
 import { Fragment } from "react";
 import { DataTableColumn } from "./types";
 

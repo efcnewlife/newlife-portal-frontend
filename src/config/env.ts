@@ -27,7 +27,7 @@ export const ENV_CONFIG = {
   NODE_ENV: import.meta.env.PROD ? "production" : "development",
 
   // APP Base
-  APP_NAME: import.meta.env.VITE_APP_NAME || "Portal Template",
+  APP_NAME: import.meta.env.VITE_APP_NAME || "Newlife Portal",
 
   // API configuration
   API_BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000",
@@ -42,7 +42,7 @@ export const ENV_CONFIG = {
   MOCK_AUTH_PASSWORD: import.meta.env.VITE_MOCK_AUTH_PASSWORD || "mock_password",
 
   // Application configuration
-  APP_TITLE: import.meta.env.VITE_APP_TITLE || "Portal Template",
+  APP_TITLE: import.meta.env.VITE_APP_TITLE || "Newlife Portal",
   APP_VERSION: import.meta.env.VITE_APP_VERSION || "1.0.0",
 
   // Development tooling configuration

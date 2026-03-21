@@ -17,7 +17,7 @@ let mockRoles: MockRole[] = [
     code: "superadmin",
     name: "Super Admin",
     isActive: true,
-    description: "Template super admin role",
+    description: "Newlife Portal super admin role",
     permissions: [{ id: "perm-user-list", resourceName: "User", displayName: "User List", code: "system:user:list" }],
   },
 ];

@@ -1,17 +1,16 @@
-import { Dropdown } from "@/components/ui/dropdown/Dropdown";
-import { DropdownItem } from "@/components/ui/dropdown/DropdownItem";
-import { Select, SelectOptionType } from "@/components/ui/select";
+import { Dropdown, DropdownItem, Select, type SelectOptionType } from "newlife-ui";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MdAccountCircle, MdKeyboardArrowDown, MdLogout, MdPerson } from "react-icons/md";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { logout, user } = useAuth();
   const { i18n } = useTranslation();
+  const { t } = useTranslation();
   const { t: tLanguage } = useTranslation("language");
   const language_options: SelectOptionType[] = [
     { value: "en", label: tLanguage("english") },
@@ -61,6 +60,7 @@ export default function UserDropdown() {
         <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
           <li>
             <DropdownItem
+              LinkComponent={Link}
               onItemClick={closeDropdown}
               tag="a"
               to="/profile"
@@ -75,6 +75,13 @@ export default function UserDropdown() {
               id="user-language"
               label={tLanguage("label")}
               size="sm"
+              labels={{
+                selectPlaceholder: t("common.selectPlaceholder"),
+                clearSelection: t("common.clearSelection"),
+                toggleOptions: t("common.toggleOptions"),
+                searchOptions: t("common.searchOptions"),
+                noOptions: t("common.noOptions"),
+              }}
               options={language_options}
               value={i18n.language === "zh-tw" ? "zh-tw" : "en"}
               onChange={(value) => {

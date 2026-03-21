@@ -22,7 +22,7 @@ export const createMockJwt = (email: string): string => {
     JSON.stringify({
       sub: "mock-admin-user",
       email,
-      display_name: "Template Admin",
+      display_name: "Newlife Portal Admin",
       roles: MOCK_ROLES,
       scope: MOCK_SCOPES.join(" "),
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
@@ -36,7 +36,7 @@ export const createMockUser = (email: string, token: string): User => {
   const nowIso = new Date().toISOString();
   return {
     id: "mock-admin-user",
-    username: "Template Admin",
+    username: "Newlife Portal Admin",
     email,
     avatar: "/images/user/default-avatar.jpg",
     status: "active",

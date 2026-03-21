@@ -1,8 +1,4 @@
-import Button from "@/components/ui/button";
-import Checkbox from "@/components/ui/checkbox";
-import Input from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import TextArea from "@/components/ui/textarea";
+import { Button, Checkbox, Input, Select, TextArea } from "newlife-ui";
 import { AdminResourceType } from "@/const/resource";
 import { getCommonIconNames, useIconResolver } from "@/utils/icon-resolver";
 import { useEffect, useState } from "react";

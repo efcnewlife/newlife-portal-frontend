@@ -2,10 +2,7 @@ import { roleService, type RoleCreate, type RolePageItem, type RolePagesResponse
 import type { DataTableColumn, MenuButtonType, PopoverType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
 import { getRecycleButtonClassName } from "@/components/DataPage/PageButtonTypes";
-import Button from "@/components/ui/button";
-import { Modal } from "@/components/ui/modal";
-import { ModalForm, type ModalFormHandle } from "@/components/ui/modal/modal-form";
-import Tooltip from "@/components/ui/tooltip";
+import { Button, Modal, ModalForm, type ModalFormHandle, Tooltip } from "newlife-ui";
 import { PopoverPosition, Resource } from "@/const/enums";
 import { useModal } from "@/hooks/useModal";
 import { DateUtil } from "@/utils/dateUtil";

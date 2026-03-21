@@ -1,6 +1,6 @@
-# Portal Frontend Template
+# Newlife Portal
 
-`tmpl-portal-frontend` is a React + TypeScript admin template project. It keeps the core architecture (Auth, System RBAC, dynamic routing, and DataPage) while removing conference-specific business features, so you can copy it and start new projects quickly.
+`newlife-portal-frontend` is the React + TypeScript admin frontend for Newlife Portal. It provides Auth, System RBAC, backend-driven menus with dynamic routing, and the reusable DataPage architecture.
 
 ## Core Capabilities
 
@@ -33,7 +33,7 @@ pnpm run dev
 
 Default URL: `http://localhost:5173`
 
-## Project Structure (Template Highlights)
+## Project Structure
 
 ```text
 src/
@@ -42,7 +42,7 @@ src/
     services/          # Service layer (includes demo mock branch)
   components/
     DataPage/          # Reusable CRUD UI components
-    Demo/              # Template demo pages
+    Demo/              # Demo pages
   context/
     AuthContext.tsx
     MenuContext.tsx

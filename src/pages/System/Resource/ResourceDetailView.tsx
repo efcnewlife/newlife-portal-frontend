@@ -1,7 +1,5 @@
 import { resourceService } from "@/api";
-import Checkbox from "@/components/ui/checkbox";
-import Input from "@/components/ui/input";
-import TextArea from "@/components/ui/textarea";
+import { Checkbox, Input, TextArea } from "newlife-ui";
 import { AdminResourceType } from "@/const/resource";
 import type { ResourceMenuItem } from "@/types/resource-admin";
 import { useEffect, useState } from "react";

@@ -3,6 +3,8 @@ layer(base);
 
 @import "tailwindcss";
 
+@source "../node_modules/newlife-ui/dist";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {

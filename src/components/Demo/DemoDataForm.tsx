@@ -1,9 +1,6 @@
 import { Gender } from "@/const/enums";
+import { Button, Input, Select, TextArea } from "newlife-ui";
 import { useEffect, useState } from "react";
-import Button from "../ui/button";
-import Input from "../ui/input";
-import { Select } from "../ui/select";
-import TextArea from "../ui/textarea";
 
 export interface DemoFormValues {
   id?: string;

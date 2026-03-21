@@ -1,9 +1,5 @@
 import { userService, type UserUpdate } from "@/api/services/userService";
-import Button from "@/components/ui/button";
-import Checkbox from "@/components/ui/checkbox";
-import Input from "@/components/ui/input";
-import { Select } from "@/components/ui/select/Select";
-import TextArea from "@/components/ui/textarea";
+import { Button, Checkbox, Input, Select, TextArea } from "newlife-ui";
 import { Gender } from "@/const/enums";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";

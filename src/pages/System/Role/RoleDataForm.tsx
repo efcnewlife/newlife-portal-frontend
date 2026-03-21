@@ -1,7 +1,4 @@
-import Checkbox from "@/components/ui/checkbox";
-import Input from "@/components/ui/input";
-import Label from "@/components/ui/label";
-import TextArea from "@/components/ui/textarea";
+import { Checkbox, Input, Label, TextArea } from "newlife-ui";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import RolePermissionMatrix from "./RolePermissionMatrix";
 

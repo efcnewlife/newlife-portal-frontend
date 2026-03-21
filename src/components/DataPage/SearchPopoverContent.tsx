@@ -1,5 +1,4 @@
-import Button from "@/components/ui/button";
-import Popover from "@/components/ui/popover";
+import { Button, Popover } from "newlife-ui";
 import { useTranslation } from "react-i18next";
 import { PopoverType } from "./types";
 

@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "newlife-ui";
 
 export interface RoleDetailProps {
   role: {

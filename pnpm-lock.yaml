@@ -32,6 +32,9 @@ importers:
       moment-timezone:
         specifier: ^0.6.0
         version: 0.6.0
+      newlife-ui:
+        specifier: file:../newlife-ui
+        version: file:../newlife-ui(flatpickr@4.6.13)(react-dom@19.2.4(react@19.2.4))(react-icons@5.5.0(react@19.2.4))(react@19.2.4)
       react:
         specifier: ^19.0.0
         version: 19.2.4
@@ -1364,6 +1367,14 @@ packages:
 
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
+
+  newlife-ui@file:../newlife-ui:
+    resolution: {directory: ../newlife-ui, type: directory}
+    peerDependencies:
+      flatpickr: ^4.0.0
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+      react-icons: ^5.0.0
 
   no-case@3.0.4:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
@@ -2806,6 +2817,15 @@ snapshots:
   nanoid@3.3.11: {}
 
   natural-compare@1.4.0: {}
+
+  newlife-ui@file:../newlife-ui(flatpickr@4.6.13)(react-dom@19.2.4(react@19.2.4))(react-icons@5.5.0(react@19.2.4))(react@19.2.4):
+    dependencies:
+      clsx: 2.1.1
+      flatpickr: 4.6.13
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      react-icons: 5.5.0(react@19.2.4)
+      tailwind-merge: 3.4.0
 
   no-case@3.0.4:
     dependencies:

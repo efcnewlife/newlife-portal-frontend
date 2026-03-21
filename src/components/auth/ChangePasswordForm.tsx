@@ -1,6 +1,5 @@
 import { httpClient } from "@/api";
-import Button from "@/components/ui/button";
-import Input from "@/components/ui/input";
+import { Button, Input } from "newlife-ui";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";

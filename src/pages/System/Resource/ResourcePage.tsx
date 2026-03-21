@@ -1,6 +1,6 @@
 import { resourceService } from "@/api";
 import RestoreForm from "@/components/DataPage/RestoreForm";
-import { Modal } from "@/components/ui/modal";
+import { Modal } from "newlife-ui";
 import { useResourceManagement } from "@/hooks/useResourceManagement";
 import { useResourcePermissions } from "@/hooks/useResourcePermissions";
 import type { ResourceMenuItem as ApiResourceMenuItem } from "@/types/resource-admin";

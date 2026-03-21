@@ -1,5 +1,4 @@
-import Button from "@/components/ui/button";
-import TextArea from "@/components/ui/textarea";
+import { Button, TextArea } from "newlife-ui";
 import { useEffect, useState } from "react";
 
 interface DeleteFormProps {

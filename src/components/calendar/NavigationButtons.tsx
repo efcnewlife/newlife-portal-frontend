@@ -1,4 +1,4 @@
-import Button from "@/components/ui/button";
+import { Button } from "newlife-ui";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { CalendarView, DateRange } from "./types";
 import { canNavigateNext, canNavigatePrevious } from "./utils";

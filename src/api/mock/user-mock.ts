@@ -21,7 +21,7 @@ let mockUsers: MockUser[] = [
     is_active: true,
     is_superuser: true,
     is_admin: true,
-    display_name: "Template Admin",
+    display_name: "Newlife Portal Admin",
     gender: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),

@@ -1,4 +1,4 @@
-import Tooltip from "@/components/ui/tooltip";
+import { Tooltip } from "newlife-ui";
 import { useState } from "react";
 import { PageButtonType } from "./types";
 

@@ -1,6 +1,4 @@
-import Button from "@/components/ui/button";
-import Checkbox from "@/components/ui/checkbox";
-import Input from "@/components/ui/input";
+import { Button, Checkbox, Input } from "newlife-ui";
 import { ENV_CONFIG } from "@/config/env";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";

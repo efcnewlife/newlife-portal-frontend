@@ -1,5 +1,4 @@
-import Checkbox from "@/components/ui/checkbox";
-import { TableCell, TableHeader, TableRow } from "@/components/ui/table";
+import { Checkbox, TableCell, TableHeader, TableRow } from "newlife-ui";
 import { DataTableColumn } from "./types";
 
 interface DataTableHeaderProps<T> {

@@ -3,8 +3,7 @@ import type { DataTableColumn, MenuButtonType, PageButtonType, PopoverType } fro
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
 import { getRecycleButtonClassName } from "@/components/DataPage/PageButtonTypes";
 import RestoreForm from "@/components/DataPage/RestoreForm";
-import { Modal } from "@/components/ui/modal";
-import Tooltip from "@/components/ui/tooltip";
+import { Modal, Tooltip } from "newlife-ui";
 import { Gender, PopoverPosition, Resource } from "@/const/enums";
 import { useNotification } from "@/context/NotificationContext";
 import { useModal } from "@/hooks/useModal";

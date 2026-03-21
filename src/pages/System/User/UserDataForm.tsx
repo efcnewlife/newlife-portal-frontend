@@ -1,9 +1,4 @@
-import Button from "@/components/ui/button";
-import Checkbox from "@/components/ui/checkbox";
-import Input from "@/components/ui/input";
-import PhoneInput from "@/components/ui/phone-input";
-import { Select } from "@/components/ui/select";
-import TextArea from "@/components/ui/textarea";
+import { Button, Checkbox, Input, PhoneInput, Select, TextArea } from "newlife-ui";
 import { CountryCodes } from "@/const/enums";
 import { usePermissions } from "@/context/AuthContext";
 import { useEffect, useState } from "react";

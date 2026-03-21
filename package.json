@@ -1,5 +1,5 @@
 {
-  "name": "tmpl-portal-frontend",
+  "name": "newlife-portal-frontend",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -22,6 +22,7 @@
     "i18next": "^25.9.0",
     "moment": "^2.30.1",
     "moment-timezone": "^0.6.0",
+    "newlife-ui": "file:../newlife-ui",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-helmet-async": "^2.0.5",
@@ -51,6 +52,9 @@
   "pnpm": {
     "overrides": {
       "react-helmet-async>react": "^16.8.0 || ^17 || ^18 || ^19"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }
