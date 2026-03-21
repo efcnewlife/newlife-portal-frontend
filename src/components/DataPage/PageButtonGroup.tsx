@@ -39,7 +39,7 @@ export default function PageButtonGroup({
 
     // judge permission Whether it is a complete permission code (including colon)
     // If it is a full permission code (e.g. "system:role:modify"），then use directly
-    // If it is a verb (e.g. "modify"），then with resource Spliced ​​into resource:verb
+    // If it is a verb (e.g. "modify"），then with resource Spliced into resource:verb
     const permissionCode = button.permission.includes(":") ? button.permission : `${resource}:${button.permission}`;
 
     // Check permissions
