@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main, develop]
 
+permissions:
+  contents: read
+  packages: read
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -29,8 +33,6 @@ jobs:
           scope: "@efcnewlife"
           cache: "pnpm"
           cache-dependency-path: newlife-portal-frontend/pnpm-lock.yaml
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
