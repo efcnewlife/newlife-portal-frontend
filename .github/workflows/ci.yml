@@ -21,7 +21,7 @@ jobs:
         working-directory: newlife-portal-frontend
     steps:
       - name: Checkout portal
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: newlife-portal-frontend
 
@@ -29,7 +29,7 @@ jobs:
         with:
           version: 10
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: "22"
           registry-url: https://npm.pkg.github.com
