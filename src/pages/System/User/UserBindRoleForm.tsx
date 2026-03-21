@@ -1,6 +1,6 @@
 import { roleService, type RoleBase } from "@/api/services/roleService";
 import { userService } from "@/api/services/userService";
-import { Button, Checkbox } from "newlife-ui";
+import { Button, Checkbox } from "@efcnewlife/newlife-ui";
 import { useEffect, useState } from "react";
 
 interface UserBindRoleFormProps {

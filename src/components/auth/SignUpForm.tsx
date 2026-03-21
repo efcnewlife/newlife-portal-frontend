@@ -1,4 +1,4 @@
-import { Checkbox, Input } from "newlife-ui";
+import { Checkbox, Input } from "@efcnewlife/newlife-ui";
 import { useState } from "react";
 import { MdArrowBack, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { Link } from "react-router";

@@ -1,7 +1,7 @@
 import { permissionService } from "@/api/services/permissionService";
 import { resourceService } from "@/api/services/resourceService";
 import { verbService, type VerbItem } from "@/api/services/verbService";
-import { Checkbox, Tooltip } from "newlife-ui";
+import { Checkbox, Tooltip } from "@efcnewlife/newlife-ui";
 import { AdminResourceType } from "@/const/resource";
 import type { PermissionListItem } from "@/types/api";
 import type { ResourceMenuItem } from "@/types/resource-admin";

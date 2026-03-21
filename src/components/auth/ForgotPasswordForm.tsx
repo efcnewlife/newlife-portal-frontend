@@ -1,4 +1,4 @@
-import { Button, Input } from "newlife-ui";
+import { Button, Input } from "@efcnewlife/newlife-ui";
 import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 import { authService } from "@/api/services/authService";

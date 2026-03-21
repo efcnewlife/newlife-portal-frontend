@@ -1,4 +1,4 @@
-import { Tooltip } from "newlife-ui";
+import { Tooltip } from "@efcnewlife/newlife-ui";
 import { useState } from "react";
 import { PageButtonType } from "./types";
 

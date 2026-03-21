@@ -1,5 +1,5 @@
 import { permissionService } from "@/api";
-import { Checkbox, Input, TextArea } from "newlife-ui";
+import { Checkbox, Input, TextArea } from "@efcnewlife/newlife-ui";
 import type { PermissionDetail } from "@/types/api";
 import { useEffect, useState } from "react";
 

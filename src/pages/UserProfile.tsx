@@ -1,7 +1,7 @@
 import ChangePasswordForm from "@/components/auth/ChangePasswordForm";
 import UserProfileDetailView from "@/components/auth/UserProfileDetailView";
 import PageMeta from "@/components/common/PageMeta";
-import { Button } from "newlife-ui";
+import { Button } from "@efcnewlife/newlife-ui";
 import { ENV_CONFIG } from "@/config/env";
 import { useState } from "react";
 import { MdEdit } from "react-icons/md";

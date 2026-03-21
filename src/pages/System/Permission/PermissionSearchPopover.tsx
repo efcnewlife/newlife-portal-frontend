@@ -1,6 +1,6 @@
 import { PopoverType } from "@/components/DataPage";
 import SearchPopoverContent from "@/components/DataPage/SearchPopoverContent";
-import { Button, Input } from "newlife-ui";
+import { Button, Input } from "@efcnewlife/newlife-ui";
 import { ReactNode } from "react";
 
 export interface PermissionSearchFilters {

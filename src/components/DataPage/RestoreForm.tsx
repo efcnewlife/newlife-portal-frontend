@@ -1,4 +1,4 @@
-import { Button } from "newlife-ui";
+import { Button } from "@efcnewlife/newlife-ui";
 
 interface RestoreFormProps {
   onSubmit: (ids: string[]) => Promise<void> | void;

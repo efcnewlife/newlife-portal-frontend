@@ -1,4 +1,4 @@
-import { Badge, Button, ButtonGroup } from "newlife-ui";
+import { Badge, Button, ButtonGroup } from "@efcnewlife/newlife-ui";
 import NavigationButtons from "./NavigationButtons";
 import { CalendarView, DateRange } from "./types";
 import { formatDate, formatWeekday, getEndOfWeek, getStartOfWeek } from "./utils";

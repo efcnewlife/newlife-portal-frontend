@@ -4,7 +4,7 @@ import type { DataTableColumn, MenuButtonType, PopoverType } from "@/components/
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
 import { getRecycleButtonClassName } from "@/components/DataPage/PageButtonTypes";
 import RestoreForm from "@/components/DataPage/RestoreForm";
-import { Modal } from "newlife-ui";
+import { Modal } from "@efcnewlife/newlife-ui";
 import { PopoverPosition, Resource } from "@/const/enums";
 import { useNotification } from "@/context/NotificationContext";
 import { useModal } from "@/hooks/useModal";

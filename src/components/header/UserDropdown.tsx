@@ -1,4 +1,4 @@
-import { Dropdown, DropdownItem, Select, type SelectOptionType } from "newlife-ui";
+import { Dropdown, DropdownItem, Select, type SelectOptionType } from "@efcnewlife/newlife-ui";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

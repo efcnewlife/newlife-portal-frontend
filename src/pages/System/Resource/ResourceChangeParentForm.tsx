@@ -1,4 +1,4 @@
-import { Button, Radio } from "newlife-ui";
+import { Button, Radio } from "@efcnewlife/newlife-ui";
 import type { ResourceMenuItem } from "@/types/resource";
 import { useState } from "react";
 

@@ -1,4 +1,4 @@
-import { Checkbox, TableCell, TableHeader, TableRow } from "newlife-ui";
+import { Checkbox, TableCell, TableHeader, TableRow } from "@efcnewlife/newlife-ui";
 import { DataTableColumn } from "./types";
 
 interface DataTableHeaderProps<T> {

@@ -10,6 +10,21 @@
 - Reusable DataPage CRUD architecture
 - Demo DataPage (switchable mock service)
 
+## GitHub Packages (`@efcnewlife/newlife-ui`)
+
+UI primitives are published as `@efcnewlife/newlife-ui`. This repo includes [`.npmrc`](./.npmrc) so the `@efcnewlife` scope uses GitHub Packages; authentication uses the **`NODE_AUTH_TOKEN`** environment variable.
+
+**Local install:** create a GitHub PAT with `read:packages`, then:
+
+```bash
+export NODE_AUTH_TOKEN=ghp_xxxxxxxx
+pnpm install
+```
+
+Add the same secret as **`PACKAGE_TOKEN`** (or reuse a name your org prefers) in GitHub Actions for CI so `pnpm install` can resolve the private package.
+
+If the package version is not published yet, temporarily set the dependency to `"file:../newlife-ui"` in `package.json` (path relative to this repo), then switch back to `"^0.1.0"` after the first release.
+
 ## Environment Variables
 
 Create local settings first:

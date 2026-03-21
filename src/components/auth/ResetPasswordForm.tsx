@@ -1,5 +1,5 @@
 import { authService } from "@/api/services/authService";
-import { Button, Input } from "newlife-ui";
+import { Button, Input } from "@efcnewlife/newlife-ui";
 import { useEffect, useState } from "react";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { Link, useNavigate, useSearchParams } from "react-router";

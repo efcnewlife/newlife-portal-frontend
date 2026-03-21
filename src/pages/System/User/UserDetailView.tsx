@@ -1,5 +1,5 @@
 import { userService } from "@/api/services/userService";
-import { Checkbox, Input, TextArea } from "newlife-ui";
+import { Checkbox, Input, TextArea } from "@efcnewlife/newlife-ui";
 import { Gender } from "@/const/enums";
 import { DateUtil } from "@/utils/dateUtil";
 import { useEffect, useState } from "react";

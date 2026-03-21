@@ -11,6 +11,9 @@ importers:
 
   .:
     dependencies:
+      '@efcnewlife/newlife-ui':
+        specifier: ^0.1.0
+        version: 0.1.0(flatpickr@4.6.13)(react-dom@19.2.4(react@19.2.4))(react-icons@5.5.0(react@19.2.4))(react@19.2.4)
       '@tailwindcss/forms':
         specifier: ^0.5.10
         version: 0.5.11(tailwindcss@4.1.18)
@@ -32,9 +35,6 @@ importers:
       moment-timezone:
         specifier: ^0.6.0
         version: 0.6.0
-      newlife-ui:
-        specifier: file:../newlife-ui
-        version: file:../newlife-ui(flatpickr@4.6.13)(react-dom@19.2.4(react@19.2.4))(react-icons@5.5.0(react@19.2.4))(react@19.2.4)
       react:
         specifier: ^19.0.0
         version: 19.2.4
@@ -198,6 +198,14 @@ packages:
   '@babel/types@7.29.0':
     resolution: {integrity: sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A==}
     engines: {node: '>=6.9.0'}
+
+  '@efcnewlife/newlife-ui@0.1.0':
+    resolution: {integrity: sha512-UjpJfsPnzFQLOuIgb5i1xCLR4ZlmjCh6CctyH9yKcTVZSsuzFtXrFDM2wZzxL280YChQhasJl3iDdTRBgUcGiQ==, tarball: https://npm.pkg.github.com/download/@efcnewlife/newlife-ui/0.1.0/ef576e7bc6906603d17f4cc69f9624dee2a2d488}
+    peerDependencies:
+      flatpickr: ^4.0.0
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+      react-icons: ^5.0.0
 
   '@esbuild/aix-ppc64@0.25.12':
     resolution: {integrity: sha512-Hhmwd6CInZ3dwpuGTF8fJG6yoWmsToE+vYgD4nytZVxcu1ulHpUQRAB1UJ8+N1Am3Mz4+xOByoQoSZf4D+CpkA==}
@@ -1368,14 +1376,6 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
-  newlife-ui@file:../newlife-ui:
-    resolution: {directory: ../newlife-ui, type: directory}
-    peerDependencies:
-      flatpickr: ^4.0.0
-      react: ^18.0.0 || ^19.0.0
-      react-dom: ^18.0.0 || ^19.0.0
-      react-icons: ^5.0.0
-
   no-case@3.0.4:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
 
@@ -1779,6 +1779,15 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
+
+  '@efcnewlife/newlife-ui@0.1.0(flatpickr@4.6.13)(react-dom@19.2.4(react@19.2.4))(react-icons@5.5.0(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      clsx: 2.1.1
+      flatpickr: 4.6.13
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      react-icons: 5.5.0(react@19.2.4)
+      tailwind-merge: 3.4.0
 
   '@esbuild/aix-ppc64@0.25.12':
     optional: true
@@ -2817,15 +2826,6 @@ snapshots:
   nanoid@3.3.11: {}
 
   natural-compare@1.4.0: {}
-
-  newlife-ui@file:../newlife-ui(flatpickr@4.6.13)(react-dom@19.2.4(react@19.2.4))(react-icons@5.5.0(react@19.2.4))(react@19.2.4):
-    dependencies:
-      clsx: 2.1.1
-      flatpickr: 4.6.13
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      react-icons: 5.5.0(react@19.2.4)
-      tailwind-merge: 3.4.0
 
   no-case@3.0.4:
     dependencies:

@@ -1,4 +1,4 @@
-import { Button, Checkbox, Input, PhoneInput, Select, TextArea } from "newlife-ui";
+import { Button, Checkbox, Input, PhoneInput, Select, TextArea } from "@efcnewlife/newlife-ui";
 import { CountryCodes } from "@/const/enums";
 import { usePermissions } from "@/context/AuthContext";
 import { useEffect, useState } from "react";

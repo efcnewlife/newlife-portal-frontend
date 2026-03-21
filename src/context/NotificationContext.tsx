@@ -3,4 +3,4 @@ export {
   useNotification,
   type NotificationAction,
   type NotificationItem,
-} from "newlife-ui";
+} from "@efcnewlife/newlife-ui";

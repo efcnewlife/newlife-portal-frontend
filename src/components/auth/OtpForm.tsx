@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Link } from "react-router";
-import { Label } from "newlife-ui";
+import { Label } from "@efcnewlife/newlife-ui";
 
 export default function OtpForm() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);

@@ -1,6 +1,6 @@
 import { resourceService } from "@/api/services/resourceService";
 import { verbService, type VerbItem } from "@/api/services/verbService";
-import { Button, Checkbox, ComboBox, Input, Select, TextArea } from "newlife-ui";
+import { Button, Checkbox, ComboBox, Input, Select, TextArea } from "@efcnewlife/newlife-ui";
 import type { ResourceMenuItem } from "@/types/resource-admin";
 import { resolveIcon } from "@/utils/icon-resolver";
 import { useEffect, useState } from "react";

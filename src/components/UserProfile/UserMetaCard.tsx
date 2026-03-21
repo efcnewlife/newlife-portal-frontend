@@ -1,4 +1,4 @@
-import { Button, Input, Modal } from "newlife-ui";
+import { Button, Input, Modal } from "@efcnewlife/newlife-ui";
 import { useModal } from "@/hooks/useModal";
 import { MdAccountCircle } from "react-icons/md";
 
