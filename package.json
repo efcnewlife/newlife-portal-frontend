@@ -15,6 +15,7 @@
     "preview:prod": "vite preview --mode production"
   },
   "dependencies": {
+    "@azure/msal-browser": "^4.12.0",
     "@tailwindcss/forms": "^0.5.10",
     "axios": "^1.11.0",
     "clsx": "^2.1.1",
@@ -22,7 +23,7 @@
     "i18next": "^25.9.0",
     "moment": "^2.30.1",
     "moment-timezone": "^0.6.0",
-    "@efcnewlife/newlife-ui": "^0.1.0",
+    "@efcnewlife/newlife-ui": "^0.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-helmet-async": "^2.0.5",

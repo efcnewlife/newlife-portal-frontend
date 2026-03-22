@@ -1,9 +1,8 @@
 // Authentication service
 import { API_ENDPOINTS, HTTP_STATUS } from "@/api/config";
-import { loginWithMockCredentials, mockPasswordResetConfirm, mockPasswordResetRequest } from "@/api/mock/auth-mock";
 import i18n from "@/i18n";
 import type { ApiError, ApiResponse, TokenResponse } from "@/types/api";
-import { IS_DEV, IS_MOCK_API, IS_MOCK_AUTH, IS_SKIP_AUTH } from "@/config/env";
+import { IS_DEV, IS_SKIP_AUTH } from "@/config/env";
 import type { AuthError, LoginCredentials, LoginResponse, User } from "@/types/auth";
 import { notificationManager } from "@/utils/notificationManager";
 import { getScopesFromToken, getRolesFromToken, parseJWT, hasPermissionInScopes } from "@/utils/jwt";
@@ -61,36 +60,7 @@ class AuthService {
 
   // Login
   async login(credentials: LoginCredentials): Promise<ApiResponse<LoginResponse>> {
-    // API implementation: delegate mock credential validation and token/user generation to api/mock module.
-    if (IS_MOCK_AUTH) {
-      const mockResponse = loginWithMockCredentials(credentials);
-      if (!mockResponse.success || !mockResponse.data) {
-        return mockResponse;
-      }
-
-      this.setRememberMe(credentials.rememberMe || false);
-      this.setToken(mockResponse.data.token);
-
-      if (credentials.rememberMe) {
-        sessionStorage.removeItem(this.TOKEN_KEY);
-        sessionStorage.removeItem(this.USER_KEY);
-        sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
-      } else {
-        localStorage.removeItem(this.TOKEN_KEY);
-        localStorage.removeItem(this.USER_KEY);
-        localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-        localStorage.removeItem(`${this.REFRESH_TOKEN_KEY}_expiry`);
-      }
-
-      if (mockResponse.data.refreshToken) {
-        this.setRefreshToken(mockResponse.data.refreshToken);
-      }
-      this.setUser(mockResponse.data.user);
-      return mockResponse;
-    }
-
     try {
-      // API implementation: call backend login endpoint in non-mock mode.
       const response = await httpClient.post<AdminLoginResponse>(API_ENDPOINTS.AUTH.LOGIN, {
         email: credentials.email,
         password: credentials.password,
@@ -161,16 +131,74 @@ class AuthService {
     }
   }
 
+  /**
+   * Exchange Microsoft Entra ID token for portal admin session (same storage contract as password login).
+   */
+  async loginWithMicrosoft(id_token: string, remember_me: boolean): Promise<ApiResponse<LoginResponse>> {
+    try {
+      const response = await httpClient.post<AdminLoginResponse>(API_ENDPOINTS.AUTH.MICROSOFT, {
+        id_token,
+      });
+
+      if (response.success && response.data) {
+        const accessToken = response.data.token.accessToken;
+        const user = mapAdminToUser(response.data.admin, accessToken);
+        const refreshToken = response.data.token.refreshToken;
+        const expiresAt = new Date(Date.now() + response.data.token.expiresIn * 1000).toISOString();
+
+        this.setRememberMe(remember_me);
+
+        this.setToken(accessToken);
+
+        if (remember_me) {
+          sessionStorage.removeItem(this.TOKEN_KEY);
+          sessionStorage.removeItem(this.USER_KEY);
+          sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
+        } else {
+          localStorage.removeItem(this.TOKEN_KEY);
+          localStorage.removeItem(this.USER_KEY);
+          localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+          localStorage.removeItem(`${this.REFRESH_TOKEN_KEY}_expiry`);
+        }
+
+        if (refreshToken && remember_me) {
+          this.setRefreshToken(refreshToken);
+        }
+
+        this.setUser(user);
+
+        return {
+          success: true,
+          data: {
+            user,
+            token: accessToken,
+            refreshToken,
+            expiresAt,
+            rememberMe: remember_me,
+          },
+          code: response.code,
+        };
+      }
+
+      return {
+        success: false,
+        data: undefined as unknown as LoginResponse,
+        code: response.code,
+        error: response.error,
+        message: response.message,
+      };
+    } catch (error) {
+      if (error && typeof error === "object" && "code" in error && typeof (error as ApiError).code === "number") {
+        const apiError = error as ApiError;
+        this.showAuthErrorNotification(apiError, "login");
+      }
+      throw this.handleAuthError(error);
+    }
+  }
+
   // Logout
   async logout(): Promise<ApiResponse<void>> {
-    // API implementation: clear local auth state only in mock mode.
-    if (IS_MOCK_AUTH) {
-      this.clearAuth();
-      return { success: true, data: undefined, code: HTTP_STATUS.OK };
-    }
-
     try {
-      // API implementation: call backend logout endpoint in non-mock mode.
       const token = this.getToken();
       const refreshToken = this.getRefreshToken();
       if (token) {
@@ -193,20 +221,6 @@ class AuthService {
 
   // Get current user info
   async getCurrentUser(): Promise<ApiResponse<User>> {
-    // API implementation: read current user from local storage in mock mode.
-    if (IS_MOCK_AUTH) {
-      const user = this.getUser();
-      if (!user) {
-        return {
-          success: false,
-          data: undefined as unknown as User,
-          code: HTTP_STATUS.UNAUTHORIZED,
-          message: "Mock user not found",
-        };
-      }
-      return { success: true, data: user, code: HTTP_STATUS.OK };
-    }
-
     if (this.inFlightCurrentUserPromise) {
       return this.inFlightCurrentUserPromise;
     }
@@ -246,19 +260,6 @@ class AuthService {
 
   // Refresh token
   async refreshToken(): Promise<ApiResponse<{ token: string; refreshToken?: string }>> {
-    // API implementation: reuse local token without network refresh in mock mode.
-    if (IS_MOCK_AUTH) {
-      const token = this.getToken();
-      if (!token) {
-        throw new Error("No mock token available");
-      }
-      return {
-        success: true,
-        data: { token, refreshToken: this.getRefreshToken() || undefined },
-        code: HTTP_STATUS.OK,
-      };
-    }
-
     try {
       const refreshToken = this.getRefreshToken();
       if (!refreshToken) {
@@ -312,7 +313,7 @@ class AuthService {
   // Get token (with source priority: session -> local)
   getToken(): string | null {
     // Development mode: return developer token when auth skip env var is enabled
-    if (IS_SKIP_AUTH && !IS_MOCK_AUTH) {
+    if (IS_SKIP_AUTH) {
       return "dev_token_skip_auth_mode";
     }
 
@@ -603,11 +604,6 @@ class AuthService {
 
   // Request password reset
   async requestPasswordReset(email: string): Promise<ApiResponse<{ message: string }>> {
-    // API implementation: delegate mock password reset request to api/mock module.
-    if (IS_MOCK_API) {
-      return mockPasswordResetRequest(email);
-    }
-
     try {
       const response = await httpClient.post<{ message: string }>(API_ENDPOINTS.AUTH.REQUEST_PASSWORD_RESET, { email });
       return response;
@@ -623,11 +619,6 @@ class AuthService {
 
   // Reset password with token
   async resetPasswordWithToken(token: string, newPassword: string, newPasswordConfirm: string): Promise<ApiResponse<{ message: string }>> {
-    // API implementation: delegate mock password reset confirmation to api/mock module.
-    if (IS_MOCK_API) {
-      return mockPasswordResetConfirm(token, newPassword, newPasswordConfirm);
-    }
-
     try {
       const response = await httpClient.post<{ message: string }>(API_ENDPOINTS.AUTH.RESET_PASSWORD_CONFIRM, {
         token,

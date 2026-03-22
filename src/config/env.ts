@@ -35,11 +35,15 @@ export const ENV_CONFIG = {
 
   // Authentication configuration
   SKIP_AUTH: import.meta.env.VITE_SKIP_AUTH === "true",
+  /** When true (development only), show email/password login on the sign-in page. */
+  SHOW_DEV_LOGIN: import.meta.env.VITE_SHOW_DEV_LOGIN === "true",
   USE_MOCK_API: import.meta.env.VITE_USE_MOCK_API !== "false",
-  USE_MOCK_AUTH: import.meta.env.VITE_USE_MOCK_AUTH === "true",
   USE_MOCK_DEMO: import.meta.env.VITE_USE_MOCK_DEMO === "true",
-  MOCK_AUTH_EMAIL: import.meta.env.VITE_MOCK_AUTH_EMAIL || "admin@example.com",
-  MOCK_AUTH_PASSWORD: import.meta.env.VITE_MOCK_AUTH_PASSWORD || "mock_password",
+
+  // Microsoft Entra ID (Admin Portal) — optional; when set, shows "Sign in with Microsoft"
+  AZURE_CLIENT_ID: (import.meta.env.VITE_AZURE_CLIENT_ID as string | undefined) || "",
+  AZURE_TENANT_ID: (import.meta.env.VITE_AZURE_TENANT_ID as string | undefined) || "",
+  AZURE_REDIRECT_URI: (import.meta.env.VITE_AZURE_REDIRECT_URI as string | undefined) || "",
 
   // Application configuration
   APP_TITLE: import.meta.env.VITE_APP_TITLE || "Newlife Portal",
@@ -80,6 +84,10 @@ export const IS_PROD_BUILD = ENV_CONFIG.NODE_ENV === "production";
  * Whether auth skipping is enabled (development environment only)
  */
 export const IS_SKIP_AUTH = IS_DEV && ENV_CONFIG.SKIP_AUTH;
+/** Email/password block on sign-in; development only, controlled by VITE_SHOW_DEV_LOGIN. */
+export const IS_SHOW_DEV_LOGIN = IS_DEV && ENV_CONFIG.SHOW_DEV_LOGIN;
 export const IS_MOCK_API = IS_DEV && ENV_CONFIG.USE_MOCK_API;
-export const IS_MOCK_AUTH = IS_DEV && (ENV_CONFIG.USE_MOCK_AUTH || ENV_CONFIG.USE_MOCK_API);
 export const IS_MOCK_DEMO = IS_DEV && (ENV_CONFIG.USE_MOCK_DEMO || ENV_CONFIG.USE_MOCK_API);
+
+/** True when VITE_AZURE_CLIENT_ID and VITE_AZURE_TENANT_ID are set (production/staging may enable without dev-only flags). */
+export const IS_MICROSOFT_LOGIN_ENABLED = Boolean(ENV_CONFIG.AZURE_CLIENT_ID?.trim()) && Boolean(ENV_CONFIG.AZURE_TENANT_ID?.trim());

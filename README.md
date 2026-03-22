@@ -35,9 +35,8 @@ cp .env.example .env.local
 
 Important flags:
 
-- `VITE_USE_MOCK_AUTH=true`: Uses mock login/logout/me/refresh flow and does not call real auth APIs.
 - `VITE_USE_MOCK_DEMO=true`: Demo page data is returned from `demoService` in-memory mocks.
-- `VITE_SKIP_AUTH=true`: Developer shortcut mode that skips auth guarding directly (different from full mock auth flow).
+- `VITE_SKIP_AUTH=true`: Developer shortcut mode that skips auth guarding and uses a placeholder token for API calls.
 
 ## Start
 

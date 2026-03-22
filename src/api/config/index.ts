@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
   // Authentication (admin)
   AUTH: {
     LOGIN: `${ADMIN_API_PREFIX}/auth/login`,
+    MICROSOFT: `${ADMIN_API_PREFIX}/auth/microsoft`,
     LOGOUT: `${ADMIN_API_PREFIX}/auth/logout`,
     REFRESH: `${ADMIN_API_PREFIX}/auth/refresh`,
     PROFILE: `${ADMIN_API_PREFIX}/auth/me`,

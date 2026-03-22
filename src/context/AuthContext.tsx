@@ -1,4 +1,5 @@
-import { IS_MOCK_AUTH, IS_SKIP_AUTH } from "@/config/env";
+import { ensure_msal_ready, get_msal_instance, MSAL_LOGIN_SCOPES } from "@/auth/msalInstance";
+import { IS_MICROSOFT_LOGIN_ENABLED, IS_SKIP_AUTH } from "@/config/env";
 import { getRolesFromToken, getScopesFromToken, hasPermissionInScopes } from "@/utils/jwt";
 import { createContext, ReactNode, useContext, useEffect, useReducer } from "react";
 import { authService } from "../api/services/authService";
@@ -15,6 +16,7 @@ type AuthAction =
 // Auth context type
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
+  loginWithMicrosoft: (remember_me: boolean) => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
   refreshUser: () => Promise<void>;
@@ -89,8 +91,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Initialize auth state
   useEffect(() => {
     const initializeAuth = async () => {
-      // Development mode: restore local state directly for skip/mock auth without calling /auth/me
-      if (IS_SKIP_AUTH || IS_MOCK_AUTH) {
+      // Development mode: restore local state directly for skip auth without calling /auth/me
+      if (IS_SKIP_AUTH) {
         const devUser = authService.getUser();
         const devToken = authService.getToken();
         if (devUser && devToken) {
@@ -178,9 +180,58 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const loginWithMicrosoft = async (remember_me: boolean) => {
+    try {
+      dispatch({ type: "AUTH_START" });
+      const msal = await ensure_msal_ready();
+      if (!msal) {
+        dispatch({ type: "AUTH_FAILURE", payload: "Microsoft sign-in is not configured" });
+        return;
+      }
+      const auth_result = await msal.loginPopup({ scopes: MSAL_LOGIN_SCOPES });
+      if (auth_result.account) {
+        msal.setActiveAccount(auth_result.account);
+      }
+      const id_token = auth_result.idToken;
+      if (!id_token) {
+        dispatch({ type: "AUTH_FAILURE", payload: "No ID token from Microsoft" });
+        return;
+      }
+      const response = await authService.loginWithMicrosoft(id_token, remember_me);
+      if (response.success && response.data) {
+        const token = authService.getToken();
+        dispatch({
+          type: "AUTH_SUCCESS",
+          payload: { user: response.data.user, token: token || "" },
+        });
+      } else {
+        dispatch({ type: "AUTH_FAILURE", payload: response.message || "Microsoft sign-in failed" });
+      }
+    } catch (error) {
+      dispatch({
+        type: "AUTH_FAILURE",
+        payload: error instanceof Error ? error.message : "Microsoft sign-in failed",
+      });
+    }
+  };
+
   // Logout method
   const logout = async () => {
     try {
+      if (IS_MICROSOFT_LOGIN_ENABLED) {
+        try {
+          const msal = get_msal_instance();
+          if (msal) {
+            await ensure_msal_ready();
+            const account = msal.getActiveAccount() ?? msal.getAllAccounts()[0];
+            if (account) {
+              await msal.logoutPopup({ account });
+            }
+          }
+        } catch (msal_error) {
+          console.warn("MSAL logout:", msal_error);
+        }
+      }
       await authService.logout();
     } catch (error) {
       console.warn("Logout error:", error);
@@ -216,6 +267,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const value: AuthContextType = {
     ...state,
     login,
+    loginWithMicrosoft,
     logout,
     clearError,
     refreshUser,

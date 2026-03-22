@@ -333,7 +333,7 @@ class HttpClient {
   // Check whether this is a login request
   private isLoginRequest(config: AxiosRequestConfig): boolean {
     const url = typeof config.url === "string" ? config.url : "";
-    return url === API_ENDPOINTS.AUTH.LOGIN;
+    return url === API_ENDPOINTS.AUTH.LOGIN || url === API_ENDPOINTS.AUTH.MICROSOFT;
   }
 
   // Create or reuse refresh flow promise (avoid parallel duplicate refresh)

@@ -11,9 +11,12 @@ importers:
 
   .:
     dependencies:
+      '@azure/msal-browser':
+        specifier: ^4.12.0
+        version: 4.30.0
       '@efcnewlife/newlife-ui':
-        specifier: ^0.1.0
-        version: 0.1.0(flatpickr@4.6.13)(react-dom@19.2.4(react@19.2.4))(react-icons@5.5.0(react@19.2.4))(react@19.2.4)
+        specifier: ^0.1.1
+        version: 0.1.1(flatpickr@4.6.13)(react-dom@19.2.4(react@19.2.4))(react-icons@5.5.0(react@19.2.4))(react@19.2.4)
       '@tailwindcss/forms':
         specifier: ^0.5.10
         version: 0.5.11(tailwindcss@4.1.18)
@@ -112,6 +115,14 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
+  '@azure/msal-browser@4.30.0':
+    resolution: {integrity: sha512-HBBKfbZkMVzzF5bofvS1cXuNHFVc+gt4/HOnCmG/0hsHuZRJvJvDg/+7nTwIpoqvJc8BQp5o23rBUfisOLxR+w==}
+    engines: {node: '>=0.8.0'}
+
+  '@azure/msal-common@15.17.0':
+    resolution: {integrity: sha512-VQ5/gTLFADkwue+FohVuCqlzFPUq4xSrX8jeZe+iwZuY6moliNC8xt86qPVNYdtbQfELDf2Nu6LI+demFPHGgw==}
+    engines: {node: '>=0.8.0'}
+
   '@babel/code-frame@7.29.0':
     resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
     engines: {node: '>=6.9.0'}
@@ -199,8 +210,8 @@ packages:
     resolution: {integrity: sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A==}
     engines: {node: '>=6.9.0'}
 
-  '@efcnewlife/newlife-ui@0.1.0':
-    resolution: {integrity: sha512-UjpJfsPnzFQLOuIgb5i1xCLR4ZlmjCh6CctyH9yKcTVZSsuzFtXrFDM2wZzxL280YChQhasJl3iDdTRBgUcGiQ==, tarball: https://npm.pkg.github.com/download/@efcnewlife/newlife-ui/0.1.0/ef576e7bc6906603d17f4cc69f9624dee2a2d488}
+  '@efcnewlife/newlife-ui@0.1.1':
+    resolution: {integrity: sha512-d3SLFc4CU5hFsf1SQEENkSk98U95Mnm8v/flPnMaf874iUaZT7dm759qy8Kyu1OqKNQNuD/idZsnB7ntwVFsew==, tarball: https://npm.pkg.github.com/download/@efcnewlife/newlife-ui/0.1.1/35dd1c6c4878c9791adb1c8a64e71cd44083e9b9}
     peerDependencies:
       flatpickr: ^4.0.0
       react: ^18.0.0 || ^19.0.0
@@ -1666,6 +1677,12 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
+  '@azure/msal-browser@4.30.0':
+    dependencies:
+      '@azure/msal-common': 15.17.0
+
+  '@azure/msal-common@15.17.0': {}
+
   '@babel/code-frame@7.29.0':
     dependencies:
       '@babel/helper-validator-identifier': 7.28.5
@@ -1780,7 +1797,7 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
-  '@efcnewlife/newlife-ui@0.1.0(flatpickr@4.6.13)(react-dom@19.2.4(react@19.2.4))(react-icons@5.5.0(react@19.2.4))(react@19.2.4)':
+  '@efcnewlife/newlife-ui@0.1.1(flatpickr@4.6.13)(react-dom@19.2.4(react@19.2.4))(react-icons@5.5.0(react@19.2.4))(react@19.2.4)':
     dependencies:
       clsx: 2.1.1
       flatpickr: 4.6.13
