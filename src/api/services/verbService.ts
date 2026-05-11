@@ -6,7 +6,7 @@ import { httpClient } from "./httpClient";
 
 export interface VerbItem {
   id: string;
-  displayName: string;
+  name: string;
   action: string; // e.g., create/read/update/delete/list/get
 }
 

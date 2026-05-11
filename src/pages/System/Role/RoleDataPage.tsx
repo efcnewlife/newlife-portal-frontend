@@ -7,12 +7,14 @@ import { PopoverPosition, Resource } from "@/const/enums";
 import { useModal } from "@/hooks/useModal";
 import { DateUtil } from "@/utils/dateUtil";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import RoleDataForm, { type RoleDataFormHandle, type RoleFormValues } from "./RoleDataForm";
 import RoleDeleteForm from "./RoleDeleteForm";
 import RoleDetailView from "./RoleDetailView";
 import RoleSearchPopover, { type RoleSearchFilters } from "./RoleSearchPopover";
 
 export default function RoleDataPage() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<RolePageItem[]>([]);
   const [total, setTotal] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -72,30 +74,30 @@ export default function RoleDataPage() {
 
   const columns: DataTableColumn<RolePageItem>[] = useMemo(
     () => [
-      { key: "code", label: "code", sortable: true, width: "w-40" },
-      { key: "name", label: "name", sortable: true, width: "w-48" },
+      { key: "code", label: t("system:role.table.code"), sortable: true, width: "w-40" },
+      { key: "name", label: t("system:role.table.name"), sortable: true, width: "w-48" },
       {
         key: "isActive",
-        label: "enable",
+        label: t("system:role.detail.labelActive"),
         sortable: true,
         width: "w-24",
-        render: (val) => (val ? "yes" : "no"),
+        render: (val) => (val ? t("system:role.boolean.yes") : t("system:role.boolean.no")),
       },
       {
         key: "remark",
-        label: "Remark",
+        label: t("system:role.table.remark"),
         overflow: true,
         width: "w-48",
       },
       {
         key: "permissions",
-        label: "Number of permissions",
+        label: t("system:role.table.permissionCount"),
         width: "w-24",
         render: (_, row) => (row.permissions ? row.permissions.length : 0),
       },
       {
         key: "createAt",
-        label: "Setup time",
+        label: t("system:role.table.createdAt"),
         sortable: true,
         width: "w-44",
         render: (value: unknown) => {
@@ -111,7 +113,7 @@ export default function RoleDataPage() {
       },
       {
         key: "updateAt",
-        label: "Update time",
+        label: t("system:role.table.updatedAt"),
         sortable: true,
         width: "w-44",
         render: (value: unknown) => {
@@ -126,7 +128,7 @@ export default function RoleDataPage() {
         },
       },
     ],
-    [],
+    [t]
   );
 
   const toolbarButtons = useMemo(() => {
@@ -164,7 +166,7 @@ export default function RoleDataPage() {
 
     return [
       CommonPageButton.SEARCH(searchPopoverCallback, {
-        popover: { title: "Search for roles", position: PopoverPosition.BottomLeft, width: "420px" },
+        popover: { title: t("system:role.search.popoverTitle"), position: PopoverPosition.BottomLeft, width: "420px" },
       }),
       CommonPageButton.ADD(
         () => {
@@ -173,7 +175,7 @@ export default function RoleDataPage() {
           setEditingFormValues(null);
           openModal();
         },
-        { visible: !showDeleted },
+        { visible: !showDeleted }
       ),
       CommonPageButton.REFRESH(() => {
         clearSelectionRef.current?.();
@@ -184,27 +186,27 @@ export default function RoleDataPage() {
           setShowDeleted((v) => !v);
           setCurrentPage(1);
         },
-        { className: getRecycleButtonClassName(showDeleted) },
+        { className: getRecycleButtonClassName(showDeleted) }
       ),
     ];
-  }, [fetchPages, searchFilters, showDeleted, openModal, setFormMode, setEditing, setEditingFormValues, clearSelectionRef]);
+  }, [fetchPages, searchFilters, showDeleted, openModal, setFormMode, setEditing, setEditingFormValues, clearSelectionRef, t]);
 
   const rowActions: MenuButtonType<RolePageItem>[] = useMemo(
     () => [
       CommonRowAction.VIEW(async (row) => {
         try {
           setSubmitting(true);
-          // Get full role details (including permission list)
+          // Load full role detail including permissions
           const response = await roleService.getById(row.id);
           if (response.success) {
             setViewing(response.data);
             openViewModal();
           } else {
-            alert("Failed to load character details, please try again later");
+            alert(t("system:role.feedback.detailLoadAlert"));
           }
         } catch (e) {
           console.error("Error fetching role detail:", e);
-          alert("Failed to load character details, please try again later");
+          alert(t("system:role.feedback.detailLoadAlert"));
         } finally {
           setSubmitting(false);
         }
@@ -213,13 +215,13 @@ export default function RoleDataPage() {
         async (row) => {
           try {
             setSubmitting(true);
-            // Get full role details (including permission list)
+            // Load full role detail including permissions
             const response = await roleService.getById(row.id);
             if (response.success) {
               const detail = response.data;
               setFormMode("edit");
               setEditing(row);
-              // Convert to form value format
+              // Map to form values
               setEditingFormValues({
                 code: detail.code,
                 name: detail.name || "",
@@ -230,18 +232,18 @@ export default function RoleDataPage() {
               });
               openModal();
             } else {
-              alert("Failed to load character details, please try again later");
+              alert(t("system:role.feedback.detailLoadAlert"));
             }
           } catch (e) {
             console.error("Error fetching role detail:", e);
-            alert("Failed to load character details, please try again later");
+            alert(t("system:role.feedback.detailLoadAlert"));
           } finally {
             setSubmitting(false);
           }
         },
         {
           visible: !showDeleted,
-        },
+        }
       ),
       CommonRowAction.RESTORE(
         async (row) => {
@@ -255,7 +257,7 @@ export default function RoleDataPage() {
         },
         {
           visible: showDeleted,
-        },
+        }
       ),
       CommonRowAction.DELETE(
         (row) => {
@@ -263,11 +265,11 @@ export default function RoleDataPage() {
           openDeleteModal();
         },
         {
-          text: showDeleted ? "Delete permanently" : "delete",
-        },
+          text: showDeleted ? t("common:deletePermanently") : t("common:delete"),
+        }
       ),
     ],
-    [openModal, openDeleteModal, openViewModal, showDeleted, fetchPages, setSubmitting],
+    [openModal, openDeleteModal, openViewModal, showDeleted, fetchPages, t]
   );
 
   const handleSort = (key?: string | null, desc?: boolean) => {
@@ -321,17 +323,17 @@ export default function RoleDataPage() {
 
       <ModalForm
         ref={roleModalFormRef}
-        title={formMode === "create" ? "Add new role" : "Edit role"}
+        title={formMode === "create" ? t("system:role.modal.createTitle") : t("system:role.modal.editTitle")}
         isOpen={isOpen}
         onClose={closeModal}
         className="max-w-7xl w-full mx-4 p-6"
         footer={
           <>
             <Button variant="outline" size="sm" onClick={closeModal} disabled={submitting}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button variant="primary" size="sm" onClick={() => roleModalFormRef.current?.submit()} disabled={submitting}>
-              {formMode === "create" ? "Add new role" : "Save changes"}
+              {formMode === "create" ? t("system:role.form.footer.submitCreate") : t("system:role.form.footer.submitSave")}
             </Button>
           </>
         }
@@ -357,7 +359,7 @@ export default function RoleDataPage() {
       </ModalForm>
 
       <Modal
-        title={showDeleted ? "Confirm permanent deletion of role" : "Confirm role deletion"}
+        title={showDeleted ? t("system:role.modal.deleteConfirmPermanent.title") : t("system:role.modal.deleteConfirmSoft.title")}
         isOpen={isDeleteOpen}
         onClose={closeDeleteModal}
         className="max-w-[560px] w-full mx-4 p-6"
@@ -372,7 +374,7 @@ export default function RoleDataPage() {
               await fetchPages();
             } catch (e) {
               console.error(e);
-              alert("Deletion failed, please try again later");
+              alert(t("system:role.feedback.deleteFailedAlert"));
             } finally {
               setSubmitting(false);
             }
@@ -384,7 +386,7 @@ export default function RoleDataPage() {
       </Modal>
 
       <Modal
-        title="Role details"
+        title={t("system:role.modal.detailTitle")}
         isOpen={isViewOpen}
         onClose={closeViewModal}
         className="max-w-7xl w-full max-h-9/10 mx-4 p-6 overflow-y-auto"

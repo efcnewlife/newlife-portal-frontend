@@ -23,6 +23,8 @@ import type {
 } from "@/types/resource-admin";
 import { IS_MOCK_API } from "@/config/env";
 import { httpClient } from "./httpClient";
+export { AdminResourceType } from "@/const/resource";
+export type { ResourceMenuItem } from "@/types/resource-admin";
 
 // Resource service class
 class ResourceService {

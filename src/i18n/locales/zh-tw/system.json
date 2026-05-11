@@ -1,0 +1,584 @@
+{
+  "shared": {
+    "genderMale": "男性",
+    "genderFemale": "女性",
+    "genderUnknown": "未知",
+    "neverLoggedIn": "從未登入",
+    "notSet": "未設定",
+    "loading": "載入中...",
+    "loadFailedShort": "載入失敗",
+    "search": "搜尋",
+    "clear": "清除"
+  },
+  "role": {
+    "matrix": {
+      "columnName": "名稱",
+      "selectAllVerb": "全部",
+      "permissionsLoading": "載入權限中...",
+      "sectionGeneralResources": "一般資源",
+      "sectionSystemResources": "系統資源",
+      "childVerbLabel": "所有子資源的 {{verb}} 權限"
+    },
+    "page": {
+      "title": "角色管理",
+      "description": "管理系統角色"
+    },
+    "table": {
+      "code": "代碼",
+      "name": "名稱",
+      "remark": "備註",
+      "permissionCount": "權限數",
+      "createdAt": "建立時間",
+      "updatedAt": "更新時間"
+    },
+    "search": {
+      "popoverTitle": "搜尋角色",
+      "keywordLabel": "關鍵字",
+      "keywordPlaceholder": "代碼或名稱",
+      "activeOnlyCheckbox": "僅顯示啟用",
+      "defaultTitleFallback": "搜尋角色"
+    },
+    "feedback": {
+      "detailLoadAlert": "載入角色詳情失敗，請稍後再試。",
+      "deleteFailedAlert": "刪除失敗，請稍後再試。"
+    },
+    "modal": {
+      "createTitle": "新增角色",
+      "editTitle": "編輯角色",
+      "deleteConfirmPermanent": {
+        "title": "確認永久刪除角色"
+      },
+      "deleteConfirmSoft": {
+        "title": "確認刪除角色"
+      },
+      "detailTitle": "角色詳細資料"
+    },
+    "form": {
+      "footer": {
+        "submitCreate": "新增角色",
+        "submitSave": "儲存變更"
+      },
+      "code": {
+        "label": "代碼",
+        "placeholder": "請輸入代碼",
+        "hint": "例如：content_manager"
+      },
+      "validation": {
+        "codeRequired": "請輸入代碼",
+        "nameRequired": "請輸入名稱",
+        "permissionsRequired": "請選擇權限"
+      },
+      "name": {
+        "label": "名稱",
+        "placeholder": "請輸入名稱",
+        "hint": "例如：內容管理員"
+      },
+      "checkboxActive": "啟用",
+      "description": {
+        "label": "描述"
+      },
+      "remark": {
+        "label": "備註"
+      },
+      "permissionsLabelRequired": "權限 *"
+    },
+    "detail": {
+      "labelCode": "代碼",
+      "labelName": "名稱",
+      "labelActive": "啟用",
+      "labelCreatedAt": "建立時間",
+      "labelUpdatedAt": "更新時間",
+      "descriptionHeading": "描述",
+      "remarkHeading": "備註",
+      "permissionsHeadingCount": "權限（{{count}}）",
+      "permissionsEmpty": "無",
+      "table": {
+        "resourceName": "資源名稱",
+        "displayName": "顯示名稱",
+        "permissionCode": "代碼"
+      }
+    },
+    "boolean": {
+      "yes": "是",
+      "no": "否"
+    },
+    "deleteForm": {
+      "entityLabel": "角色資料"
+    }
+  },
+  "resource": {
+    "detail": {
+      "typeGeneral": "業務功能 (GENERAL)",
+      "typeSystem": "系統功能 (SYSTEM)",
+      "sectionInfo": "資源資訊",
+      "sectionVisibility": "狀態",
+      "sectionParent": "父資源資訊",
+      "parent": {
+        "noneRoot": "無（根資源）"
+      },
+      "loading": "載入中...",
+      "loadFailedFallback": "載入資源詳情失敗",
+      "notFound": "資源不存在"
+    },
+    "tree": {
+      "sectionMenuLabel": "MENU",
+      "sectionSystemLabel": "SYSTEM",
+      "columnIcon": "圖示",
+      "columnName": "資源名稱",
+      "columnKey": "Key",
+      "columnPath": "路徑",
+      "empty": "暫無資源數據"
+    },
+    "page": {
+      "title": "資源管理",
+      "description": "管理系統資源和權限"
+    },
+    "toolbar": {
+      "addRoot": "新增根資源",
+      "expandAll": "展開全部",
+      "collapseAll": "收合全部"
+    },
+    "feedback": {
+      "refreshFailedAlert": "刷新失敗，請稍後再試。",
+      "deleteFailedAlert": "刪除失敗，請稍後再試。",
+      "restoreFailedAlert": "恢復失敗，請稍後再試。",
+      "moveUpFailedAlert": "上移失敗，請稍後再試。",
+      "moveDownFailedAlert": "下移失敗，請稍後再試。",
+      "changeParentFailedAlert": "切換父資源失敗，請稍後再試。",
+      "saveFailedAlert": "儲存失敗，請稍後再試。"
+    },
+    "loading": {
+      "fullPageMessage": "載入資源資料中...",
+      "overlayMessage": "刷新中...",
+      "errorTitle": "載入資源資料失敗"
+    },
+    "modal": {
+      "createTitle": "新增資源",
+      "editTitle": "編輯資源",
+      "deleteConfirmPermanent": {
+        "title": "確認永久刪除資源"
+      },
+      "deleteConfirmSoft": {
+        "title": "確認刪除資源"
+      },
+      "restoreTitle": "還原資源",
+      "detailTitle": "資源詳細資料",
+      "changeParentTitle": "切換父資源"
+    },
+    "restoreForm": {
+      "entityLabel": "資源"
+    },
+    "menu": {
+      "viewDetails": "查看資料",
+      "editResource": "編輯資源",
+      "addChild": "新增子資源",
+      "changeParent": "切換父資源",
+      "moveUp": "上移一位",
+      "moveDown": "下移一位",
+      "restore": "恢復資源",
+      "deletePermanent": "永久刪除",
+      "deleteResource": "刪除資源"
+    },
+    "form": {
+      "parentBanner": "正在為「{{name}}」新增子資源",
+      "sectionInfo": "資源資訊",
+      "name": {
+        "label": "名稱 *",
+        "placeholder": "請輸入資源名稱"
+      },
+      "key": {
+        "label": "Key *",
+        "placeholder": "請輸入資源 Key"
+      },
+      "code": {
+        "label": "代碼 *",
+        "placeholder": "請輸入資源代碼"
+      },
+      "path": {
+        "label": "路徑 *",
+        "placeholder": "請輸入資源路徑"
+      },
+      "type": {
+        "label": "類型 *",
+        "optionGeneral": "業務功能 (GENERAL)",
+        "optionSystem": "系統功能 (SYSTEM)",
+        "placeholder": "請選擇類型"
+      },
+      "icon": {
+        "label": "圖示 *",
+        "placeholder": "請輸入圖示名稱（例：MdHome）"
+      },
+      "iconHint": "輸入 Material Design 圖示名稱。",
+      "sectionVisibility": "狀態",
+      "checkboxVisible": "資源可見",
+      "remark": {
+        "label": "備註",
+        "placeholder": "請輸入備註"
+      },
+      "description": {
+        "label": "描述",
+        "placeholder": "請輸入資源描述"
+      },
+      "submittingSaving": "儲存中...",
+      "validation": {
+        "nameRequired": "資源名稱不能為空",
+        "keyRequired": "資源 Key 不能為空",
+        "keyCharset": "資源 Key 只能包含字母、數字和下劃線",
+        "codeRequired": "資源代碼不能為空",
+        "codeChildFormat": "子資源代碼格式需為 {resource}:{subResource}，例如 user:create",
+        "codeRootFormat": "根資源代碼不得包含冒號，格式為 {resource}，例如 user",
+        "pathRequired": "資源路徑不能為空",
+        "iconRequired": "資源圖示不能為空"
+      }
+    },
+    "deleteForm": {
+      "titlePermanent": "確認永久刪除資源",
+      "titleSoft": "確認刪除資源",
+      "descPermanent": "此操作將永久刪除資源，無法恢復。",
+      "descSoft": "此操作將軟刪除資源，可在回收桶中恢復。",
+      "reasonLabel": "刪除原因（可選）",
+      "reasonPlaceholder": "請輸入刪除原因",
+      "submittingDeleting": "刪除中...",
+      "confirmPermanentButton": "永久刪除"
+    },
+    "changeParentForm": {
+      "titleHeading": "切換父資源",
+      "instruction": "選擇根資源，將「{{name}}」歸入其下（只能選擇根節點）",
+      "noRoots": "沒有可用的根節點資源",
+      "confirmButton": "確認切換",
+      "processingButton": "處理中..."
+    }
+  },
+  "user": {
+    "page": {
+      "title": "使用者管理",
+      "description": "管理系統使用者"
+    },
+    "table": {
+      "phoneNumber": "手機號碼",
+      "email": "電子郵件",
+      "displayName": "顯示名稱",
+      "gender": "性別",
+      "verified": "已驗證",
+      "active": "啟用",
+      "admin": "管理員",
+      "ministry": "服事",
+      "lastLoginAt": "最後登入",
+      "createdAt": "建立時間"
+    },
+    "tooltip": {
+      "superAdmin": "超級管理員"
+    },
+    "feedback": {
+      "loadFailed": {
+        "title": "載入失敗",
+        "desc": "無法載入用戶資料，請稍後重試。"
+      },
+      "restoreSuccess": {
+        "title": "還原成功",
+        "desc": "已成功還原 {{count}} 個用戶。"
+      },
+      "restoreFailed": {
+        "title": "還原失敗",
+        "desc": "無法還原用戶，請稍後再試。"
+      },
+      "validationNeeded": {
+        "title": "驗證失敗",
+        "password": "請輸入密碼"
+      },
+      "createSuccess": {
+        "title": "新增成功",
+        "desc": "已成功新增用戶「{{name}}」。"
+      },
+      "updateSuccess": {
+        "title": "更新成功",
+        "desc": "已成功更新用戶「{{name}}」。"
+      },
+      "saveFailed": {
+        "title": "儲存失敗",
+        "desc": "無法儲存用戶資料，請稍後再試。"
+      },
+      "deleteSuccessPermanent": {
+        "title": "永久刪除成功",
+        "desc": "已成功永久刪除用戶「{{name}}」。"
+      },
+      "deleteSuccessSoft": {
+        "title": "刪除成功",
+        "desc": "已成功刪除用戶「{{name}}」。"
+      },
+      "deleteFailed": {
+        "title": "刪除失敗",
+        "desc": "無法刪除用戶，請稍後再試。"
+      },
+      "bindSuccess": {
+        "title": "綁定成功",
+        "desc": "已成功更新用戶角色。"
+      },
+      "bindFailed": {
+        "title": "綁定失敗",
+        "desc": "無法綁定角色，請稍後再試。"
+      }
+    },
+    "search": {
+      "popoverTitle": "搜尋用戶",
+      "keywordLabel": "關鍵字搜尋",
+      "keywordPlaceholder": "搜尋手機號碼、電子郵件、顯示名稱",
+      "sectionStatus": "狀態篩選",
+      "labelVerifiedFilter": "已驗證",
+      "toggleVerified": {
+        "true": "已驗證",
+        "false": "未驗證"
+      },
+      "labelActiveFilter": "啟用狀態",
+      "toggleActive": {
+        "true": "已啟用",
+        "false": "未啟用"
+      },
+      "labelAdminFilter": "後台管理員",
+      "toggleAdmin": {
+        "true": "管理員",
+        "false": "一般用戶"
+      },
+      "labelSuperFilter": "超級管理員",
+      "toggleSuper": {
+        "true": "超級管理員",
+        "false": "非超級管理員"
+      },
+      "labelMinistryFilter": "服事人員",
+      "toggleMinistry": {
+        "true": "服事人員",
+        "false": "非服事人員"
+      },
+      "genderSection": "性別篩選",
+      "genderPlaceholder": "請選擇性別",
+      "chipsTitle": "當前篩選條件：",
+      "chipKeywordPrefix": "關鍵字：",
+      "chipVerifiedPrefix": "已驗證：",
+      "chipActivePrefix": "啟用：",
+      "chipAdminPrefix": "管理員：",
+      "chipSuperPrefix": "超級管理員：",
+      "chipMinistryPrefix": "服事人員：",
+      "chipGenderPrefix": "性別："
+    },
+    "row": {
+      "bindRole": "綁定角色",
+      "permanentDelete": "永久刪除"
+    },
+    "modal": {
+      "createTitle": "新增用戶",
+      "editTitle": "編輯用戶",
+      "deleteConfirmPermanent": {
+        "title": "確認永久刪除用戶"
+      },
+      "deleteConfirmSoft": {
+        "title": "確認刪除用戶"
+      },
+      "restoreTitle": "還原用戶",
+      "detailTitle": "用戶詳細資料",
+      "bindRoleTitle": "綁定角色"
+    },
+    "restoreForm": {
+      "entityLabel": "使用者"
+    },
+    "deleteForm": {
+      "entityLabel": "用戶資料"
+    },
+    "form": {
+      "validation": {
+        "phoneInvalid": "請輸入有效的手機號碼。",
+        "emailRequired": "請輸入電子郵件。",
+        "emailInvalid": "請輸入有效的電子郵件格式。",
+        "displayNameTooLong": "顯示名稱不能超過 64 個字符。",
+        "remarkTooLong": "備註不能超過 500 個字符。"
+      },
+      "email": {
+        "label": "電子郵件",
+        "placeholder": "請輸入電子郵件",
+        "hint": "例如：user@example.com"
+      },
+      "displayName": {
+        "label": "顯示名稱",
+        "placeholder": "用戶顯示名稱"
+      },
+      "gender": {
+        "label": "性別",
+        "placeholder": "請選擇性別"
+      },
+      "sectionStatus": "狀態設定",
+      "checkboxVerified": "已驗證",
+      "checkboxActive": "啟用",
+      "sectionPermissions": "權限設定",
+      "checkboxSuperUser": "超級用戶",
+      "checkboxAdmin": "管理員",
+      "remark": {
+        "label": "備註",
+        "placeholder": "備註資訊"
+      }
+    },
+    "detail": {
+      "sectionStatus": "狀態/權限",
+      "labelActiveStatus": "啟用狀態",
+      "labelBackendAdmin": "後台管理員",
+      "labelSuperAdministrator": "超級管理員",
+      "labelMinistryStaff": "服事人員",
+      "loadFailed": "載入用戶詳情失敗",
+      "labelUpdatedAt": "更新時間",
+      "remarkHeading": "備註"
+    },
+    "bindRoles": {
+      "selectAll": "全選",
+      "summary": "已選擇 {{selected}} / {{total}} 個角色",
+      "noRoles": "暫無可用角色",
+      "submittingLabel": "綁定中...",
+      "confirmBind": "確認綁定",
+      "loadAlert": "載入資料失敗，請稍後重試。"
+    }
+  },
+  "permission": {
+    "page": {
+      "title": "權限管理",
+      "description": "管理系統權限"
+    },
+    "table": {
+      "displayName": "顯示名稱",
+      "code": "代碼",
+      "status": "狀態",
+      "resource": "資源",
+      "action": "動作",
+      "description": "描述"
+    },
+    "search": {
+      "popoverTitle": "搜尋權限",
+      "keywordPlaceholder": "搜尋顯示名稱或代碼",
+      "keywordLabel": "關鍵字搜尋",
+      "sectionStatus": "狀態篩選",
+      "labelActiveStatus": "啟用狀態",
+      "toggleActive": {
+        "true": "已啟用",
+        "false": "未啟用"
+      },
+      "chipsTitle": "當前篩選條件：",
+      "chipKeywordPrefix": "關鍵字：",
+      "chipActivePrefix": "啟用："
+    },
+    "feedback": {
+      "load": {
+        "title": "載入失敗",
+        "desc": "無法載入權限資料。",
+        "retryDesc": "請稍後再試。"
+      },
+      "detailLoad": {
+        "desc": "無法載入權限詳情。",
+        "title": "載入失敗",
+        "failure": "無法載入權限詳情，請稍後再試。",
+        "failureShort": "無法載入權限詳情",
+        "generic": "載入權限詳情失敗。"
+      },
+      "restoreSuccess": {
+        "desc": "已成功還原 {{count}} 個權限。",
+        "title": "還原成功"
+      },
+      "restoreFailed": {
+        "desc": "無法還原權限，請稍後再試。",
+        "title": "還原失敗"
+      },
+      "createSuccess": {
+        "desc": "已成功新增權限「{{name}}」。",
+        "title": "新增成功"
+      },
+      "updateSuccess": {
+        "desc": "已成功更新權限「{{name}}」。",
+        "title": "更新成功"
+      },
+      "saveFailed": {
+        "desc": "無法儲存權限資料，請稍後再試。",
+        "title": "儲存失敗"
+      },
+      "deletePermanentSuccess": {
+        "desc": "已成功永久刪除權限「{{name}}」。"
+      },
+      "deleteSoftSuccess": {
+        "desc": "已成功刪除權限「{{name}}」。"
+      },
+      "deleteFailed": {
+        "desc": "無法刪除權限，請稍後再試。",
+        "title": "刪除失敗"
+      },
+      "genericLoadFail": "載入失敗。",
+      "deleteSuccessPermanent": {
+        "title": "永久刪除成功"
+      },
+      "deleteSuccessSoft": {
+        "title": "刪除成功"
+      }
+    },
+    "modal": {
+      "createTitle": "新增權限",
+      "editTitle": "編輯權限",
+      "deleteConfirmPermanent": {
+        "title": "確認永久刪除權限"
+      },
+      "deleteConfirmSoft": {
+        "title": "確認刪除權限"
+      },
+      "restoreTitle": "還原權限",
+      "detailTitle": "權限詳細資料"
+    },
+    "deleteForm": {
+      "entityLabel": "權限資料"
+    },
+    "restoreForm": {
+      "entityLabel": "權限"
+    },
+    "form": {
+      "validation": {
+        "nameRequired": "請輸入顯示名稱",
+        "codeRequired": "請輸入代碼",
+        "resourceRequired": "請選擇資源",
+        "verbRequired": "請選擇動作",
+        "descriptionTooLong": "描述不能超過 500 個字符",
+        "remarkTooLong": "備註不能超過 500 個字符"
+      },
+      "displayName": {
+        "label": "顯示名稱",
+        "placeholder": "請輸入顯示名稱",
+        "hint": "例如：建立使用者"
+      },
+      "code": {
+        "label": "代碼",
+        "placeholder": "請輸入代碼",
+        "hint": "例如：user:create"
+      },
+      "comboLoading": "載入中...",
+      "comboResourcePlaceholder": {
+        "loading": "載入中...",
+        "idle": "請選擇或搜尋資源"
+      },
+      "verb": {
+        "label": "動作",
+        "placeholder": "請選擇動作",
+        "placeholderLoading": "載入中..."
+      },
+      "verbPlaceholderDisabled": "請選擇動作",
+      "sectionStatus": "狀態設定",
+      "checkboxActive": "啟用",
+      "description": {
+        "label": "描述",
+        "placeholder": "權限描述"
+      },
+      "remark": {
+        "label": "備註",
+        "placeholder": "備註資訊"
+      }
+    },
+    "detail": {
+      "sectionDetailResource": "資源詳情",
+      "sectionDetailVerb": "動作詳情",
+      "labelResourceKey": "Key",
+      "labelResourceCode": "Code",
+      "labelVerbAction": "Action",
+      "permissionIdHeading": "權限 ID",
+      "labelActiveStatus": "啟用狀態"
+    }
+  }
+}

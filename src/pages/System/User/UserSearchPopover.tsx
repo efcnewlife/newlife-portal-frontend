@@ -2,7 +2,8 @@ import { PopoverType } from "@/components/DataPage";
 import SearchPopoverContent from "@/components/DataPage/SearchPopoverContent";
 import { Button, Input, Select } from "@efcnewlife/newlife-ui";
 import { Gender } from "@/const/enums";
-import { ReactNode } from "react";
+import { ReactNode, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 export interface UserSearchFilters {
   keyword?: string;
@@ -10,6 +11,7 @@ export interface UserSearchFilters {
   is_active?: boolean;
   is_admin?: boolean;
   is_superuser?: boolean;
+  is_ministry?: boolean;
   gender?: Gender;
 }
 
@@ -34,6 +36,8 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
   trigger,
   popover,
 }) => {
+  const { t } = useTranslation();
+
   const handleFilterChange = (key: keyof UserSearchFilters, value: unknown) => {
     onFiltersChange({
       ...filters,
@@ -52,22 +56,28 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
     }
   };
 
-  const getBooleanLabel = (currentValue?: boolean, trueLabel = "Yes", falseLabel = "No") => {
-    if (currentValue === true) return trueLabel;
-    if (currentValue === false) return falseLabel;
-    return "Any";
-  };
+  const getBooleanLabel = useCallback(
+    (currentValue?: boolean, trueLabel?: string, falseLabel?: string) => {
+      if (currentValue === true) return trueLabel ?? t("common:yes");
+      if (currentValue === false) return falseLabel ?? t("common:no");
+      return t("common:any");
+    },
+    [t]
+  );
 
-  const getGenderLabel = (gender?: Gender) => {
-    switch (gender) {
-      case Gender.Male:
-        return "Male";
-      case Gender.Female:
-        return "Female";
-      default:
-        return "Any";
-    }
-  };
+  const getGenderLabel = useCallback(
+    (gender?: Gender) => {
+      switch (gender) {
+        case Gender.Male:
+          return t("system:shared.genderMale");
+        case Gender.Female:
+          return t("system:shared.genderFemale");
+        default:
+          return t("common:any");
+      }
+    },
+    [t]
+  );
 
   return (
     <SearchPopoverContent
@@ -79,25 +89,23 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
       popover={popover}
     >
       <div className="space-y-4">
-        {/* Keyword Search */}
         <div>
           <Input
             id="keyword"
-            label="Keyword"
+            label={t("system:user.search.keywordLabel")}
             type="text"
             value={filters.keyword || ""}
             onChange={(e) => handleFilterChange("keyword", e.target.value)}
-            placeholder="Search by phone number, email, or display name"
+            placeholder={t("system:user.search.keywordPlaceholder")}
             clearable
           />
         </div>
 
-        {/* Status Filters */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Status Filters</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">{t("system:user.search.sectionStatus")}</label>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Verification</label>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t("system:user.search.labelVerifiedFilter")}</label>
               <Button
                 variant="outline"
                 size="sm"
@@ -106,16 +114,16 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
                   filters.verified === true
                     ? "bg-green-100 text-green-700 border-green-300 dark:bg-green-900 dark:text-green-300"
                     : filters.verified === false
-                      ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-900 dark:text-red-300"
-                      : ""
+                    ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-900 dark:text-red-300"
+                    : ""
                 }`}
               >
-                {getBooleanLabel(filters.verified, "Verified", "Unverified")}
+                {getBooleanLabel(filters.verified, t("system:user.search.toggleVerified.true"), t("system:user.search.toggleVerified.false"))}
               </Button>
             </div>
 
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Account Status</label>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t("system:user.search.labelActiveFilter")}</label>
               <Button
                 variant="outline"
                 size="sm"
@@ -124,16 +132,16 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
                   filters.is_active === true
                     ? "bg-green-100 text-green-700 border-green-300 dark:bg-green-900 dark:text-green-300"
                     : filters.is_active === false
-                      ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-900 dark:text-red-300"
-                      : ""
+                    ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-900 dark:text-red-300"
+                    : ""
                 }`}
               >
-                {getBooleanLabel(filters.is_active, "Active", "Inactive")}
+                {getBooleanLabel(filters.is_active, t("system:user.search.toggleActive.true"), t("system:user.search.toggleActive.false"))}
               </Button>
             </div>
 
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Admin Access</label>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t("system:user.search.labelAdminFilter")}</label>
               <Button
                 variant="outline"
                 size="sm"
@@ -142,16 +150,16 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
                   filters.is_admin === true
                     ? "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900 dark:text-blue-300"
                     : filters.is_admin === false
-                      ? "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300"
-                      : ""
+                    ? "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300"
+                    : ""
                 }`}
               >
-                {getBooleanLabel(filters.is_admin, "Admin", "Regular User")}
+                {getBooleanLabel(filters.is_admin, t("system:user.search.toggleAdmin.true"), t("system:user.search.toggleAdmin.false"))}
               </Button>
             </div>
 
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Superuser</label>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t("system:user.search.labelSuperFilter")}</label>
               <Button
                 variant="outline"
                 size="sm"
@@ -160,72 +168,94 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
                   filters.is_superuser === true
                     ? "bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900 dark:text-purple-300"
                     : filters.is_superuser === false
-                      ? "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300"
-                      : ""
+                    ? "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300"
+                    : ""
                 }`}
               >
-                {getBooleanLabel(filters.is_superuser, "Superuser", "Not Superuser")}
+                {getBooleanLabel(filters.is_superuser, t("system:user.search.toggleSuper.true"), t("system:user.search.toggleSuper.false"))}
+              </Button>
+            </div>
+
+            <div>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t("system:user.search.labelMinistryFilter")}</label>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleBooleanFilterChange("is_ministry")}
+                className={`w-full justify-start text-xs ${
+                  filters.is_ministry === true
+                    ? "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900 dark:text-orange-300"
+                    : filters.is_ministry === false
+                    ? "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300"
+                    : ""
+                }`}
+              >
+                {getBooleanLabel(filters.is_ministry, t("system:user.search.toggleMinistry.true"), t("system:user.search.toggleMinistry.false"))}
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Gender Filter */}
         <div>
           <Select
             id="gender"
-            label="Gender"
+            label={t("system:user.search.genderSection")}
             options={[
-              { value: "", label: "Any" },
-              { value: Gender.Male.toString(), label: "Male" },
-              { value: Gender.Female.toString(), label: "Female" },
+              { value: "", label: t("common:any") },
+              { value: Gender.Male.toString(), label: t("system:shared.genderMale") },
+              { value: Gender.Female.toString(), label: t("system:shared.genderFemale") },
             ]}
             value={filters.gender?.toString() || ""}
             onChange={(value) => handleFilterChange("gender", value ? Number(value) : undefined)}
-            placeholder="Select gender"
+            placeholder={t("system:user.search.genderPlaceholder")}
             clearable
             size="md"
           />
         </div>
 
-        {/* Filter Summary */}
         {(filters.keyword ||
           filters.verified !== undefined ||
           filters.is_active !== undefined ||
           filters.is_admin !== undefined ||
           filters.is_superuser !== undefined ||
+          filters.is_ministry !== undefined ||
           filters.gender !== undefined) && (
           <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">Active Filters:</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t("system:user.search.chipsTitle")}</div>
             <div className="flex flex-wrap gap-1">
               {filters.keyword && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                  Keyword: {filters.keyword}
+                  {t("system:user.search.chipKeywordPrefix")} {filters.keyword}
                 </span>
               )}
               {filters.verified !== undefined && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                  Verified: {getBooleanLabel(filters.verified, "Yes", "No")}
+                  {t("system:user.search.chipVerifiedPrefix")} {getBooleanLabel(filters.verified, t("common:yes"), t("common:no"))}
                 </span>
               )}
               {filters.is_active !== undefined && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                  Active: {getBooleanLabel(filters.is_active, "Yes", "No")}
+                  {t("system:user.search.chipActivePrefix")} {getBooleanLabel(filters.is_active, t("common:yes"), t("common:no"))}
                 </span>
               )}
               {filters.is_admin !== undefined && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                  Admin: {getBooleanLabel(filters.is_admin, "Yes", "No")}
+                  {t("system:user.search.chipAdminPrefix")} {getBooleanLabel(filters.is_admin, t("common:yes"), t("common:no"))}
                 </span>
               )}
               {filters.is_superuser !== undefined && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
-                  Superuser: {getBooleanLabel(filters.is_superuser, "Yes", "No")}
+                  {t("system:user.search.chipSuperPrefix")} {getBooleanLabel(filters.is_superuser, t("common:yes"), t("common:no"))}
+                </span>
+              )}
+              {filters.is_ministry !== undefined && (
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300">
+                  {t("system:user.search.chipMinistryPrefix")} {getBooleanLabel(filters.is_ministry, t("common:yes"), t("common:no"))}
                 </span>
               )}
               {filters.gender !== undefined && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300">
-                  Gender: {getGenderLabel(filters.gender)}
+                  {t("system:user.search.chipGenderPrefix")} {getGenderLabel(filters.gender)}
                 </span>
               )}
             </div>

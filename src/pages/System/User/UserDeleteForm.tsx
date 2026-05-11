@@ -1,4 +1,5 @@
 import DeleteForm from "@/components/DataPage/DeleteForm";
+import { useTranslation } from "react-i18next";
 
 interface UserDeleteFormProps {
   onSubmit: (payload: { reason?: string; permanent?: boolean }) => Promise<void> | void;
@@ -8,7 +9,10 @@ interface UserDeleteFormProps {
 }
 
 const UserDeleteForm: React.FC<UserDeleteFormProps> = ({ onSubmit, onCancel, submitting, isPermanent = false }) => {
-  return <DeleteForm onSubmit={onSubmit} onCancel={onCancel} submitting={submitting} entityName="User profile" isPermanent={isPermanent} />;
+  const { t } = useTranslation();
+  return (
+    <DeleteForm onSubmit={onSubmit} onCancel={onCancel} submitting={submitting} entityName={t("system:user.deleteForm.entityLabel")} isPermanent={isPermanent} />
+  );
 };
 
 export default UserDeleteForm;

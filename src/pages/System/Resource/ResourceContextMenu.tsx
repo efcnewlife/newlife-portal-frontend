@@ -1,6 +1,7 @@
 import type { ResourceMenuItem } from "@/types/resource";
 import { useEffect, useRef, useState } from "react";
-import { MdAdd, MdArrowDownward, MdArrowUpward, MdDelete, MdEdit, MdRestore, MdSwapHoriz, MdVisibility } from "react-icons/md";
+import { useTranslation } from "react-i18next";
+import { MdAdd, MdArrowDownward, MdArrowUpward, MdDelete, MdEdit, MdRestore, MdVisibility, MdSwapHoriz } from "react-icons/md";
 
 interface ResourceContextMenuProps {
   visible: boolean;
@@ -47,7 +48,7 @@ export const ResourceContextMenu: React.FC<ResourceContextMenuProps> = ({
   canMoveDown,
   canChangeParent = true,
 }) => {
-  // Limit the menu position to the visible area
+  const { t } = useTranslation();
   const menuRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ left: number; top: number }>({ left: x, top: y });
 
@@ -59,7 +60,6 @@ export const ResourceContextMenu: React.FC<ResourceContextMenuProps> = ({
     let left = x;
     let top = y;
 
-    // Use the estimated size temporarily and correct it after rendering.
     const rect = menuRef.current?.getBoundingClientRect();
     const width = rect?.width ?? 200;
     const height = rect?.height ?? 260;
@@ -78,7 +78,6 @@ export const ResourceContextMenu: React.FC<ResourceContextMenuProps> = ({
     return null;
   }
 
-  // In recycle bin mode, undeleted root resources: only "View data" is displayed
   const showOnlyViewInTrashForRoot = canRestore && !resource.is_deleted && !resource.pid;
 
   return (
@@ -87,51 +86,46 @@ export const ResourceContextMenu: React.FC<ResourceContextMenuProps> = ({
       className="fixed z-[1000] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1 min-w-[180px] max-w-[90vw]"
       style={{ left: pos.left, top: pos.top }}
     >
-      {/* View - can be viewed in any status */}
       {canView && (
         <button
           onClick={() => onView(resource)}
           className="w-full px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
         >
           <MdVisibility className="h-4 w-4" />
-          View profile
+          {t("system:resource.menu.viewDetails")}
         </button>
       )}
 
-      {/* Edit - Only resources that have not been deleted show the edit option */}
       {!showOnlyViewInTrashForRoot && canEdit && !resource.is_deleted && (
         <button
           onClick={() => onEdit(resource)}
           className="w-full px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
         >
           <MdEdit className="h-4 w-4" />
-          Edit resources
+          {t("system:resource.menu.editResource")}
         </button>
       )}
 
-      {/* Add new sub-resources - only root resources that have not been deleted are displayed */}
       {!showOnlyViewInTrashForRoot && canAddChild && !resource.is_deleted && !resource.pid && (
         <button
           onClick={() => onAddChild(resource)}
           className="w-full px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
         >
           <MdAdd className="h-4 w-4" />
-          Add new sub-resource
+          {t("system:resource.menu.addChild")}
         </button>
       )}
 
-      {/* Toggle parent resources - only undeleted child resources are displayed */}
       {!showOnlyViewInTrashForRoot && canChangeParent && canEdit && !resource.is_deleted && resource.pid && (
         <button
           onClick={() => onChangeParent(resource)}
           className="w-full px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
         >
           <MdSwapHoriz className="h-4 w-4" />
-          Switch parent resource
+          {t("system:resource.menu.changeParent")}
         </button>
       )}
 
-      {/* Sort operations - Only resources that have not been deleted will show sort options */}
       {!showOnlyViewInTrashForRoot && canEdit && !resource.is_deleted && (
         <>
           <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
@@ -142,7 +136,7 @@ export const ResourceContextMenu: React.FC<ResourceContextMenuProps> = ({
               className="w-full px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
             >
               <MdArrowUpward className="h-4 w-4" />
-              Move up one position
+              {t("system:resource.menu.moveUp")}
             </button>
           )}
 
@@ -152,13 +146,12 @@ export const ResourceContextMenu: React.FC<ResourceContextMenuProps> = ({
               className="w-full px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
             >
               <MdArrowDownward className="h-4 w-4" />
-              Move down one position
+              {t("system:resource.menu.moveDown")}
             </button>
           )}
         </>
       )}
 
-      {/* Restore - only shown for deleted resources in recycle mode */}
       {!showOnlyViewInTrashForRoot && canRestore && resource.is_deleted && (
         <>
           <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
@@ -167,12 +160,11 @@ export const ResourceContextMenu: React.FC<ResourceContextMenuProps> = ({
             className="w-full px-3 py-2 text-left text-sm text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-2"
           >
             <MdRestore className="h-4 w-4" />
-            Restore resources
+            {t("system:resource.menu.restore")}
           </button>
         </>
       )}
 
-      {/* delete */}
       {!showOnlyViewInTrashForRoot && canDelete && (
         <>
           <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
@@ -181,7 +173,7 @@ export const ResourceContextMenu: React.FC<ResourceContextMenuProps> = ({
             className="w-full px-3 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
           >
             <MdDelete className="h-4 w-4" />
-            {canRestore && resource.is_deleted ? "Delete permanently" : "Delete resources"}
+            {canRestore && resource.is_deleted ? t("system:resource.menu.deletePermanent") : t("system:resource.menu.deleteResource")}
           </button>
         </>
       )}

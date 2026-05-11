@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 
-import { MdKeyboardArrowDown, MdMoreHoriz } from "react-icons/md";
+import { MdKeyboardArrowDown, MdMoreHoriz, MdRefresh } from "react-icons/md";
 import { ENV_CONFIG } from "@/config/env";
 import { useTranslation } from "react-i18next";
 import { useSidebar } from "../context/SidebarContext";
@@ -19,11 +19,20 @@ type NavItem = {
   subItems?: { name: string; path: string; icon?: React.ReactNode }[];
 };
 
+/** Spinning loader for sidebar label slots (matches refresh-style spinners elsewhere). */
+const SidebarNavTextSpinner = () => (
+  <span className="inline-flex shrink-0 items-center" aria-hidden>
+    <MdRefresh className="h-4 w-4 animate-spin text-gray-400 dark:text-gray-500" />
+  </span>
+);
+
 const AppSidebar: React.FC = () => {
   const { t } = useTranslation();
   const { isExpanded, isMobileOpen, isHovered, setIsHovered, setIsMobileOpen } = useSidebar();
   const location = useLocation();
-  const { mainNavItems, systemNavItems } = useNavigationItems();
+  const { mainNavItems, systemNavItems, isLoading: menus_loading } = useNavigationItems();
+  const menus_refreshing = menus_loading && (mainNavItems.length > 0 || systemNavItems.length > 0);
+  const menus_initial_skeleton = menus_loading && mainNavItems.length === 0 && systemNavItems.length === 0;
 
   // Auto-close sidebar on mobile after route change
   useEffect(() => {
@@ -88,6 +97,27 @@ const AppSidebar: React.FC = () => {
     });
   };
 
+  const collapsed_xl_nav = !isExpanded && !isHovered;
+
+  const render_nav_skeleton_rows = () => (
+    <ul className="flex flex-col gap-1">
+      {[0, 1, 2].map((idx) => (
+        <li key={idx}>
+          <div className={`menu-item group menu-item-inactive cursor-default ${collapsed_xl_nav ? "xl:justify-center" : "xl:justify-start"}`}>
+            <span className="menu-item-icon-size inline-flex items-center justify-center shrink-0">
+              <MdRefresh className="h-5 w-5 animate-spin text-gray-300 dark:text-gray-600" aria-hidden />
+            </span>
+            {(isExpanded || isHovered || isMobileOpen) && (
+              <span className="menu-item-text inline-flex flex-1 min-w-0 items-center">
+                <SidebarNavTextSpinner />
+              </span>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+
   const renderMenuItems = (items: NavItem[], menuType: "main" | "system") => (
     <ul className="flex flex-col gap-1">
       {items.map((nav, index) => (
@@ -97,7 +127,7 @@ const AppSidebar: React.FC = () => {
               onClick={() => handleSubmenuToggle(index, menuType)}
               className={`menu-item group ${
                 openSubmenu?.type === menuType && openSubmenu?.index === index ? "menu-item-active" : "menu-item-inactive"
-              } cursor-pointer ${!isExpanded && !isHovered ? "xl:justify-center" : "xl:justify-start"}`}
+              } cursor-pointer ${collapsed_xl_nav ? "xl:justify-center" : "xl:justify-start"}`}
             >
               <span
                 className={`menu-item-icon-size  ${
@@ -107,7 +137,11 @@ const AppSidebar: React.FC = () => {
                 {nav.icon}
               </span>
 
-              {(isExpanded || isHovered || isMobileOpen) && <span className="menu-item-text">{nav.name}</span>}
+              {(isExpanded || isHovered || isMobileOpen) && (
+                <span className="menu-item-text inline-flex flex-1 min-w-0 items-center">
+                  {menus_refreshing ? <SidebarNavTextSpinner /> : nav.name}
+                </span>
+              )}
               {(isExpanded || isHovered || isMobileOpen) && (
                 <MdKeyboardArrowDown
                   className={`ml-auto w-5 h-5 transition-transform duration-200 ${
@@ -122,7 +156,11 @@ const AppSidebar: React.FC = () => {
                 <span className={`menu-item-icon-size ${isActive(nav.path) ? "menu-item-icon-active" : "menu-item-icon-inactive"}`}>
                   {nav.icon}
                 </span>
-                {(isExpanded || isHovered || isMobileOpen) && <span className="menu-item-text">{nav.name}</span>}
+                {(isExpanded || isHovered || isMobileOpen) && (
+                  <span className="menu-item-text inline-flex flex-1 min-w-0 items-center">
+                    {menus_refreshing ? <SidebarNavTextSpinner /> : nav.name}
+                  </span>
+                )}
               </Link>
             )
           )}
@@ -147,7 +185,9 @@ const AppSidebar: React.FC = () => {
                       }`}
                     >
                       {subItem.icon && <span className="mr-2 inline-flex items-center">{subItem.icon}</span>}
-                      <span>{subItem.name}</span>
+                      <span className="inline-flex min-w-0 flex-1 items-center">
+                        {menus_refreshing ? <SidebarNavTextSpinner /> : subItem.name}
+                      </span>
                     </Link>
                   </li>
                 ))}
@@ -189,9 +229,9 @@ const AppSidebar: React.FC = () => {
                   !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
                 }`}
               >
-                {isExpanded || isHovered || isMobileOpen ? t("common.menu") : <MdMoreHoriz className="size-6" />}
+                {isExpanded || isHovered || isMobileOpen ? t("common:menu") : <MdMoreHoriz className="size-6" />}
               </h2>
-              {renderMenuItems(mainNavItems, "main")}
+              {menus_initial_skeleton ? render_nav_skeleton_rows() : renderMenuItems(mainNavItems, "main")}
             </div>
             <div>
               <h2
@@ -199,9 +239,9 @@ const AppSidebar: React.FC = () => {
                   !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
                 }`}
               >
-                {isExpanded || isHovered || isMobileOpen ? t("common.system") : <MdMoreHoriz />}
+                {isExpanded || isHovered || isMobileOpen ? t("common:system") : <MdMoreHoriz />}
               </h2>
-              {renderMenuItems(systemNavItems, "system")}
+              {menus_initial_skeleton ? render_nav_skeleton_rows() : renderMenuItems(systemNavItems, "system")}
             </div>
           </div>
         </nav>

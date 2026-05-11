@@ -84,11 +84,9 @@ src/
 
 ## i18n Contribution Guide
 
-- i18n is initialized in `src/i18n/index.ts` using `react-i18next` with `lowerCaseLng: true` (locale codes are normalized, e.g. `zh-tw`).
-- Add new translation keys to both locale files:
-  - `src/i18n/locales/en/common.json` and `src/i18n/locales/zh-tw/common.json` for the default `translation` namespace.
-  - `src/i18n/locales/en/language.json` and `src/i18n/locales/zh-tw/language.json` for language UI copy (namespace: `language`).
-- Use dotted key names by domain and intent in `common.json` (for example: `common.search`, `auth.signIn`, `errors.network`).
-- For the `language` namespace, use short keys (for example: `label`, `english`, `traditionalChinese`).
-- In React components, use `useTranslation()` for the default namespace, or `useTranslation("language")` for language strings.
-- In non-React modules (such as service/utils files), import `i18n` and use `i18n.t("your.key")` or `i18n.t("label", { ns: "language" })`.
+- i18n is initialized in `src/i18n/index.ts` using `react-i18next` with BCP 47 locale tags (`en`, `zh-TW`, `zh-CN`).
+- Copy lives in **`common`**, **`auth`**, **`errors`**, **`system`**, and **`language`** namespaces (one JSON fragment per domain under `src/i18n/locales/<lng>/`; see `src/i18n/SYSTEM_I18N_MIGRATION.md`).
+- In UI code use **`namespace:key`** (for example: `t("common:search")`, `t("system:user.page.title")`, `t("errors:network")`, `t("auth:signIn")`). Default namespace is **`common`**, so `t("cancel")` resolves inside `common` when no prefix is needed.
+- For the `language` namespace, use short keys (for example: `label`, `english`) with `useTranslation("language")`, or pass `{ ns: "language" }` to `t`.
+- In non-React modules, import `i18n` and use `i18n.t("errors:network")` etc., or `i18n.t("label", { ns: "language" })`.
+- Keep **`en`** / **`zh-TW`** / **`zh-CN`** JSON fragments in sync manually (same keys/shape across locales). Runtime does not execute repo **`scripts`** for i18n.

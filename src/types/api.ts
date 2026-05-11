@@ -82,13 +82,13 @@ export interface PermissionResource {
 
 export interface PermissionVerb {
   id: string;
-  displayName: string;
+  name: string;
   action: string;
 }
 
 interface PermissionBase {
   id: string;
-  displayName: string;
+  name: string;
   code: string;
   isActive: boolean;
   description?: string;
@@ -107,7 +107,7 @@ export interface PermissionDetail extends PermissionBase {
 
 export interface PermissionPageItem extends Record<string, unknown> {
   id: string;
-  displayName: string;
+  name: string;
   code: string;
   isActive: boolean;
   description?: string;
@@ -124,11 +124,11 @@ export interface PermissionPage {
 }
 
 export interface PermissionCreate {
-  displayName: string;
+  name: string;
   code: string;
-  resourceId: string;
-  verbId: string;
-  isActive: boolean;
+  resource_id: string;
+  verb_id: string;
+  is_active: boolean;
   description?: string;
   remark?: string;
 }

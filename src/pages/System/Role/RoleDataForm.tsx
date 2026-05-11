@@ -1,5 +1,6 @@
 import { Checkbox, Input, Label, TextArea } from "@efcnewlife/newlife-ui";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { useTranslation } from "react-i18next";
 import RolePermissionMatrix from "./RolePermissionMatrix";
 
 export interface RoleFormValues {
@@ -23,6 +24,7 @@ const RoleDataForm = forwardRef<
     defaultValues?: Partial<RoleFormValues> | null;
   }
 >(function RoleDataForm({ mode, defaultValues }, ref) {
+  const { t } = useTranslation();
   const [code, setCode] = useState<string>(defaultValues?.code || "");
   const [name, setName] = useState<string>(defaultValues?.name || "");
   const [isActive, setIsActive] = useState<boolean>(defaultValues?.isActive ?? true);
@@ -42,9 +44,9 @@ const RoleDataForm = forwardRef<
 
   const validate = (): boolean => {
     const nextErrors: { code?: string; name?: string; permissions?: string } = {};
-    if (!code || code.trim() === "") nextErrors.code = "Please enter code";
-    if (!name || name.trim() === "") nextErrors.name = "Please enter name";
-    if (!permissions || permissions.length === 0) nextErrors.permissions = "Please select permissions";
+    if (!code || code.trim() === "") nextErrors.code = t("system:role.form.validation.codeRequired");
+    if (!name || name.trim() === "") nextErrors.name = t("system:role.form.validation.nameRequired");
+    if (!permissions || permissions.length === 0) nextErrors.permissions = t("system:role.form.validation.permissionsRequired");
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -71,14 +73,14 @@ const RoleDataForm = forwardRef<
         <div>
           <Input
             id="code"
-            label="code"
+            label={t("system:role.form.code.label")}
             type="text"
-            placeholder="Please enter code"
+            placeholder={t("system:role.form.code.placeholder")}
             value={code}
             onChange={(e) => setCode(e.target.value)}
             disabled={mode === "edit"}
             error={errors.code ?? undefined}
-            hint="For example:content_manager"
+            hint={t("system:role.form.code.hint")}
             required
             clearable
           />
@@ -86,13 +88,13 @@ const RoleDataForm = forwardRef<
         <div>
           <Input
             id="name"
-            label="name"
+            label={t("system:role.form.name.label")}
             type="text"
-            placeholder="Please enter name"
+            placeholder={t("system:role.form.name.placeholder")}
             value={name}
             onChange={(e) => setName(e.target.value)}
             error={errors.name ?? undefined}
-            hint="Example: Content Manager"
+            hint={t("system:role.form.name.hint")}
             required
             clearable
           />
@@ -100,21 +102,19 @@ const RoleDataForm = forwardRef<
       </div>
 
       <div>
-        <Checkbox id="isActive" label="enable" checked={isActive} onChange={setIsActive} />
+        <Checkbox id="isActive" label={t("system:role.form.checkboxActive")} checked={isActive} onChange={setIsActive} />
       </div>
 
       <div>
-        <TextArea id="description" label="describe" rows={3} value={description} onChange={setDescription} />
+        <TextArea id="description" label={t("system:role.form.description.label")} rows={3} value={description} onChange={setDescription} />
       </div>
 
       <div>
-        <TextArea id="remark" label="Remark" rows={2} value={remark} onChange={setRemark} />
+        <TextArea id="remark" label={t("system:role.form.remark.label")} rows={2} value={remark} onChange={setRemark} />
       </div>
 
       <div>
-        <Label>
-          Permissions <span className="text-red-500">*</span>
-        </Label>
+        <Label>{t("system:role.form.permissionsLabelRequired")}</Label>
         {errors.permissions && <p className="mt-1.5 text-xs text-error-500 dark:text-error-400">{errors.permissions}</p>}
         <RolePermissionMatrix
           value={permissions}

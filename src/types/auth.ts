@@ -9,6 +9,7 @@ export interface User {
   status: "active" | "inactive" | "suspended";
   roles: string[];
   permissions: string[];
+  preferredLocaleId?: string;
   lastLoginAt?: string;
   createdAt: string;
   updatedAt: string;

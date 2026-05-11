@@ -1,5 +1,6 @@
 import { Button, TextArea } from "@efcnewlife/newlife-ui";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ResourceDeleteFormProps {
   onSubmit: (data: { reason?: string; permanent?: boolean }) => Promise<void> | void;
@@ -9,6 +10,7 @@ interface ResourceDeleteFormProps {
 }
 
 const ResourceDeleteForm: React.FC<ResourceDeleteFormProps> = ({ onSubmit, onCancel, submitting, isPermanent = false }) => {
+  const { t } = useTranslation();
   const [reason, setReason] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,19 +31,28 @@ const ResourceDeleteForm: React.FC<ResourceDeleteFormProps> = ({ onSubmit, onCan
             />
           </svg>
         </div>
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{isPermanent ? "Confirm permanent deletion of resources" : "Confirm resource deletion"}</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+          {isPermanent ? t("system:resource.deleteForm.titlePermanent") : t("system:resource.deleteForm.titleSoft")}
+        </h3>
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          {isPermanent ? "This operation will permanently delete the resource and cannot be recovered." : "This operation will soft delete the resource and can be restored in the recycle bin."}
+          {isPermanent ? t("system:resource.deleteForm.descPermanent") : t("system:resource.deleteForm.descSoft")}
         </p>
       </div>
 
       <div>
-        <TextArea id="reason" label="Reason for deletion (optional)" value={reason} onChange={(value) => setReason(value)} rows={3} placeholder="Please enter the reason for deletion" />
+        <TextArea
+          id="reason"
+          label={t("system:resource.deleteForm.reasonLabel")}
+          value={reason}
+          onChange={(value) => setReason(value)}
+          rows={3}
+          placeholder={t("system:resource.deleteForm.reasonPlaceholder")}
+        />
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">
         <Button btnType="button" variant="outline" onClick={onCancel} disabled={submitting}>
-          Cancel
+          {t("common:cancel")}
         </Button>
         <Button
           btnType="submit"
@@ -49,7 +60,11 @@ const ResourceDeleteForm: React.FC<ResourceDeleteFormProps> = ({ onSubmit, onCan
           disabled={submitting}
           className="bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300"
         >
-          {submitting ? "Deleting..." : isPermanent ? "Delete permanently" : "delete"}
+          {submitting
+            ? t("system:resource.deleteForm.submittingDeleting")
+            : isPermanent
+            ? t("system:resource.deleteForm.confirmPermanentButton")
+            : t("common:delete")}
         </Button>
       </div>
     </form>

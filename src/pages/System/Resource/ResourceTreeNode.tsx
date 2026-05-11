@@ -26,7 +26,7 @@ export const ResourceTreeNode: React.FC<ResourceTreeNodeProps> = ({
   const hasChildren = node.children.length > 0;
 
   const handleNodeClick = () => {
-    // If there are child nodes, switch to the expanded state first
+    // If node has children, toggle expanded state first
     if (hasChildren) {
       onToggleExpand(node.id);
     }
@@ -41,10 +41,10 @@ export const ResourceTreeNode: React.FC<ResourceTreeNodeProps> = ({
         onClick={handleNodeClick}
         onContextMenu={(e) => onContextMenu(e, node)}
       >
-        {/* Expand/Collapse icon + Hierarchical indentation */}
+        {/* Expand/collapse affordance + indent */}
         <div className="flex-shrink-0 w-8">
           {level === 0 ? (
-            // Root node: show expansion/Collapse icon
+            // Root row: show expand/collapse chevron
             hasChildren ? (
               <div className="p-1 flex items-center justify-center">
                 <MdChevronRight
@@ -55,12 +55,12 @@ export const ResourceTreeNode: React.FC<ResourceTreeNodeProps> = ({
               <div className="w-6" />
             )
           ) : (
-            // Child nodes: fixed indentation
+            // Child row: fixed gutter indent
             <div className="w-9" />
           )}
         </div>
 
-        {/* icon */}
+        {/* Icon */}
         <div className={`flex-shrink-0 flex w-20 ${level === 0 ? "pl-6" : "pl-10"}`}>{resolveIcon(node.icon || "").icon}</div>
 
         {/* Resource name */}
@@ -68,18 +68,18 @@ export const ResourceTreeNode: React.FC<ResourceTreeNodeProps> = ({
           <div className="p-2 font-medium text-gray-900 dark:text-white truncate">{node.name}</div>
         </div>
 
-        {/* resource Key */}
+        {/* Resource key */}
         <div className="flex-shrink-0 w-80 min-w-0">
           <div className="p-2 text-sm text-gray-600 dark:text-gray-300 truncate">{node.key}</div>
         </div>
 
-        {/* path */}
+        {/* Path */}
         <div className="flex-1 min-w-0">
           <div className="p-2 text-sm text-gray-500 dark:text-gray-400 truncate">{node.path}</div>
         </div>
       </div>
 
-      {/* child node */}
+      {/* Child rows */}
       {hasChildren && (
         <div
           className={`overflow-hidden transition-all duration-300 ease-in-out ${

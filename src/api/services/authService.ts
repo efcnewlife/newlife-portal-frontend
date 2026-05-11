@@ -14,6 +14,7 @@ interface AdminInfoResponse {
   email: string;
   display_name: string;
   roles: string[];
+  preferred_locale_id?: string;
   // Removed permissions field; permission data is parsed from JWT scope
   last_login_at?: string;
 }
@@ -41,6 +42,7 @@ function mapAdminToUser(admin: AdminInfoResponse, token?: string | null): User {
     status: "active",
     roles: roles,
     permissions: scopes, // Parsed from JWT token
+    preferredLocaleId: admin.preferred_locale_id,
     lastLoginAt: admin.last_login_at,
     createdAt: nowIso,
     updatedAt: nowIso,
@@ -460,14 +462,14 @@ class AuthService {
     }
 
     let variant: "error" | "warning" = "error";
-    let title = i18n.t("errors.unknown");
+    let title = i18n.t("errors:unknown");
     let description = message;
     let hideDuration = 4000;
 
     switch (code) {
       case HTTP_STATUS.UNAUTHORIZED:
-        title = context === "login" ? i18n.t("auth.signIn") : i18n.t("errors.unauthorized");
-        description = context === "login" ? message : i18n.t("errors.unauthorized");
+        title = context === "login" ? i18n.t("auth:signIn") : i18n.t("errors:unauthorized");
+        description = context === "login" ? message : i18n.t("errors:unauthorized");
         variant = "warning";
         hideDuration = 5000;
 
@@ -483,26 +485,26 @@ class AuthService {
         break;
 
       case HTTP_STATUS.FORBIDDEN:
-        title = i18n.t("errors.forbidden");
-        description = i18n.t("errors.forbidden");
+        title = i18n.t("errors:forbidden");
+        description = i18n.t("errors:forbidden");
         variant = "warning";
         break;
 
       case HTTP_STATUS.UNPROCESSABLE_ENTITY:
         // 422 is typically a validation error (e.g. invalid login credentials)
-        title = context === "login" ? i18n.t("auth.signIn") : i18n.t("errors.validation");
+        title = context === "login" ? i18n.t("auth:signIn") : i18n.t("errors:validation");
         description = message;
         variant = "error";
         break;
 
       case HTTP_STATUS.BAD_REQUEST:
-        title = i18n.t("errors.validation");
+        title = i18n.t("errors:validation");
         description = message;
         variant = "error";
         break;
 
       case HTTP_STATUS.NOT_FOUND:
-        title = i18n.t("errors.notFound");
+        title = i18n.t("errors:notFound");
         description = message;
         variant = "warning";
         break;
@@ -510,8 +512,8 @@ class AuthService {
       case HTTP_STATUS.INTERNAL_SERVER_ERROR:
       case HTTP_STATUS.BAD_GATEWAY:
       case HTTP_STATUS.SERVICE_UNAVAILABLE:
-        title = i18n.t("errors.server");
-        description = i18n.t("errors.server");
+        title = i18n.t("errors:server");
+        description = i18n.t("errors:server");
         variant = "error";
         break;
 
@@ -520,8 +522,8 @@ class AuthService {
           // Network errors are already notified in httpClient
           return;
         }
-        title = i18n.t("errors.unknown");
-        description = message || i18n.t("errors.unknown");
+        title = i18n.t("errors:unknown");
+        description = message || i18n.t("errors:unknown");
         variant = "error";
     }
 
@@ -544,14 +546,14 @@ class AuthService {
         this.clearAuth();
         return {
           code: "UNAUTHORIZED",
-          message: i18n.t("errors.unauthorized"),
+          message: i18n.t("errors:unauthorized"),
           details: apiError.details,
         };
       }
 
       return {
         code: apiError.code.toString(),
-        message: apiError.message || i18n.t("errors.unknown"),
+        message: apiError.message || i18n.t("errors:unknown"),
         details: apiError.details,
       };
     }
@@ -559,7 +561,7 @@ class AuthService {
     // Handle other error types
     return {
       code: "UNKNOWN_ERROR",
-      message: error instanceof Error ? error.message : i18n.t("errors.unknown"),
+      message: error instanceof Error ? error.message : i18n.t("errors:unknown"),
     };
   }
 

@@ -29,10 +29,10 @@ export const getRowActionIcon = (type: RowActionTypeKey): ReactNode => {
 // Built-in line action text
 export const getRowActionLabel = (type: RowActionTypeKey): string => {
   const labels: Record<RowActionTypeKey, string> = {
-    [ROW_ACTION_TYPES.VIEW]: i18n.t("common.view"),
-    [ROW_ACTION_TYPES.EDIT]: i18n.t("common.edit"),
-    [ROW_ACTION_TYPES.DELETE]: i18n.t("common.delete"),
-    [ROW_ACTION_TYPES.RESTORE]: i18n.t("common.restore"),
+    [ROW_ACTION_TYPES.VIEW]: i18n.t("common:view"),
+    [ROW_ACTION_TYPES.EDIT]: i18n.t("common:edit"),
+    [ROW_ACTION_TYPES.DELETE]: i18n.t("common:delete"),
+    [ROW_ACTION_TYPES.RESTORE]: i18n.t("common:restore"),
   };
 
   return labels[type];
@@ -92,7 +92,7 @@ export class CommonMenuButton {
   ): MenuButtonType<T> => {
     return {
       key: "move-up",
-      text: i18n.t("common.moveUp"),
+      text: i18n.t("common:moveUp"),
       icon: <MdArrowUpward />,
       onClick,
       variant: "default" as const,
@@ -106,7 +106,7 @@ export class CommonMenuButton {
   ): MenuButtonType<T> => {
     return {
       key: "move-down",
-      text: i18n.t("common.moveDown"),
+      text: i18n.t("common:moveDown"),
       icon: <MdArrowDownward />,
       onClick,
       variant: "default" as const,

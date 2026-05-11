@@ -1,0 +1,584 @@
+{
+  "shared": {
+    "genderMale": "Male",
+    "genderFemale": "Female",
+    "genderUnknown": "Unknown",
+    "neverLoggedIn": "Never logged in",
+    "notSet": "Not set",
+    "loading": "Loading...",
+    "loadFailedShort": "Load failed",
+    "search": "Search",
+    "clear": "Clear"
+  },
+  "role": {
+    "matrix": {
+      "columnName": "Name",
+      "selectAllVerb": "All",
+      "permissionsLoading": "Loading permissions...",
+      "sectionGeneralResources": "General resources",
+      "sectionSystemResources": "System resources",
+      "childVerbLabel": "{{verb}} for all children"
+    },
+    "page": {
+      "title": "Role management",
+      "description": "Manage system roles"
+    },
+    "table": {
+      "code": "Code",
+      "name": "Name",
+      "remark": "Remark",
+      "permissionCount": "Permissions",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at"
+    },
+    "search": {
+      "popoverTitle": "Search roles",
+      "keywordLabel": "Keyword",
+      "keywordPlaceholder": "Code or name",
+      "activeOnlyCheckbox": "Active only",
+      "defaultTitleFallback": "Search roles"
+    },
+    "feedback": {
+      "detailLoadAlert": "Unable to load role detail. Try again later.",
+      "deleteFailedAlert": "Delete failed. Try again later."
+    },
+    "modal": {
+      "createTitle": "Create role",
+      "editTitle": "Edit role",
+      "deleteConfirmPermanent": {
+        "title": "Confirm permanently delete role"
+      },
+      "deleteConfirmSoft": {
+        "title": "Confirm delete role"
+      },
+      "detailTitle": "Role detail"
+    },
+    "form": {
+      "footer": {
+        "submitCreate": "Create role",
+        "submitSave": "Save changes"
+      },
+      "code": {
+        "label": "Code",
+        "placeholder": "Enter code",
+        "hint": "Example: content_manager"
+      },
+      "validation": {
+        "codeRequired": "Enter code",
+        "nameRequired": "Enter name",
+        "permissionsRequired": "Select at least one permission"
+      },
+      "name": {
+        "label": "Name",
+        "placeholder": "Enter name",
+        "hint": "Example: content manager"
+      },
+      "checkboxActive": "Active",
+      "description": {
+        "label": "Description"
+      },
+      "remark": {
+        "label": "Remark"
+      },
+      "permissionsLabelRequired": "Permissions *"
+    },
+    "detail": {
+      "labelCode": "Code",
+      "labelName": "Name",
+      "labelActive": "Active",
+      "labelCreatedAt": "Created at",
+      "labelUpdatedAt": "Updated at",
+      "descriptionHeading": "Description",
+      "remarkHeading": "Remark",
+      "permissionsHeadingCount": "Permissions ({{count}})",
+      "permissionsEmpty": "None",
+      "table": {
+        "resourceName": "Resource name",
+        "displayName": "Display name",
+        "permissionCode": "Code"
+      }
+    },
+    "boolean": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "deleteForm": {
+      "entityLabel": "role record(s)"
+    }
+  },
+  "resource": {
+    "detail": {
+      "typeGeneral": "General (GENERAL)",
+      "typeSystem": "System (SYSTEM)",
+      "sectionInfo": "Resource information",
+      "sectionVisibility": "Visibility",
+      "sectionParent": "Parent resource",
+      "parent": {
+        "noneRoot": "None (root resource)"
+      },
+      "loading": "Loading...",
+      "loadFailedFallback": "Load failed.",
+      "notFound": "Resource not found."
+    },
+    "tree": {
+      "sectionMenuLabel": "MENU",
+      "sectionSystemLabel": "SYSTEM",
+      "columnIcon": "Icon",
+      "columnName": "Resource name",
+      "columnKey": "Key",
+      "columnPath": "Path",
+      "empty": "No resource data yet"
+    },
+    "page": {
+      "title": "Resource management",
+      "description": "Manage system resources"
+    },
+    "toolbar": {
+      "addRoot": "Add root resource",
+      "expandAll": "Expand all",
+      "collapseAll": "Collapse all"
+    },
+    "feedback": {
+      "refreshFailedAlert": "Refresh failed. Try again later.",
+      "deleteFailedAlert": "Delete failed. Try again later.",
+      "restoreFailedAlert": "Restore failed. Try again later.",
+      "moveUpFailedAlert": "Move up failed. Try again later.",
+      "moveDownFailedAlert": "Move down failed. Try again later.",
+      "changeParentFailedAlert": "Changing parent failed. Try again later.",
+      "saveFailedAlert": "Save failed. Try again later."
+    },
+    "loading": {
+      "fullPageMessage": "Loading resources...",
+      "overlayMessage": "Refreshing...",
+      "errorTitle": "Failed to load resources"
+    },
+    "modal": {
+      "createTitle": "Create resource",
+      "editTitle": "Edit resource",
+      "deleteConfirmPermanent": {
+        "title": "Confirm permanently delete resource"
+      },
+      "deleteConfirmSoft": {
+        "title": "Confirm delete resource"
+      },
+      "restoreTitle": "Restore resource(s)",
+      "detailTitle": "Resource detail",
+      "changeParentTitle": "Change parent resource"
+    },
+    "restoreForm": {
+      "entityLabel": "resource record(s)"
+    },
+    "menu": {
+      "viewDetails": "View details",
+      "editResource": "Edit resource",
+      "addChild": "Add child resource",
+      "changeParent": "Change parent resource",
+      "moveUp": "Move up one position",
+      "moveDown": "Move down one position",
+      "restore": "Restore resource",
+      "deletePermanent": "Delete permanently",
+      "deleteResource": "Delete resource"
+    },
+    "form": {
+      "parentBanner": "You are adding a child resource under “{{name}}”.",
+      "sectionInfo": "Resource information",
+      "name": {
+        "label": "Name *",
+        "placeholder": "Resource name"
+      },
+      "key": {
+        "label": "Key *",
+        "placeholder": "Resource key"
+      },
+      "code": {
+        "label": "Code *",
+        "placeholder": "Resource code"
+      },
+      "path": {
+        "label": "Path *",
+        "placeholder": "Resource path"
+      },
+      "type": {
+        "label": "Type *",
+        "optionGeneral": "Business (GENERAL)",
+        "optionSystem": "System (SYSTEM)",
+        "placeholder": "Select type"
+      },
+      "icon": {
+        "label": "Icon *",
+        "placeholder": "Enter icon names (example: MdHome)"
+      },
+      "iconHint": "Use Material Design icon names.",
+      "sectionVisibility": "Visibility",
+      "checkboxVisible": "Resource visible",
+      "remark": {
+        "label": "Remark",
+        "placeholder": "Remark"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Describe this resource"
+      },
+      "submittingSaving": "Saving...",
+      "validation": {
+        "nameRequired": "Name is required.",
+        "keyRequired": "Key is required.",
+        "keyCharset": "Key may contain letters, numbers, or underscores.",
+        "codeRequired": "Resource code is required.",
+        "codeChildFormat": "Child code must match {resource}:{subResource}, e.g. user:create.",
+        "codeRootFormat": "Root code must not contain a colon, e.g. user.",
+        "pathRequired": "Path is required.",
+        "iconRequired": "Icon name is required."
+      }
+    },
+    "deleteForm": {
+      "titlePermanent": "Confirm permanently delete resource",
+      "titleSoft": "Confirm delete resource",
+      "descPermanent": "Permanently removing this resource cannot be undone.",
+      "descSoft": "Deleting moves the resource to the recycle bin.",
+      "reasonLabel": "Deletion reason (optional)",
+      "reasonPlaceholder": "Enter deletion reason",
+      "submittingDeleting": "Deleting...",
+      "confirmPermanentButton": "Delete permanently"
+    },
+    "changeParentForm": {
+      "titleHeading": "Change parent resource",
+      "instruction": "Choose which root resource “{{name}}” should belong to.",
+      "noRoots": "No eligible root nodes",
+      "confirmButton": "Confirm change",
+      "processingButton": "Processing..."
+    }
+  },
+  "user": {
+    "page": {
+      "title": "User Management",
+      "description": "Manage system users"
+    },
+    "table": {
+      "phoneNumber": "Phone number",
+      "email": "Email",
+      "displayName": "Display name",
+      "gender": "Gender",
+      "verified": "Verified",
+      "active": "Active",
+      "admin": "Administrator",
+      "ministry": "Ministry",
+      "lastLoginAt": "Last login",
+      "createdAt": "Created at"
+    },
+    "tooltip": {
+      "superAdmin": "Super administrator"
+    },
+    "feedback": {
+      "loadFailed": {
+        "title": "Load failed",
+        "desc": "Unable to load users. Try again later."
+      },
+      "restoreSuccess": {
+        "title": "Restored",
+        "desc": "Restored {{count}} user(s)."
+      },
+      "restoreFailed": {
+        "title": "Restore failed",
+        "desc": "Could not restore users. Try again later."
+      },
+      "validationNeeded": {
+        "title": "Validation failed",
+        "password": "Enter a password"
+      },
+      "createSuccess": {
+        "title": "Created",
+        "desc": "User '{{name}}' was created."
+      },
+      "updateSuccess": {
+        "title": "Updated",
+        "desc": "User '{{name}}' was updated."
+      },
+      "saveFailed": {
+        "title": "Save failed",
+        "desc": "Could not save user. Try again later."
+      },
+      "deleteSuccessPermanent": {
+        "title": "Permanently deleted",
+        "desc": "User '{{name}}' was permanently deleted."
+      },
+      "deleteSuccessSoft": {
+        "title": "Deleted",
+        "desc": "User '{{name}}' was deleted."
+      },
+      "deleteFailed": {
+        "title": "Delete failed",
+        "desc": "Could not delete user. Try again later."
+      },
+      "bindSuccess": {
+        "title": "Roles updated",
+        "desc": "Roles were updated."
+      },
+      "bindFailed": {
+        "title": "Bind failed",
+        "desc": "Could not bind roles. Try again later."
+      }
+    },
+    "search": {
+      "popoverTitle": "Search users",
+      "keywordLabel": "Keyword",
+      "keywordPlaceholder": "Search phone, email, or display name",
+      "sectionStatus": "Status filters",
+      "labelVerifiedFilter": "Verified",
+      "toggleVerified": {
+        "true": "Verified",
+        "false": "Unverified"
+      },
+      "labelActiveFilter": "Active status",
+      "toggleActive": {
+        "true": "Active",
+        "false": "Inactive"
+      },
+      "labelAdminFilter": "Administrator",
+      "toggleAdmin": {
+        "true": "Administrator",
+        "false": "Regular user"
+      },
+      "labelSuperFilter": "Super administrator",
+      "toggleSuper": {
+        "true": "Super administrator",
+        "false": "Non-super"
+      },
+      "labelMinistryFilter": "Ministry",
+      "toggleMinistry": {
+        "true": "Ministry",
+        "false": "Non-ministry"
+      },
+      "genderSection": "Gender filter",
+      "genderPlaceholder": "Select gender",
+      "chipsTitle": "Current filters:",
+      "chipKeywordPrefix": "Keyword:",
+      "chipVerifiedPrefix": "Verified:",
+      "chipActivePrefix": "Active:",
+      "chipAdminPrefix": "Administrator:",
+      "chipSuperPrefix": "Super:",
+      "chipMinistryPrefix": "Ministry:",
+      "chipGenderPrefix": "Gender:"
+    },
+    "row": {
+      "bindRole": "Bind roles",
+      "permanentDelete": "Delete permanently"
+    },
+    "modal": {
+      "createTitle": "Create user",
+      "editTitle": "Edit user",
+      "deleteConfirmPermanent": {
+        "title": "Confirm permanently delete user"
+      },
+      "deleteConfirmSoft": {
+        "title": "Confirm delete user"
+      },
+      "restoreTitle": "Restore users",
+      "detailTitle": "User detail",
+      "bindRoleTitle": "Bind roles"
+    },
+    "restoreForm": {
+      "entityLabel": "user(s)"
+    },
+    "deleteForm": {
+      "entityLabel": "user record"
+    },
+    "form": {
+      "validation": {
+        "phoneInvalid": "Enter a valid phone number.",
+        "emailRequired": "Enter an email.",
+        "emailInvalid": "Enter a valid email address.",
+        "displayNameTooLong": "Display name cannot exceed 64 characters.",
+        "remarkTooLong": "Remark cannot exceed 500 characters."
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "Enter email",
+        "hint": "e.g. user@example.com"
+      },
+      "displayName": {
+        "label": "Display name",
+        "placeholder": "Display name"
+      },
+      "gender": {
+        "label": "Gender",
+        "placeholder": "Select gender"
+      },
+      "sectionStatus": "Account status",
+      "checkboxVerified": "Verified",
+      "checkboxActive": "Active",
+      "sectionPermissions": "Permission flags",
+      "checkboxSuperUser": "Superuser",
+      "checkboxAdmin": "Administrator",
+      "remark": {
+        "label": "Remark",
+        "placeholder": "Remark"
+      }
+    },
+    "detail": {
+      "sectionStatus": "Status / privileges",
+      "labelActiveStatus": "Active state",
+      "labelBackendAdmin": "Backend administrator",
+      "labelSuperAdministrator": "Super administrator",
+      "labelMinistryStaff": "Ministry staff",
+      "loadFailed": "Failed to load user",
+      "labelUpdatedAt": "Updated at",
+      "remarkHeading": "Remark"
+    },
+    "bindRoles": {
+      "selectAll": "Select all",
+      "summary": "Selected {{selected}} / {{total}} roles",
+      "noRoles": "No roles available",
+      "submittingLabel": "Binding...",
+      "confirmBind": "Confirm bind",
+      "loadAlert": "Could not load data. Try again later."
+    }
+  },
+  "permission": {
+    "page": {
+      "title": "Permission management",
+      "description": "Manage permissions"
+    },
+    "table": {
+      "displayName": "Display name",
+      "code": "Code",
+      "status": "Status",
+      "resource": "Resource",
+      "action": "Action",
+      "description": "Description"
+    },
+    "search": {
+      "popoverTitle": "Search permissions",
+      "keywordPlaceholder": "Search display name or code",
+      "keywordLabel": "Keyword search",
+      "sectionStatus": "Status filter",
+      "labelActiveStatus": "Active status",
+      "toggleActive": {
+        "true": "Active",
+        "false": "Inactive"
+      },
+      "chipsTitle": "Current filters:",
+      "chipKeywordPrefix": "Keyword:",
+      "chipActivePrefix": "Active:"
+    },
+    "feedback": {
+      "load": {
+        "title": "Load failed",
+        "desc": "Unable to load permissions.",
+        "retryDesc": "Try again later."
+      },
+      "detailLoad": {
+        "desc": "Unable to load permission detail.",
+        "title": "Load failed",
+        "failure": "Unable to load permission detail. Try again later.",
+        "failureShort": "Unable to load permission detail.",
+        "generic": "Unable to load permission."
+      },
+      "restoreSuccess": {
+        "desc": "{{count}} permission(s) restored.",
+        "title": "Restored"
+      },
+      "restoreFailed": {
+        "desc": "Could not restore permissions.",
+        "title": "Restore failed"
+      },
+      "createSuccess": {
+        "desc": "Permission '{{name}}' created.",
+        "title": "Created"
+      },
+      "updateSuccess": {
+        "desc": "Permission '{{name}}' updated.",
+        "title": "Updated"
+      },
+      "saveFailed": {
+        "desc": "Could not save permission.",
+        "title": "Save failed"
+      },
+      "deletePermanentSuccess": {
+        "desc": "Permission '{{name}}' permanently deleted."
+      },
+      "deleteSoftSuccess": {
+        "desc": "Permission '{{name}}' deleted."
+      },
+      "deleteFailed": {
+        "desc": "Could not delete permission.",
+        "title": "Delete failed"
+      },
+      "genericLoadFail": "Load failed.",
+      "deleteSuccessPermanent": {
+        "title": "Permanently deleted"
+      },
+      "deleteSuccessSoft": {
+        "title": "Deleted"
+      }
+    },
+    "modal": {
+      "createTitle": "Create permission",
+      "editTitle": "Edit permission",
+      "deleteConfirmPermanent": {
+        "title": "Confirm permanently delete permission"
+      },
+      "deleteConfirmSoft": {
+        "title": "Confirm delete permission"
+      },
+      "restoreTitle": "Restore permissions",
+      "detailTitle": "Permission detail"
+    },
+    "deleteForm": {
+      "entityLabel": "permission record"
+    },
+    "restoreForm": {
+      "entityLabel": "permission(s)"
+    },
+    "form": {
+      "validation": {
+        "nameRequired": "Enter display name",
+        "codeRequired": "Enter code",
+        "resourceRequired": "Select a resource",
+        "verbRequired": "Select an action",
+        "descriptionTooLong": "Description cannot exceed 500 characters.",
+        "remarkTooLong": "Remark cannot exceed 500 characters."
+      },
+      "displayName": {
+        "label": "Display name",
+        "placeholder": "Enter display name",
+        "hint": "Example: Create user"
+      },
+      "code": {
+        "label": "Code",
+        "placeholder": "Enter code",
+        "hint": "Example: user:create"
+      },
+      "comboLoading": "Loading...",
+      "comboResourcePlaceholder": {
+        "loading": "Loading...",
+        "idle": "Select or search resources"
+      },
+      "verb": {
+        "label": "Action",
+        "placeholder": "Select an action",
+        "placeholderLoading": "Loading..."
+      },
+      "verbPlaceholderDisabled": "Select an action",
+      "sectionStatus": "Settings",
+      "checkboxActive": "Active",
+      "description": {
+        "label": "Description",
+        "placeholder": "Permission description"
+      },
+      "remark": {
+        "label": "Remark",
+        "placeholder": "Optional remark"
+      }
+    },
+    "detail": {
+      "sectionDetailResource": "Resource details",
+      "sectionDetailVerb": "Action details",
+      "labelResourceKey": "Key",
+      "labelResourceCode": "Code",
+      "labelVerbAction": "Action",
+      "permissionIdHeading": "Permission ID",
+      "labelActiveStatus": "Active status"
+    }
+  }
+}

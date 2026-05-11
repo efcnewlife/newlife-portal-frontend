@@ -3,7 +3,15 @@ import { API_ENDPOINTS, REQUEST_CONFIG } from "@/api";
 import i18n from "@/i18n";
 import type { ApiError, ApiResponse, TokenResponse } from "@/types/api";
 import { notificationManager } from "@/utils/notificationManager";
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, HttpStatusCode } from "axios";
+import axios, {
+  AxiosError,
+  AxiosHeaders,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  HttpStatusCode,
+  InternalAxiosRequestConfig,
+} from "axios";
 
 // Interceptor types
 type RequestInterceptor = (config: AxiosRequestConfig) => AxiosRequestConfig | Promise<AxiosRequestConfig>;
@@ -25,8 +33,25 @@ class HttpClient {
       headers: REQUEST_CONFIG.HEADERS,
     });
 
+    // Axios-level interceptor so every call (including refresh token via axiosInstance.post) sends Accept-Language
+    this.axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+      const accept_language = this.resolveAcceptLanguage();
+      const headers = new AxiosHeaders(config.headers);
+      headers.set("Accept-Language", accept_language);
+      config.headers = headers;
+      return config;
+    });
+
     // Set up default interceptors
     this.setupDefaultInterceptors();
+  }
+
+  /** BCP 47 tag for Accept-Language (matches i18next lng). */
+  private resolveAcceptLanguage(): string {
+    const lng = i18n.language ?? "en";
+    if (lng === "zh-TW") return "zh-TW";
+    if (lng === "zh-CN") return "zh-CN";
+    return "en";
   }
 
   // Add request interceptor
@@ -78,12 +103,12 @@ class HttpClient {
     if (error.code === "ECONNABORTED") {
       const apiError: ApiError = {
         code: HttpStatusCode.RequestTimeout,
-        message: i18n.t("errors.timeout"),
+        message: i18n.t("errors:timeout"),
       };
       notificationManager.show({
         variant: "error",
-        title: i18n.t("errors.timeout"),
-        description: i18n.t("errors.timeout"),
+        title: i18n.t("errors:timeout"),
+        description: i18n.t("errors:timeout"),
         position: "top-right",
       });
       return apiError;
@@ -128,12 +153,12 @@ class HttpClient {
     // True network-level error (no HTTP status info at all)
     const apiError: ApiError = {
       code: 0,
-      message: i18n.t("errors.network"),
+      message: i18n.t("errors:network"),
     };
     notificationManager.show({
       variant: "error",
-      title: i18n.t("errors.network"),
-      description: i18n.t("errors.network"),
+      title: i18n.t("errors:network"),
+      description: i18n.t("errors:network"),
       position: "top-right",
     });
     return apiError;
@@ -143,15 +168,15 @@ class HttpClient {
   private getErrorMessage(status: number): string {
     switch (status) {
       case HttpStatusCode.Unauthorized:
-        return i18n.t("errors.unauthorized");
+        return i18n.t("errors:unauthorized");
       case HttpStatusCode.Forbidden:
-        return i18n.t("errors.forbidden");
+        return i18n.t("errors:forbidden");
       case HttpStatusCode.NotFound:
-        return i18n.t("errors.notFound");
+        return i18n.t("errors:notFound");
       case HttpStatusCode.InternalServerError:
-        return i18n.t("errors.server");
+        return i18n.t("errors:server");
       default:
-        return i18n.t("errors.unknown");
+        return i18n.t("errors:unknown");
     }
   }
 

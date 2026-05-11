@@ -1,0 +1,584 @@
+{
+  "shared": {
+    "genderMale": "男性",
+    "genderFemale": "女性",
+    "genderUnknown": "未知",
+    "neverLoggedIn": "从未登入",
+    "notSet": "未设定",
+    "loading": "载入中...",
+    "loadFailedShort": "载入失败",
+    "search": "搜寻",
+    "clear": "清除"
+  },
+  "role": {
+    "matrix": {
+      "columnName": "名称",
+      "selectAllVerb": "全部",
+      "permissionsLoading": "载入权限中...",
+      "sectionGeneralResources": "一般资源",
+      "sectionSystemResources": "系统资源",
+      "childVerbLabel": "所有子资源的 {{verb}} 权限"
+    },
+    "page": {
+      "title": "角色管理",
+      "description": "管理系统角色"
+    },
+    "table": {
+      "code": "代码",
+      "name": "名称",
+      "remark": "备注",
+      "permissionCount": "权限数",
+      "createdAt": "建立时间",
+      "updatedAt": "更新时间"
+    },
+    "search": {
+      "popoverTitle": "搜寻角色",
+      "keywordLabel": "关键字",
+      "keywordPlaceholder": "代码或名称",
+      "activeOnlyCheckbox": "仅显示启用",
+      "defaultTitleFallback": "搜寻角色"
+    },
+    "feedback": {
+      "detailLoadAlert": "载入角色详情失败，请稍后再试。",
+      "deleteFailedAlert": "删除失败，请稍后再试。"
+    },
+    "modal": {
+      "createTitle": "新增角色",
+      "editTitle": "编辑角色",
+      "deleteConfirmPermanent": {
+        "title": "确认永久删除角色"
+      },
+      "deleteConfirmSoft": {
+        "title": "确认删除角色"
+      },
+      "detailTitle": "角色详细资料"
+    },
+    "form": {
+      "footer": {
+        "submitCreate": "新增角色",
+        "submitSave": "储存变更"
+      },
+      "code": {
+        "label": "代码",
+        "placeholder": "请输入代码",
+        "hint": "例如：content_manager"
+      },
+      "validation": {
+        "codeRequired": "请输入代码",
+        "nameRequired": "请输入名称",
+        "permissionsRequired": "请选择权限"
+      },
+      "name": {
+        "label": "名称",
+        "placeholder": "请输入名称",
+        "hint": "例如：内容管理员"
+      },
+      "checkboxActive": "启用",
+      "description": {
+        "label": "描述"
+      },
+      "remark": {
+        "label": "备注"
+      },
+      "permissionsLabelRequired": "权限 *"
+    },
+    "detail": {
+      "labelCode": "代码",
+      "labelName": "名称",
+      "labelActive": "启用",
+      "labelCreatedAt": "建立时间",
+      "labelUpdatedAt": "更新时间",
+      "descriptionHeading": "描述",
+      "remarkHeading": "备注",
+      "permissionsHeadingCount": "权限（{{count}}）",
+      "permissionsEmpty": "无",
+      "table": {
+        "resourceName": "资源名称",
+        "displayName": "显示名称",
+        "permissionCode": "代码"
+      }
+    },
+    "boolean": {
+      "yes": "是",
+      "no": "否"
+    },
+    "deleteForm": {
+      "entityLabel": "角色资料"
+    }
+  },
+  "resource": {
+    "detail": {
+      "typeGeneral": "业务功能 (GENERAL)",
+      "typeSystem": "系统功能 (SYSTEM)",
+      "sectionInfo": "资源资讯",
+      "sectionVisibility": "状态",
+      "sectionParent": "父资源资讯",
+      "parent": {
+        "noneRoot": "无（根资源）"
+      },
+      "loading": "载入中...",
+      "loadFailedFallback": "载入资源详情失败",
+      "notFound": "资源不存在"
+    },
+    "tree": {
+      "sectionMenuLabel": "MENU",
+      "sectionSystemLabel": "SYSTEM",
+      "columnIcon": "图示",
+      "columnName": "资源名称",
+      "columnKey": "Key",
+      "columnPath": "路径",
+      "empty": "暂无资源数据"
+    },
+    "page": {
+      "title": "资源管理",
+      "description": "管理系统资源和权限"
+    },
+    "toolbar": {
+      "addRoot": "新增根资源",
+      "expandAll": "展开全部",
+      "collapseAll": "收合全部"
+    },
+    "feedback": {
+      "refreshFailedAlert": "刷新失败，请稍后再试。",
+      "deleteFailedAlert": "删除失败，请稍后再试。",
+      "restoreFailedAlert": "恢复失败，请稍后再试。",
+      "moveUpFailedAlert": "上移失败，请稍后再试。",
+      "moveDownFailedAlert": "下移失败，请稍后再试。",
+      "changeParentFailedAlert": "切换父资源失败，请稍后再试。",
+      "saveFailedAlert": "储存失败，请稍后再试。"
+    },
+    "loading": {
+      "fullPageMessage": "载入资源资料中...",
+      "overlayMessage": "刷新中...",
+      "errorTitle": "载入资源资料失败"
+    },
+    "modal": {
+      "createTitle": "新增资源",
+      "editTitle": "编辑资源",
+      "deleteConfirmPermanent": {
+        "title": "确认永久删除资源"
+      },
+      "deleteConfirmSoft": {
+        "title": "确认删除资源"
+      },
+      "restoreTitle": "还原资源",
+      "detailTitle": "资源详细资料",
+      "changeParentTitle": "切换父资源"
+    },
+    "restoreForm": {
+      "entityLabel": "资源"
+    },
+    "menu": {
+      "viewDetails": "查看资料",
+      "editResource": "编辑资源",
+      "addChild": "新增子资源",
+      "changeParent": "切换父资源",
+      "moveUp": "上移一位",
+      "moveDown": "下移一位",
+      "restore": "恢复资源",
+      "deletePermanent": "永久删除",
+      "deleteResource": "删除资源"
+    },
+    "form": {
+      "parentBanner": "正在为「{{name}}」新增子资源",
+      "sectionInfo": "资源资讯",
+      "name": {
+        "label": "名称 *",
+        "placeholder": "请输入资源名称"
+      },
+      "key": {
+        "label": "Key *",
+        "placeholder": "请输入资源 Key"
+      },
+      "code": {
+        "label": "代码 *",
+        "placeholder": "请输入资源代码"
+      },
+      "path": {
+        "label": "路径 *",
+        "placeholder": "请输入资源路径"
+      },
+      "type": {
+        "label": "类型 *",
+        "optionGeneral": "业务功能 (GENERAL)",
+        "optionSystem": "系统功能 (SYSTEM)",
+        "placeholder": "请选择类型"
+      },
+      "icon": {
+        "label": "图示 *",
+        "placeholder": "请输入图示名称（例：MdHome）"
+      },
+      "iconHint": "输入 Material Design 图示名称。",
+      "sectionVisibility": "状态",
+      "checkboxVisible": "资源可见",
+      "remark": {
+        "label": "备注",
+        "placeholder": "请输入备注"
+      },
+      "description": {
+        "label": "描述",
+        "placeholder": "请输入资源描述"
+      },
+      "submittingSaving": "储存中...",
+      "validation": {
+        "nameRequired": "资源名称不能为空",
+        "keyRequired": "资源 Key 不能为空",
+        "keyCharset": "资源 Key 只能包含字母、数字和下划线",
+        "codeRequired": "资源代码不能为空",
+        "codeChildFormat": "子资源代码格式需为 {resource}:{subResource}，例如 user:create",
+        "codeRootFormat": "根资源代码不得包含冒号，格式为 {resource}，例如 user",
+        "pathRequired": "资源路径不能为空",
+        "iconRequired": "资源图示不能为空"
+      }
+    },
+    "deleteForm": {
+      "titlePermanent": "确认永久删除资源",
+      "titleSoft": "确认删除资源",
+      "descPermanent": "此操作将永久删除资源，无法恢复。",
+      "descSoft": "此操作将软删除资源，可在回收桶中恢复。",
+      "reasonLabel": "删除原因（可选）",
+      "reasonPlaceholder": "请输入删除原因",
+      "submittingDeleting": "删除中...",
+      "confirmPermanentButton": "永久删除"
+    },
+    "changeParentForm": {
+      "titleHeading": "切换父资源",
+      "instruction": "选择根资源，将「{{name}}」归入其下（只能选择根节点）",
+      "noRoots": "没有可用的根节点资源",
+      "confirmButton": "确认切换",
+      "processingButton": "处理中..."
+    }
+  },
+  "user": {
+    "page": {
+      "title": "使用者管理",
+      "description": "管理系统使用者"
+    },
+    "table": {
+      "phoneNumber": "手机号码",
+      "email": "电子邮件",
+      "displayName": "显示名称",
+      "gender": "性别",
+      "verified": "已验证",
+      "active": "启用",
+      "admin": "管理员",
+      "ministry": "服事",
+      "lastLoginAt": "最后登入",
+      "createdAt": "建立时间"
+    },
+    "tooltip": {
+      "superAdmin": "超级管理员"
+    },
+    "feedback": {
+      "loadFailed": {
+        "title": "载入失败",
+        "desc": "无法载入用户资料，请稍后重试。"
+      },
+      "restoreSuccess": {
+        "title": "还原成功",
+        "desc": "已成功还原 {{count}} 个用户。"
+      },
+      "restoreFailed": {
+        "title": "还原失败",
+        "desc": "无法还原用户，请稍后再试。"
+      },
+      "validationNeeded": {
+        "title": "验证失败",
+        "password": "请输入密码"
+      },
+      "createSuccess": {
+        "title": "新增成功",
+        "desc": "已成功新增用户「{{name}}」。"
+      },
+      "updateSuccess": {
+        "title": "更新成功",
+        "desc": "已成功更新用户「{{name}}」。"
+      },
+      "saveFailed": {
+        "title": "储存失败",
+        "desc": "无法储存用户资料，请稍后再试。"
+      },
+      "deleteSuccessPermanent": {
+        "title": "永久删除成功",
+        "desc": "已成功永久删除用户「{{name}}」。"
+      },
+      "deleteSuccessSoft": {
+        "title": "删除成功",
+        "desc": "已成功删除用户「{{name}}」。"
+      },
+      "deleteFailed": {
+        "title": "删除失败",
+        "desc": "无法删除用户，请稍后再试。"
+      },
+      "bindSuccess": {
+        "title": "绑定成功",
+        "desc": "已成功更新用户角色。"
+      },
+      "bindFailed": {
+        "title": "绑定失败",
+        "desc": "无法绑定角色，请稍后再试。"
+      }
+    },
+    "search": {
+      "popoverTitle": "搜寻用户",
+      "keywordLabel": "关键字搜寻",
+      "keywordPlaceholder": "搜寻手机号码、电子邮件、显示名称",
+      "sectionStatus": "状态筛选",
+      "labelVerifiedFilter": "已验证",
+      "toggleVerified": {
+        "true": "已验证",
+        "false": "未验证"
+      },
+      "labelActiveFilter": "启用状态",
+      "toggleActive": {
+        "true": "已启用",
+        "false": "未启用"
+      },
+      "labelAdminFilter": "后台管理员",
+      "toggleAdmin": {
+        "true": "管理员",
+        "false": "一般用户"
+      },
+      "labelSuperFilter": "超级管理员",
+      "toggleSuper": {
+        "true": "超级管理员",
+        "false": "非超级管理员"
+      },
+      "labelMinistryFilter": "服事人员",
+      "toggleMinistry": {
+        "true": "服事人员",
+        "false": "非服事人员"
+      },
+      "genderSection": "性别筛选",
+      "genderPlaceholder": "请选择性别",
+      "chipsTitle": "当前筛选条件：",
+      "chipKeywordPrefix": "关键字：",
+      "chipVerifiedPrefix": "已验证：",
+      "chipActivePrefix": "启用：",
+      "chipAdminPrefix": "管理员：",
+      "chipSuperPrefix": "超级管理员：",
+      "chipMinistryPrefix": "服事人员：",
+      "chipGenderPrefix": "性别："
+    },
+    "row": {
+      "bindRole": "绑定角色",
+      "permanentDelete": "永久删除"
+    },
+    "modal": {
+      "createTitle": "新增用户",
+      "editTitle": "编辑用户",
+      "deleteConfirmPermanent": {
+        "title": "确认永久删除用户"
+      },
+      "deleteConfirmSoft": {
+        "title": "确认删除用户"
+      },
+      "restoreTitle": "还原用户",
+      "detailTitle": "用户详细资料",
+      "bindRoleTitle": "绑定角色"
+    },
+    "restoreForm": {
+      "entityLabel": "使用者"
+    },
+    "deleteForm": {
+      "entityLabel": "用户资料"
+    },
+    "form": {
+      "validation": {
+        "phoneInvalid": "请输入有效的手机号码。",
+        "emailRequired": "请输入电子邮件。",
+        "emailInvalid": "请输入有效的电子邮件格式。",
+        "displayNameTooLong": "显示名称不能超过 64 个字符。",
+        "remarkTooLong": "备注不能超过 500 个字符。"
+      },
+      "email": {
+        "label": "电子邮件",
+        "placeholder": "请输入电子邮件",
+        "hint": "例如：user@example.com"
+      },
+      "displayName": {
+        "label": "显示名称",
+        "placeholder": "用户显示名称"
+      },
+      "gender": {
+        "label": "性别",
+        "placeholder": "请选择性别"
+      },
+      "sectionStatus": "状态设定",
+      "checkboxVerified": "已验证",
+      "checkboxActive": "启用",
+      "sectionPermissions": "权限设定",
+      "checkboxSuperUser": "超级用户",
+      "checkboxAdmin": "管理员",
+      "remark": {
+        "label": "备注",
+        "placeholder": "备注资讯"
+      }
+    },
+    "detail": {
+      "sectionStatus": "状态/权限",
+      "labelActiveStatus": "启用状态",
+      "labelBackendAdmin": "后台管理员",
+      "labelSuperAdministrator": "超级管理员",
+      "labelMinistryStaff": "服事人员",
+      "loadFailed": "载入用户详情失败",
+      "labelUpdatedAt": "更新时间",
+      "remarkHeading": "备注"
+    },
+    "bindRoles": {
+      "selectAll": "全选",
+      "summary": "已选择 {{selected}} / {{total}} 个角色",
+      "noRoles": "暂无可用角色",
+      "submittingLabel": "绑定中...",
+      "confirmBind": "确认绑定",
+      "loadAlert": "载入资料失败，请稍后重试。"
+    }
+  },
+  "permission": {
+    "page": {
+      "title": "权限管理",
+      "description": "管理系统权限"
+    },
+    "table": {
+      "displayName": "显示名称",
+      "code": "代码",
+      "status": "状态",
+      "resource": "资源",
+      "action": "动作",
+      "description": "描述"
+    },
+    "search": {
+      "popoverTitle": "搜寻权限",
+      "keywordPlaceholder": "搜寻显示名称或代码",
+      "keywordLabel": "关键字搜寻",
+      "sectionStatus": "状态筛选",
+      "labelActiveStatus": "启用状态",
+      "toggleActive": {
+        "true": "已启用",
+        "false": "未启用"
+      },
+      "chipsTitle": "当前筛选条件：",
+      "chipKeywordPrefix": "关键字：",
+      "chipActivePrefix": "启用："
+    },
+    "feedback": {
+      "load": {
+        "title": "载入失败",
+        "desc": "无法载入权限资料。",
+        "retryDesc": "请稍后再试。"
+      },
+      "detailLoad": {
+        "desc": "无法载入权限详情。",
+        "title": "载入失败",
+        "failure": "无法载入权限详情，请稍后再试。",
+        "failureShort": "无法载入权限详情",
+        "generic": "载入权限详情失败。"
+      },
+      "restoreSuccess": {
+        "desc": "已成功还原 {{count}} 个权限。",
+        "title": "还原成功"
+      },
+      "restoreFailed": {
+        "desc": "无法还原权限，请稍后再试。",
+        "title": "还原失败"
+      },
+      "createSuccess": {
+        "desc": "已成功新增权限「{{name}}」。",
+        "title": "新增成功"
+      },
+      "updateSuccess": {
+        "desc": "已成功更新权限「{{name}}」。",
+        "title": "更新成功"
+      },
+      "saveFailed": {
+        "desc": "无法储存权限资料，请稍后再试。",
+        "title": "储存失败"
+      },
+      "deletePermanentSuccess": {
+        "desc": "已成功永久删除权限「{{name}}」。"
+      },
+      "deleteSoftSuccess": {
+        "desc": "已成功删除权限「{{name}}」。"
+      },
+      "deleteFailed": {
+        "desc": "无法删除权限，请稍后再试。",
+        "title": "删除失败"
+      },
+      "genericLoadFail": "载入失败。",
+      "deleteSuccessPermanent": {
+        "title": "永久删除成功"
+      },
+      "deleteSuccessSoft": {
+        "title": "删除成功"
+      }
+    },
+    "modal": {
+      "createTitle": "新增权限",
+      "editTitle": "编辑权限",
+      "deleteConfirmPermanent": {
+        "title": "确认永久删除权限"
+      },
+      "deleteConfirmSoft": {
+        "title": "确认删除权限"
+      },
+      "restoreTitle": "还原权限",
+      "detailTitle": "权限详细资料"
+    },
+    "deleteForm": {
+      "entityLabel": "权限资料"
+    },
+    "restoreForm": {
+      "entityLabel": "权限"
+    },
+    "form": {
+      "validation": {
+        "nameRequired": "请输入显示名称",
+        "codeRequired": "请输入代码",
+        "resourceRequired": "请选择资源",
+        "verbRequired": "请选择动作",
+        "descriptionTooLong": "描述不能超过 500 个字符",
+        "remarkTooLong": "备注不能超过 500 个字符"
+      },
+      "displayName": {
+        "label": "显示名称",
+        "placeholder": "请输入显示名称",
+        "hint": "例如：建立使用者"
+      },
+      "code": {
+        "label": "代码",
+        "placeholder": "请输入代码",
+        "hint": "例如：user:create"
+      },
+      "comboLoading": "载入中...",
+      "comboResourcePlaceholder": {
+        "loading": "载入中...",
+        "idle": "请选择或搜寻资源"
+      },
+      "verb": {
+        "label": "动作",
+        "placeholder": "请选择动作",
+        "placeholderLoading": "载入中..."
+      },
+      "verbPlaceholderDisabled": "请选择动作",
+      "sectionStatus": "状态设定",
+      "checkboxActive": "启用",
+      "description": {
+        "label": "描述",
+        "placeholder": "权限描述"
+      },
+      "remark": {
+        "label": "备注",
+        "placeholder": "备注资讯"
+      }
+    },
+    "detail": {
+      "sectionDetailResource": "资源详情",
+      "sectionDetailVerb": "动作详情",
+      "labelResourceKey": "Key",
+      "labelResourceCode": "Code",
+      "labelVerbAction": "Action",
+      "permissionIdHeading": "权限 ID",
+      "labelActiveStatus": "启用状态"
+    }
+  }
+}

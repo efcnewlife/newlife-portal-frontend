@@ -1,13 +1,15 @@
 import { permissionService } from "@/api";
-import { Checkbox, Input, TextArea } from "@efcnewlife/newlife-ui";
 import type { PermissionDetail } from "@/types/api";
+import { Checkbox, Input, TextArea } from "@efcnewlife/newlife-ui";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface PermissionDetailViewProps {
   permissionId: string;
 }
 
 const PermissionDetailView: React.FC<PermissionDetailViewProps> = ({ permissionId }) => {
+  const { t } = useTranslation();
   const [permissionData, setPermissionData] = useState<PermissionDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,25 +23,25 @@ const PermissionDetailView: React.FC<PermissionDetailViewProps> = ({ permissionI
         if (response.success) {
           setPermissionData(response.data);
         } else {
-          setError(response.message || "Load failed");
+          setError(response.message || t("system:permission.feedback.genericLoadFail"));
         }
       } catch (e) {
         console.error("Error fetching permission detail:", e);
-        setError("Failed to load permission details");
+        setError(t("system:permission.feedback.detailLoad.generic"));
       } finally {
         setLoading(false);
       }
     };
 
     if (permissionId) {
-      fetchPermissionDetail();
+      void fetchPermissionDetail();
     }
-  }, [permissionId]);
+  }, [permissionId, t]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+        <div className="text-gray-500 dark:text-gray-400">{t("system:shared.loading")}</div>
       </div>
     );
   }
@@ -47,77 +49,71 @@ const PermissionDetailView: React.FC<PermissionDetailViewProps> = ({ permissionI
   if (error || !permissionData) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="text-red-500 dark:text-red-400">{error || "Load failed"}</div>
+        <div className="text-red-500 dark:text-red-400">{error || t("system:permission.feedback.genericLoadFail")}</div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Basic Information */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <Input id="displayName" label="Display Name" type="text" value={permissionData.displayName} disabled />
+          <Input id="name" label={t("system:permission.form.displayName.label")} type="text" value={permissionData.name} disabled />
         </div>
 
         <div>
-          <Input id="code" label="Code" type="text" value={permissionData.code} disabled />
+          <Input id="code" label={t("system:permission.form.code.label")} type="text" value={permissionData.code} disabled />
         </div>
 
         <div>
-          <Input id="resource" label="Resource" type="text" value={permissionData.resource.name} disabled />
+          <Input id="resource" label={t("system:permission.table.resource")} type="text" value={permissionData.resource.name} disabled />
         </div>
 
         <div>
-          <Input id="verb" label="Action" type="text" value={permissionData.verb.displayName} disabled />
+          <Input id="verb" label={t("system:permission.table.action")} type="text" value={permissionData.verb.name} disabled />
         </div>
       </div>
 
-      {/* Status */}
-      <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</div>
+      <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:permission.table.status")}</div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
-          <Checkbox id="isActive" checked={permissionData.isActive} disabled label="Active" />
+          <Checkbox id="isActive" checked={permissionData.isActive} disabled label={t("system:permission.detail.labelActiveStatus")} />
         </div>
       </div>
 
-      {/* Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Resource Details</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:permission.detail.sectionDetailResource")}</label>
           <div className="space-y-2">
-            <Input id="resourceKey" label="Key" type="text" value={permissionData.resource.key} disabled />
-            <Input id="resourceCode" label="Code" type="text" value={permissionData.resource.code} disabled />
+            <Input id="resourceKey" label={t("system:permission.detail.labelResourceKey")} type="text" value={permissionData.resource.key} disabled />
+            <Input id="resourceCode" label={t("system:permission.detail.labelResourceCode")} type="text" value={permissionData.resource.code} disabled />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Action Details</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:permission.detail.sectionDetailVerb")}</label>
           <div className="space-y-2">
-            <Input id="verbAction" label="Action" type="text" value={permissionData.verb.action} disabled />
+            <Input id="verbAction" label={t("system:permission.detail.labelVerbAction")} type="text" value={permissionData.verb.action} disabled />
           </div>
         </div>
       </div>
 
-      {/* Description */}
       {permissionData.description && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:permission.form.description.label")}</label>
           <TextArea id="description" placeholder="" value={permissionData.description} disabled rows={3} />
         </div>
       )}
 
-      {/* Remark */}
       {permissionData.remark && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Remark</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:permission.form.remark.label")}</label>
           <TextArea id="remark" placeholder="" value={permissionData.remark} disabled rows={3} />
         </div>
       )}
 
-      {/* Permission ID */}
       <div>
-        <Input id="permissionId" label="Permission ID" type="text" value={permissionData.id} disabled />
+        <Input id="permissionId" label={t("system:permission.detail.permissionIdHeading")} type="text" value={permissionData.id} disabled />
       </div>
     </div>
   );

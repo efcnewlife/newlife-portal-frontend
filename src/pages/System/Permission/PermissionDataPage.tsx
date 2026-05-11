@@ -1,5 +1,5 @@
 import { permissionService } from "@/api";
-import type { PermissionDetail as ApiPermissionDetail, PermissionPageItem } from "@/types/api";
+import type { PermissionCreate, PermissionDetail as ApiPermissionDetail, PermissionPageItem, PermissionUpdate } from "@/types/api";
 import type { DataTableColumn, MenuButtonType, PopoverType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
 import { getRecycleButtonClassName } from "@/components/DataPage/PageButtonTypes";
@@ -9,13 +9,27 @@ import { PopoverPosition, Resource } from "@/const/enums";
 import { useNotification } from "@/context/NotificationContext";
 import { useModal } from "@/hooks/useModal";
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { MdCheck, MdClose } from "react-icons/md";
 import PermissionDataForm, { type PermissionFormValues } from "./PermissionDataForm";
 import PermissionDeleteForm from "./PermissionDeleteForm";
 import PermissionDetailView from "./PermissionDetailView";
 import PermissionSearchPopover, { type PermissionSearchFilters } from "./PermissionSearchPopover";
 
+const mapPermissionFormValuesToPayload = (values: PermissionFormValues): PermissionCreate => {
+  return {
+    name: values.name,
+    code: values.code,
+    resource_id: values.resourceId,
+    verb_id: values.verbId,
+    is_active: values.isActive,
+    description: values.description,
+    remark: values.remark,
+  };
+};
+
 export default function PermissionDataPage() {
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1); // 1-based for UI
   const [pageSize, setPageSize] = useState(10);
   const [searchFilters, setSearchFilters] = useState<PermissionSearchFilters>({});
@@ -46,7 +60,7 @@ export default function PermissionDataPage() {
 
   const clearSelectionRef = useRef<(() => void) | null>(null);
 
-  // Fetch function - useRef avoids unnecessary re-creation
+  // Fetch function: use a ref to avoid recreating the callback unnecessarily
   const fetchPagesRef = useRef({
     currentPage,
     pageSize,
@@ -56,7 +70,7 @@ export default function PermissionDataPage() {
     showDeleted,
   });
 
-  // Update ref when dependencies change
+  // Keep ref in sync when dependencies change
   fetchPagesRef.current = {
     currentPage,
     pageSize,
@@ -67,7 +81,7 @@ export default function PermissionDataPage() {
   };
 
   const fetchPages = useCallback(async () => {
-    // Clear selected rows before fetching pages
+    // Clear row selection before fetching
     clearSelectionRef.current?.();
 
     const { currentPage, pageSize, orderBy, descending, appliedFilters, showDeleted } = fetchPagesRef.current;
@@ -96,8 +110,8 @@ export default function PermissionDataPage() {
         console.error("Failed to fetch permissions:", response.message);
         showNotification({
           variant: "error",
-          title: "Load Failed",
-          description: response.message || "Unable to load permission data.",
+          title: t("system:permission.feedback.load.title"),
+          description: `${t("system:permission.feedback.load.desc")} ${t("system:permission.feedback.load.retryDesc")}`,
           position: "top-right",
         });
         setItems([]);
@@ -107,27 +121,27 @@ export default function PermissionDataPage() {
       console.error("Error fetching permission pages:", e);
       showNotification({
         variant: "error",
-        title: "Load Failed",
-        description: "Unable to load permission data. Please try again later.",
+        title: t("system:permission.feedback.load.title"),
+        description: `${t("system:permission.feedback.load.desc")} ${t("system:permission.feedback.load.retryDesc")}`,
         position: "top-right",
       });
     } finally {
       setLoading(false);
     }
-  }, [showNotification]); // Include showNotification dependency
+  }, [showNotification, t]); // showNotification is intentionally included
 
   // Columns definition
   const columns: DataTableColumn<PermissionPageItem>[] = useMemo(
     () => [
       {
-        key: "displayName",
-        label: "Display Name",
+        key: "name",
+        label: t("system:permission.table.displayName"),
         width: "w-48",
-        tooltip: (row) => row.displayName,
+        tooltip: (row) => String(row.name ?? ""),
       },
       {
         key: "code",
-        label: "Code",
+        label: t("system:permission.table.code"),
         sortable: true,
         width: "w-48",
         tooltip: (row) => row.code,
@@ -137,7 +151,7 @@ export default function PermissionDataPage() {
       },
       {
         key: "isActive",
-        label: "Status",
+        label: t("system:permission.table.status"),
         sortable: true,
         width: "w-20",
         render: (_value: unknown, row: PermissionPageItem) => {
@@ -156,26 +170,26 @@ export default function PermissionDataPage() {
       },
       {
         key: "resourceName",
-        label: "Resource",
+        label: t("system:permission.table.resource"),
         width: "w-36",
         tooltip: (row) => row.resourceName,
       },
       {
         key: "verbName",
-        label: "Action",
+        label: t("system:permission.table.action"),
         width: "w-24",
         tooltip: (row) => row.verbName,
       },
       {
         key: "description",
-        label: "Description",
+        label: t("system:permission.table.description"),
         width: "w-72",
         render: (_value: unknown, row: PermissionPageItem) => (
-          <span className="text-gray-600 dark:text-gray-400 truncate max-w-xs">{row.description || "-"}</span>
+          <span className="text-gray-600 dark:text-gray-400 truncate max-w-xs">{row.description || t("common:none")}</span>
         ),
       },
     ],
-    [],
+    [t]
   );
 
   // Toolbar buttons
@@ -226,8 +240,8 @@ export default function PermissionDataPage() {
       await permissionService.restore(ids);
       showNotification({
         variant: "success",
-        title: "Restore Successful",
-        description: `Successfully restored ${ids.length} permissions.`,
+        title: t("system:permission.feedback.restoreSuccess.title"),
+        description: t("system:permission.feedback.restoreSuccess.desc", { count: ids.length }),
       });
       await fetchPages();
       closeRestoreModal();
@@ -236,8 +250,8 @@ export default function PermissionDataPage() {
       console.error(e);
       showNotification({
         variant: "error",
-        title: "Restore Failed",
-        description: "Unable to restore permissions. Please try again later.",
+        title: t("system:permission.feedback.restoreFailed.title"),
+        description: t("system:permission.feedback.restoreFailed.desc"),
         position: "top-right",
       });
     } finally {
@@ -247,7 +261,7 @@ export default function PermissionDataPage() {
 
   // Toolbar buttons
   const toolbarButtons = useMemo(() => {
-    // Use popoverCallback mode with a unified trigger style
+    // popoverCallback pattern with a unified trigger style
     const searchPopoverCallback = ({
       isOpen,
       onOpenChange,
@@ -265,13 +279,13 @@ export default function PermissionDataPage() {
         onSearch={(filters) => {
           setAppliedFilters(filters);
           setCurrentPage(1);
-          onOpenChange(false); // Close popover after search
+          onOpenChange(false); // Close popover after applying search
         }}
         onClear={() => {
           setSearchFilters({});
           setAppliedFilters({});
           setCurrentPage(1);
-          onOpenChange(false); // Close popover after clearing filters
+          onOpenChange(false); // Close popover after clear
         }}
         trigger={trigger}
         isOpen={isOpen}
@@ -282,7 +296,7 @@ export default function PermissionDataPage() {
 
     const buttons = [
       CommonPageButton.SEARCH(searchPopoverCallback, {
-        popover: { title: "Search Permissions", position: PopoverPosition.BottomLeft, width: "400px" },
+        popover: { title: t("system:permission.search.popoverTitle"), position: PopoverPosition.BottomLeft, width: "400px" },
       }),
       CommonPageButton.ADD(
         () => {
@@ -293,7 +307,7 @@ export default function PermissionDataPage() {
         },
         {
           visible: !showDeleted,
-        },
+        }
       ),
       CommonPageButton.RESTORE(handleBulkRestore, {
         visible: showDeleted,
@@ -307,12 +321,12 @@ export default function PermissionDataPage() {
           setShowDeleted(!showDeleted);
           setCurrentPage(1);
         },
-        { className: getRecycleButtonClassName(showDeleted) },
+        { className: getRecycleButtonClassName(showDeleted) }
       ),
     ];
 
     return buttons;
-  }, [openModal, fetchPages, searchFilters, showDeleted, selectedKeys, handleBulkRestore]);
+  }, [openModal, fetchPages, searchFilters, showDeleted, selectedKeys, handleBulkRestore, t]);
 
   // Row actions
   const rowActions: MenuButtonType<PermissionPageItem>[] = useMemo(
@@ -325,16 +339,16 @@ export default function PermissionDataPage() {
         async (row: PermissionPageItem) => {
           try {
             setSubmitting(true);
-            // Fetch full permission details (including resourceId and verbId)
+            // Load full permission detail (includes resourceId and verbId)
             const response = await permissionService.getById(row.id);
             if (response.success) {
               const detail: ApiPermissionDetail = response.data;
               setFormMode("edit");
               setEditing(row);
-              // Convert to form values
+              // Map API detail to form values
               setEditingFormValues({
                 id: detail.id,
-                displayName: detail.displayName,
+                name: detail.name,
                 code: detail.code,
                 resourceId: detail.resource.id,
                 verbId: detail.verb.id,
@@ -346,8 +360,8 @@ export default function PermissionDataPage() {
             } else {
               showNotification({
                 variant: "error",
-                title: "Load Failed",
-                description: "Unable to load permission details. Please try again later.",
+                title: t("system:permission.feedback.detailLoad.title"),
+                description: t("system:permission.feedback.detailLoad.failure"),
                 position: "top-right",
               });
             }
@@ -355,8 +369,8 @@ export default function PermissionDataPage() {
             console.error("Error fetching permission detail:", e);
             showNotification({
               variant: "error",
-              title: "Load Failed",
-              description: "Unable to load permission details. Please try again later.",
+              title: t("system:permission.feedback.detailLoad.title"),
+              description: t("system:permission.feedback.detailLoad.failure"),
               position: "top-right",
             });
           } finally {
@@ -364,16 +378,16 @@ export default function PermissionDataPage() {
           }
         },
         {
-          visible: !showDeleted, // Show only in normal mode
-        },
+          visible: !showDeleted, // Only when not in trash mode
+        }
       ),
       CommonRowAction.RESTORE(
         async (row: PermissionPageItem) => {
           handleSingleRestore(row);
         },
         {
-          visible: showDeleted, // Show only in recycle mode
-        },
+          visible: showDeleted, // Only in trash mode
+        }
       ),
       CommonRowAction.DELETE(
         (row: PermissionPageItem) => {
@@ -381,30 +395,31 @@ export default function PermissionDataPage() {
           openDeleteModal();
         },
         {
-          text: showDeleted ? "Delete Permanently" : "Delete",
-        },
+          text: showDeleted ? t("common:deletePermanently") : t("common:delete"),
+        }
       ),
     ],
-    [openModal, openDeleteModal, openViewModal, showDeleted, fetchPages, setSubmitting, showNotification],
+    [openModal, openDeleteModal, openViewModal, showDeleted, fetchPages, showNotification, t]
   );
 
   // Submit handlers
   const handleSubmit = async (values: PermissionFormValues) => {
     try {
       setSubmitting(true);
+      const payload: PermissionCreate | PermissionUpdate = mapPermissionFormValuesToPayload(values);
       if (formMode === "create") {
-        await permissionService.create(values);
+        await permissionService.create(payload);
         showNotification({
           variant: "success",
-          title: "Permission Created",
-          description: `Successfully created permission "${values.displayName}".`,
+          title: t("system:permission.feedback.createSuccess.title"),
+          description: t("system:permission.feedback.createSuccess.desc", { name: values.name }),
         });
       } else if (formMode === "edit" && editing?.id) {
-        await permissionService.update(editing.id, values);
+        await permissionService.update(editing.id, payload);
         showNotification({
           variant: "success",
-          title: "Permission Updated",
-          description: `Successfully updated permission "${values.displayName}".`,
+          title: t("system:permission.feedback.updateSuccess.title"),
+          description: t("system:permission.feedback.updateSuccess.desc", { name: values.name }),
         });
       }
       closeModal();
@@ -414,8 +429,8 @@ export default function PermissionDataPage() {
       console.error(e);
       showNotification({
         variant: "error",
-        title: "Save Failed",
-        description: "Unable to save permission data. Please try again later.",
+        title: t("system:permission.feedback.saveFailed.title"),
+        description: t("system:permission.feedback.saveFailed.desc"),
         position: "top-right",
       });
     } finally {
@@ -431,8 +446,10 @@ export default function PermissionDataPage() {
       await permissionService.remove(editing.id, { reason, permanent: !!permanent });
       showNotification({
         variant: "success",
-        title: permanent ? "Permission Permanently Deleted" : "Permission Deleted",
-        description: `Successfully ${permanent ? "permanently deleted" : "deleted"} permission "${deletedPermission.displayName}".`,
+        title: permanent ? t("system:permission.feedback.deleteSuccessPermanent.title") : t("system:permission.feedback.deleteSuccessSoft.title"),
+        description: permanent
+          ? t("system:permission.feedback.deletePermanentSuccess.desc", { name: deletedPermission.name })
+          : t("system:permission.feedback.deleteSoftSuccess.desc", { name: deletedPermission.name }),
       });
       closeDeleteModal();
       // Refresh list by calling fetchPages directly
@@ -441,8 +458,8 @@ export default function PermissionDataPage() {
       console.error(e);
       showNotification({
         variant: "error",
-        title: "Delete Failed",
-        description: "Unable to delete permission. Please try again later.",
+        title: t("system:permission.feedback.deleteFailed.title"),
+        description: t("system:permission.feedback.deleteFailed.desc"),
         position: "top-right",
       });
     } finally {
@@ -482,7 +499,7 @@ export default function PermissionDataPage() {
       />
 
       <Modal
-        title={formMode === "create" ? "Create Permission" : "Edit Permission"}
+        title={formMode === "create" ? t("system:permission.modal.createTitle") : t("system:permission.modal.editTitle")}
         isOpen={isOpen}
         onClose={closeModal}
         className="max-w-[800px] w-full mx-4 p-6"
@@ -497,7 +514,7 @@ export default function PermissionDataPage() {
       </Modal>
 
       <Modal
-        title={showDeleted ? "Confirm Permanent Permission Deletion" : "Confirm Permission Deletion"}
+        title={showDeleted ? t("system:permission.modal.deleteConfirmPermanent.title") : t("system:permission.modal.deleteConfirmSoft.title")}
         isOpen={isDeleteOpen}
         onClose={closeDeleteModal}
         className="max-w-[560px] w-full mx-4 p-6"
@@ -505,17 +522,17 @@ export default function PermissionDataPage() {
         <PermissionDeleteForm onSubmit={handleDelete} onCancel={closeDeleteModal} submitting={submitting} isPermanent={showDeleted} />
       </Modal>
 
-      <Modal title="Restore Permission" isOpen={isRestoreOpen} onClose={closeRestoreModal} className="max-w-[500px] w-full mx-4 p-6">
+      <Modal title={t("system:permission.modal.restoreTitle")} isOpen={isRestoreOpen} onClose={closeRestoreModal} className="max-w-[500px] w-full mx-4 p-6">
         <RestoreForm
           ids={restoreIds}
-          entityName="permission"
+          entityName={t("system:permission.restoreForm.entityLabel")}
           onSubmit={handleRestoreConfirm}
           onCancel={closeRestoreModal}
           submitting={submitting}
         />
       </Modal>
 
-      <Modal title="Permission Details" isOpen={isViewOpen} onClose={closeViewModal} className="max-w-[800px] w-full mx-4 p-6">
+      <Modal title={t("system:permission.modal.detailTitle")} isOpen={isViewOpen} onClose={closeViewModal} className="max-w-[800px] w-full mx-4 p-6">
         {viewing && <PermissionDetailView permissionId={viewing.id} />}
       </Modal>
     </>

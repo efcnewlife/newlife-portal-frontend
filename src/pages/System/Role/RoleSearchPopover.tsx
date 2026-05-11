@@ -1,5 +1,6 @@
 import { PopoverPosition } from "@/const/enums";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export interface RoleSearchFilters {
   keyword?: string;
@@ -25,6 +26,7 @@ export default function RoleSearchPopover({
   onOpenChange: (open: boolean) => void;
   popover: { title: React.ReactNode; position?: PopoverPosition; width?: string };
 }) {
+  const { t } = useTranslation();
   const [local, setLocal] = useState<RoleSearchFilters>(filters);
 
   useEffect(() => {
@@ -33,7 +35,6 @@ export default function RoleSearchPopover({
 
   return (
     <div className="relative inline-block">
-      {/* trigger */}
       <div onClick={() => onOpenChange(!isOpen)}>{trigger}</div>
       {isOpen && (
         <div
@@ -42,13 +43,15 @@ export default function RoleSearchPopover({
             left: popover.position === PopoverPosition.BottomLeft ? 0 : undefined,
           }}
         >
-          <div className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-200">{popover.title || "Search for roles"}</div>
+          <div className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-200">
+            {popover.title || t("system:role.search.defaultTitleFallback")}
+          </div>
           <div className="space-y-3">
             <div>
-              <label className="block text-sm text-gray-600 dark:text-gray-300">Keywords</label>
+              <label className="block text-sm text-gray-600 dark:text-gray-300">{t("system:role.search.keywordLabel")}</label>
               <input
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white/90"
-                placeholder="code or name"
+                placeholder={t("system:role.search.keywordPlaceholder")}
                 value={local.keyword || ""}
                 onChange={(e) => setLocal((s) => ({ ...s, keyword: e.target.value }))}
               />
@@ -62,7 +65,7 @@ export default function RoleSearchPopover({
                 onChange={(e) => setLocal((s) => ({ ...s, isActive: e.target.checked }))}
               />
               <label htmlFor="isActive" className="text-sm text-gray-700 dark:text-gray-300">
-                Show only enabled
+                {t("system:role.search.activeOnlyCheckbox")}
               </label>
             </div>
           </div>
@@ -74,7 +77,7 @@ export default function RoleSearchPopover({
                 onClear();
               }}
             >
-              Clear
+              {t("common:clear")}
             </button>
             <button
               className="px-3 py-2 rounded-lg bg-brand-600 text-white text-sm hover:bg-brand-700"
@@ -83,7 +86,7 @@ export default function RoleSearchPopover({
                 onSearch(local);
               }}
             >
-              search
+              {t("common:search")}
             </button>
           </div>
         </div>

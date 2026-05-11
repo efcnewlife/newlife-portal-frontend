@@ -5,21 +5,21 @@ type MockPermission = PermissionDetail & { isDeleted?: boolean };
 let mockPermissions: MockPermission[] = [
   {
     id: "perm-user-list",
-    displayName: "User List",
+    name: "User List",
     code: "system:user:list",
     isActive: true,
     description: "List users",
     resource: { id: "res-user", name: "User", key: "SYSTEM_USER", code: "system:user" },
-    verb: { id: "verb-list", displayName: "List", action: "list" },
+    verb: { id: "verb-list", name: "List", action: "list" },
   },
   {
     id: "perm-role-list",
-    displayName: "Role List",
+    name: "Role List",
     code: "system:role:list",
     isActive: true,
     description: "List roles",
     resource: { id: "res-role", name: "Role", key: "SYSTEM_ROLE", code: "system:role" },
-    verb: { id: "verb-list", displayName: "List", action: "list" },
+    verb: { id: "verb-list", name: "List", action: "list" },
   },
 ];
 
@@ -31,7 +31,7 @@ export const getMockPermissionPages = (params: { page?: number; page_size?: numb
   const filtered = mockPermissions.filter((item) => {
     if ((item.isDeleted || false) !== deleted) return false;
     if (!keyword) return true;
-    return item.displayName.toLowerCase().includes(keyword) || item.code.toLowerCase().includes(keyword);
+    return item.name.toLowerCase().includes(keyword) || item.code.toLowerCase().includes(keyword);
   });
   return {
     success: true,
@@ -42,13 +42,13 @@ export const getMockPermissionPages = (params: { page?: number; page_size?: numb
       total: filtered.length,
       items: filtered.slice(page * pageSize, page * pageSize + pageSize).map((item) => ({
         id: item.id,
-        displayName: item.displayName,
+        name: item.name,
         code: item.code,
         isActive: item.isActive,
         description: item.description,
         remark: item.remark,
         resourceName: item.resource.name,
-        verbName: item.verb.displayName,
+        verbName: item.verb.name,
       })),
     },
   };
@@ -62,7 +62,7 @@ export const listMockPermissions = (): ApiResponse<{ items: PermissionListItem[]
       .filter((item) => !item.isDeleted)
       .map((item) => ({
         id: item.id,
-        displayName: item.displayName,
+        name: item.name,
         code: item.code,
         isActive: item.isActive,
         description: item.description,
@@ -83,13 +83,13 @@ export const createMockPermission = (data: PermissionCreate): ApiResponse<{ id: 
   const id = `perm-${Date.now()}`;
   mockPermissions.unshift({
     id,
-    displayName: data.displayName,
+    name: data.name,
     code: data.code,
-    isActive: data.isActive,
+    isActive: data.is_active,
     description: data.description,
     remark: data.remark,
-    resource: { id: data.resourceId, name: "Resource", key: "RESOURCE", code: "resource" },
-    verb: { id: data.verbId, displayName: "Verb", action: "list" },
+    resource: { id: data.resource_id, name: "Resource", key: "RESOURCE", code: "resource" },
+    verb: { id: data.verb_id, name: "Verb", action: "list" },
   });
   return { success: true, code: 201, data: { id } };
 };
@@ -97,15 +97,15 @@ export const createMockPermission = (data: PermissionCreate): ApiResponse<{ id: 
 export const updateMockPermission = (id: string, data: PermissionUpdate): ApiResponse<void> => {
   mockPermissions = mockPermissions.map((item) =>
     item.id === id
-      ? {
+        ? {
           ...item,
-          displayName: data.displayName,
+          name: data.name,
           code: data.code,
-          isActive: data.isActive,
+          isActive: data.is_active,
           description: data.description,
           remark: data.remark,
-          resource: data.resourceId ? { ...item.resource, id: data.resourceId } : item.resource,
-          verb: data.verbId ? { ...item.verb, id: data.verbId } : item.verb,
+          resource: data.resource_id ? { ...item.resource, id: data.resource_id } : item.resource,
+          verb: data.verb_id ? { ...item.verb, id: data.verb_id } : item.verb,
         }
       : item
   );

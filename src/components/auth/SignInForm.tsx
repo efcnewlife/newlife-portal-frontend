@@ -64,8 +64,8 @@ export default function SignInForm() {
               <img src="/images/logo/logo.png" alt="Logo" className="mb-4 w-50 h-50 rounded-2xl" />
               <h1 className="text-gray-600 dark:text-gray-300 font-semibold text-2xl">{ENV_CONFIG.APP_NAME}</h1>
             </div>
-            <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">{t("auth.signIn")}</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{t("auth.signInPromptMicrosoft")}</p>
+            <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">{t("auth:signIn")}</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t("auth:signInPromptMicrosoft")}</p>
           </div>
           <div>
             <div className="space-y-6">
@@ -80,11 +80,11 @@ export default function SignInForm() {
                   onClick={handleMicrosoftSignIn}
                   startIcon={<MicrosoftColorIcon className="size-[22px] shrink-0" aria-hidden focusable={false} />}
                 >
-                  {isLoading ? t("auth.microsoftSigningIn") : t("auth.signInWithMicrosoft")}
+                  {isLoading ? t("auth:microsoftSigningIn") : t("auth:signInWithMicrosoft")}
                 </Button>
               </div>
               <div className="flex items-center justify-between">
-                <Checkbox checked={isChecked} onChange={setIsChecked} label={t("auth.keepMeLoggedIn")} />
+                <Checkbox checked={isChecked} onChange={setIsChecked} label={t("auth:keepMeLoggedIn")} />
               </div>
               {IS_SHOW_DEV_LOGIN && (
                 <>
@@ -94,17 +94,17 @@ export default function SignInForm() {
                     </div>
                     <div className="relative flex justify-center text-xs">
                       <span className="bg-white px-2 text-gray-500 dark:bg-gray-900 dark:text-gray-400">
-                        {t("auth.devEmailSignInSection")}
+                        {t("auth:devEmailSignInSection")}
                       </span>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t("auth.signInPromptDev")}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t("auth:signInPromptDev")}</p>
                   <form onSubmit={handleSubmit}>
                     <div className="space-y-6">
                       <div>
                         <Input
                           id="email"
-                          label={t("auth.email")}
+                          label={t("auth:email")}
                           type="email"
                           placeholder="info@example.com"
                           value={email}
@@ -115,7 +115,7 @@ export default function SignInForm() {
                       <div>
                         <Input
                           id="password"
-                          label={t("auth.password")}
+                          label={t("auth:password")}
                           type={showPassword ? "text" : "password"}
                           icon={
                             showPassword ? (
@@ -126,7 +126,7 @@ export default function SignInForm() {
                           }
                           iconPosition="right"
                           iconClick={() => setShowPassword(!showPassword)}
-                          placeholder={t("auth.password")}
+                          placeholder={t("auth:password")}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
@@ -134,12 +134,12 @@ export default function SignInForm() {
                       </div>
                       <div className="flex items-center justify-end">
                         <Link to="/forgot-password" className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400">
-                          {t("auth.forgotPassword")}
+                          {t("auth:forgotPassword")}
                         </Link>
                       </div>
                       <div>
                         <Button btnType="submit" className="w-full" size="sm" disabled={isLoading || !isFormValid}>
-                          {isLoading ? t("auth.signingIn") : t("auth.signInWithEmail")}
+                          {isLoading ? t("auth:signingIn") : t("auth:signInWithEmail")}
                         </Button>
                       </div>
                     </div>

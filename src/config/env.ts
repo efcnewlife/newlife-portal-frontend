@@ -37,7 +37,7 @@ export const ENV_CONFIG = {
   SKIP_AUTH: import.meta.env.VITE_SKIP_AUTH === "true",
   /** When true (development only), show email/password login on the sign-in page. */
   SHOW_DEV_LOGIN: import.meta.env.VITE_SHOW_DEV_LOGIN === "true",
-  USE_MOCK_API: import.meta.env.VITE_USE_MOCK_API !== "false",
+  USE_MOCK_API: import.meta.env.VITE_USE_MOCK_API === "true",
   USE_MOCK_DEMO: import.meta.env.VITE_USE_MOCK_DEMO === "true",
 
   // Microsoft Entra ID (Admin Portal) — optional; when set, shows "Sign in with Microsoft"
@@ -54,6 +54,7 @@ export const ENV_CONFIG = {
   LOG_LEVEL: import.meta.env.VITE_LOG_LEVEL || "info",
 } as const;
 
+console.log(ENV_CONFIG);
 /**
  * Whether this is development environment
  */

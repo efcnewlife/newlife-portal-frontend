@@ -2,6 +2,7 @@ import { roleService, type RoleBase } from "@/api/services/roleService";
 import { userService } from "@/api/services/userService";
 import { Button, Checkbox } from "@efcnewlife/newlife-ui";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface UserBindRoleFormProps {
   userId: string;
@@ -12,39 +13,39 @@ interface UserBindRoleFormProps {
 }
 
 const UserBindRoleForm: React.FC<UserBindRoleFormProps> = ({ userId, initialRoleIds = [], onSubmit, onCancel, submitting = false }) => {
+  const { t } = useTranslation();
   const [roles, setRoles] = useState<RoleBase[]>([]);
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>(initialRoleIds);
   const [loading, setLoading] = useState(false);
 
-  // Get the list of roles and the user's current role (only in userId (when changed)
+  // Load roles and current user roles when userId changes
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Get the role list and the user's current role in parallel
+        // Fetch role list and user roles in parallel
         const [rolesResponse, userRolesResponse] = await Promise.all([roleService.getList(), userService.getUserRoles(userId)]);
 
         if (rolesResponse.data?.items) {
           setRoles(rolesResponse.data.items);
         }
 
-        // Determine the initial role to use ID
-        // Prioritize the incoming initialRoleIds，If empty then start from API get
+        // Initial selection: prefer props; otherwise use API response
         const roleIdsToUse = initialRoleIds.length > 0 ? initialRoleIds : userRolesResponse.data?.role_ids || [];
         setSelectedRoleIds(roleIdsToUse);
       } catch (error) {
         console.error("Failed to fetch data:", error);
-        alert("Failed to load data, please try again later");
+        alert(t("system:user.bindRoles.loadAlert"));
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    void fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  // when initialRoleIds Update selected state when changed (only if non-null)
+  // Sync selection when initialRoleIds changes (non-empty only)
   useEffect(() => {
     if (initialRoleIds.length > 0) {
       setSelectedRoleIds(initialRoleIds);
@@ -80,19 +81,19 @@ const UserBindRoleForm: React.FC<UserBindRoleFormProps> = ({ userId, initialRole
         <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
           <Checkbox
             id="select-all"
-            label="Select all"
+            label={t("system:user.bindRoles.selectAll")}
             checked={allSelected}
             onChange={handleSelectAll}
           />
           <span className="text-sm text-gray-600 dark:text-gray-400">
-            Selected {selectedRoleIds.length} / {roles.length} role
+            {t("system:user.bindRoles.summary", { selected: selectedRoleIds.length, total: roles.length })}
           </span>
         </div>
 
         {loading ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">loading...</div>
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t("system:shared.loading")}</div>
         ) : roles.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">No roles available yet</div>
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t("system:user.bindRoles.noRoles")}</div>
         ) : (
           <div className="max-h-[400px] overflow-y-auto space-y-2">
             {roles.map((role) => (
@@ -110,10 +111,10 @@ const UserBindRoleForm: React.FC<UserBindRoleFormProps> = ({ userId, initialRole
 
       <div className="flex justify-end gap-3 pt-2 border-t border-gray-200 dark:border-gray-700">
         <Button onClick={onCancel} size="sm" variant="outline" disabled={submitting || loading}>
-          Cancel
+          {t("common:cancel")}
         </Button>
         <Button btnType="submit" size="sm" variant="primary" disabled={submitting || loading}>
-          {submitting ? "Binding..." : "Confirm binding"}
+          {submitting ? t("system:user.bindRoles.submittingLabel") : t("system:user.bindRoles.confirmBind")}
         </Button>
       </div>
     </form>

@@ -1,21 +1,64 @@
-import { Dropdown, DropdownItem, Select, type SelectOptionType } from "@efcnewlife/newlife-ui";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
+import { localeService, userService } from "@/api";
+import type { LocaleItem } from "@/api/services/localeService";
+import { normalize_locale_code } from "@/i18n";
+import { Dropdown, DropdownItem, Select, type SelectOptionType } from "@efcnewlife/newlife-ui";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MdAccountCircle, MdKeyboardArrowDown, MdLogout, MdPerson } from "react-icons/md";
 import { Link, useNavigate } from "react-router";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
+  const [localeCodeById, setLocaleCodeById] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const { logout, user } = useAuth();
   const { i18n } = useTranslation();
   const { t } = useTranslation();
   const { t: tLanguage } = useTranslation("language");
-  const language_options: SelectOptionType[] = [
-    { value: "en", label: tLanguage("english") },
-    { value: "zh-tw", label: tLanguage("traditionalChinese") },
-  ];
+  const [languageOptions, setLanguageOptions] = useState<SelectOptionType[]>([]);
+
+  useEffect(() => {
+    const locale_to_value = (locale: LocaleItem): string => {
+      const parts = [locale.language_code, locale.script_code, locale.region_code].filter(Boolean);
+      return parts.join("-");
+    };
+
+    const load_locale_options = async () => {
+      const response = await localeService.list();
+      if (!response.success || !response.data?.items?.length) {
+        setLocaleCodeById({});
+        setLanguageOptions([]);
+        return;
+      }
+      const options: SelectOptionType[] = response.data.items
+        .filter((item) => item.is_active)
+        .map((item) => ({
+          value: item.id,
+          label: item.native_name || item.name || locale_to_value(item),
+        }));
+      const nextLocaleCodeById = response.data.items.reduce<Record<string, string>>((acc, item) => {
+        acc[item.id] = locale_to_value(item);
+        return acc;
+      }, {});
+      setLocaleCodeById(nextLocaleCodeById);
+      setLanguageOptions(options);
+    };
+
+    void load_locale_options();
+  }, [tLanguage]);
+
+  const selectedLanguage = useMemo(() => {
+    if (user?.preferredLocaleId) {
+      return user.preferredLocaleId;
+    }
+    const normalized = normalize_locale_code(i18n.language);
+    if (!normalized) {
+      return undefined;
+    }
+    const matchedLocaleId = Object.entries(localeCodeById).find(([, code]) => normalize_locale_code(code) === normalized)?.[0];
+    return matchedLocaleId;
+  }, [i18n.language, localeCodeById, user?.preferredLocaleId]);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -76,17 +119,25 @@ export default function UserDropdown() {
               label={tLanguage("label")}
               size="sm"
               labels={{
-                selectPlaceholder: t("common.selectPlaceholder"),
-                clearSelection: t("common.clearSelection"),
-                toggleOptions: t("common.toggleOptions"),
-                searchOptions: t("common.searchOptions"),
-                noOptions: t("common.noOptions"),
+                selectPlaceholder: t("common:selectPlaceholder"),
+                clearSelection: t("common:clearSelection"),
+                toggleOptions: t("common:toggleOptions"),
+                searchOptions: t("common:searchOptions"),
+                noOptions: t("common:noOptions"),
               }}
-              options={language_options}
-              value={i18n.language === "zh-tw" ? "zh-tw" : "en"}
-              onChange={(value) => {
+              options={languageOptions}
+              value={selectedLanguage}
+              onChange={async (value) => {
                 if (typeof value === "string") {
-                  void i18n.changeLanguage(value);
+                  try {
+                    await userService.updateCurrentUserPreferredLocale(value);
+                    const localeCode = localeCodeById[value];
+                    if (localeCode) {
+                      await i18n.changeLanguage(localeCode);
+                    }
+                  } catch (error) {
+                    console.warn("Failed to update preferred language:", error);
+                  }
                 }
               }}
             />

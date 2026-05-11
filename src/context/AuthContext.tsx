@@ -1,5 +1,7 @@
-import { ensure_msal_ready, get_msal_instance, MSAL_LOGIN_SCOPES } from "@/auth/msalInstance";
-import { IS_MICROSOFT_LOGIN_ENABLED, IS_SKIP_AUTH } from "@/config/env";
+import { ensure_msal_ready, MSAL_LOGIN_SCOPES } from "@/auth/msalInstance";
+import { localeService } from "@/api";
+import { IS_SKIP_AUTH } from "@/config/env";
+import i18n from "@/i18n";
 import { getRolesFromToken, getScopesFromToken, hasPermissionInScopes } from "@/utils/jwt";
 import { createContext, ReactNode, useContext, useEffect, useReducer } from "react";
 import { authService } from "../api/services/authService";
@@ -88,6 +90,21 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
+  const syncPreferredLanguageFromAuthUser = async (user: User) => {
+    if (!user.preferredLocaleId) {
+      return;
+    }
+    const localeResponse = await localeService.list();
+    const locale = localeResponse.data?.items?.find((item) => item.id === user.preferredLocaleId);
+    if (!locale) {
+      return;
+    }
+    const localeCode = [locale.language_code, locale.script_code, locale.region_code].filter(Boolean).join("-");
+    if (localeCode && i18n.language !== localeCode) {
+      await i18n.changeLanguage(localeCode);
+    }
+  };
+
   // Initialize auth state
   useEffect(() => {
     const initializeAuth = async () => {
@@ -113,6 +130,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
           if (response.success && response.data) {
             const token = authService.getToken();
+            await syncPreferredLanguageFromAuthUser(response.data);
             dispatch({
               type: "AUTH_SUCCESS",
               payload: { user: response.data, token: token || "" },
@@ -120,7 +138,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           } else {
             dispatch({ type: "AUTH_FAILURE", payload: "Unable to fetch user information" });
           }
-        } catch (error) {
+        } catch {
           // If initialization fails briefly, keep current state and allow later refresh flow
           dispatch({ type: "AUTH_FAILURE", payload: "" });
         }
@@ -140,6 +158,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const userResp = await authService.getCurrentUser();
           if (userResp.success && userResp.data) {
             const token = authService.getToken();
+            await syncPreferredLanguageFromAuthUser(userResp.data);
             dispatch({
               type: "AUTH_SUCCESS",
               payload: { user: userResp.data, token: token || "" },
@@ -165,6 +184,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (response.success && response.data) {
         // Re-read token from authService to ensure correct storage location
         const token = authService.getToken();
+        await syncPreferredLanguageFromAuthUser(response.data.user);
         dispatch({
           type: "AUTH_SUCCESS",
           payload: { user: response.data.user, token: token || "" },
@@ -189,6 +209,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
       const auth_result = await msal.loginPopup({ scopes: MSAL_LOGIN_SCOPES });
+      console.log(auth_result);
       if (auth_result.account) {
         msal.setActiveAccount(auth_result.account);
       }
@@ -200,6 +221,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const response = await authService.loginWithMicrosoft(id_token, remember_me);
       if (response.success && response.data) {
         const token = authService.getToken();
+        await syncPreferredLanguageFromAuthUser(response.data.user);
         dispatch({
           type: "AUTH_SUCCESS",
           payload: { user: response.data.user, token: token || "" },
@@ -218,20 +240,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Logout method
   const logout = async () => {
     try {
-      if (IS_MICROSOFT_LOGIN_ENABLED) {
-        try {
-          const msal = get_msal_instance();
-          if (msal) {
-            await ensure_msal_ready();
-            const account = msal.getActiveAccount() ?? msal.getAllAccounts()[0];
-            if (account) {
-              await msal.logoutPopup({ account });
-            }
-          }
-        } catch (msal_error) {
-          console.warn("MSAL logout:", msal_error);
-        }
-      }
       await authService.logout();
     } catch (error) {
       console.warn("Logout error:", error);
@@ -254,6 +262,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (response.success && response.data) {
         const token = authService.getToken();
+        await syncPreferredLanguageFromAuthUser(response.data);
         dispatch({
           type: "AUTH_SUCCESS",
           payload: { user: response.data, token: token || "" },

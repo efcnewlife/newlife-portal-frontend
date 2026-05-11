@@ -1,12 +1,11 @@
 import { permissionService } from "@/api/services/permissionService";
-import { resourceService } from "@/api/services/resourceService";
+import { AdminResourceType, resourceService, type ResourceMenuItem } from "@/api/services/resourceService";
 import { verbService, type VerbItem } from "@/api/services/verbService";
-import { Checkbox, Tooltip } from "@efcnewlife/newlife-ui";
-import { AdminResourceType } from "@/const/resource";
 import type { PermissionListItem } from "@/types/api";
-import type { ResourceMenuItem } from "@/types/resource-admin";
+import { Checkbox, Tooltip } from "@efcnewlife/newlife-ui";
 import { resolveIcon } from "@/utils/icon-resolver";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type PermissionMatrixProps = {
   value: string[]; // selected permission IDs
@@ -17,6 +16,7 @@ type PermissionMatrixProps = {
 type PermissionMap = Record<string, Record<string, string | undefined>>; // resourceId -> verbId -> permissionId
 
 export default function RolePermissionMatrix({ value, onChange, className = "" }: PermissionMatrixProps) {
+  const { t } = useTranslation();
   const [resources, setResources] = useState<ResourceMenuItem[]>([]);
   const [verbs, setVerbs] = useState<VerbItem[]>([]);
   const [permMap, setPermMap] = useState<PermissionMap>({});
@@ -33,7 +33,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
         const items: PermissionListItem[] = Array.isArray(pr.data) ? pr.data : pr.data?.items || [];
         const map: PermissionMap = {};
         const info: Record<string, { code: string }> = {};
-        // Build helper indexes: resource code/key -> id, verb action -> id
+        // Lookup indexes: resource code/key -> id, verb action -> id
         const resourceIndexByCode: Record<string, string> = {};
         const resourceIndexByName: Record<string, string> = {};
         (rr.success ? rr.data.items : []).forEach((r: ResourceMenuItem) => {
@@ -45,15 +45,15 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
         const verbIndexByName: Record<string, string> = {};
         (vr.success ? vr.data.items : []).forEach((v: VerbItem) => {
           if (v?.action) verbIndexByAction[String(v.action).toLowerCase()] = v.id;
-          if (v?.displayName) verbIndexByName[String(v.displayName).toLowerCase()] = v.id;
+          if (v?.name) verbIndexByName[String(v.name).toLowerCase()] = v.id;
         });
 
         items.forEach((p) => {
-          // PermissionListItem guarantees resourceId and verbId
+          // PermissionListItem should include resourceId and verbId
           let resourceId: string | undefined = p.resourceId;
           let verbId: string | undefined = p.verbId;
 
-          // Fallback: parse resource/verb from code if data is incomplete
+          // Fallback: parse resource/verb from code when ids are missing
           if ((!resourceId || !verbId) && p.code.includes(":")) {
             const [codePrefixRaw, actionRaw] = p.code.split(":");
             const codePrefix = codePrefixRaw.toLowerCase();
@@ -69,7 +69,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
 
           if (!map[resourceId]) map[resourceId] = {};
           map[resourceId][verbId] = p.id;
-          info[p.id] = { code: p.code || p.displayName || "" };
+          info[p.id] = { code: p.code || p.name || "" };
         });
         setPermMap(map);
         setPermInfoById(info);
@@ -91,10 +91,10 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
     onChange([...set]);
   };
 
-  // Build tree structure and flattened rows (grouped by type)
+  // Tree shape and flat rows (split by resource type)
   type TreeNode = ResourceMenuItem & { children: TreeNode[] };
 
-  // Helper function to build tree structure
+  // Build resource tree from flat list
   const buildTree = useCallback((resourceList: ResourceMenuItem[]): TreeNode[] => {
     const byId: Record<string, TreeNode> = {};
     resourceList.forEach((r) => (byId[r.id] = { ...r, children: [] }));
@@ -105,7 +105,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
       if (pid && byId[pid]) byId[pid].children.push(node);
       else roots.push(node);
     });
-    // Sort by resource management order: sequence first, then name
+    // Sort like resource admin: sequence ascending, then name
     const sortNodes = (nodes: TreeNode[]) => {
       nodes.sort((a, b) => {
         const sa = a.sequence ?? 0;
@@ -119,7 +119,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
     return roots;
   }, []);
 
-  // Group resources by type
+  // Split resources by type (system vs general)
   const { systemResources, generalResources } = useMemo(() => {
     const system: ResourceMenuItem[] = [];
     const general: ResourceMenuItem[] = [];
@@ -141,12 +141,12 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
     return buildTree(systemResources);
   }, [systemResources, buildTree]);
 
-  // General resource tree
+  // General (business) resource tree
   const generalTree: TreeNode[] = useMemo(() => {
     return buildTree(generalResources);
   }, [generalResources, buildTree]);
 
-  // Build resource map (for fast lookup) - includes all resources
+  // Id -> node map for fast lookup (all resources)
   const resourceMap = useMemo(() => {
     const map: Record<string, TreeNode> = {};
     const buildMap = (nodes: TreeNode[]) => {
@@ -160,7 +160,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
     return map;
   }, [systemTree, generalTree]);
 
-  // Get IDs for resource and all descendants (recursive)
+  // Collect resource id and all descendant ids (recursive)
   const getResourceAndChildrenIds = useCallback((resourceId: string, resourceMap: Record<string, TreeNode>): string[] => {
     const ids: string[] = [resourceId];
     const resource = resourceMap[resourceId];
@@ -172,10 +172,10 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
     return ids;
   }, []);
 
-  // Get permission IDs for a specific verb across all children of a root resource
+  // Permission ids for one verb across all descendants of a root resource
   const getChildResourcePermissionsForVerb = useCallback(
     (rootResourceId: string, verbId: string, resourceMap: Record<string, TreeNode>): string[] => {
-      const childResourceIds = getResourceAndChildrenIds(rootResourceId, resourceMap).slice(1); // Remove root resource itself
+      const childResourceIds = getResourceAndChildrenIds(rootResourceId, resourceMap).slice(1); // Exclude root itself
       const permIds: string[] = [];
       childResourceIds.forEach((childId) => {
         const permId = permMap[childId]?.[verbId];
@@ -183,13 +183,13 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
       });
       return permIds;
     },
-    [permMap, getResourceAndChildrenIds],
+    [permMap, getResourceAndChildrenIds]
   );
 
-  // Get all permission IDs across all children of a root resource
+  // All permission ids under descendants of a root resource
   const getChildResourceAllPermissions = useCallback(
     (rootResourceId: string, resourceMap: Record<string, TreeNode>): string[] => {
-      const childResourceIds = getResourceAndChildrenIds(rootResourceId, resourceMap).slice(1); // Remove root resource itself
+      const childResourceIds = getResourceAndChildrenIds(rootResourceId, resourceMap).slice(1); // Exclude root itself
       const permIds: string[] = [];
       childResourceIds.forEach((childId) => {
         verbs.forEach((v) => {
@@ -199,7 +199,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
       });
       return permIds;
     },
-    [permMap, verbs, getResourceAndChildrenIds],
+    [permMap, verbs, getResourceAndChildrenIds]
   );
 
   const toggleAllForResource = useCallback(
@@ -209,7 +209,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
       const allPermIds = verbs.map((v) => verbToPerm[v.id]).filter(Boolean) as string[];
       const allSelected = allPermIds.length > 0 && allPermIds.every((id) => set.has(id));
 
-      // For root resources (without direct permission items), control all child permissions
+      // Root placeholder row (no direct perms): toggle all descendant permissions
       if (allPermIds.length === 0) {
         const childPermIds = getChildResourceAllPermissions(resourceId, resourceMap);
         const allChildSelected = childPermIds.length > 0 && childPermIds.every((id) => set.has(id));
@@ -220,7 +220,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
           childPermIds.forEach((id) => set.add(id));
         }
       } else {
-        // Standard logic for non-root resources
+        // Normal row: toggle this resource's verb cells
         if (allSelected) {
           allPermIds.forEach((id) => set.delete(id));
         } else {
@@ -229,10 +229,10 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
       }
       onChange([...set]);
     },
-    [value, permMap, verbs, getChildResourceAllPermissions, resourceMap, onChange],
+    [value, permMap, verbs, getChildResourceAllPermissions, resourceMap, onChange]
   );
 
-  // Toggle child permissions of a root resource for a specific verb
+  // Toggle one verb column for all descendants under a root row
   const toggleVerbForRootResource = useCallback(
     (rootResourceId: string, verbId: string) => {
       const childPermIds = getChildResourcePermissionsForVerb(rootResourceId, verbId, resourceMap);
@@ -248,10 +248,10 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
       }
       onChange([...set]);
     },
-    [value, getChildResourcePermissionsForVerb, resourceMap, onChange],
+    [value, getChildResourcePermissionsForVerb, resourceMap, onChange]
   );
 
-  // Toggle all resource permissions for one verb (within the given resource list)
+  // Toggle entire verb column for the given resource list
   const toggleAllForVerb = (verbId: string, resourceList: ResourceMenuItem[]) => {
     const set = new Set(value);
     const permIds: string[] = resourceList.map((r) => permMap[r.id]?.[verbId]).filter(Boolean) as string[];
@@ -262,7 +262,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
     onChange([...set]);
   };
 
-  // Toggle "All" checkbox (all verbs within the given resource list)
+  // Toggle all verbs for the given resource list (first-column select-all)
   const toggleAllGlobal = (resourceList: ResourceMenuItem[]) => {
     const set = new Set(value);
     const permIds: string[] = resourceList.flatMap((r) => verbs.map((v) => permMap[r.id]?.[v.id])).filter(Boolean) as string[];
@@ -273,7 +273,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
     onChange([...set]);
   };
 
-  // Flatten tree into rows (for a specific tree)
+  // Flatten tree to rows with depth for rendering
   const flattenTree = useCallback((nodes: TreeNode[], depth: number = 0): Array<{ node: TreeNode; depth: number }> => {
     const rows: Array<{ node: TreeNode; depth: number }> = [];
     const walk = (ns: TreeNode[], d: number) => {
@@ -289,12 +289,12 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
   const systemFlatRows = useMemo(() => flattenTree(systemTree, 0), [systemTree, flattenTree]);
   const generalFlatRows = useMemo(() => flattenTree(generalTree, 0), [generalTree, flattenTree]);
 
-  // Helper function to render permission matrix table
+  // Render one permission matrix section
   const renderPermissionTable = (
     title: string,
     resourceList: ResourceMenuItem[],
     tree: TreeNode[],
-    flatRows: Array<{ node: TreeNode; depth: number }>,
+    flatRows: Array<{ node: TreeNode; depth: number }>
   ) => {
     if (tree.length === 0) return null;
 
@@ -306,7 +306,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
         <div className="border rounded-b-xl overflow-hidden">
           {/* Header (flex layout) */}
           <div className="flex items-center bg-gray-50 dark:bg-white/[0.03] border-b px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200">
-            <div className="shrink-0 w-50">Name</div>
+            <div className="shrink-0 w-50">{t("system:role.matrix.columnName")}</div>
             <div className="shrink-0 w-20">
               <Checkbox
                 checked={(() => {
@@ -314,7 +314,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
                   return allIds.length > 0 && allIds.every((id) => value.includes(id));
                 })()}
                 onChange={() => toggleAllGlobal(resourceList)}
-                label="All"
+                label={t("system:role.matrix.selectAllVerb")}
               />
             </div>
             {verbs.map((v) => (
@@ -325,7 +325,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
                     return ids.length > 0 && ids.every((id) => value.includes(id));
                   })()}
                   onChange={() => toggleAllForVerb(v.id, resourceList)}
-                  label={`${v.displayName} (${v.action})`}
+                  label={`${v.name} (${v.action})`}
                 />
               </div>
             ))}
@@ -333,11 +333,11 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
           {/* Body (flex rows) */}
           <div className="divide-y overflow-auto max-h-[420px]">
             {flatRows.map(({ node, depth }) => {
-              const isRootResource = depth === 0; // Root resources are nodes with depth === 0
+              const isRootResource = depth === 0; // Root rows are depth 0
               const verbToPerm = permMap[node.id] || {};
               const allPermIds = verbs.map((v) => verbToPerm[v.id]).filter(Boolean) as string[];
 
-              // Root resources: check permission state across all child resources
+              // Root row: derive checked state from all descendant permissions
               const allSelected = isRootResource
                 ? (() => {
                     const childPermIds = getChildResourceAllPermissions(node.id, resourceMap);
@@ -358,7 +358,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
                   </div>
                   {verbs.map((v) => {
                     if (isRootResource) {
-                      // Root resources: checkbox controls this verb across all child resources
+                      // Root row: column checkbox applies verb to all descendants
                       const childPermIds = getChildResourcePermissionsForVerb(node.id, v.id, resourceMap);
                       const checked = childPermIds.length > 0 && childPermIds.every((id) => value.includes(id));
 
@@ -368,7 +368,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
                             checked={checked}
                             onChange={() => toggleVerbForRootResource(node.id, v.id)}
                             disabled={childPermIds.length === 0}
-                            label={childPermIds.length > 0 ? `${v.displayName} permission for all child resources` : ""}
+                            label={childPermIds.length > 0 ? t("system:role.matrix.childVerbLabel", { verb: v.name }) : ""}
                             tooltip
                             tooltipPlacement="bottom"
                             className="max-w-50 truncate"
@@ -376,7 +376,7 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
                         </div>
                       );
                     } else {
-                      // Child resources: show specific permission checkbox
+                      // Child row: single permission checkbox
                       const pid = verbToPerm[v.id];
                       const checked = !!pid && value.includes(pid);
                       const fallbackCode = `${node.code || node.key || ""}:${v.action}`;
@@ -405,12 +405,12 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
     );
   };
 
-  if (loading) return <div className="text-sm text-gray-500">Loading permissions...</div>;
+  if (loading) return <div className="text-sm text-gray-500">{t("system:role.matrix.permissionsLoading")}</div>;
 
   return (
     <div className={`space-y-0 ${className}`}>
-      {renderPermissionTable("General Resources", generalResources, generalTree, generalFlatRows)}
-      {renderPermissionTable("System Resources", systemResources, systemTree, systemFlatRows)}
+      {renderPermissionTable(t("system:role.matrix.sectionGeneralResources"), generalResources, generalTree, generalFlatRows)}
+      {renderPermissionTable(t("system:role.matrix.sectionSystemResources"), systemResources, systemTree, systemFlatRows)}
     </div>
   );
 }

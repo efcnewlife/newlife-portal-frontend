@@ -1,7 +1,8 @@
-import { Button, Checkbox, Input, Select, TextArea } from "@efcnewlife/newlife-ui";
-import { AdminResourceType } from "@/const/resource";
+import { AdminResourceType } from "@/api/services/resourceService";
 import { getCommonIconNames, useIconResolver } from "@/utils/icon-resolver";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Button, Checkbox, Input, Select, TextArea } from "@efcnewlife/newlife-ui";
 
 export interface ResourceFormValues {
   id?: string;
@@ -20,13 +21,14 @@ export interface ResourceFormValues {
 interface ResourceDataFormProps {
   mode: "create" | "edit";
   defaultValues?: ResourceFormValues | null;
-  parentResource?: { id: string; name: string } | null; // Parent resource info for creating child resources
+  parentResource?: { id: string; name: string } | null;
   onSubmit: (values: ResourceFormValues) => Promise<void> | void;
   onCancel: () => void;
   submitting?: boolean;
 }
 
 const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues, parentResource, onSubmit, onCancel, submitting }) => {
+  const { t } = useTranslation();
   const [values, setValues] = useState<ResourceFormValues>({
     name: "",
     key: "",
@@ -57,7 +59,6 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
         pid: defaultValues.pid ?? undefined,
       });
     } else if (parentResource) {
-      // Automatically set parent resource ID when creating child resources
       setValues((prev) => ({
         ...prev,
         pid: parentResource.id,
@@ -65,44 +66,49 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
     }
   }, [defaultValues, parentResource]);
 
+  const iconResult = useIconResolver(values.icon, {
+    library: "md",
+    className: "size-5",
+  });
+
+  const { icon: dynamicIcon, error: iconError, isValid: isIconValid } = iconResult;
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
     if (!values.name.trim()) {
-      newErrors.name = "Resource name cannot be empty";
+      newErrors.name = t("system:resource.form.validation.nameRequired");
     }
 
     if (!values.key.trim()) {
-      newErrors.key = "Resource key cannot be empty";
+      newErrors.key = t("system:resource.form.validation.keyRequired");
     } else if (!/^[a-zA-Z0-9_]+$/.test(values.key)) {
-      newErrors.key = "Resource key can only contain letters, numbers, and underscores";
+      newErrors.key = t("system:resource.form.validation.keyCharset");
     }
 
     if (!values.code.trim()) {
-      newErrors.code = "Resource code cannot be empty";
+      newErrors.code = t("system:resource.form.validation.codeRequired");
     } else {
-      const rootPattern = /^[a-zA-Z0-9_]+$/; // Root resource: resource only (no colon)
-      const childPattern = /^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$/; // Child resource: {resource}:{subResource}
+      const rootPattern = /^[a-zA-Z0-9_]+$/;
+      const childPattern = /^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$/;
 
       if (values.pid) {
-        // Child resource must include a colon
         if (!childPattern.test(values.code)) {
-          newErrors.code = "Child resource code must follow {resource}:{subResource}, e.g. user:create";
+          newErrors.code = t("system:resource.form.validation.codeChildFormat");
         }
       } else {
-        // Root resource must not include colon
         if (!rootPattern.test(values.code)) {
-          newErrors.code = "Root resource code must follow {resource}, e.g. user";
+          newErrors.code = t("system:resource.form.validation.codeRootFormat");
         }
       }
     }
 
     if (!values.path?.trim()) {
-      newErrors.path = "Resource path cannot be empty";
+      newErrors.path = t("system:resource.form.validation.pathRequired");
     }
 
     if (!values.icon?.trim()) {
-      newErrors.icon = "Resource icon cannot be empty";
+      newErrors.icon = t("system:resource.form.validation.iconRequired");
     }
 
     setErrors(newErrors);
@@ -114,32 +120,23 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
     if (validateForm()) {
       const submitValues: ResourceFormValues = {
         ...values,
-        // Avoid sending empty string when no parent resource
         pid: values.pid ? values.pid : undefined,
       };
       await onSubmit(submitValues);
     }
   };
 
-  // Use icon resolver
-  const iconResult = useIconResolver(values.icon, {
-    library: "md",
-    className: "size-5",
-  });
-
-  const { icon: dynamicIcon, error: iconError, isValid: isIconValid } = iconResult;
-
   const handleChange = (field: keyof ResourceFormValues, value: string | number | boolean | undefined) => {
     setValues((prev) => ({ ...prev, [field]: value }));
-    // Clear field-specific errors
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
+  const iconHintTail = getCommonIconNames("md").slice(0, 5).join(", ");
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      {/* Parent resource prompt (top) */}
       {parentResource && (
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
           <div className="flex items-center">
@@ -153,159 +150,139 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
               </svg>
             </div>
             <div className="ml-3">
-              <p className="text-sm text-blue-700 dark:text-blue-300">
-                Creating a child resource under <strong className="font-medium">{parentResource.name}</strong>
-              </p>
+              <p className="text-sm text-blue-700 dark:text-blue-300">{t("system:resource.form.parentBanner", { name: parentResource.name })}</p>
             </div>
           </div>
         </div>
       )}
-      {/* Basic Information */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Resource Information</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">{t("system:resource.form.sectionInfo")}</h3>
 
-      {/* Basic Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Name <span className="text-red-500">*</span>
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.name.label")}</label>
             <Input
               id="name"
               type="text"
               value={values.name}
               onChange={(e) => handleChange("name", e.target.value)}
-              placeholder="Enter resource name"
+              placeholder={t("system:resource.form.name.placeholder")}
               className={errors.name ? "border-red-500" : ""}
             />
             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Key <span className="text-red-500">*</span>
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.key.label")}</label>
             <Input
               id="key"
               type="text"
               value={values.key}
               onChange={(e) => handleChange("key", e.target.value)}
-              placeholder="Enter resource key"
+              placeholder={t("system:resource.form.key.placeholder")}
               className={errors.key ? "border-red-500" : ""}
             />
             {errors.key && <p className="text-red-500 text-sm mt-1">{errors.key}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Code <span className="text-red-500">*</span>
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.code.label")}</label>
             <Input
               id="code"
               type="text"
               value={values.code}
               onChange={(e) => handleChange("code", e.target.value)}
-              placeholder="Enter resource code"
+              placeholder={t("system:resource.form.code.placeholder")}
               className={errors.code ? "border-red-500" : ""}
             />
             {errors.code && <p className="text-red-500 text-sm mt-1">{errors.code}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Path <span className="text-red-500">*</span>
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.path.label")}</label>
             <Input
               id="path"
               type="text"
               value={values.path}
               onChange={(e) => handleChange("path", e.target.value)}
-              placeholder="Enter resource path"
+              placeholder={t("system:resource.form.path.placeholder")}
               className={errors.path ? "border-red-500" : ""}
             />
             {errors.path && <p className="text-red-500 text-sm mt-1">{errors.path}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Type <span className="text-red-500">*</span>
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.type.label")}</label>
             <Select
               id="type"
               options={[
-                { value: AdminResourceType.GENERAL, label: "General Feature (GENERAL)" },
-                { value: AdminResourceType.SYSTEM, label: "System Feature (SYSTEM)" },
+                { value: AdminResourceType.GENERAL, label: t("system:resource.form.type.optionGeneral") },
+                { value: AdminResourceType.SYSTEM, label: t("system:resource.form.type.optionSystem") },
               ]}
               value={values.type}
               onChange={(value) => handleChange("type", Number(value))}
-              placeholder="Select type"
+              placeholder={t("system:resource.form.type.placeholder")}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Icon <span className="text-red-500">*</span>
-            </label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.icon.label")}</label>
             <Input
               id="icon"
               type="text"
               value={values.icon}
               onChange={(e) => handleChange("icon", e.target.value)}
-              placeholder={`Enter icon name (e.g. ${getCommonIconNames("md").slice(0, 3).join(", ")})`}
+              placeholder={t("system:resource.form.icon.placeholder")}
               icon={dynamicIcon}
               iconPosition="left"
               error={errors.icon || !isIconValid ? iconError || undefined : undefined}
-              hint={`Use Material Design icon names, e.g. ${getCommonIconNames("md").slice(0, 5).join(", ")}`}
+              hint={`${t("system:resource.form.iconHint")} ${iconHintTail}`}
               clearable
             />
           </div>
         </div>
 
-        {/* Status */}
         <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-          <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Status</div>
+          <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">{t("system:resource.form.sectionVisibility")}</div>
           <div className="flex items-center">
             <Checkbox
               id="is_visible"
               checked={!!values.is_visible}
               onChange={(checked) => handleChange("is_visible", checked)}
-              label="Visible"
+              label={t("system:resource.form.checkboxVisible")}
             />
           </div>
         </div>
       </div>
 
-      {/* Remark */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Remark</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.remark.label")}</label>
         <Input
           id="remark"
           type="text"
           value={values.remark}
           onChange={(e) => handleChange("remark", e.target.value)}
-          placeholder="Enter remark"
+          placeholder={t("system:resource.form.remark.placeholder")}
         />
       </div>
 
-      {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.description.label")}</label>
         <TextArea
           id="description"
           value={values.description}
           onChange={(value) => handleChange("description", value)}
-          placeholder="Enter resource description"
+          placeholder={t("system:resource.form.description.placeholder")}
           rows={3}
         />
       </div>
 
-      {/* Buttons */}
       <div className="flex justify-end space-x-3 pt-4">
         <Button btnType="button" variant="outline" onClick={onCancel} disabled={submitting}>
-          Cancel
+          {t("common:cancel")}
         </Button>
         <Button btnType="submit" variant="primary" disabled={submitting}>
-          {submitting ? "Saving..." : mode === "create" ? "Create" : "Update"}
+          {submitting ? t("system:resource.form.submittingSaving") : mode === "create" ? t("common:create") : t("common:save")}
         </Button>
       </div>
     </form>

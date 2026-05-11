@@ -1,11 +1,11 @@
-import { resourceService } from "@/api";
+import { resourceService, type ResourceMenuItem as ApiResourceMenuItem } from "@/api";
 import RestoreForm from "@/components/DataPage/RestoreForm";
 import { Modal } from "@efcnewlife/newlife-ui";
 import { useResourceManagement } from "@/hooks/useResourceManagement";
 import { useResourcePermissions } from "@/hooks/useResourcePermissions";
-import type { ResourceMenuItem as ApiResourceMenuItem } from "@/types/resource-admin";
 import type { ResourceFormData, ResourceMenuItem, ResourceTreeNode } from "@/types/resource";
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ResourceChangeParentForm from "./ResourceChangeParentForm";
 import { ResourceContextMenu } from "./ResourceContextMenu";
 import ResourceDataForm, { type ResourceFormValues } from "./ResourceDataForm";
@@ -15,9 +15,10 @@ import { ResourceToolbar } from "./ResourceToolbar";
 import { ResourceTreeView } from "./ResourceTreeView";
 
 export default function ResourcePage() {
+  const { t } = useTranslation();
   const permissions = useResourcePermissions();
 
-  // Use the refactored hook
+  // Refactored resource management hook
   const {
     resources,
     treeData,
@@ -51,7 +52,7 @@ export default function ResourcePage() {
     resource: null,
   });
 
-  // Form state
+  // Form / modal state
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isRestoreOpen, setIsRestoreOpen] = useState(false);
@@ -63,7 +64,7 @@ export default function ResourcePage() {
   const [submitting, setSubmitting] = useState(false);
   const [restoreIds, setRestoreIds] = useState<string[]>([]);
 
-  // Expand/collapse nodes
+  // Expand/collapse tree nodes
   const toggleExpand = useCallback((nodeId: string) => {
     setExpandedNodes((prev) => {
       const newSet = new Set(prev);
@@ -76,7 +77,7 @@ export default function ResourcePage() {
     });
   }, []);
 
-  // Expand all
+  // Expand all nodes
   const expandAll = useCallback(() => {
     const allNodeIds = new Set<string>();
     const collectIds = (nodes: ResourceTreeNode[]) => {
@@ -89,20 +90,20 @@ export default function ResourcePage() {
     setExpandedNodes(allNodeIds);
   }, [treeData]);
 
-  // Collapse all
+  // Collapse all nodes
   const collapseAll = useCallback(() => {
     setExpandedNodes(new Set());
   }, []);
 
-  // Refresh resources (wrap hook fetchResources for error handling)
+  // Refresh resources (wraps hook fetchResources with error handling)
   const refreshResources = useCallback(async () => {
     try {
       await fetchResources();
     } catch (e) {
-      console.error("Failed to refresh resources:", e);
-      alert("Refresh failed. Please try again later.");
+      console.error("refreshResources failed:", e);
+      alert(t("system:resource.feedback.refreshFailedAlert"));
     }
-  }, [fetchResources]);
+  }, [fetchResources, t]);
 
   // Context menu handlers
   const handleContextMenu = useCallback((e: React.MouseEvent, resource: ResourceMenuItem) => {
@@ -121,7 +122,7 @@ export default function ResourcePage() {
     setContextMenu((prev) => ({ ...prev, visible: false }));
   }, []);
 
-  // Form handlers
+  // Form helpers
   const openModal = useCallback((mode: "create" | "edit", resource?: ResourceMenuItem, parent?: { id: string; name: string }) => {
     setFormMode(mode);
     setEditing(resource || null);
@@ -155,17 +156,17 @@ export default function ResourcePage() {
     setEditing(null);
   }, []);
 
-  // Handle add root resource
+  // Add root resource
   const handleAddRootResource = useCallback(() => {
-    // Clear selection to ensure create flow
+    // Clear selection so save runs create flow
     selectResource(null);
     openModal("create");
   }, [openModal, selectResource]);
 
-  // Handle add child resource
+  // Add child resource
   const handleAddChild = useCallback(
     (resource: ResourceMenuItem) => {
-      // Adding child resources also uses create flow
+      // Treat as create flow
       selectResource(null);
       openModal("create", undefined, { id: resource.id, name: resource.name });
       hideContextMenu();
@@ -173,14 +174,14 @@ export default function ResourcePage() {
     [openModal, hideContextMenu, selectResource]
   );
 
-  // Handle edit
+  // Edit resource
   const handleEdit = useCallback(
     async (resource: ResourceMenuItem) => {
       try {
-        // Fetch detailed resource data before opening edit form
+        // Load full detail before opening the edit form
         const resp = await resourceService.getResource(resource.id);
         if (resp.success && resp.data) {
-          // Set selected resource so save uses update API
+          // Select resource so save uses update API
           const resourceData = resp.data as ApiResourceMenuItem;
           const resourceWithVisible: ResourceMenuItem = {
             ...resourceData,
@@ -189,12 +190,12 @@ export default function ResourcePage() {
           selectResource(resourceWithVisible);
           openModal("edit", resourceWithVisible);
         } else {
-          // Fallback to existing resource data when request fails
+          // Fall back to row data if detail fetch fails
           selectResource(resource);
           openModal("edit", resource);
         }
       } catch {
-        // On error, also fallback to existing resource data
+        // On error, still use row data
         selectResource(resource);
         openModal("edit", resource);
       } finally {
@@ -204,7 +205,7 @@ export default function ResourcePage() {
     [openModal, hideContextMenu, selectResource]
   );
 
-  // Handle view
+  // View detail
   const handleView = useCallback(
     (resource: ResourceMenuItem) => {
       setEditing(resource);
@@ -214,7 +215,7 @@ export default function ResourcePage() {
     [hideContextMenu]
   );
 
-  // Handle delete
+  // Delete (open confirm)
   const handleDelete = useCallback(
     (resource: ResourceMenuItem) => {
       setEditing(resource);
@@ -224,7 +225,7 @@ export default function ResourcePage() {
     [hideContextMenu]
   );
 
-  // Handle delete confirmation
+  // Confirm delete
   const handleDeleteConfirm = useCallback(
     async (data: { reason?: string; permanent?: boolean }) => {
       if (!editing) return;
@@ -234,16 +235,16 @@ export default function ResourcePage() {
         await deleteResource(editing.id, data.reason, data.permanent);
         closeDeleteModal();
       } catch (e) {
-        console.error("Failed to delete resource:", e);
-        alert("Delete failed. Please try again later.");
+        console.error("deleteResource failed:", e);
+        alert(t("system:resource.feedback.deleteFailedAlert"));
       } finally {
         setSubmitting(false);
       }
     },
-    [editing, deleteResource, closeDeleteModal]
+    [editing, deleteResource, closeDeleteModal, t]
   );
 
-  // Handle restore
+  // Restore (open confirm)
   const handleRestore = useCallback(
     (resource: ResourceMenuItem) => {
       setRestoreIds([resource.id]);
@@ -253,7 +254,7 @@ export default function ResourcePage() {
     [hideContextMenu]
   );
 
-  // Handle restore confirmation
+  // Confirm restore
   const handleRestoreConfirm = useCallback(
     async (ids: string[]) => {
       setSubmitting(true);
@@ -263,27 +264,27 @@ export default function ResourcePage() {
         }
         closeRestoreModal();
       } catch (e) {
-        console.error("Failed to restore resource:", e);
-        alert("Restore failed. Please try again later.");
+        console.error("restoreResource failed:", e);
+        alert(t("system:resource.feedback.restoreFailedAlert"));
       } finally {
         setSubmitting(false);
       }
     },
-    [restoreResource, closeRestoreModal]
+    [restoreResource, closeRestoreModal, t]
   );
 
-  // Handle sorting
+  // Reorder (move up/down)
   const handleMoveUp = useCallback(
     async (resource: ResourceMenuItem) => {
       try {
         await moveUp(resource.id);
       } catch (e) {
-        console.error("Failed to move resource up:", e);
-        alert("Move up failed. Please try again later.");
+        console.error("moveUp failed:", e);
+        alert(t("system:resource.feedback.moveUpFailedAlert"));
       }
       hideContextMenu();
     },
-    [moveUp, hideContextMenu]
+    [moveUp, hideContextMenu, t]
   );
 
   const handleMoveDown = useCallback(
@@ -291,15 +292,15 @@ export default function ResourcePage() {
       try {
         await moveDown(resource.id);
       } catch (e) {
-        console.error("Failed to move resource down:", e);
-        alert("Move down failed. Please try again later.");
+        console.error("moveDown failed:", e);
+        alert(t("system:resource.feedback.moveDownFailedAlert"));
       }
       hideContextMenu();
     },
-    [moveDown, hideContextMenu]
+    [moveDown, hideContextMenu, t]
   );
 
-  // Handle changing parent resource
+  // Change parent resource
   const handleChangeParent = useCallback(
     (resource: ResourceMenuItem) => {
       setEditing(resource);
@@ -309,7 +310,7 @@ export default function ResourcePage() {
     [hideContextMenu]
   );
 
-  // Handle parent switch confirmation
+  // Confirm change parent
   const handleChangeParentConfirm = useCallback(
     async (parentId: string) => {
       if (!editing) return;
@@ -320,21 +321,21 @@ export default function ResourcePage() {
         await fetchResources();
         closeChangeParentModal();
       } catch (e) {
-        console.error("Failed to change parent resource:", e);
-        alert("Failed to change parent resource. Please try again later.");
+        console.error("changeParent failed:", e);
+        alert(t("system:resource.feedback.changeParentFailedAlert"));
       } finally {
         setSubmitting(false);
       }
     },
-    [editing, fetchResources, closeChangeParentModal]
+    [editing, fetchResources, closeChangeParentModal, t]
   );
 
-  // Get root resources (non-deleted root nodes)
+  // Root resources (non-deleted, no parent)
   const rootResources = useMemo(() => {
     return resources.filter((r) => !r.pid && !r.is_deleted);
   }, [resources]);
 
-  // Handle form submit
+  // Submit form
   const handleSubmit = useCallback(
     async (values: ResourceFormValues) => {
       setSubmitting(true);
@@ -342,27 +343,27 @@ export default function ResourcePage() {
         await saveResource(values as ResourceFormData);
         closeModal();
       } catch (e) {
-        console.error("Failed to save resource:", e);
-        alert("Save failed. Please try again later.");
+        console.error("saveResource failed:", e);
+        alert(t("system:resource.feedback.saveFailedAlert"));
       } finally {
         setSubmitting(false);
       }
     },
-    [saveResource, closeModal]
+    [saveResource, closeModal, t]
   );
 
-  // Close context menu when clicking outside
+  // Click outside closes context menu
   const handleClickOutside = useCallback(() => {
     hideContextMenu();
   }, [hideContextMenu]);
 
-  // Loading state
+  // Initial loading
   if (isLoading && resources.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading resource data...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">{t("system:resource.loading.fullPageMessage")}</p>
         </div>
       </div>
     );
@@ -373,7 +374,7 @@ export default function ResourcePage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 dark:text-red-400">Failed to load resource data</p>
+          <p className="text-red-600 dark:text-red-400">{t("system:resource.loading.errorTitle")}</p>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{error}</p>
         </div>
       </div>
@@ -412,7 +413,7 @@ export default function ResourcePage() {
           <div className="absolute inset-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm flex items-center justify-center z-10">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Refreshing...</p>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{t("system:resource.loading.overlayMessage")}</p>
             </div>
           </div>
         )}
@@ -442,12 +443,12 @@ export default function ResourcePage() {
         canChangeParent={permissions.canModify}
       />
 
-      {/* Click outside to close context menu */}
+      {/* Backdrop: click outside closes context menu */}
       {contextMenu.visible && <div className="fixed inset-0 z-40" onClick={handleClickOutside} />}
 
-      {/* Create/Edit modal */}
+      {/* Create / edit modal */}
       <Modal
-        title={formMode === "create" ? "Create Resource" : "Edit Resource"}
+        title={formMode === "create" ? t("system:resource.modal.createTitle") : t("system:resource.modal.editTitle")}
         isOpen={isOpen}
         onClose={closeModal}
         className="max-w-[800px] w-full mx-4 p-6"
@@ -467,7 +468,7 @@ export default function ResourcePage() {
                   is_visible: editing.is_visible ?? true,
                   description: editing.description || "",
                   remark: editing.remark || "",
-                  // Editing child resources requires pid; fallback to parent.id when missing
+                  // Child edit needs pid; fall back to parent.id if missing on detail
                   pid: editing.pid ?? (editing as ApiResourceMenuItem).parent?.id ?? undefined,
                 }
               : null
@@ -481,7 +482,7 @@ export default function ResourcePage() {
 
       {/* Delete modal */}
       <Modal
-        title={showDeleted ? "Confirm Permanent Resource Deletion" : "Confirm Resource Deletion"}
+        title={showDeleted ? t("system:resource.modal.deleteConfirmPermanent.title") : t("system:resource.modal.deleteConfirmSoft.title")}
         isOpen={isDeleteOpen}
         onClose={closeDeleteModal}
         className="max-w-[560px] w-full mx-4 p-6"
@@ -490,23 +491,23 @@ export default function ResourcePage() {
       </Modal>
 
       {/* Restore modal */}
-      <Modal title="Restore Resource" isOpen={isRestoreOpen} onClose={closeRestoreModal} className="max-w-[500px] w-full mx-4 p-6">
+      <Modal title={t("system:resource.modal.restoreTitle")} isOpen={isRestoreOpen} onClose={closeRestoreModal} className="max-w-[500px] w-full mx-4 p-6">
         <RestoreForm
           ids={restoreIds}
-          entityName="resource"
+          entityName={t("system:resource.restoreForm.entityLabel")}
           onSubmit={handleRestoreConfirm}
           onCancel={closeRestoreModal}
           submitting={submitting}
         />
       </Modal>
 
-      {/* View modal */}
-      <Modal title="Resource Details" isOpen={isViewOpen} onClose={closeViewModal} className="max-w-[900px] w-full mx-4 p-6">
+      {/* Detail modal */}
+      <Modal title={t("system:resource.modal.detailTitle")} isOpen={isViewOpen} onClose={closeViewModal} className="max-w-[900px] w-full mx-4 p-6">
         {editing && <ResourceDetailView resourceId={editing.id} />}
       </Modal>
 
       {/* Change parent modal */}
-      <Modal title="Change Parent Resource" isOpen={isChangeParentOpen} onClose={closeChangeParentModal} className="max-w-[500px] w-full mx-4 p-6">
+      <Modal title={t("system:resource.modal.changeParentTitle")} isOpen={isChangeParentOpen} onClose={closeChangeParentModal} className="max-w-[500px] w-full mx-4 p-6">
         {editing && (
           <ResourceChangeParentForm
             rootResources={rootResources}

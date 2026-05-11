@@ -11,6 +11,7 @@ import { DateUtil } from "@/utils/dateUtil";
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MdCheck, MdClose, MdGroup } from "react-icons/md";
 import { TbCircleLetterSFilled } from "react-icons/tb";
+import { useTranslation } from "react-i18next";
 import UserBindRoleForm from "./UserBindRoleForm";
 import UserDataForm, { type UserFormValues } from "./UserDataForm";
 import UserDeleteForm from "./UserDeleteForm";
@@ -20,6 +21,7 @@ import UserSearchPopover, { type UserSearchFilters } from "./UserSearchPopover";
 type UserDetail = ApiUserDetail & Record<string, unknown>;
 
 export default function UserDataPage() {
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1); // 1-based for UI
   const [pageSize, setPageSize] = useState(10);
   const [searchFilters, setSearchFilters] = useState<UserSearchFilters>({});
@@ -52,7 +54,7 @@ export default function UserDataPage() {
 
   const clearSelectionRef = useRef<(() => void) | null>(null);
 
-  // Fetch function - useRef avoids unnecessary re-creation
+  // Fetch function: use a ref to avoid recreating the callback unnecessarily
   const fetchPagesRef = useRef({
     currentPage,
     pageSize,
@@ -62,7 +64,7 @@ export default function UserDataPage() {
     showDeleted,
   });
 
-  // Update ref when dependencies change
+  // Keep ref in sync when dependencies change
   fetchPagesRef.current = {
     currentPage,
     pageSize,
@@ -73,7 +75,7 @@ export default function UserDataPage() {
   };
 
   const fetchPages = useCallback(async () => {
-    // Clear selected rows before fetching pages
+    // Clear row selection before fetching
     clearSelectionRef.current?.();
 
     const { currentPage, pageSize, orderBy, descending, appliedFilters, showDeleted } = fetchPagesRef.current;
@@ -90,6 +92,7 @@ export default function UserDataPage() {
         is_active: appliedFilters.is_active,
         is_admin: appliedFilters.is_admin,
         is_superuser: appliedFilters.is_superuser,
+        is_ministry: appliedFilters.is_ministry,
         gender: appliedFilters.gender,
         deleted: showDeleted || undefined,
       } as Record<string, unknown>;
@@ -104,56 +107,56 @@ export default function UserDataPage() {
       console.error("Error fetching user pages:", e);
       showNotification({
         variant: "error",
-        title: "Load Failed",
-        description: "Unable to load user data. Please try again later.",
+        title: t("system:user.feedback.loadFailed.title"),
+        description: t("system:user.feedback.loadFailed.desc"),
         position: "top-right",
       });
     } finally {
       setLoading(false);
     }
-  }, [showNotification]); // Include showNotification dependency
+  }, [showNotification, t]); // include t for localized error copy
 
   // Columns definition
   const columns: DataTableColumn<UserDetail>[] = useMemo(
     () => [
       {
         key: "phone_number",
-        label: "Phone Number",
+        label: t("system:user.table.phoneNumber"),
         sortable: true,
         width: "w-36",
         tooltip: (row) => row.phone_number,
       },
       {
         key: "email",
-        label: "Email",
+        label: t("system:user.table.email"),
         sortable: true,
         width: "w-60",
         tooltip: (row) => row.email,
       },
       {
         key: "display_name",
-        label: "Display Name",
+        label: t("system:user.table.displayName"),
         sortable: true,
         width: "w-36",
         tooltip: (row) => row.display_name || "",
       },
       {
         key: "gender",
-        label: "Gender",
+        label: t("system:user.table.gender"),
         sortable: true,
         width: "w-20",
         valueEnum: {
           item: (value: unknown) => {
             const v = value as Gender | undefined;
-            if (v === Gender.Male) return { text: "Male", color: "text-blue-600" };
-            if (v === Gender.Female) return { text: "Female", color: "text-pink-600" };
-            return { text: "Unknown", color: "text-gray-500" };
+            if (v === Gender.Male) return { text: t("system:shared.genderMale"), color: "text-blue-600" };
+            if (v === Gender.Female) return { text: t("system:shared.genderFemale"), color: "text-pink-600" };
+            return { text: t("system:shared.genderUnknown"), color: "text-gray-500" };
           },
         },
       },
       {
         key: "is_verified",
-        label: "Verified",
+        label: t("system:user.table.verified"),
         sortable: true,
         width: "w-18",
         render: (_value: unknown, row: UserDetail) => {
@@ -172,7 +175,7 @@ export default function UserDataPage() {
       },
       {
         key: "is_active",
-        label: "Active",
+        label: t("system:user.table.active"),
         sortable: true,
         width: "w-18",
         render: (_value: unknown, row: UserDetail) => {
@@ -191,7 +194,7 @@ export default function UserDataPage() {
       },
       {
         key: "is_admin",
-        label: "Admin",
+        label: t("system:user.table.admin"),
         sortable: true,
         width: "w-24",
         render: (_value: unknown, row: UserDetail) => {
@@ -207,7 +210,7 @@ export default function UserDataPage() {
                 {row.is_admin ? <MdCheck size={16} /> : <MdClose size={16} />}
               </span>
               {row.is_admin && row.is_superuser && (
-                <Tooltip content="Superuser">
+                <Tooltip content={t("system:user.tooltip.superAdmin")}>
                   <TbCircleLetterSFilled size={24} className="text-blue-600 dark:text-blue-400" />
                 </Tooltip>
               )}
@@ -216,12 +219,31 @@ export default function UserDataPage() {
         },
       },
       {
+        key: "is_ministry",
+        label: t("system:user.table.ministry"),
+        sortable: true,
+        width: "w-18",
+        render: (_value: unknown, row: UserDetail) => {
+          return (
+            <span
+              className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${
+                row.is_ministry
+                  ? "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400"
+                  : "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400"
+              }`}
+            >
+              {row.is_ministry ? <MdCheck size={16} /> : <MdClose size={16} />}
+            </span>
+          );
+        },
+      },
+      {
         key: "last_login_at",
-        label: "Last Login",
+        label: t("system:user.table.lastLoginAt"),
         sortable: true,
         width: "w-32",
         render: (value: unknown) => {
-          if (!value) return <span className="text-gray-400">Never logged in</span>;
+          if (!value) return <span className="text-gray-400">{t("system:shared.neverLoggedIn")}</span>;
           const friendlyTime = DateUtil.friendlyDate(value);
           const shortTime = DateUtil.format(value);
           return (
@@ -233,7 +255,7 @@ export default function UserDataPage() {
       },
       {
         key: "created_at",
-        label: "Created At",
+        label: t("system:user.table.createdAt"),
         sortable: true,
         width: "w-32",
         render: (value: unknown) => {
@@ -248,7 +270,7 @@ export default function UserDataPage() {
         },
       },
     ],
-    [],
+    [t]
   );
 
   // Toolbar buttons
@@ -294,8 +316,8 @@ export default function UserDataPage() {
       await userService.restore(ids);
       showNotification({
         variant: "success",
-        title: "Restore Successful",
-        description: `Successfully restored ${ids.length} users.`,
+        title: t("system:user.feedback.restoreSuccess.title"),
+        description: t("system:user.feedback.restoreSuccess.desc", { count: ids.length }),
       });
       await fetchPages();
       closeRestoreModal();
@@ -304,8 +326,8 @@ export default function UserDataPage() {
       console.error(e);
       showNotification({
         variant: "error",
-        title: "Restore Failed",
-        description: "Unable to restore users. Please try again later.",
+        title: t("system:user.feedback.restoreFailed.title"),
+        description: t("system:user.feedback.restoreFailed.desc"),
         position: "top-right",
       });
     } finally {
@@ -318,12 +340,12 @@ export default function UserDataPage() {
       setRestoreIds([row.id]);
       openRestoreModal();
     },
-    [openRestoreModal],
+    [openRestoreModal]
   );
 
   // Toolbar buttons
   const toolbarButtons = useMemo(() => {
-      // Use popoverCallback mode with a unified trigger style
+    // popoverCallback pattern with a unified trigger style
     const searchPopoverCallback = ({
       isOpen,
       onOpenChange,
@@ -341,13 +363,13 @@ export default function UserDataPage() {
         onSearch={(filters) => {
           setAppliedFilters(filters);
           setCurrentPage(1);
-          onOpenChange(false); // Close popover after search
+          onOpenChange(false); // Close popover after applying search
         }}
         onClear={() => {
           setSearchFilters({});
           setAppliedFilters({});
           setCurrentPage(1);
-          onOpenChange(false); // Close popover after clearing filters
+          onOpenChange(false); // Close popover after clear
         }}
         trigger={trigger}
         isOpen={isOpen}
@@ -358,7 +380,7 @@ export default function UserDataPage() {
 
     const buttons: PageButtonType[] = [
       CommonPageButton.SEARCH(searchPopoverCallback, {
-        popover: { title: "Search Users", position: PopoverPosition.BottomLeft, width: "500px" },
+        popover: { title: t("system:user.search.popoverTitle"), position: PopoverPosition.BottomLeft, width: "500px" },
       }),
       CommonPageButton.ADD(
         () => {
@@ -368,7 +390,7 @@ export default function UserDataPage() {
         },
         {
           visible: !showDeleted,
-        },
+        }
       ),
       CommonPageButton.RESTORE(handleBulkRestore, {
         visible: showDeleted,
@@ -382,12 +404,12 @@ export default function UserDataPage() {
           setShowDeleted(!showDeleted);
           setCurrentPage(1);
         },
-        { className: getRecycleButtonClassName(showDeleted) },
+        { className: getRecycleButtonClassName(showDeleted) }
       ),
     ];
 
     return buttons;
-  }, [openModal, fetchPages, searchFilters, showDeleted, selectedKeys, handleBulkRestore]);
+  }, [openModal, fetchPages, searchFilters, showDeleted, selectedKeys, handleBulkRestore, t]);
 
   // Row actions
   const rowActions: MenuButtonType<UserDetail>[] = useMemo(
@@ -403,28 +425,28 @@ export default function UserDataPage() {
           openModal();
         },
         {
-          visible: !showDeleted, // Show only in normal mode
-        },
+          visible: !showDeleted, // Only when not in trash mode
+        }
       ),
       {
         key: "bind_role",
-        text: "Bind Roles",
+        text: t("system:user.row.bindRole"),
         icon: <MdGroup />,
         permission: "system:role:modify",
         onClick: (row: UserDetail) => {
           setBindingUser(row);
-          setUserRoleIds([]); // Reset so UserBindRoleForm can auto-fetch roles
+          setUserRoleIds([]); // Reset so UserBindRoleForm loads roles from API
           openBindRoleModal();
         },
-        visible: !showDeleted, // Show only in normal mode
+        visible: !showDeleted, // Only when not in trash mode
       },
       CommonRowAction.RESTORE(
         async (row: UserDetail) => {
           handleSingleRestore(row);
         },
         {
-          visible: showDeleted, // Show only in recycle mode
-        },
+          visible: showDeleted, // Only in trash mode
+        }
       ),
       CommonRowAction.DELETE(
         (row: UserDetail) => {
@@ -432,11 +454,11 @@ export default function UserDataPage() {
           openDeleteModal();
         },
         {
-          text: showDeleted ? "Delete Permanently" : "Delete",
-        },
+          text: showDeleted ? t("system:user.row.permanentDelete") : t("common:delete"),
+        }
       ),
     ],
-    [openModal, openDeleteModal, openViewModal, openBindRoleModal, showDeleted, handleSingleRestore],
+    [openModal, openDeleteModal, openViewModal, openBindRoleModal, showDeleted, handleSingleRestore, t]
   );
 
   // Submit handlers
@@ -444,13 +466,13 @@ export default function UserDataPage() {
     try {
       setSubmitting(true);
       if (formMode === "create") {
-        // Create mode requires password fields (already validated in form)
+        // Create flow requires password (validated before submit)
         const { password, password_confirm, ...restValues } = values;
         if (!password || !password_confirm) {
           showNotification({
             variant: "warning",
-            title: "Validation Failed",
-            description: "Please enter a password.",
+            title: t("system:user.feedback.validationNeeded.title"),
+            description: t("system:user.feedback.validationNeeded.password"),
             position: "top-center",
           });
           return;
@@ -462,11 +484,13 @@ export default function UserDataPage() {
         } as Parameters<typeof userService.create>[0]);
         showNotification({
           variant: "success",
-          title: "User Created",
-          description: `Successfully created user "${values.display_name || values.email}".`,
+          title: t("system:user.feedback.createSuccess.title"),
+          description: t("system:user.feedback.createSuccess.desc", {
+            name: values.display_name || values.email || "",
+          }),
         });
       } else if (formMode === "edit" && editing?.id) {
-        // Do not send password fields in edit mode (handled by UserDataForm)
+        // Edit flow omits password (UserDataForm strips it)
         await userService.update(editing.id, {
           phone_number: values.phone_number,
           email: values.email,
@@ -476,12 +500,15 @@ export default function UserDataPage() {
           is_admin: values.is_admin,
           display_name: values.display_name,
           gender: values.gender,
+          is_ministry: values.is_ministry,
           remark: values.remark,
         });
         showNotification({
           variant: "success",
-          title: "User Updated",
-          description: `Successfully updated user "${values.display_name || values.email}".`,
+          title: t("system:user.feedback.updateSuccess.title"),
+          description: t("system:user.feedback.updateSuccess.desc", {
+            name: values.display_name || values.email || "",
+          }),
         });
       }
       closeModal();
@@ -491,8 +518,8 @@ export default function UserDataPage() {
       console.error(e);
       showNotification({
         variant: "error",
-        title: "Save Failed",
-        description: "Unable to save user data. Please try again later.",
+        title: t("system:user.feedback.saveFailed.title"),
+        description: t("system:user.feedback.saveFailed.desc"),
         position: "top-right",
       });
     } finally {
@@ -508,8 +535,14 @@ export default function UserDataPage() {
       await userService.remove(editing.id, { reason, permanent: !!permanent });
       showNotification({
         variant: "success",
-        title: permanent ? "User Permanently Deleted" : "User Deleted",
-        description: `Successfully ${permanent ? "permanently deleted" : "deleted"} user "${deletedUser.display_name || deletedUser.email}".`,
+        title: permanent ? t("system:user.feedback.deleteSuccessPermanent.title") : t("system:user.feedback.deleteSuccessSoft.title"),
+        description: permanent
+          ? t("system:user.feedback.deleteSuccessPermanent.desc", {
+              name: deletedUser.display_name || deletedUser.email || "",
+            })
+          : t("system:user.feedback.deleteSuccessSoft.desc", {
+              name: deletedUser.display_name || deletedUser.email || "",
+            }),
       });
       closeDeleteModal();
       // Refresh list by calling fetchPages directly
@@ -518,8 +551,8 @@ export default function UserDataPage() {
       console.error(e);
       showNotification({
         variant: "error",
-        title: "Delete Failed",
-        description: "Unable to delete user. Please try again later.",
+        title: t("system:user.feedback.deleteFailed.title"),
+        description: t("system:user.feedback.deleteFailed.desc"),
         position: "top-right",
       });
     } finally {
@@ -534,8 +567,8 @@ export default function UserDataPage() {
       await userService.bindRoles(bindingUser.id, roleIds);
       showNotification({
         variant: "success",
-        title: "Roles Updated",
-        description: "User roles were updated successfully.",
+        title: t("system:user.feedback.bindSuccess.title"),
+        description: t("system:user.feedback.bindSuccess.desc"),
       });
       closeBindRoleModal();
       // Refresh list by calling fetchPages directly
@@ -544,8 +577,8 @@ export default function UserDataPage() {
       console.error(e);
       showNotification({
         variant: "error",
-        title: "Role Binding Failed",
-        description: "Unable to bind roles. Please try again later.",
+        title: t("system:user.feedback.bindFailed.title"),
+        description: t("system:user.feedback.bindFailed.desc"),
         position: "top-right",
       });
     } finally {
@@ -585,16 +618,38 @@ export default function UserDataPage() {
       />
 
       <Modal
-        title={formMode === "create" ? "Create User" : "Edit User"}
+        title={formMode === "create" ? t("system:user.modal.createTitle") : t("system:user.modal.editTitle")}
         isOpen={isOpen}
         onClose={closeModal}
         className="max-w-[800px] w-full mx-4 p-6"
       >
-        <UserDataForm mode={formMode} defaultValues={editing} onSubmit={handleSubmit} onCancel={closeModal} submitting={submitting} />
+        <UserDataForm
+          mode={formMode}
+          defaultValues={
+            editing
+              ? {
+                  id: editing.id,
+                  phone_number: editing.phone_number,
+                  email: editing.email,
+                  verified: editing.verified,
+                  is_active: editing.is_active,
+                  is_superuser: editing.is_superuser,
+                  is_admin: editing.is_admin,
+                  is_ministry: editing.is_ministry ?? false,
+                  display_name: editing.display_name,
+                  gender: editing.gender,
+                  remark: editing.remark,
+                }
+              : null
+          }
+          onSubmit={handleSubmit}
+          onCancel={closeModal}
+          submitting={submitting}
+        />
       </Modal>
 
       <Modal
-        title={showDeleted ? "Confirm Permanent User Deletion" : "Confirm User Deletion"}
+        title={showDeleted ? t("system:user.modal.deleteConfirmPermanent.title") : t("system:user.modal.deleteConfirmSoft.title")}
         isOpen={isDeleteOpen}
         onClose={closeDeleteModal}
         className="max-w-[560px] w-full mx-4 p-6"
@@ -602,22 +657,28 @@ export default function UserDataPage() {
         <UserDeleteForm onSubmit={handleDelete} onCancel={closeDeleteModal} submitting={submitting} isPermanent={showDeleted} />
       </Modal>
 
-      <Modal title="Restore User" isOpen={isRestoreOpen} onClose={closeRestoreModal} className="max-w-[500px] w-full mx-4 p-6">
+      <Modal title={t("system:user.modal.restoreTitle")} isOpen={isRestoreOpen} onClose={closeRestoreModal} className="max-w-[500px] w-full mx-4 p-6">
         <RestoreForm
           ids={restoreIds}
-          entityName="user"
+          entityName={t("system:user.restoreForm.entityLabel")}
           onSubmit={handleRestoreConfirm}
           onCancel={closeRestoreModal}
           submitting={submitting}
         />
       </Modal>
 
-      <Modal title="User Details" isOpen={isViewOpen} onClose={closeViewModal} className="max-w-[900px] w-full mx-4 p-6">
+      <Modal title={t("system:user.modal.detailTitle")} isOpen={isViewOpen} onClose={closeViewModal} className="max-w-[900px] w-full mx-4 p-6">
         {viewing && <UserDetailView userId={viewing.id} />}
       </Modal>
 
       <Modal
-        title={bindingUser ? `Bind Roles - ${bindingUser.display_name || bindingUser.email}` : "Bind Roles"}
+        title={
+          bindingUser
+            ? t("system:user.modal.bindRoleTitle.withName", {
+                name: bindingUser.display_name || bindingUser.email || "",
+              })
+            : t("system:user.modal.bindRoleTitle")
+        }
         isOpen={isBindRoleOpen}
         onClose={closeBindRoleModal}
         className="max-w-[600px] w-full mx-4 p-6"

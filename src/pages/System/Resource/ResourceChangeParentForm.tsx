@@ -1,6 +1,7 @@
 import { Button, Radio } from "@efcnewlife/newlife-ui";
 import type { ResourceMenuItem } from "@/types/resource";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ResourceChangeParentFormProps {
   rootResources: ResourceMenuItem[];
@@ -17,6 +18,7 @@ const ResourceChangeParentForm: React.FC<ResourceChangeParentFormProps> = ({
   onCancel,
   submitting = false,
 }) => {
+  const { t } = useTranslation();
   const [selectedParentId, setSelectedParentId] = useState<string>(currentResource.pid || "");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,15 +41,13 @@ const ResourceChangeParentForm: React.FC<ResourceChangeParentFormProps> = ({
             />
           </svg>
         </div>
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Switch parent resource</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Select the "<span className="font-medium">{currentResource.name}</span>」The parent resource to move to (only the root node can be selected)
-        </p>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{t("system:resource.changeParentForm.titleHeading")}</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t("system:resource.changeParentForm.instruction", { name: currentResource.name })}</p>
       </div>
 
       <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar">
         {rootResources.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No root node resource available</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">{t("system:resource.changeParentForm.noRoots")}</p>
         ) : (
           rootResources.map((resource) => (
             <Radio
@@ -66,10 +66,10 @@ const ResourceChangeParentForm: React.FC<ResourceChangeParentFormProps> = ({
 
       <div className="flex justify-end space-x-3 pt-4">
         <Button btnType="button" variant="outline" onClick={onCancel} disabled={submitting}>
-          Cancel
+          {t("common:cancel")}
         </Button>
         <Button btnType="submit" variant="primary" disabled={submitting || !selectedParentId || selectedParentId === currentResource.pid}>
-          {submitting ? "Processing..." : "Confirm switch"}
+          {submitting ? t("system:resource.changeParentForm.processingButton") : t("system:resource.changeParentForm.confirmButton")}
         </Button>
       </div>
     </form>
@@ -77,4 +77,3 @@ const ResourceChangeParentForm: React.FC<ResourceChangeParentFormProps> = ({
 };
 
 export default ResourceChangeParentForm;
-

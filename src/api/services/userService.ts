@@ -16,7 +16,9 @@ export interface UserDetail {
   is_active: boolean;
   is_superuser: boolean;
   is_admin: boolean;
+  is_ministry?: boolean;
   last_login_at?: string;
+  preferred_locale_id?: string;
   display_name?: string;
   gender?: number; // 0: Unknown, 1: Male, 2: Female
   created_at?: string;
@@ -33,6 +35,7 @@ export interface UserCreate {
   is_active?: boolean;
   is_superuser?: boolean;
   is_admin?: boolean;
+  is_ministry?: boolean;
   display_name?: string;
   gender?: number;
   remark?: string;
@@ -45,7 +48,9 @@ export interface UserUpdate {
   is_active?: boolean;
   is_superuser?: boolean;
   is_admin?: boolean;
+  is_ministry?: boolean;
   display_name?: string;
+  preferred_locale_id?: string;
   gender?: number;
   remark?: string;
 }
@@ -163,17 +168,6 @@ export const userService = {
     return httpClient.get<UserListResponse>(API_ENDPOINTS.USER.LIST, params);
   },
 
-  /** Return only users with FCM device tokens (same params as getList) */
-  async getListWithDeviceToken(params: { keyword?: string }) {
-    // API implementation: reuse mock list method for device-token list.
-    if (IS_MOCK_API) {
-      return this.getList(params);
-    }
-
-    // API implementation: call backend endpoint in non-mock mode.
-    return httpClient.get<UserListResponse>(API_ENDPOINTS.USER.LIST_WITH_DEVICE_TOKEN, params);
-  },
-
   async getById(id: string) {
     // API implementation: return one user record from in-memory store.
     if (IS_MOCK_API) {
@@ -226,6 +220,16 @@ export const userService = {
 
     // API implementation: call backend endpoint in non-mock mode.
     return httpClient.put<void>(API_ENDPOINTS.USER.UPDATE_ME, payload);
+  },
+
+  async updateCurrentUserPreferredLocale(preferred_locale_id: string) {
+    if (IS_MOCK_API) {
+      mockUsers = mockUsers.map((item, index) =>
+        index === 0 ? { ...item, preferred_locale_id, updated_at: new Date().toISOString() } : item,
+      );
+      return { success: true, code: 200, data: undefined };
+    }
+    return httpClient.put<void>(API_ENDPOINTS.USER.UPDATE_ME_PREFERRED_LANGUAGE, { preferred_locale_id });
   },
 
   async update(id: string, payload: UserUpdate) {

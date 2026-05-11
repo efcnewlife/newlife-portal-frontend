@@ -1,4 +1,5 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import i18n from "@/i18n";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { resourceService } from "../api/services/resourceService";
 import type { ResourceMenuItem } from "../types/resource-admin";
 import { useAuth } from "./AuthContext";
@@ -22,7 +23,7 @@ export function MenuProvider({ children }: MenuProviderProps) {
   const [error, setError] = useState<string | null>(null);
   const { isAuthenticated } = useAuth();
 
-  const loadMenus = async () => {
+  const loadMenus = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -46,7 +47,7 @@ export function MenuProvider({ children }: MenuProviderProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isAuthenticated]);
 
   const refreshMenus = async () => {
     await loadMenus();
@@ -62,7 +63,21 @@ export function MenuProvider({ children }: MenuProviderProps) {
       setIsLoading(false);
       setError(null);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, loadMenus]);
+
+  // Refetch menus when UI language changes (backend may localize names via Accept-Language)
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return undefined;
+    }
+    const on_language_changed = () => {
+      void loadMenus();
+    };
+    i18n.on("languageChanged", on_language_changed);
+    return () => {
+      i18n.off("languageChanged", on_language_changed);
+    };
+  }, [isAuthenticated, loadMenus]);
 
   const value: MenuContextType = {
     menus,

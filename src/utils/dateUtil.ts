@@ -1,7 +1,6 @@
 import moment from "moment";
 
-// settings moment is localized into Traditional Chinese
-moment.locale("zh-tw");
+// Moment locale is driven by `@/i18n` (`sync_moment_locale`) so `fromNow()` matches UI language.
 
 /**
  * Date and time tool class - use moment.js

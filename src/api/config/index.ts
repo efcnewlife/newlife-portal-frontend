@@ -13,7 +13,7 @@ export const API_ENDPOINTS = {
   // Authentication (admin)
   AUTH: {
     LOGIN: `${ADMIN_API_PREFIX}/auth/login`,
-    MICROSOFT: `${ADMIN_API_PREFIX}/auth/microsoft`,
+    MICROSOFT: `${ADMIN_API_PREFIX}/auth/login/microsoft`,
     LOGOUT: `${ADMIN_API_PREFIX}/auth/logout`,
     REFRESH: `${ADMIN_API_PREFIX}/auth/refresh`,
     PROFILE: `${ADMIN_API_PREFIX}/auth/me`,
@@ -52,6 +52,11 @@ export const API_ENDPOINTS = {
     LIST: `${ADMIN_API_PREFIX}/verb/list`,
   },
 
+  // Locale management
+  LOCALE: {
+    LIST: `${ADMIN_API_PREFIX}/locale/list`,
+  },
+
   // Resource management (admin)
   RESOURCES: {
     LIST: `${ADMIN_API_PREFIX}/resource/list`,
@@ -67,12 +72,10 @@ export const API_ENDPOINTS = {
     MENUS: `${ADMIN_API_PREFIX}/resource/menus`,
   },
 
-
   // User management (admin)
   USER: {
     PAGES: `${ADMIN_API_PREFIX}/user/pages`,
     LIST: `${ADMIN_API_PREFIX}/user/list`,
-    LIST_WITH_DEVICE_TOKEN: `${ADMIN_API_PREFIX}/user/list-with-device-token`,
     CREATE: `${ADMIN_API_PREFIX}/user`,
     DETAIL: (id: string) => `${ADMIN_API_PREFIX}/user/${id}`,
     UPDATE: (id: string) => `${ADMIN_API_PREFIX}/user/${id}`,
@@ -80,6 +83,7 @@ export const API_ENDPOINTS = {
     RESTORE: `${ADMIN_API_PREFIX}/user/restore`,
     ME: `${ADMIN_API_PREFIX}/user/me`,
     UPDATE_ME: `${ADMIN_API_PREFIX}/user/me`,
+    UPDATE_ME_PREFERRED_LANGUAGE: `${ADMIN_API_PREFIX}/user/me/preferred-language`,
     BIND_ROLE: (id: string) => `${ADMIN_API_PREFIX}/user/${id}/bind_role`,
     ROLES: (id: string) => `${ADMIN_API_PREFIX}/user/${id}/roles`,
   },
@@ -92,7 +96,6 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `${ADMIN_API_PREFIX}/demo/${id}`,
     RESTORE: `${ADMIN_API_PREFIX}/demo/restore`,
   },
-
 } as const;
 
 // HTTP status codes

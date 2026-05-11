@@ -64,18 +64,18 @@ export const getPageButtonIcon = (type: PageButtonTypeKey): ReactNode => {
 // Built-in button text
 export const getPageButtonText = (type: PageButtonTypeKey): string => {
   const texts: Record<PageButtonTypeKey, string> = {
-    [PAGE_BUTTON_TYPES.SEARCH]: i18n.t("common.search"),
-    [PAGE_BUTTON_TYPES.ADD]: i18n.t("common.create"),
-    [PAGE_BUTTON_TYPES.REFRESH]: i18n.t("common.refresh"),
-    [PAGE_BUTTON_TYPES.BULK_DELETE]: i18n.t("common.delete"),
-    [PAGE_BUTTON_TYPES.RECYCLE]: i18n.t("common.delete"),
-    [PAGE_BUTTON_TYPES.RESTORE]: i18n.t("common.restore"),
-    [PAGE_BUTTON_TYPES.DOWNLOAD]: i18n.t("common.view"),
-    [PAGE_BUTTON_TYPES.EDIT]: i18n.t("common.edit"),
-    [PAGE_BUTTON_TYPES.DELETE]: i18n.t("common.delete"),
-    [PAGE_BUTTON_TYPES.VIEW]: i18n.t("common.view"),
-    [PAGE_BUTTON_TYPES.COPY]: i18n.t("common.view"),
-    [PAGE_BUTTON_TYPES.EXPORT]: i18n.t("common.view"),
+    [PAGE_BUTTON_TYPES.SEARCH]: i18n.t("common:search"),
+    [PAGE_BUTTON_TYPES.ADD]: i18n.t("common:create"),
+    [PAGE_BUTTON_TYPES.REFRESH]: i18n.t("common:refresh"),
+    [PAGE_BUTTON_TYPES.BULK_DELETE]: i18n.t("common:delete"),
+    [PAGE_BUTTON_TYPES.RECYCLE]: i18n.t("common:delete"),
+    [PAGE_BUTTON_TYPES.RESTORE]: i18n.t("common:restore"),
+    [PAGE_BUTTON_TYPES.DOWNLOAD]: i18n.t("common:view"),
+    [PAGE_BUTTON_TYPES.EDIT]: i18n.t("common:edit"),
+    [PAGE_BUTTON_TYPES.DELETE]: i18n.t("common:delete"),
+    [PAGE_BUTTON_TYPES.VIEW]: i18n.t("common:view"),
+    [PAGE_BUTTON_TYPES.COPY]: i18n.t("common:view"),
+    [PAGE_BUTTON_TYPES.EXPORT]: i18n.t("common:view"),
   };
 
   return texts[type];
@@ -130,7 +130,7 @@ export class CommonPageButton {
   ) => {
     return createPageButton(PAGE_BUTTON_TYPES.SEARCH, () => {}, {
       align: "left",
-      tooltip: i18n.t("common.search"),
+      tooltip: i18n.t("common:search"),
       popoverCallback,
       ...options,
     });
@@ -157,14 +157,14 @@ export class CommonPageButton {
       variant: "danger",
       outline: true,
       align: "right",
-      tooltip: i18n.t("common.delete"),
+      tooltip: i18n.t("common:delete"),
       ...options,
     });
   };
   static RECYCLE = (onClick: () => void, options: Partial<PageButtonType> = {}) => {
     return createPageButton(PAGE_BUTTON_TYPES.RECYCLE, onClick, {
       align: "right",
-      tooltip: i18n.t("common.delete"),
+      tooltip: i18n.t("common:delete"),
       ...options,
     });
   };
@@ -172,7 +172,7 @@ export class CommonPageButton {
   static RESTORE = (onClick: () => void, options: Partial<PageButtonType> = {}) => {
     return createPageButton(PAGE_BUTTON_TYPES.RESTORE, onClick, {
       align: "left",
-      tooltip: i18n.t("common.restore"),
+      tooltip: i18n.t("common:restore"),
       ...options,
     });
   };

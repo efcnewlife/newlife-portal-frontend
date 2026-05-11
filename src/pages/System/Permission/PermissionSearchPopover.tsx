@@ -1,7 +1,8 @@
 import { PopoverType } from "@/components/DataPage";
 import SearchPopoverContent from "@/components/DataPage/SearchPopoverContent";
 import { Button, Input } from "@efcnewlife/newlife-ui";
-import { ReactNode } from "react";
+import { ReactNode, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 export interface PermissionSearchFilters {
   keyword?: string;
@@ -29,6 +30,8 @@ const PermissionSearchPopover: React.FC<PermissionSearchPopoverProps> = ({
   trigger,
   popover,
 }) => {
+  const { t } = useTranslation();
+
   const handleFilterChange = (key: keyof PermissionSearchFilters, value: unknown) => {
     onFiltersChange({
       ...filters,
@@ -47,11 +50,14 @@ const PermissionSearchPopover: React.FC<PermissionSearchPopoverProps> = ({
     }
   };
 
-  const getBooleanLabel = (currentValue?: boolean, trueLabel = "yes", falseLabel = "no") => {
-    if (currentValue === true) return trueLabel;
-    if (currentValue === false) return falseLabel;
-    return "No limit";
-  };
+  const getBooleanLabel = useCallback(
+    (currentValue?: boolean, trueLabel?: string, falseLabel?: string) => {
+      if (currentValue === true) return trueLabel ?? t("common:yes");
+      if (currentValue === false) return falseLabel ?? t("common:no");
+      return t("common:any");
+    },
+    [t]
+  );
 
   return (
     <SearchPopoverContent
@@ -63,25 +69,23 @@ const PermissionSearchPopover: React.FC<PermissionSearchPopoverProps> = ({
       popover={popover}
     >
       <div className="space-y-4">
-        {/* keyword search */}
         <div>
           <Input
             id="keyword"
-            label="keyword search"
+            label={t("system:permission.search.keywordLabel")}
             type="text"
             value={filters.keyword || ""}
             onChange={(e) => handleFilterChange("keyword", e.target.value)}
-            placeholder="Search display name or code"
+            placeholder={t("system:permission.search.keywordPlaceholder")}
             clearable
           />
         </div>
 
-        {/* status filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">status filter</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">{t("system:permission.search.sectionStatus")}</label>
           <div className="grid grid-cols-1 gap-3">
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Enabled status</label>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t("system:permission.search.labelActiveStatus")}</label>
               <Button
                 variant="outline"
                 size="sm"
@@ -94,25 +98,24 @@ const PermissionSearchPopover: React.FC<PermissionSearchPopoverProps> = ({
                     : ""
                 }`}
               >
-                {getBooleanLabel(filters.isActive, "Enabled", "Not enabled")}
+                {getBooleanLabel(filters.isActive, t("system:permission.search.toggleActive.true"), t("system:permission.search.toggleActive.false"))}
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Filter abstracts */}
         {(filters.keyword || filters.isActive !== undefined) && (
           <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">Current filters:</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t("system:permission.search.chipsTitle")}</div>
             <div className="flex flex-wrap gap-1">
               {filters.keyword && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                  Keywords: {filters.keyword}
+                  {t("system:permission.search.chipKeywordPrefix")} {filters.keyword}
                 </span>
               )}
               {filters.isActive !== undefined && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                  enable: {getBooleanLabel(filters.isActive, "yes", "no")}
+                  {t("system:permission.search.chipActivePrefix")} {getBooleanLabel(filters.isActive, t("common:yes"), t("common:no"))}
                 </span>
               )}
             </div>

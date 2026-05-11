@@ -33,7 +33,7 @@ export default function SearchPopoverContent({
   popover,
 }: SearchPopoverContentProps) {
   const { t } = useTranslation();
-  const effective_placeholder = placeholder ?? t("common.enterKeyword");
+  const effective_placeholder = placeholder ?? t("common:enterKeyword");
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -67,10 +67,10 @@ export default function SearchPopoverContent({
         )}
         <div className="flex items-center justify-end gap-2 mt-2">
           <Button variant="primary" size="sm" onClick={onSearch}>
-            {t("common.search")}
+            {t("common:search")}
           </Button>
           <Button variant="outline" size="sm" onClick={onClear}>
-            {t("common.clear")}
+            {t("common:clear")}
           </Button>
         </div>
       </div>

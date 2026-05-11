@@ -1,13 +1,13 @@
-import { resourceService } from "@/api/services/resourceService";
+import { resourceService, type ResourceMenuItem } from "@/api/services/resourceService";
 import { verbService, type VerbItem } from "@/api/services/verbService";
-import { Button, Checkbox, ComboBox, Input, Select, TextArea } from "@efcnewlife/newlife-ui";
-import type { ResourceMenuItem } from "@/types/resource-admin";
 import { resolveIcon } from "@/utils/icon-resolver";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Button, Checkbox, ComboBox, Input, Select, TextArea } from "@efcnewlife/newlife-ui";
 
 export interface PermissionFormValues {
   id?: string;
-  displayName: string;
+  name: string;
   code: string;
   resourceId: string;
   verbId: string;
@@ -25,8 +25,9 @@ interface PermissionDataFormProps {
 }
 
 const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultValues, onSubmit, onCancel, submitting }) => {
+  const { t } = useTranslation();
   const [values, setValues] = useState<PermissionFormValues>({
-    displayName: "",
+    name: "",
     code: "",
     resourceId: "",
     verbId: "",
@@ -39,7 +40,6 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
   const [verbs, setVerbs] = useState<VerbItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Load resources and verbs
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -60,12 +60,11 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
     void loadData();
   }, []);
 
-  // Update form values
   useEffect(() => {
     if (defaultValues) {
       setValues({
         id: defaultValues.id,
-        displayName: defaultValues.displayName || "",
+        name: defaultValues.name || "",
         code: defaultValues.code || "",
         resourceId: defaultValues.resourceId || "",
         verbId: defaultValues.verbId || "",
@@ -75,7 +74,7 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
       });
     } else {
       setValues({
-        displayName: "",
+        name: "",
         code: "",
         resourceId: "",
         verbId: "",
@@ -89,28 +88,28 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
   const validate = (): boolean => {
     const next: Record<string, string> = {};
 
-    if (!values.displayName || values.displayName.trim().length === 0) {
-      next.displayName = "Please enter a display name";
+    if (!values.name || values.name.trim().length === 0) {
+      next.name = t("system:permission.form.validation.nameRequired");
     }
 
     if (!values.code || values.code.trim().length === 0) {
-      next.code = "Please enter a code";
+      next.code = t("system:permission.form.validation.codeRequired");
     }
 
     if (!values.resourceId) {
-      next.resourceId = "Please select a resource";
+      next.resourceId = t("system:permission.form.validation.resourceRequired");
     }
 
     if (!values.verbId) {
-      next.verbId = "Please select an action";
+      next.verbId = t("system:permission.form.validation.verbRequired");
     }
 
     if (values.description && values.description.length > 500) {
-      next.description = "Description cannot exceed 500 characters";
+      next.description = t("system:permission.form.validation.descriptionTooLong");
     }
 
     if (values.remark && values.remark.length > 500) {
-      next.remark = "Remark cannot exceed 500 characters";
+      next.remark = t("system:permission.form.validation.remarkTooLong");
     }
 
     setErrors(next);
@@ -128,14 +127,14 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Input
-            id="displayName"
-            label="Display Name"
+            id="name"
+            label={t("system:permission.form.displayName.label")}
             type="text"
-            placeholder="Enter display name"
-            value={values.displayName}
-            onChange={(e) => setValues((v) => ({ ...v, displayName: e.target.value }))}
-            error={errors.displayName}
-            hint="Example: Create User"
+            placeholder={t("system:permission.form.displayName.placeholder")}
+            value={values.name}
+            onChange={(e) => setValues((v) => ({ ...v, name: e.target.value }))}
+            error={errors.name}
+            hint={t("system:permission.form.displayName.hint")}
             required
             clearable
           />
@@ -144,13 +143,13 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
         <div>
           <Input
             id="code"
-            label="Code"
+            label={t("system:permission.form.code.label")}
             type="text"
-            placeholder="Enter code"
+            placeholder={t("system:permission.form.code.placeholder")}
             value={values.code}
             onChange={(e) => setValues((v) => ({ ...v, code: e.target.value }))}
             error={errors.code}
-            hint="Example: user:create"
+            hint={t("system:permission.form.code.hint")}
             required
             clearable
           />
@@ -161,7 +160,7 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
         <div>
           <ComboBox<string>
             id="resourceId"
-            label="Resource"
+            label={t("system:permission.table.resource")}
             options={
               loading
                 ? []
@@ -175,7 +174,7 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
             }
             value={values.resourceId || null}
             onChange={(value) => setValues((v) => ({ ...v, resourceId: value || "" }))}
-            placeholder={loading ? "Loading..." : "Select or search a resource"}
+            placeholder={loading ? t("system:permission.form.comboResourcePlaceholder.loading") : t("system:permission.form.comboResourcePlaceholder.idle")}
             disabled={loading}
             error={errors.resourceId}
             required
@@ -186,22 +185,22 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
         <div>
           <Select
             id="verbId"
-            label="Action"
+            label={t("system:permission.form.verb.label")}
             options={
               loading
-                ? [{ value: "", label: "Loading..." }]
+                ? [{ value: "", label: t("system:permission.form.verb.placeholderLoading") }]
                 : [
-                    { value: null, label: "Select an action", disabled: true },
+                    { value: null, label: t("system:permission.form.verbPlaceholderDisabled"), disabled: true },
                     ...verbs.map((v) => ({
                       value: v.id,
-                      label: v.displayName || v.action,
+                      label: v.name || v.action,
                     })),
                   ]
             }
             value={values.verbId}
             onChange={(value) => setValues((v) => ({ ...v, verbId: value as string }))}
             error={errors.verbId}
-            placeholder="Select an action"
+            placeholder={t("system:permission.form.verb.placeholder")}
             disabled={loading}
             required
             clearable
@@ -211,9 +210,9 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-3">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t("system:permission.form.sectionStatus")}</label>
           <div className="space-y-2">
-            <Checkbox checked={values.isActive} onChange={(checked) => setValues((v) => ({ ...v, isActive: checked }))} label="Active" />
+            <Checkbox checked={values.isActive} onChange={(checked) => setValues((v) => ({ ...v, isActive: checked }))} label={t("system:permission.form.checkboxActive")} />
           </div>
         </div>
       </div>
@@ -221,9 +220,9 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
       <div>
         <TextArea
           id="description"
-          label="Description"
+          label={t("system:permission.form.description.label")}
           rows={3}
-          placeholder="Permission description"
+          placeholder={t("system:permission.form.description.placeholder")}
           value={values.description || ""}
           onChange={(value) => setValues((v) => ({ ...v, description: value }))}
           error={errors.description}
@@ -234,9 +233,9 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
       <div>
         <TextArea
           id="remark"
-          label="Remark"
+          label={t("system:permission.form.remark.label")}
           rows={3}
-          placeholder="Additional notes"
+          placeholder={t("system:permission.form.remark.placeholder")}
           value={values.remark || ""}
           onChange={(value) => setValues((v) => ({ ...v, remark: value }))}
           error={errors.remark}
@@ -246,10 +245,10 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
 
       <div className="flex justify-end gap-3 pt-2">
         <Button onClick={onCancel} size="sm" variant="outline" disabled={!!submitting}>
-          Cancel
+          {t("common:cancel")}
         </Button>
         <Button btnType="submit" size="sm" variant="primary" disabled={!!submitting}>
-          {mode === "create" ? "Create" : "Save"}
+          {mode === "create" ? t("common:create") : t("common:save")}
         </Button>
       </div>
     </form>

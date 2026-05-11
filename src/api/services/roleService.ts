@@ -17,7 +17,7 @@ import { httpClient } from "./httpClient";
 export interface RolePermissionItem {
   id: string;
   resourceName: string;
-  displayName: string;
+  name: string;
   code: string;
 }
 

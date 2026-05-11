@@ -18,7 +18,7 @@ let mockRoles: MockRole[] = [
     name: "Super Admin",
     isActive: true,
     description: "Newlife Portal super admin role",
-    permissions: [{ id: "perm-user-list", resourceName: "User", displayName: "User List", code: "system:user:list" }],
+    permissions: [{ id: "perm-user-list", resourceName: "User", name: "User List", code: "system:user:list" }],
   },
 ];
 
@@ -91,7 +91,7 @@ export const assignMockRolePermissions = (id: string, payload: RolePermissionAss
           permissions: payload.permissionIds.map((permissionId) => ({
             id: permissionId,
             resourceName: "Resource",
-            displayName: permissionId,
+            name: permissionId,
             code: permissionId,
           })),
         }

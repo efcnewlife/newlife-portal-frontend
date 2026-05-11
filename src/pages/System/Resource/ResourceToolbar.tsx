@@ -1,4 +1,5 @@
 import { MdAdd, MdDelete, MdExpandMore, MdRefresh, MdUnfoldLess } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 
 interface ResourceToolbarProps {
   onExpandAll: () => void;
@@ -21,18 +22,18 @@ export const ResourceToolbar: React.FC<ResourceToolbarProps> = ({
   isTrashMode = false,
   canAdd = true,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center justify-between">
-      {/* Left: Add and refresh operations */}
       <div className="flex items-center gap-2">
-        {/* Add root resource button */}
         {canAdd && !isTrashMode && (
           <button
             onClick={onAddRootResource}
             className="flex items-center gap-2 px-3 py-2 text-sm bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-900/50 text-green-700 dark:text-green-300 rounded transition-colors"
           >
             <MdAdd className="h-4 w-4" />
-            Add root resource
+            {t("system:resource.toolbar.addRoot")}
           </button>
         )}
 
@@ -44,7 +45,6 @@ export const ResourceToolbar: React.FC<ResourceToolbarProps> = ({
           <MdRefresh className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
         </button>
 
-        {/* Recycle bin mode switch button */}
         <button
           onClick={onToggleTrashMode}
           className={`flex items-center gap-2 px-2 py-2 text-sm rounded transition-colors ${
@@ -57,21 +57,20 @@ export const ResourceToolbar: React.FC<ResourceToolbarProps> = ({
         </button>
       </div>
 
-      {/* Right: Expand/Collapse operation */}
       <div className="flex items-center gap-2">
         <button
           onClick={onExpandAll}
           className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded transition-colors"
         >
           <MdExpandMore className="h-4 w-4" />
-          Expand all
+          {t("system:resource.toolbar.expandAll")}
         </button>
         <button
           onClick={onCollapseAll}
           className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded transition-colors"
         >
           <MdUnfoldLess className="h-4 w-4" />
-          Collapse all
+          {t("system:resource.toolbar.collapseAll")}
         </button>
       </div>
     </div>
