@@ -56,7 +56,8 @@ export function MenuProvider({ children }: MenuProviderProps) {
   // Load or clear menus based on authentication state
   useEffect(() => {
     if (isAuthenticated) {
-      loadMenus();
+      setIsLoading(true);
+      void loadMenus();
     } else {
       // Clear menus in unauthenticated state
       setMenus(null);

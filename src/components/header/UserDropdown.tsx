@@ -1,7 +1,8 @@
 import { useAuth } from "@/context/AuthContext";
 import { localeService, userService } from "@/api";
-import type { LocaleItem } from "@/api/services/localeService";
-import { normalize_locale_code } from "@/i18n";
+import { change_app_language, normalize_locale_code } from "@/i18n";
+import { locale_item_to_code } from "@/utils/localeResolve";
+import { format_user_display_name } from "@/utils/userDisplayName";
 import { Dropdown, DropdownItem, Select, type SelectOptionType } from "@efcnewlife/newlife-ui";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -12,18 +13,13 @@ export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const [localeCodeById, setLocaleCodeById] = useState<Record<string, string>>({});
   const navigate = useNavigate();
-  const { logout, user } = useAuth();
+  const { logout, user, refreshUser } = useAuth();
   const { i18n } = useTranslation();
   const { t } = useTranslation();
   const { t: tLanguage } = useTranslation("language");
   const [languageOptions, setLanguageOptions] = useState<SelectOptionType[]>([]);
 
   useEffect(() => {
-    const locale_to_value = (locale: LocaleItem): string => {
-      const parts = [locale.language_code, locale.script_code, locale.region_code].filter(Boolean);
-      return parts.join("-");
-    };
-
     const load_locale_options = async () => {
       const response = await localeService.list();
       if (!response.success || !response.data?.items?.length) {
@@ -32,13 +28,13 @@ export default function UserDropdown() {
         return;
       }
       const options: SelectOptionType[] = response.data.items
-        .filter((item) => item.is_active)
+        .filter((item) => item.isActive)
         .map((item) => ({
           value: item.id,
-          label: item.native_name || item.name || locale_to_value(item),
+          label: item.nativeName || item.name || locale_item_to_code(item),
         }));
       const nextLocaleCodeById = response.data.items.reduce<Record<string, string>>((acc, item) => {
-        acc[item.id] = locale_to_value(item);
+        acc[item.id] = locale_item_to_code(item);
         return acc;
       }, {});
       setLocaleCodeById(nextLocaleCodeById);
@@ -59,6 +55,8 @@ export default function UserDropdown() {
     const matchedLocaleId = Object.entries(localeCodeById).find(([, code]) => normalize_locale_code(code) === normalized)?.[0];
     return matchedLocaleId;
   }, [i18n.language, localeCodeById, user?.preferredLocaleId]);
+
+  const display_name = useMemo(() => (user ? format_user_display_name(user) : "Anonymous"), [user]);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -83,7 +81,7 @@ export default function UserDropdown() {
           <MdAccountCircle size={44} className="text-gray-500 dark:text-gray-400" />
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">{user?.username || "Anonymous"}</span>
+        <span className="block mr-1 font-medium text-theme-sm">{display_name}</span>
         <MdKeyboardArrowDown
           size={18}
           className={`text-gray-500 dark:text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
@@ -96,7 +94,7 @@ export default function UserDropdown() {
         className="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
       >
         <div>
-          <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">{user?.username || "Anonymous"}</span>
+          <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">{display_name}</span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">{user?.email || ""}</span>
         </div>
 
@@ -133,8 +131,9 @@ export default function UserDropdown() {
                     await userService.updateCurrentUserPreferredLocale(value);
                     const localeCode = localeCodeById[value];
                     if (localeCode) {
-                      await i18n.changeLanguage(localeCode);
+                      await change_app_language(localeCode);
                     }
+                    await refreshUser();
                   } catch (error) {
                     console.warn("Failed to update preferred language:", error);
                   }

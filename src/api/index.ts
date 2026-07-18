@@ -20,6 +20,10 @@ export * from "./services/userService";
 export { default as userService } from "./services/userService";
 export * from "./services/verbService";
 export { default as verbService } from "./services/verbService";
+export * from "./services/facilityService";
+export { default as facilityService } from "./services/facilityService";
+export * from "./services/orgService";
+export { default as orgService } from "./services/orgService";
 
 // Hooks
 export * from "./hooks/useApi";

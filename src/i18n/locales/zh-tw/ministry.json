@@ -1,0 +1,150 @@
+{
+  "shared": {
+    "yes": "是",
+    "no": "否",
+    "active": "啟用",
+    "all": "全部",
+    "loadFailed": "載入失敗，請稍後再試。",
+    "saveFailed": "儲存失敗，請稍後再試。",
+    "deleteFailed": "刪除失敗，請稍後再試。",
+    "actionFailed": "操作失敗，請稍後再試。"
+  },
+  "ministry": {
+    "page": { "title": "事工管理", "description": "管理事工單位與生命週期" },
+    "table": {
+      "name": "名稱",
+      "ministryType": "類型",
+      "targetAudiences": "對象",
+      "status": "狀態",
+      "ownerPosition": "負責職位",
+      "hasPriorityBooking": "優先預約",
+      "isActive": "啟用",
+      "createdAt": "建立時間",
+      "updatedAt": "更新時間"
+    },
+    "modal": {
+      "createTitle": "新增事工",
+      "editTitle": "編輯事工",
+      "detailTitle": "事工詳情",
+      "deleteSoft": "刪除事工",
+      "deletePermanent": "永久刪除事工",
+      "approveTitle": "核准事工",
+      "rejectTitle": "拒絕事工"
+    },
+    "form": {
+      "name": "名稱",
+      "ministryTypeId": "事工類型",
+      "ministryTypePlaceholder": "請選擇事工類型",
+      "ministryTypeRequired": "請選擇事工類型",
+      "targetAudiences": "適合對象",
+      "scheduleNote": "時段備註",
+      "schedules": "時段",
+      "ownerPositionId": "負責職位",
+      "ownerPositionPlaceholder": "請選擇職位",
+      "hasPriorityBooking": "優先預約",
+      "nameRequired": "請輸入名稱",
+      "members": "負責人",
+      "membersHint": "送審前需恰好一位主要負責人與至少一位次要負責人。"
+    },
+    "status": {
+      "draft": "草稿",
+      "pending_approval": "待審核",
+      "active": "啟用中",
+      "rejected": "已拒絕",
+      "inactive": "停用"
+    },
+    "actions": {
+      "submit": "送審",
+      "approve": "核准",
+      "reject": "拒絕"
+    },
+    "approve": {
+      "comment": "備註（選填）"
+    },
+    "reject": {
+      "reason": "拒絕原因",
+      "reasonRequired": "請填寫拒絕原因",
+      "comment": "備註（選填）"
+    },
+    "members": {
+      "user": "使用者",
+      "role": "角色",
+      "email": "電子郵件",
+      "displayName": "顯示名稱",
+      "contactEmail": "聯絡信箱",
+      "primary": "主要負責人",
+      "secondary": "次要負責人",
+      "add": "新增負責人",
+      "remove": "移除",
+      "selectUser": "選擇使用者",
+      "validationPrimary": "需恰好一位主要負責人",
+      "validationSecondary": "至少需要一位次要負責人",
+      "duplicateUser": "同一使用者不可重複指派"
+    },
+    "detail": {
+      "members": "成員",
+      "noMembers": "尚未指派負責人"
+    },
+    "deleteForm": { "entityLabel": "事工" },
+    "schedule": {
+      "add": "新增時段",
+      "remove": "移除",
+      "empty": "尚未設定時段",
+      "row": "時段 {{index}}",
+      "timeOptionalHint": "開始／結束時間留空表示時間待定（TBA）。",
+      "daysOfWeek": "適用星期",
+      "startTime": "開始時間",
+      "endTime": "結束時間",
+      "effectiveFrom": "生效起始日",
+      "effectiveTo": "生效結束日",
+      "days": {
+        "0": "一",
+        "1": "二",
+        "2": "三",
+        "3": "四",
+        "4": "五",
+        "5": "六",
+        "6": "日"
+      }
+    }
+  },
+  "ministryMember": {
+    "page": {
+      "title": "事工成員",
+      "description": "指派事工主要與次要負責人"
+    },
+    "filter": { "ministry": "事工", "selectMinistry": "請選擇事工" },
+    "save": "儲存成員",
+    "search": {
+      "popoverTitle": "搜尋事工成員",
+      "keywordLabel": "關鍵字",
+      "keywordPlaceholder": "依事工名稱篩選列表",
+      "selectMinistryHint": "請使用搜尋選擇事工後再編輯成員。",
+      "chipsTitle": "已選條件",
+      "chipKeyword": "關鍵字：",
+      "chipMinistry": "事工："
+    }
+  },
+  "approval": {
+    "page": {
+      "title": "事工審核",
+      "description": "審核待核准事工申請"
+    },
+    "table": {
+      "name": "名稱",
+      "ownerPosition": "負責職位",
+      "submittedAt": "送審時間",
+      "status": "狀態"
+    },
+    "modal": {
+      "detailTitle": "待審核事工",
+      "approveTitle": "核准事工",
+      "rejectTitle": "拒絕事工"
+    },
+    "detail": {
+      "members": "負責人",
+      "translations": "翻譯",
+      "ownerPosition": "負責職位"
+    }
+  }
+}

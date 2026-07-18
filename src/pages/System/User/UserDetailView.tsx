@@ -1,5 +1,5 @@
 import { userService } from "@/api/services/userService";
-import { Checkbox, Input, TextArea } from "@efcnewlife/newlife-ui";
+import { Checkbox, Input } from "@efcnewlife/newlife-ui";
 import { Gender } from "@/const/enums";
 import { DateUtil } from "@/utils/dateUtil";
 import { useEffect, useState } from "react";
@@ -11,19 +11,20 @@ interface UserDetailViewProps {
 
 interface UserDetailData {
   id: string;
-  phone_number: string;
+  phone_number?: string | null;
   email: string;
   verified: boolean;
   is_active: boolean;
   is_superuser: boolean;
   is_admin: boolean;
-  last_login_at?: string;
-  display_name?: string;
+  last_login_at?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  preferred_name?: string | null;
+  preferred_locale_id?: string | null;
   gender?: Gender;
-  is_ministry?: boolean;
   created_at?: string;
   updated_at?: string;
-  remark?: string;
 }
 
 const UserDetailView: React.FC<UserDetailViewProps> = ({ userId }) => {
@@ -63,6 +64,8 @@ const UserDetailView: React.FC<UserDetailViewProps> = ({ userId }) => {
     }
   };
 
+  const formatOptionalText = (value?: string | null) => value?.trim() || t("system:shared.notSet");
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -83,7 +86,7 @@ const UserDetailView: React.FC<UserDetailViewProps> = ({ userId }) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <Input id="phone_number" label={t("system:user.table.phoneNumber")} type="text" value={userData.phone_number} disabled />
+          <Input id="phone_number" label={t("system:user.table.phoneNumber")} type="text" value={formatOptionalText(userData.phone_number)} disabled />
         </div>
 
         <div>
@@ -91,13 +94,15 @@ const UserDetailView: React.FC<UserDetailViewProps> = ({ userId }) => {
         </div>
 
         <div>
-          <Input
-            id="display_name"
-            label={t("system:user.form.displayName.label")}
-            type="text"
-            value={userData.display_name || t("system:shared.notSet")}
-            disabled
-          />
+          <Input id="first_name" label={t("system:user.form.firstName.label")} type="text" value={formatOptionalText(userData.first_name)} disabled />
+        </div>
+
+        <div>
+          <Input id="last_name" label={t("system:user.form.lastName.label")} type="text" value={formatOptionalText(userData.last_name)} disabled />
+        </div>
+
+        <div>
+          <Input id="preferred_name" label={t("system:user.form.preferredName.label")} type="text" value={formatOptionalText(userData.preferred_name)} disabled />
         </div>
 
         <div>
@@ -118,9 +123,6 @@ const UserDetailView: React.FC<UserDetailViewProps> = ({ userId }) => {
         </div>
         <div>
           <Checkbox id="is_superuser" checked={userData.is_superuser} disabled label={t("system:user.detail.labelSuperAdministrator")} />
-        </div>
-        <div>
-          <Checkbox id="is_ministry" checked={userData.is_ministry ?? false} disabled label={t("system:user.detail.labelMinistryStaff")} />
         </div>
       </div>
 
@@ -154,11 +156,6 @@ const UserDetailView: React.FC<UserDetailViewProps> = ({ userId }) => {
             disabled
           />
         </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:user.detail.remarkHeading")}</label>
-        <TextArea id="remark" placeholder="" value={userData.remark || ""} disabled rows={3} />
       </div>
     </div>
   );

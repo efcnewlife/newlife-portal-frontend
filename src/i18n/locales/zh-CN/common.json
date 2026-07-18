@@ -52,5 +52,13 @@
       "restoring": "还原中...",
       "confirm": "确认还原"
     }
+  },
+  "translation": {
+    "tabsLabel": "多语言内容",
+    "name": "名称",
+    "description": "说明",
+    "remark": "备注",
+    "defaultLocaleRequired": "默认语言的名称必填。",
+    "loadLocalesFailed": "无法加载系统支持的语言列表。"
   }
 }

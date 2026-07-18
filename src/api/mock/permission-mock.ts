@@ -83,11 +83,12 @@ export const createMockPermission = (data: PermissionCreate): ApiResponse<{ id: 
   const id = `perm-${Date.now()}`;
   mockPermissions.unshift({
     id,
-    name: data.name,
+    name: data.translations?.[0]?.name || "",
     code: data.code,
     isActive: data.is_active,
     description: data.description,
     remark: data.remark,
+    translations: data.translations,
     resource: { id: data.resource_id, name: "Resource", key: "RESOURCE", code: "resource" },
     verb: { id: data.verb_id, name: "Verb", action: "list" },
   });
@@ -99,11 +100,12 @@ export const updateMockPermission = (id: string, data: PermissionUpdate): ApiRes
     item.id === id
         ? {
           ...item,
-          name: data.name,
+          name: data.translations?.[0]?.name || item.name,
           code: data.code,
           isActive: data.is_active,
           description: data.description,
           remark: data.remark,
+          translations: data.translations ?? item.translations,
           resource: data.resource_id ? { ...item.resource, id: data.resource_id } : item.resource,
           verb: data.verb_id ? { ...item.verb, id: data.verb_id } : item.verb,
         }

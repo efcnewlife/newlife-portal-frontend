@@ -1,0 +1,30 @@
+{
+  "shared": {
+    "loadFailed": "載入資料失敗，請再試一次。",
+    "saveFailed": "儲存失敗，請再試一次。"
+  },
+  "person": {
+    "page": {
+      "title": "會友",
+      "description": "管理教會會友"
+    },
+    "table": {
+      "legalName": "法定姓名",
+      "displayName": "顯示名稱",
+      "email": "電子郵件",
+      "userId": "關聯帳號"
+    },
+    "modal": {
+      "createTitle": "新增會友",
+      "editTitle": "編輯會友",
+      "detailTitle": "會友詳情"
+    },
+    "form": {
+      "legalName": "法定姓名",
+      "linkUser": "關聯使用者帳號",
+      "selectUser": "選擇使用者",
+      "noUser": "尚未關聯帳號",
+      "legalNameRequired": "請輸入法定姓名"
+    }
+  }
+}

@@ -21,14 +21,21 @@ let mockUsers: MockUser[] = [
     is_active: true,
     is_superuser: true,
     is_admin: true,
-    display_name: "Newlife Portal Admin",
+    first_name: "Newlife",
+    last_name: "Portal Admin",
+    preferred_name: "Newlife Portal Admin",
     gender: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-    remark: "Mock admin account",
     role_ids: ["role-superadmin"],
   },
 ];
+
+const matchesKeyword = (item: MockUser, keyword: string) =>
+  (item.email || "").toLowerCase().includes(keyword) ||
+  (item.preferred_name || "").toLowerCase().includes(keyword) ||
+  (item.first_name || "").toLowerCase().includes(keyword) ||
+  (item.last_name || "").toLowerCase().includes(keyword);
 
 export const getMockUserPages = (params: UserPagesParams): ApiResponse<UserPagesResponse> => {
   const page = params.page ?? 0;
@@ -38,7 +45,7 @@ export const getMockUserPages = (params: UserPagesParams): ApiResponse<UserPages
   const filtered = mockUsers.filter((item) => {
     if ((item.is_deleted || false) !== deleted) return false;
     if (!keyword) return true;
-    return (item.email || "").toLowerCase().includes(keyword) || (item.display_name || "").toLowerCase().includes(keyword);
+    return matchesKeyword(item, keyword);
   });
   return {
     success: true,
@@ -56,12 +63,12 @@ export const listMockUsers = (keyword?: string): ApiResponse<UserListResponse> =
   const text = (keyword || "").toLowerCase().trim();
   const items: UserBase[] = mockUsers
     .filter((item) => !item.is_deleted)
-    .filter((item) => !text || (item.email || "").toLowerCase().includes(text) || (item.display_name || "").toLowerCase().includes(text))
+    .filter((item) => !text || matchesKeyword(item, text))
     .map((item) => ({
       id: item.id,
       email: item.email,
-      phoneNumber: item.phone_number,
-      displayName: item.display_name,
+      phoneNumber: item.phone_number || undefined,
+      displayName: item.preferred_name || [item.first_name, item.last_name].filter(Boolean).join(" ").trim() || undefined,
     }));
   return { success: true, code: 200, data: { items } };
 };
@@ -82,9 +89,10 @@ export const createMockUser = (payload: UserCreate): ApiResponse<{ id: string }>
     is_active: payload.is_active ?? true,
     is_superuser: payload.is_superuser ?? false,
     is_admin: payload.is_admin ?? false,
-    display_name: payload.display_name,
+    first_name: payload.display_name || "",
+    last_name: "",
+    preferred_name: payload.display_name,
     gender: payload.gender,
-    remark: payload.remark,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     role_ids: [],
@@ -95,21 +103,39 @@ export const createMockUser = (payload: UserCreate): ApiResponse<{ id: string }>
 
 export const updateMockCurrentUser = (payload: UserUpdate): ApiResponse<void> => {
   mockUsers = mockUsers.map((item, index) =>
-    index === 0 ? { ...item, ...payload, phone_number: payload.phone_number, updated_at: new Date().toISOString() } : item,
+    index === 0
+      ? {
+          ...item,
+          ...payload,
+          phone_number: payload.phone_number,
+          first_name: payload.display_name || item.first_name,
+          preferred_name: payload.display_name || item.preferred_name,
+          updated_at: new Date().toISOString(),
+        }
+      : item,
   );
   return { success: true, code: 200, data: undefined };
 };
 
 export const updateMockUser = (id: string, payload: UserUpdate): ApiResponse<void> => {
   mockUsers = mockUsers.map((item) =>
-    item.id === id ? { ...item, ...payload, phone_number: payload.phone_number, updated_at: new Date().toISOString() } : item,
+    item.id === id
+      ? {
+          ...item,
+          ...payload,
+          phone_number: payload.phone_number,
+          first_name: payload.display_name || item.first_name,
+          preferred_name: payload.display_name || item.preferred_name,
+          updated_at: new Date().toISOString(),
+        }
+      : item,
   );
   return { success: true, code: 200, data: undefined };
 };
 
 export const removeMockUser = (id: string, payload: UserDelete): ApiResponse<void> => {
   if (payload.permanent) mockUsers = mockUsers.filter((item) => item.id !== id);
-  else mockUsers = mockUsers.map((item) => (item.id === id ? { ...item, is_deleted: true, remark: payload.reason } : item));
+  else mockUsers = mockUsers.map((item) => (item.id === id ? { ...item, is_deleted: true } : item));
   return { success: true, code: 200, data: undefined };
 };
 

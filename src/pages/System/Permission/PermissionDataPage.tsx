@@ -25,6 +25,7 @@ const mapPermissionFormValuesToPayload = (values: PermissionFormValues): Permiss
     is_active: values.isActive,
     description: values.description,
     remark: values.remark,
+    translations: values.translations,
   };
 };
 
@@ -355,6 +356,7 @@ export default function PermissionDataPage() {
                 isActive: detail.isActive,
                 description: detail.description || "",
                 remark: detail.remark || "",
+                translations: detail.translations,
               });
               openModal();
             } else {

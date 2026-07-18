@@ -96,6 +96,116 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `${ADMIN_API_PREFIX}/demo/${id}`,
     RESTORE: `${ADMIN_API_PREFIX}/demo/restore`,
   },
+
+  // Facility booking (admin)
+  FACILITY: {
+    ROOMS: {
+      PAGES: `${ADMIN_API_PREFIX}/facility/rooms/pages`,
+      LIST: `${ADMIN_API_PREFIX}/facility/rooms/list`,
+      CREATE: `${ADMIN_API_PREFIX}/facility/rooms`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/rooms/${id}`,
+      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/rooms/${id}`,
+      DELETE: (id: string) => `${ADMIN_API_PREFIX}/facility/rooms/${id}`,
+      RESTORE: `${ADMIN_API_PREFIX}/facility/rooms/restore`,
+    },
+    ROOM_SLOT_TEMPLATES: {
+      PAGES: `${ADMIN_API_PREFIX}/facility/room-slot-templates/pages`,
+      LIST: `${ADMIN_API_PREFIX}/facility/room-slot-templates/list`,
+      CREATE: `${ADMIN_API_PREFIX}/facility/room-slot-templates`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/room-slot-templates/${id}`,
+      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/room-slot-templates/${id}`,
+      DELETE: (id: string) => `${ADMIN_API_PREFIX}/facility/room-slot-templates/${id}`,
+      RESTORE: (id: string) => `${ADMIN_API_PREFIX}/facility/room-slot-templates/${id}/restore`,
+    },
+    RENTAL_RATES: {
+      PAGES: `${ADMIN_API_PREFIX}/facility/rental-rates/pages`,
+      LIST: `${ADMIN_API_PREFIX}/facility/rental-rates/list`,
+      CREATE: `${ADMIN_API_PREFIX}/facility/rental-rates`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/rental-rates/${id}`,
+      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/rental-rates/${id}`,
+      DELETE: (id: string) => `${ADMIN_API_PREFIX}/facility/rental-rates/${id}`,
+      RESTORE: (id: string) => `${ADMIN_API_PREFIX}/facility/rental-rates/${id}/restore`,
+      PREVIEW_QUOTE: `${ADMIN_API_PREFIX}/facility/rental-rates/preview-quote`,
+    },
+    DISCOUNT_RULES: {
+      LIST: `${ADMIN_API_PREFIX}/facility/discount-rules`,
+      CREATE: `${ADMIN_API_PREFIX}/facility/discount-rules`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/discount-rules/${id}`,
+      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/discount-rules/${id}`,
+      DELETE: (id: string) => `${ADMIN_API_PREFIX}/facility/discount-rules/${id}`,
+    },
+    SURCHARGES: {
+      LIST: `${ADMIN_API_PREFIX}/facility/surcharges`,
+      CREATE: `${ADMIN_API_PREFIX}/facility/surcharges`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/surcharges/${id}`,
+      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/surcharges/${id}`,
+      DELETE: (id: string) => `${ADMIN_API_PREFIX}/facility/surcharges/${id}`,
+    },
+    POLICY_SETTINGS: {
+      LIST: `${ADMIN_API_PREFIX}/facility/policy-settings`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/policy-settings/${id}`,
+      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/policy-settings/${id}`,
+    },
+    BOOKINGS: {
+      PAGES: `${ADMIN_API_PREFIX}/facility/bookings/pages`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/bookings/${id}`,
+      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/bookings/${id}`,
+      CANCEL: (id: string) => `${ADMIN_API_PREFIX}/facility/bookings/${id}/cancel`,
+    },
+    MEMBERS: {
+      PAGES: `${ADMIN_API_PREFIX}/facility/members/pages`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/members/${id}`,
+      MINISTRIES: (id: string) => `${ADMIN_API_PREFIX}/facility/members/${id}/ministries`,
+    },
+    BOOKING_OVERRIDE_LOGS: {
+      PAGES: `${ADMIN_API_PREFIX}/facility/booking-override-logs/pages`,
+    },
+  },
+
+  // Ministry (admin)
+  MINISTRY: {
+    MINISTRIES: {
+      PAGES: `${ADMIN_API_PREFIX}/ministry/ministries/pages`,
+      LIST: `${ADMIN_API_PREFIX}/ministry/ministries/list`,
+      CREATE: `${ADMIN_API_PREFIX}/ministry/ministries`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/ministry/ministries/${id}`,
+      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/ministry/ministries/${id}`,
+      DELETE: (id: string) => `${ADMIN_API_PREFIX}/ministry/ministries/${id}`,
+      RESTORE: `${ADMIN_API_PREFIX}/ministry/ministries/restore`,
+      MEMBERS: (id: string) => `${ADMIN_API_PREFIX}/ministry/ministries/${id}/members`,
+      SUBMIT: (id: string) => `${ADMIN_API_PREFIX}/ministry/ministries/${id}/submit`,
+      APPROVE: (id: string) => `${ADMIN_API_PREFIX}/ministry/ministries/${id}/approve`,
+      REJECT: (id: string) => `${ADMIN_API_PREFIX}/ministry/ministries/${id}/reject`,
+    },
+    APPROVALS: {
+      PAGES: `${ADMIN_API_PREFIX}/ministry/approvals/pages`,
+    },
+    CATALOG: {
+      MINISTRY_TYPES: `${ADMIN_API_PREFIX}/ministry/catalog/ministry-types`,
+      TARGET_AUDIENCES: `${ADMIN_API_PREFIX}/ministry/catalog/target-audiences`,
+    },
+  },
+
+  // Organization (admin)
+  ORG: {
+    POSITIONS: {
+      PAGES: `${ADMIN_API_PREFIX}/org/positions/pages`,
+      CREATE: `${ADMIN_API_PREFIX}/org/positions`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/org/positions/${id}`,
+      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/org/positions/${id}`,
+      DELETE: (id: string) => `${ADMIN_API_PREFIX}/org/positions/${id}`,
+      RESTORE: `${ADMIN_API_PREFIX}/org/positions/restore`,
+      ASSIGN: (id: string) => `${ADMIN_API_PREFIX}/org/positions/${id}/assign`,
+      ASSIGNABLE: `${ADMIN_API_PREFIX}/org/positions/assignable`,
+    },
+    MEMBERS: {
+      PAGES: `${ADMIN_API_PREFIX}/org/members/pages`,
+      CREATE: `${ADMIN_API_PREFIX}/org/members`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/org/members/${id}`,
+      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/org/members/${id}`,
+      LINK: (id: string) => `${ADMIN_API_PREFIX}/org/members/${id}/link`,
+    },
+  },
 } as const;
 
 // HTTP status codes

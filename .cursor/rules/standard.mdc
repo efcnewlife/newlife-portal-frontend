@@ -1,0 +1,148 @@
+---
+description: Standard
+globs:
+alwaysApply: true
+---
+# Project Standards
+
+## Basics
+
+- Use camelCase for all variable names.
+- Use camelCase for all function names.
+- Use PascalCase for all component and class names.
+- Use UPPER_SNAKE_CASE for all constants and environment variables (e.g. `UPPER_CASE` or `VITE_API_BASE_URL`).
+- Use PascalCase for business-domain directories under `pages/` and `routes/modules/` (e.g. `System/`, `Facility/`, `Ministry/`); use kebab-case or camelCase for shared utilities and config files (e.g. `route-filter-manager.tsx`, `caseConvert.ts`).
+- Use PascalCase for component files (e.g. `RoomManagement.tsx`, `DataPage.tsx`).
+- Do not check linting rules (e.g. eslint).
+- Use pnpm for dependency management; the private package `@efcnewlife/newlife-ui` requires `NODE_AUTH_TOKEN` (see README).
+- Files that use HTML, ReactNode, or JSX.Element must use the `.tsx` extension.
+- The project defines a path alias: `@` maps to the `src` directory.
+- Prefer arrow functions for React components and hooks; reducers, classes, or existing modules may keep function declarations.
+- Do not manipulate the DOM directly with DOM APIs; use React APIs instead.
+- All comments and default user-facing copy must be in English unless the copy comes from i18n resource files.
+
+## TypeScript
+
+- Use TypeScript strictly; define explicit types for all props, state, and function parameters.
+- Use `interface` for object shapes; use `type` for unions and utility types.
+- Prefer generics to improve reusability.
+- Avoid `any`; all types should be explicit.
+- Place API and domain types under `src/types/`; enums and fixed constants under `src/const/`.
+
+## React Components
+
+- Use function components and React Hooks.
+- Component files must use PascalCase and live under the matching feature directory.
+- Every component must define an explicit props interface.
+- Prefer custom hooks to extract reusable logic (`src/hooks/`).
+- List CRUD pages follow `*Management.tsx` (shell) + `*DataPage.tsx` (data and interactions); form logic lives in `*DataForm.tsx`; delete/restore and similar sub-flows live in `*DeleteForm.tsx`, `*RestoreForm.tsx`, etc.
+
+## Directory Layout
+
+- Follow the existing layout:
+  - `src/api/` — HTTP config, services, hooks, mocks
+  - `src/auth/` — Microsoft Entra ID (MSAL)
+  - `src/components/` — shared components (`common/`, `auth/`, `DataPage/`, `translation/`, etc.)
+  - `src/config/` — centralized environment config (`env.ts`)
+  - `src/context/` — global context (`AuthContext`, `MenuContext`, `NotificationContext`)
+  - `src/hooks/` — reusable hooks
+  - `src/i18n/` — i18n setup and locale JSON
+  - `src/layout/` — layout (sidebar, header, etc.)
+  - `src/pages/` — pages grouped by domain (`System/`, `Facility/`, `Ministry/`, `AuthPages/`)
+  - `src/routes/modules/` — modular route definitions
+  - `src/types/` — shared types
+  - `src/utils/` — utilities (route registry, component registry, case conversion, etc.)
+- Shared layout and breadcrumbs live under `components/common/`.
+- Reusable list CRUD primitives live under `components/DataPage/`.
+- Page components live under `pages/`, grouped by business domain and feature.
+
+## State Management
+
+- Prefer React Context for global state (`AuthContext`, `MenuContext`, `NotificationContext`).
+- Use custom hooks to encapsulate complex state logic.
+- Avoid overusing global state; prefer local state when possible.
+- Update state immutably.
+
+## Styling and UI
+
+- Use Tailwind CSS v4 for styling.
+- Prefer UI components from `@efcnewlife/newlife-ui` (`Button`, `Input`, `Select`, `Modal`, `ModalForm`, etc.); do not reimplement what the library already provides.
+- Follow existing layout patterns (`ManagementPage`, `AppLayout`).
+- Ensure responsive layouts across screen sizes.
+- Import all icons from `react-icons`; prefer the `md` icon set.
+- Merge all `className` values with the `cn` helper in `src/utils/index.ts`; do not concatenate class names manually.
+
+## Routing
+
+- Use React Router v7 (`react-router`) with `RouterProvider`.
+- Routes are **not** all defined in `App.tsx`; register them by module under `src/routes/modules/` and manage them centrally via `initializeRoutes()` in `src/routes/index.ts` and `route-registry`.
+- `App.tsx` wraps providers and initializes `route-filter-manager` (builds the router dynamically from auth state and backend menus).
+- Backend menu-driven pages must be mapped in `src/utils/component-registry.tsx` (resource key → component).
+- When adding a business module: define routes in `routes/modules/<Domain>/`, register the module in `routes/index.ts`, and add key mappings in `component-registry.tsx`.
+- Route paths use kebab-case (e.g. `/facility/room-slot-templates`).
+- The `demo` module demonstrates DataPage in development; register it only when `IS_DEV` is true.
+
+## Internationalization (i18n)
+
+- Use `react-i18next`; initialization lives in `src/i18n/index.ts`.
+- Supported BCP 47 locales: `en`, `zh-TW`, `zh-CN`; copy lives in `src/i18n/locales/<lng>/` per namespace (`common`, `auth`, `errors`, `system`, `language`, `facility`, etc.).
+- In UI code use `namespace:key` (e.g. `t("facility:room.page.title")`); the default namespace is `common`.
+- When adding copy, keep the same key structure in sync across `en`, `zh-TW`, and `zh-CN`.
+- Non-React modules may `import i18n from "@/i18n"` and call `i18n.t(...)`.
+- `httpClient` sets `Accept-Language` automatically from the active i18n locale.
+
+## Authentication
+
+- `AuthContext` manages login state and tokens; pages and route guards rely on `isAuthenticated` and backend menus.
+- Supports email/password and Microsoft Entra ID (`@azure/msal-browser`); MSAL setup lives under `src/auth/`.
+- Read environment variables through `src/config/env.ts`; do not use `import.meta.env` directly in business code.
+- Development flags include `VITE_SKIP_AUTH`, `VITE_SHOW_DEV_LOGIN`, `VITE_USE_MOCK_API`, etc. (see `.env.example`).
+
+## API Integration
+
+- Use Axios for HTTP; `httpClient` is implemented in `src/api/services/httpClient.ts`.
+- Implement request/response interceptors, token refresh, and unified error handling.
+- All API access must live under `src/api`; do not hardcode API paths elsewhere. Define endpoints in `api/config` (`API_ENDPOINTS`), wrap calls in `api/services`, and invoke services from pages or components.
+- Except for `DataPage`-related components and existing data layers, components must not call `httpClient` directly.
+- Convert request body/query keys with `deep_keys_to_snake_case` (`src/utils/caseConvert.ts`) to match the backend snake_case contract; define response types in `src/types/api.ts` and related files.
+- Development mocks live under `src/api/mock/`; services switch via flags such as `IS_MOCK_API`.
+
+## DataPage Architecture
+
+- Prefer composing list pages from `components/DataPage` (`DataPage`, `DataTable`, `DataTableToolbar`, delete/restore forms, etc.).
+- `*DataPage.tsx` owns columns, pagination, sorting, toolbar actions, and service calls; `*Management.tsx` wraps title and description with `ManagementPage`.
+- For multilingual fields, use `TranslationTabsForm` and helpers such as `src/utils/translationForm.ts`.
+- Permission-aware toolbar actions integrate via the DataPage `resource` prop and token scopes.
+
+## Performance
+
+- Lazy-load routes and large pages when appropriate.
+- Provide error boundaries and loading states (see the route initialization flow in `App.tsx`).
+- Optimize images and assets; import SVGs via `vite-plugin-svgr` when needed.
+
+## Accessibility
+
+- Ensure interactive elements have appropriate ARIA attributes.
+- Support keyboard navigation.
+- Maintain sufficient color contrast.
+- Provide meaningful `alt` text for images.
+
+## Build and Verification
+
+- Local development: `pnpm install`, `pnpm run dev` (default `http://localhost:5173`).
+- Type check: `pnpm run type-check` (required in CI).
+- Build: `pnpm run build`; use `build:stg` and `build:prod` for staging and production.
+- Environment setup: copy `.env.example` to `.env.local` and adjust `VITE_*` variables.
+
+## Git and Collaboration
+
+- Merge into `main` / `develop` via Pull Request and wait for CI (type-check) to pass.
+- Agents / automation: do not run `git commit`, `git push`, `git merge`, or similar git operations unless the user explicitly asks.
+
+## Code Quality
+
+- Keep code concise and readable.
+- Use meaningful variable and function names.
+- Avoid unnecessary complexity; refactor when needed.
+- Follow DRY (Don't Repeat Yourself).
+- When extending features, reuse existing modules (route registration, component registry, DataPage, ManagementPage, service layering); do not introduce a parallel routing or API-calling pattern.

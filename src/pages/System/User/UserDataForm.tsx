@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 
 export interface UserFormValues {
   id?: string;
-  phone_number: string;
   email: string;
   password?: string;
   password_confirm?: string;
@@ -13,9 +12,10 @@ export interface UserFormValues {
   is_active: boolean;
   is_superuser: boolean;
   is_admin: boolean;
-  display_name?: string;
+  first_name?: string;
+  last_name?: string;
+  preferred_name?: string;
   gender?: number; // 0 unknown, 1 male, 2 female
-  is_ministry: boolean;
   remark?: string;
 }
 
@@ -31,9 +31,7 @@ const UserDataForm: React.FC<UserDataFormProps> = ({ mode, defaultValues, onSubm
   const { t } = useTranslation();
   const { isSuperAdmin } = usePermissions();
 
-  // Whether current session user is super admin (gates some fields)
   const [values, setValues] = useState<UserFormValues>({
-    phone_number: "",
     email: "",
     password: "",
     password_confirm: "",
@@ -41,9 +39,10 @@ const UserDataForm: React.FC<UserDataFormProps> = ({ mode, defaultValues, onSubm
     is_active: true,
     is_superuser: false,
     is_admin: false,
-    display_name: "",
+    first_name: "",
+    last_name: "",
+    preferred_name: "",
     gender: 0,
-    is_ministry: false,
     remark: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -52,7 +51,6 @@ const UserDataForm: React.FC<UserDataFormProps> = ({ mode, defaultValues, onSubm
     if (defaultValues) {
       setValues({
         id: defaultValues.id,
-        phone_number: defaultValues.phone_number || "",
         email: defaultValues.email || "",
         password: "",
         password_confirm: "",
@@ -60,14 +58,14 @@ const UserDataForm: React.FC<UserDataFormProps> = ({ mode, defaultValues, onSubm
         is_active: defaultValues.is_active ?? true,
         is_superuser: defaultValues.is_superuser ?? false,
         is_admin: defaultValues.is_admin ?? false,
-        display_name: defaultValues.display_name || "",
+        first_name: defaultValues.first_name || "",
+        last_name: defaultValues.last_name || "",
+        preferred_name: defaultValues.preferred_name || "",
         gender: defaultValues.gender ?? 0,
-        is_ministry: defaultValues.is_ministry ?? false,
         remark: defaultValues.remark || "",
       });
     } else {
       setValues({
-        phone_number: "",
         email: "",
         password: "",
         password_confirm: "",
@@ -75,9 +73,10 @@ const UserDataForm: React.FC<UserDataFormProps> = ({ mode, defaultValues, onSubm
         is_active: true,
         is_superuser: false,
         is_admin: false,
-        display_name: "",
+        first_name: "",
+        last_name: "",
+        preferred_name: "",
         gender: 0,
-        is_ministry: false,
         remark: "",
       });
     }
@@ -86,23 +85,22 @@ const UserDataForm: React.FC<UserDataFormProps> = ({ mode, defaultValues, onSubm
   const validate = (): boolean => {
     const next: Record<string, string> = {};
 
-    const phone_trimmed = values.phone_number?.trim() ?? "";
-    if (phone_trimmed.length > 0) {
-      if ((phone_trimmed.length > 1 && !/^[1-9]\d*$/.test(phone_trimmed.slice(1))) || !phone_trimmed.startsWith("+")) {
-        next.phone_number = t("system:user.form.validation.phoneInvalid");
-      }
-    }
-
     if (!values.email || values.email.trim().length === 0) {
       next.email = t("system:user.form.validation.emailRequired");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
       next.email = t("system:user.form.validation.emailInvalid");
     }
 
-    // Create-mode password checks run in the parent (UserDataPage) before submit
+    if (values.first_name && values.first_name.length > 64) {
+      next.first_name = t("system:user.form.validation.firstNameTooLong");
+    }
 
-    if (values.display_name && values.display_name.length > 64) {
-      next.display_name = t("system:user.form.validation.displayNameTooLong");
+    if (values.last_name && values.last_name.length > 64) {
+      next.last_name = t("system:user.form.validation.lastNameTooLong");
+    }
+
+    if (values.preferred_name && values.preferred_name.length > 64) {
+      next.preferred_name = t("system:user.form.validation.preferredNameTooLong");
     }
 
     if (values.remark && values.remark.length > 500) {
@@ -117,7 +115,6 @@ const UserDataForm: React.FC<UserDataFormProps> = ({ mode, defaultValues, onSubm
     e.preventDefault();
     if (!validate()) return;
 
-    // Omit password fields on edit submit
     const submitValues = mode === "edit" ? { ...values, password: undefined, password_confirm: undefined } : values;
 
     await onSubmit(submitValues);
@@ -152,15 +149,39 @@ const UserDataForm: React.FC<UserDataFormProps> = ({ mode, defaultValues, onSubm
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Input
-            id="display_name"
-            label={t("system:user.form.displayName.label")}
+            id="first_name"
+            label={t("system:user.form.firstName.label")}
             type="text"
-            placeholder={t("system:user.form.displayName.placeholder")}
-            value={values.display_name || ""}
-            onChange={(e) => setValues((v) => ({ ...v, display_name: e.target.value }))}
-            error={errors.display_name || undefined}
+            placeholder={t("system:user.form.firstName.placeholder")}
+            value={values.first_name || ""}
+            onChange={(e) => setValues((v) => ({ ...v, first_name: e.target.value }))}
+            error={errors.first_name || undefined}
           />
-          {errors.display_name && <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.display_name}</p>}
+        </div>
+
+        <div>
+          <Input
+            id="last_name"
+            label={t("system:user.form.lastName.label")}
+            type="text"
+            placeholder={t("system:user.form.lastName.placeholder")}
+            value={values.last_name || ""}
+            onChange={(e) => setValues((v) => ({ ...v, last_name: e.target.value }))}
+            error={errors.last_name || undefined}
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Input
+            id="preferred_name"
+            label={t("system:user.form.preferredName.label")}
+            type="text"
+            placeholder={t("system:user.form.preferredName.placeholder")}
+            value={values.preferred_name || ""}
+            onChange={(e) => setValues((v) => ({ ...v, preferred_name: e.target.value }))}
+            error={errors.preferred_name || undefined}
+          />
         </div>
 
         <div>

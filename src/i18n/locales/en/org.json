@@ -1,0 +1,74 @@
+{
+  "shared": {
+    "yes": "Yes",
+    "no": "No",
+    "active": "Active",
+    "loadFailed": "Failed to load data. Please try again.",
+    "saveFailed": "Failed to save. Please try again.",
+    "deleteFailed": "Failed to delete. Please try again."
+  },
+  "position": {
+    "page": {
+      "title": "Positions",
+      "description": "Manage church leadership positions"
+    },
+    "table": {
+      "code": "Code",
+      "team": "Team",
+      "office": "Office",
+      "name": "Name",
+      "canOwnMinistry": "Can own ministry",
+      "isActive": "Active",
+      "createdAt": "Created"
+    },
+    "modal": {
+      "createTitle": "Create position",
+      "editTitle": "Edit position",
+      "detailTitle": "Position detail",
+      "deleteSoft": "Delete position",
+      "deletePermanent": "Permanently delete position",
+      "assignTitle": "Assign incumbent"
+    },
+    "form": {
+      "code": "Code",
+      "team": "Team",
+      "office": "Office",
+      "name": "Position name",
+      "description": "Description",
+      "canOwnMinistry": "Can own ministry",
+      "selectTeam": "Select team",
+      "selectOffice": "Select office",
+      "codeRequired": "Code is required",
+      "teamRequired": "Team is required",
+      "officeRequired": "Office is required",
+      "nameRequired": "Position name is required"
+    },
+    "enums": {
+      "team": {
+        "elder_and_deacon": "Elder and Deacon",
+        "pastoral_team": "Pastoral Team"
+      },
+      "office": {
+        "elder": "Elder",
+        "deacon": "Deacon",
+        "pastor": "Pastor",
+        "staff": "Staff"
+      }
+    },
+    "deleteForm": {
+      "entityLabel": "position"
+    },
+    "actions": {
+      "assign": "Assign incumbent"
+    },
+    "assign": {
+      "user": "User",
+      "startAt": "Start date",
+      "selectUser": "Select user"
+    },
+    "detail": {
+      "currentIncumbent": "Current incumbent",
+      "noIncumbent": "Not assigned"
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { AdminResourceType } from "../const/resource";
+import type { AdminTranslationInput } from "@/types/translation";
 
 // Resource menu item (maps to API response)
 export interface ResourceMenuItem {
@@ -82,7 +83,7 @@ export interface ResourceTreeNode {
 
 // Resource form data
 export interface ResourceFormData {
-  name: string;
+  name?: string;
   key: string;
   code: string;
   icon: string;
@@ -92,6 +93,7 @@ export interface ResourceFormData {
   remark?: string;
   pid?: string;
   is_visible?: boolean;
+  translations?: AdminTranslationInput[];
 }
 
 // Form validation errors

@@ -62,6 +62,25 @@ export enum Resource {
   SystemResource = "system:resource",
   SystemRole = "system:role",
   SystemUser = "system:user",
+
+  // Facility booking
+  FacilityRoom = "facility:room",
+  FacilityRoomSlotTemplate = "facility:room_slot_template",
+  FacilityRentalRate = "facility:rental_rate",
+  FacilityBooking = "facility:booking",
+  FacilityBookingOverrideLog = "facility:booking_override_log",
+  FacilityMember = "facility:member",
+
+  // Ministry
+  MinistryMinistry = "ministry:ministry",
+  MinistryMember = "ministry:member",
+  MinistryApproval = "ministry:approval",
+
+  // Organization (Platform Schema v2)
+  OrgPosition = "org:position",
+
+  // Member
+  MemberPerson = "member:person",
 }
 
 export const CountryCodes: CountryCode[] = [

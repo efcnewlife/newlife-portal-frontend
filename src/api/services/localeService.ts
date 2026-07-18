@@ -6,13 +6,13 @@ import { httpClient } from "./httpClient";
 
 export interface LocaleItem {
   id: string;
-  language_code: string;
-  script_code?: string | null;
-  region_code?: string | null;
+  languageCode: string;
+  scriptCode?: string | null;
+  regionCode?: string | null;
   name?: string | null;
-  native_name?: string | null;
-  is_active: boolean;
-  is_default: boolean;
+  nativeName?: string | null;
+  isActive: boolean;
+  isDefault: boolean;
 }
 
 export interface LocaleListResponse {

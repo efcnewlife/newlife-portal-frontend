@@ -1,4 +1,5 @@
 import type { AdminResourceType } from "@/const/resource";
+import type { AdminTranslationInput, AdminTranslationItem } from "@/types/translation";
 
 export interface ResourceParent {
   id: string;
@@ -25,6 +26,7 @@ export interface ResourceMenuItem {
   parent?: ResourceParent | null;
   created_at?: string;
   updated_at?: string;
+  translations?: AdminTranslationItem[];
 }
 
 export interface ResourceMenusResponse {
@@ -32,7 +34,7 @@ export interface ResourceMenusResponse {
 }
 
 export interface ResourceCreateData {
-  name: string;
+  name?: string;
   key: string;
   code: string;
   path: string;
@@ -42,6 +44,7 @@ export interface ResourceCreateData {
   description?: string;
   remark?: string;
   pid?: string;
+  translations?: AdminTranslationInput[];
 }
 
 export interface ResourceUpdateData {
@@ -55,6 +58,7 @@ export interface ResourceUpdateData {
   description?: string;
   remark?: string;
   pid?: string;
+  translations?: AdminTranslationInput[];
 }
 
 export interface ResourceChangeSequenceData {

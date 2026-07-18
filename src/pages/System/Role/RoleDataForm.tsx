@@ -1,4 +1,14 @@
-import { Checkbox, Input, Label, TextArea } from "@efcnewlife/newlife-ui";
+import type { AdminTranslationItem } from "@/types/translation";
+import TranslationTabsForm from "@/components/translation/TranslationTabsForm";
+import { useActiveLocales } from "@/hooks/useActiveLocales";
+import {
+  buildTranslationPayload,
+  createEmptyTranslationMap,
+  hydrateTranslationMap,
+  validateDefaultLocaleName,
+  type TranslationMap,
+} from "@/utils/translationForm";
+import { Checkbox, Input, Label } from "@efcnewlife/newlife-ui";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { useTranslation } from "react-i18next";
 import RolePermissionMatrix from "./RolePermissionMatrix";
@@ -10,6 +20,7 @@ export interface RoleFormValues {
   description?: string;
   remark?: string;
   permissions?: string[];
+  translations?: AdminTranslationItem[];
 }
 
 export interface RoleDataFormHandle {
@@ -25,40 +36,51 @@ const RoleDataForm = forwardRef<
   }
 >(function RoleDataForm({ mode, defaultValues }, ref) {
   const { t } = useTranslation();
+  const { locales, defaultLocaleId, loading, error } = useActiveLocales();
+
   const [code, setCode] = useState<string>(defaultValues?.code || "");
-  const [name, setName] = useState<string>(defaultValues?.name || "");
   const [isActive, setIsActive] = useState<boolean>(defaultValues?.isActive ?? true);
-  const [description, setDescription] = useState<string>(defaultValues?.description || "");
-  const [remark, setRemark] = useState<string>(defaultValues?.remark || "");
   const [permissions, setPermissions] = useState<string[]>(defaultValues?.permissions ? defaultValues.permissions : []);
+  const [translationMap, setTranslationMap] = useState<TranslationMap>({});
   const [errors, setErrors] = useState<{ code?: string; name?: string; permissions?: string }>({});
 
   useEffect(() => {
+    if (locales.length === 0) return;
     setCode(defaultValues?.code || "");
-    setName(defaultValues?.name || "");
     setIsActive(defaultValues?.isActive ?? true);
-    setDescription(defaultValues?.description || "");
-    setRemark(defaultValues?.remark || "");
     setPermissions(defaultValues?.permissions || []);
-  }, [defaultValues]);
+    setTranslationMap(
+      hydrateTranslationMap(locales, defaultValues?.translations, {
+        name: defaultValues?.name,
+        description: defaultValues?.description,
+        remark: defaultValues?.remark,
+      }),
+    );
+  }, [defaultValues, locales]);
+
+  useEffect(() => {
+    if (locales.length > 0 && Object.keys(translationMap).length === 0) {
+      setTranslationMap(createEmptyTranslationMap(locales));
+    }
+  }, [locales, translationMap]);
 
   const validate = (): boolean => {
     const nextErrors: { code?: string; name?: string; permissions?: string } = {};
     if (!code || code.trim() === "") nextErrors.code = t("system:role.form.validation.codeRequired");
-    if (!name || name.trim() === "") nextErrors.name = t("system:role.form.validation.nameRequired");
+    const name_error_key = validateDefaultLocaleName(translationMap, defaultLocaleId);
+    if (name_error_key) nextErrors.name = t(name_error_key);
     if (!permissions || permissions.length === 0) nextErrors.permissions = t("system:role.form.validation.permissionsRequired");
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
 
   const getValues = (): RoleFormValues => {
+    const translations = buildTranslationPayload(translationMap);
     return {
       code: code.trim(),
-      name,
       isActive,
-      description,
-      remark,
       permissions,
+      translations,
     };
   };
 
@@ -85,33 +107,25 @@ const RoleDataForm = forwardRef<
             clearable
           />
         </div>
-        <div>
-          <Input
-            id="name"
-            label={t("system:role.form.name.label")}
-            type="text"
-            placeholder={t("system:role.form.name.placeholder")}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            error={errors.name ?? undefined}
-            hint={t("system:role.form.name.hint")}
-            required
-            clearable
-          />
-        </div>
       </div>
 
-      <div>
-        <Checkbox id="isActive" label={t("system:role.form.checkboxActive")} checked={isActive} onChange={setIsActive} />
-      </div>
+      <Checkbox id="isActive" label={t("system:role.form.checkboxActive")} checked={isActive} onChange={setIsActive} />
 
-      <div>
-        <TextArea id="description" label={t("system:role.form.description.label")} rows={3} value={description} onChange={setDescription} />
-      </div>
-
-      <div>
-        <TextArea id="remark" label={t("system:role.form.remark.label")} rows={2} value={remark} onChange={setRemark} />
-      </div>
+      <TranslationTabsForm
+        locales={locales}
+        defaultLocaleId={defaultLocaleId}
+        value={translationMap}
+        onChange={setTranslationMap}
+        fields={["name", "description", "remark"]}
+        loading={loading}
+        error={error}
+        nameError={errors.name ? t(errors.name) : undefined}
+        labels={{
+          name: t("system:role.form.name.label"),
+          description: t("system:role.form.description.label"),
+          remark: t("system:role.form.remark.label"),
+        }}
+      />
 
       <div>
         <Label>{t("system:role.form.permissionsLabelRequired")}</Label>

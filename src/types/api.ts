@@ -1,4 +1,5 @@
 // Common API type definitions
+import type { AdminTranslationInput, AdminTranslationItem } from "@/types/translation";
 
 // Base API response type
 export interface ApiResponse<T = any> {
@@ -93,6 +94,7 @@ interface PermissionBase {
   isActive: boolean;
   description?: string;
   remark?: string;
+  translations?: AdminTranslationItem[];
 }
 
 export interface PermissionListItem extends PermissionBase {
@@ -124,13 +126,14 @@ export interface PermissionPage {
 }
 
 export interface PermissionCreate {
-  name: string;
+  name?: string;
   code: string;
   resource_id: string;
   verb_id: string;
   is_active: boolean;
   description?: string;
   remark?: string;
+  translations?: AdminTranslationInput[];
 }
 
 export interface PermissionUpdate extends PermissionCreate {}

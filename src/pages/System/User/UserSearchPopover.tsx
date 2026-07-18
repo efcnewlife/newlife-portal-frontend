@@ -11,7 +11,6 @@ export interface UserSearchFilters {
   is_active?: boolean;
   is_admin?: boolean;
   is_superuser?: boolean;
-  is_ministry?: boolean;
   gender?: Gender;
 }
 
@@ -175,24 +174,6 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
                 {getBooleanLabel(filters.is_superuser, t("system:user.search.toggleSuper.true"), t("system:user.search.toggleSuper.false"))}
               </Button>
             </div>
-
-            <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t("system:user.search.labelMinistryFilter")}</label>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleBooleanFilterChange("is_ministry")}
-                className={`w-full justify-start text-xs ${
-                  filters.is_ministry === true
-                    ? "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900 dark:text-orange-300"
-                    : filters.is_ministry === false
-                    ? "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300"
-                    : ""
-                }`}
-              >
-                {getBooleanLabel(filters.is_ministry, t("system:user.search.toggleMinistry.true"), t("system:user.search.toggleMinistry.false"))}
-              </Button>
-            </div>
           </div>
         </div>
 
@@ -218,7 +199,6 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
           filters.is_active !== undefined ||
           filters.is_admin !== undefined ||
           filters.is_superuser !== undefined ||
-          filters.is_ministry !== undefined ||
           filters.gender !== undefined) && (
           <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
             <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t("system:user.search.chipsTitle")}</div>
@@ -246,11 +226,6 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
               {filters.is_superuser !== undefined && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
                   {t("system:user.search.chipSuperPrefix")} {getBooleanLabel(filters.is_superuser, t("common:yes"), t("common:no"))}
-                </span>
-              )}
-              {filters.is_ministry !== undefined && (
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300">
-                  {t("system:user.search.chipMinistryPrefix")} {getBooleanLabel(filters.is_ministry, t("common:yes"), t("common:no"))}
                 </span>
               )}
               {filters.gender !== undefined && (

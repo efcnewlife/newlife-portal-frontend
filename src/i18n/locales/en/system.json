@@ -257,12 +257,13 @@
     "table": {
       "phoneNumber": "Phone number",
       "email": "Email",
-      "displayName": "Display name",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "preferredName": "Preferred name",
       "gender": "Gender",
       "verified": "Verified",
       "active": "Active",
       "admin": "Administrator",
-      "ministry": "Ministry",
       "lastLoginAt": "Last login",
       "createdAt": "Created at"
     },
@@ -322,7 +323,7 @@
     "search": {
       "popoverTitle": "Search users",
       "keywordLabel": "Keyword",
-      "keywordPlaceholder": "Search phone, email, or display name",
+      "keywordPlaceholder": "Search email or name",
       "sectionStatus": "Status filters",
       "labelVerifiedFilter": "Verified",
       "toggleVerified": {
@@ -388,7 +389,9 @@
         "phoneInvalid": "Enter a valid phone number.",
         "emailRequired": "Enter an email.",
         "emailInvalid": "Enter a valid email address.",
-        "displayNameTooLong": "Display name cannot exceed 64 characters.",
+        "firstNameTooLong": "First name cannot exceed 64 characters.",
+        "lastNameTooLong": "Last name cannot exceed 64 characters.",
+        "preferredNameTooLong": "Preferred name cannot exceed 64 characters.",
         "remarkTooLong": "Remark cannot exceed 500 characters."
       },
       "email": {
@@ -396,9 +399,17 @@
         "placeholder": "Enter email",
         "hint": "e.g. user@example.com"
       },
-      "displayName": {
-        "label": "Display name",
-        "placeholder": "Display name"
+      "firstName": {
+        "label": "First name",
+        "placeholder": "First name"
+      },
+      "lastName": {
+        "label": "Last name",
+        "placeholder": "Last name"
+      },
+      "preferredName": {
+        "label": "Preferred name",
+        "placeholder": "Preferred name"
       },
       "gender": {
         "label": "Gender",
@@ -420,7 +431,6 @@
       "labelActiveStatus": "Active state",
       "labelBackendAdmin": "Backend administrator",
       "labelSuperAdministrator": "Super administrator",
-      "labelMinistryStaff": "Ministry staff",
       "loadFailed": "Failed to load user",
       "labelUpdatedAt": "Updated at",
       "remarkHeading": "Remark"

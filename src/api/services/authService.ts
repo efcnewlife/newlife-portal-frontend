@@ -12,10 +12,13 @@ import { httpClient } from "./httpClient";
 interface AdminInfoResponse {
   id: string;
   email: string;
-  display_name: string;
+  first_name: string;
+  last_name?: string | null;
+  preferred_name?: string | null;
+  preferredName?: string | null;
   roles: string[];
   preferred_locale_id?: string;
-  // Removed permissions field; permission data is parsed from JWT scope
+  preferredLocaleId?: string;
   last_login_at?: string;
 }
 
@@ -34,15 +37,16 @@ function mapAdminToUser(admin: AdminInfoResponse, token?: string | null): User {
   
   return {
     id: admin.id,
-    username: admin.display_name || admin.email,
+    username: admin.email,
     email: admin.email,
-    firstName: undefined,
-    lastName: undefined,
+    firstName: admin.first_name || undefined,
+    lastName: admin.last_name || undefined,
+    preferredName: admin.preferred_name || admin.preferredName || undefined,
     avatar: "/images/user/default-avatar.jpg",
     status: "active",
     roles: roles,
     permissions: scopes, // Parsed from JWT token
-    preferredLocaleId: admin.preferred_locale_id,
+    preferredLocaleId: admin.preferred_locale_id || admin.preferredLocaleId,
     lastLoginAt: admin.last_login_at,
     createdAt: nowIso,
     updatedAt: nowIso,

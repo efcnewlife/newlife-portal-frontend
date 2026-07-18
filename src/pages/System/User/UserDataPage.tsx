@@ -7,6 +7,7 @@ import { Modal, Tooltip } from "@efcnewlife/newlife-ui";
 import { Gender, PopoverPosition, Resource } from "@/const/enums";
 import { useNotification } from "@/context/NotificationContext";
 import { useModal } from "@/hooks/useModal";
+import { format_admin_user_label } from "@/utils/userDisplayName";
 import { DateUtil } from "@/utils/dateUtil";
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MdCheck, MdClose, MdGroup } from "react-icons/md";
@@ -92,7 +93,6 @@ export default function UserDataPage() {
         is_active: appliedFilters.is_active,
         is_admin: appliedFilters.is_admin,
         is_superuser: appliedFilters.is_superuser,
-        is_ministry: appliedFilters.is_ministry,
         gender: appliedFilters.gender,
         deleted: showDeleted || undefined,
       } as Record<string, unknown>;
@@ -120,13 +120,6 @@ export default function UserDataPage() {
   const columns: DataTableColumn<UserDetail>[] = useMemo(
     () => [
       {
-        key: "phone_number",
-        label: t("system:user.table.phoneNumber"),
-        sortable: true,
-        width: "w-36",
-        tooltip: (row) => row.phone_number,
-      },
-      {
         key: "email",
         label: t("system:user.table.email"),
         sortable: true,
@@ -134,11 +127,26 @@ export default function UserDataPage() {
         tooltip: (row) => row.email,
       },
       {
-        key: "display_name",
-        label: t("system:user.table.displayName"),
+        key: "preferred_name",
+        label: t("system:user.table.preferredName"),
         sortable: true,
         width: "w-36",
-        tooltip: (row) => row.display_name || "",
+        render: (_value: unknown, row: UserDetail) => format_admin_user_label(row) || t("system:shared.notSet"),
+        tooltip: (row) => format_admin_user_label(row),
+      },
+      {
+        key: "first_name",
+        label: t("system:user.table.firstName"),
+        sortable: true,
+        width: "w-28",
+        render: (_value: unknown, row: UserDetail) => row.first_name || t("system:shared.notSet"),
+      },
+      {
+        key: "last_name",
+        label: t("system:user.table.lastName"),
+        sortable: true,
+        width: "w-28",
+        render: (_value: unknown, row: UserDetail) => row.last_name || t("system:shared.notSet"),
       },
       {
         key: "gender",
@@ -215,25 +223,6 @@ export default function UserDataPage() {
                 </Tooltip>
               )}
             </div>
-          );
-        },
-      },
-      {
-        key: "is_ministry",
-        label: t("system:user.table.ministry"),
-        sortable: true,
-        width: "w-18",
-        render: (_value: unknown, row: UserDetail) => {
-          return (
-            <span
-              className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${
-                row.is_ministry
-                  ? "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400"
-                  : "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400"
-              }`}
-            >
-              {row.is_ministry ? <MdCheck size={16} /> : <MdClose size={16} />}
-            </span>
           );
         },
       },
@@ -462,6 +451,9 @@ export default function UserDataPage() {
   );
 
   // Submit handlers
+  const build_display_name = (values: UserFormValues) =>
+    values.preferred_name?.trim() || [values.first_name, values.last_name].filter(Boolean).join(" ").trim() || undefined;
+
   const handleSubmit = async (values: UserFormValues) => {
     try {
       setSubmitting(true);
@@ -479,6 +471,7 @@ export default function UserDataPage() {
         }
         await userService.create({
           ...restValues,
+          display_name: build_display_name(values),
           password,
           password_confirm,
         } as Parameters<typeof userService.create>[0]);
@@ -486,28 +479,26 @@ export default function UserDataPage() {
           variant: "success",
           title: t("system:user.feedback.createSuccess.title"),
           description: t("system:user.feedback.createSuccess.desc", {
-            name: values.display_name || values.email || "",
+            name: format_admin_user_label(values) || values.email || "",
           }),
         });
       } else if (formMode === "edit" && editing?.id) {
         // Edit flow omits password (UserDataForm strips it)
         await userService.update(editing.id, {
-          phone_number: values.phone_number,
           email: values.email,
           verified: values.verified,
           is_active: values.is_active,
           is_superuser: values.is_superuser,
           is_admin: values.is_admin,
-          display_name: values.display_name,
+          display_name: build_display_name(values),
           gender: values.gender,
-          is_ministry: values.is_ministry,
           remark: values.remark,
         });
         showNotification({
           variant: "success",
           title: t("system:user.feedback.updateSuccess.title"),
           description: t("system:user.feedback.updateSuccess.desc", {
-            name: values.display_name || values.email || "",
+            name: format_admin_user_label(values) || values.email || "",
           }),
         });
       }
@@ -538,10 +529,10 @@ export default function UserDataPage() {
         title: permanent ? t("system:user.feedback.deleteSuccessPermanent.title") : t("system:user.feedback.deleteSuccessSoft.title"),
         description: permanent
           ? t("system:user.feedback.deleteSuccessPermanent.desc", {
-              name: deletedUser.display_name || deletedUser.email || "",
+              name: format_admin_user_label(deletedUser) || deletedUser.email || "",
             })
           : t("system:user.feedback.deleteSuccessSoft.desc", {
-              name: deletedUser.display_name || deletedUser.email || "",
+              name: format_admin_user_label(deletedUser) || deletedUser.email || "",
             }),
       });
       closeDeleteModal();
@@ -629,16 +620,15 @@ export default function UserDataPage() {
             editing
               ? {
                   id: editing.id,
-                  phone_number: editing.phone_number,
                   email: editing.email,
                   verified: editing.verified,
                   is_active: editing.is_active,
                   is_superuser: editing.is_superuser,
                   is_admin: editing.is_admin,
-                  is_ministry: editing.is_ministry ?? false,
-                  display_name: editing.display_name,
+                  first_name: editing.first_name || "",
+                  last_name: editing.last_name || "",
+                  preferred_name: editing.preferred_name || "",
                   gender: editing.gender,
-                  remark: editing.remark,
                 }
               : null
           }
@@ -675,7 +665,7 @@ export default function UserDataPage() {
         title={
           bindingUser
             ? t("system:user.modal.bindRoleTitle.withName", {
-                name: bindingUser.display_name || bindingUser.email || "",
+                name: format_admin_user_label(bindingUser) || bindingUser.email || "",
               })
             : t("system:user.modal.bindRoleTitle")
         }

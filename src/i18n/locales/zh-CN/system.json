@@ -257,12 +257,13 @@
     "table": {
       "phoneNumber": "手机号码",
       "email": "电子邮件",
-      "displayName": "显示名称",
+      "firstName": "名字",
+      "lastName": "姓氏",
+      "preferredName": "惯用名称",
       "gender": "性别",
       "verified": "已验证",
       "active": "启用",
       "admin": "管理员",
-      "ministry": "服事",
       "lastLoginAt": "最后登入",
       "createdAt": "建立时间"
     },
@@ -322,7 +323,7 @@
     "search": {
       "popoverTitle": "搜寻用户",
       "keywordLabel": "关键字搜寻",
-      "keywordPlaceholder": "搜寻手机号码、电子邮件、显示名称",
+      "keywordPlaceholder": "搜索电子邮件或姓名",
       "sectionStatus": "状态筛选",
       "labelVerifiedFilter": "已验证",
       "toggleVerified": {
@@ -388,7 +389,9 @@
         "phoneInvalid": "请输入有效的手机号码。",
         "emailRequired": "请输入电子邮件。",
         "emailInvalid": "请输入有效的电子邮件格式。",
-        "displayNameTooLong": "显示名称不能超过 64 个字符。",
+        "firstNameTooLong": "名字不能超过 64 个字符。",
+        "lastNameTooLong": "姓氏不能超过 64 个字符。",
+        "preferredNameTooLong": "惯用名称不能超过 64 个字符。",
         "remarkTooLong": "备注不能超过 500 个字符。"
       },
       "email": {
@@ -396,9 +399,17 @@
         "placeholder": "请输入电子邮件",
         "hint": "例如：user@example.com"
       },
-      "displayName": {
-        "label": "显示名称",
-        "placeholder": "用户显示名称"
+      "firstName": {
+        "label": "名字",
+        "placeholder": "名字"
+      },
+      "lastName": {
+        "label": "姓氏",
+        "placeholder": "姓氏"
+      },
+      "preferredName": {
+        "label": "惯用名称",
+        "placeholder": "惯用名称"
       },
       "gender": {
         "label": "性别",
@@ -420,7 +431,6 @@
       "labelActiveStatus": "启用状态",
       "labelBackendAdmin": "后台管理员",
       "labelSuperAdministrator": "超级管理员",
-      "labelMinistryStaff": "服事人员",
       "loadFailed": "载入用户详情失败",
       "labelUpdatedAt": "更新时间",
       "remarkHeading": "备注"

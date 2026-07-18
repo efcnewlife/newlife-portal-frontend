@@ -1,0 +1,260 @@
+{
+  "shared": {
+    "yes": "是",
+    "no": "否",
+    "active": "啟用",
+    "allRooms": "全部場地",
+    "selectRoom": "選擇場地",
+    "loadFailed": "載入失敗，請稍後再試。",
+    "saveFailed": "儲存失敗，請稍後再試。",
+    "deleteFailed": "刪除失敗，請稍後再試。",
+    "cancelFailed": "取消预约失败，请稍后再试。",
+    "searchChipsTitle": "已选条件",
+    "searchChipKeyword": "关键字：",
+    "searchChipRoom": "场地："
+  },
+  "room": {
+    "page": { "title": "場地管理", "description": "管理可預約場地與空間" },
+    "table": {
+      "code": "代碼",
+      "name": "名稱",
+      "roomNumber": "房號",
+      "capacity": "容量",
+      "isActive": "啟用",
+      "createdAt": "建立時間",
+      "updatedAt": "更新時間"
+    },
+    "modal": {
+      "createTitle": "新增場地",
+      "editTitle": "編輯場地",
+      "detailTitle": "場地詳情",
+      "deleteSoft": "刪除場地",
+      "deletePermanent": "永久刪除場地"
+    },
+    "form": {
+      "code": "代碼",
+      "name": "名稱",
+      "roomNumber": "房號",
+      "capacity": "容量",
+      "capacityHint": "选填。未标明容量时可留空。",
+      "description": "說明",
+      "codeRequired": "請輸入代碼",
+      "nameRequired": "請輸入名稱"
+    },
+    "deleteForm": { "entityLabel": "場地" }
+  },
+  "roomSlotTemplate": {
+    "page": { "title": "時段範本", "description": "設定各場地週期性可預約時段" },
+    "table": {
+      "name": "名稱",
+      "daysOfWeek": "適用星期",
+      "startTime": "開始",
+      "endTime": "結束",
+      "slotDuration": "時段(分)",
+      "isActive": "啟用"
+    },
+    "modal": {
+      "createTitle": "新增時段範本",
+      "editTitle": "編輯時段範本",
+      "deleteSoft": "刪除時段範本",
+      "deletePermanent": "永久刪除時段範本"
+    },
+    "form": {
+      "name": "範本名稱",
+      "daysOfWeek": "適用星期",
+      "daysOfWeekRequired": "請至少選擇一天",
+      "startTime": "開始時間",
+      "endTime": "結束時間",
+      "slotDurationMinutes": "時段長度（分鐘）",
+      "effectiveFrom": "生效日",
+      "effectiveTo": "失效日",
+      "nameRequired": "請輸入名稱"
+    },
+    "deleteForm": { "entityLabel": "时段范本" },
+    "search": {
+      "popoverTitle": "搜索时段范本",
+      "keywordLabel": "关键字",
+      "keywordPlaceholder": "搜索范本名称"
+    },
+    "weekdayPresets": {
+      "weekdays": "週一至週五",
+      "everyDay": "每天",
+      "clear": "清除"
+    },
+    "days": {
+      "0": "星期一",
+      "1": "星期二",
+      "2": "星期三",
+      "3": "星期四",
+      "4": "星期五",
+      "5": "星期六",
+      "6": "星期日"
+    }
+  },
+  "rentalRate": {
+    "page": { "title": "租金费率", "description": "管理各场地计价方式" },
+    "table": {
+      "name": "名称",
+      "room": "场地",
+      "billingUnit": "计费单位",
+      "amount": "金额",
+      "unitAmount": "单价",
+      "currency": "币别",
+      "applicability": "适用条件",
+      "isDefault": "默认",
+      "isActive": "启用"
+    },
+    "modal": {
+      "createTitle": "新增费率",
+      "editTitle": "编辑费率",
+      "deleteSoft": "删除费率",
+      "deletePermanent": "永久删除费率"
+    },
+    "form": {
+      "billingUnit": "计费单位",
+      "unitAmount": "单价",
+      "currency": "币别",
+      "effectiveFrom": "生效日",
+      "effectiveTo": "失效日",
+      "isDefault": "默认费率",
+      "remark": "备注",
+      "facilityRequired": "请选择场地",
+      "unitAmountRequired": "请输入单价",
+      "applicability": "适用条件",
+      "applicabilityHint": "依计费时数决定此费率是否适用",
+      "applicabilityMode": "模式",
+      "applicabilityHours": "时数",
+      "applicabilityMinHours": "最少时数",
+      "applicabilityMaxHours": "最多时数",
+      "applicabilityMaxExclusive": "上限为开区间（时数 < 最大值）",
+      "applicabilityPreview": "预览",
+      "hoursRequired": "请输入时数",
+      "rangeInvalid": "最少时数必须小于最多时数"
+    },
+    "applicability": {
+      "modes": {
+        "always": "一律适用",
+        "hours_lt": "时数小于",
+        "hours_gte": "时数至少",
+        "hours_range": "时数区间"
+      },
+      "summary": {
+        "always": "一律适用",
+        "hoursLt": "< {{hours}} 小时",
+        "hoursGte": "≥ {{hours}} 小时",
+        "hoursRange": "{{min}}–{{max}} 小时",
+        "unknown": "自定义"
+      }
+    },
+    "billingUnits": {
+      "hourly": "每小时",
+      "daily_flat": "每日定价",
+      "per_slot": "每时段",
+      "flat_per_booking": "每笔定价"
+    },
+    "deleteForm": { "entityLabel": "费率" },
+    "search": {
+      "popoverTitle": "搜索租金费率",
+      "keywordLabel": "关键字",
+      "keywordPlaceholder": "搜索名称、说明或备注"
+    }
+  },
+  "booking": {
+    "page": { "title": "預約管理", "description": "檢視與管理場地預約" },
+    "table": {
+      "user": "使用者",
+      "facility": "場地",
+      "bookingType": "類型",
+      "startAt": "開始",
+      "endAt": "結束",
+      "status": "狀態",
+      "quotedAmount": "報價"
+    },
+    "modal": { "detailTitle": "預約詳情", "cancelTitle": "取消預約" },
+    "detail": {
+      "userEmail": "電子郵件",
+      "status": "狀態",
+      "bookingType": "預約類型",
+      "missionAligned": "宣教對齊",
+      "subtotal": "小計",
+      "discount": "折扣",
+      "surcharge": "附加費",
+      "deposit": "訂金",
+      "quoted": "報價金額",
+      "cancelReason": "取消原因",
+      "rooms": "場地明細",
+      "slots": "時段"
+    },
+    "cancel": {
+      "reason": "取消原因",
+      "scope": "範圍",
+      "scopeSingle": "僅此筆",
+      "confirm": "確認取消"
+    },
+    "status": {
+      "draft": "草稿",
+      "confirmed": "已確認",
+      "cancelled": "已取消",
+      "overridden": "已覆寫"
+    },
+    "bookingType": {
+      "one_time": "單次",
+      "recurring": "週期"
+    }
+  },
+  "member": {
+    "page": { "title": "會員", "description": "具事工身分之預約使用者" },
+    "table": {
+      "email": "電子郵件",
+      "displayName": "顯示名稱",
+      "ministries": "事工",
+      "lastLoginAt": "上次登入"
+    },
+    "modal": { "detailTitle": "會員詳情" }
+  },
+  "overrideLog": {
+    "page": { "title": "覆寫紀錄", "description": "優先預約覆寫稽核紀錄" },
+    "table": {
+      "facility": "場地",
+      "outcome": "結果",
+      "reason": "原因",
+      "overriddenBy": "操作者",
+      "createdAt": "建立時間"
+    }
+  },
+  "ministry": {
+    "page": { "title": "事工管理", "description": "管理事工與優先預約設定" },
+    "table": {
+      "name": "名稱",
+      "status": "狀態",
+      "hasPriorityBooking": "優先預約",
+      "isActive": "啟用",
+      "createdAt": "建立時間",
+      "updatedAt": "更新時間"
+    },
+    "modal": {
+      "createTitle": "新增事工",
+      "editTitle": "編輯事工",
+      "detailTitle": "事工詳情",
+      "deleteSoft": "刪除事工",
+      "deletePermanent": "永久刪除事工"
+    },
+    "form": {
+      "name": "名稱",
+      "hasPriorityBooking": "優先預約",
+      "nameRequired": "請輸入名稱"
+    },
+    "status": {
+      "draft": "草稿",
+      "pending_approval": "待審核",
+      "active": "啟用中",
+      "rejected": "已拒絕",
+      "inactive": "停用"
+    },
+    "deleteForm": { "entityLabel": "事工" }
+  },
+  "ministryMember": {
+    "page": { "title": "事工成員", "description": "依事工篩選成員清單" },
+    "filter": { "ministry": "事工" }
+  }
+}

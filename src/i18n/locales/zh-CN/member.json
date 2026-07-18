@@ -1,0 +1,30 @@
+{
+  "shared": {
+    "loadFailed": "加载数据失败，请再试一次。",
+    "saveFailed": "保存失败，请再试一次。"
+  },
+  "person": {
+    "page": {
+      "title": "会友",
+      "description": "管理教会会友"
+    },
+    "table": {
+      "legalName": "法定姓名",
+      "displayName": "显示名称",
+      "email": "电子邮件",
+      "userId": "关联账号"
+    },
+    "modal": {
+      "createTitle": "新增会友",
+      "editTitle": "编辑会友",
+      "detailTitle": "会友详情"
+    },
+    "form": {
+      "legalName": "法定姓名",
+      "linkUser": "关联用户账号",
+      "selectUser": "选择用户",
+      "noUser": "尚未关联账号",
+      "legalNameRequired": "请输入法定姓名"
+    }
+  }
+}

@@ -1,10 +1,12 @@
 import { ensure_msal_ready, MSAL_LOGIN_SCOPES } from "@/auth/msalInstance";
 import { localeService } from "@/api";
 import { IS_SKIP_AUTH } from "@/config/env";
-import i18n from "@/i18n";
+import i18n, { build_locale_code, change_app_language } from "@/i18n";
 import { getRolesFromToken, getScopesFromToken, hasPermissionInScopes } from "@/utils/jwt";
+import { resolve_locale_id_for_language_code } from "@/utils/localeResolve";
 import { createContext, ReactNode, useContext, useEffect, useReducer } from "react";
 import { authService } from "../api/services/authService";
+import { userService } from "../api/services/userService";
 import type { AuthState, LoginCredentials, User } from "../types/auth";
 
 // Auth action type
@@ -99,10 +101,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (!locale) {
       return;
     }
-    const localeCode = [locale.language_code, locale.script_code, locale.region_code].filter(Boolean).join("-");
-    if (localeCode && i18n.language !== localeCode) {
-      await i18n.changeLanguage(localeCode);
+    const localeCode = build_locale_code(locale.languageCode, locale.scriptCode, locale.regionCode);
+    await change_app_language(localeCode);
+  };
+
+  const persist_preferred_locale_from_current_ui = async (user: User): Promise<User> => {
+    const localeResponse = await localeService.list();
+    const items = localeResponse.data?.items ?? [];
+    const locale_id = resolve_locale_id_for_language_code(items, i18n.language);
+    if (!locale_id) {
+      return user;
     }
+    if (locale_id !== user.preferredLocaleId) {
+      await userService.updateCurrentUserPreferredLocale(locale_id);
+    }
+    return { ...user, preferredLocaleId: locale_id };
   };
 
   // Initialize auth state
@@ -184,10 +197,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (response.success && response.data) {
         // Re-read token from authService to ensure correct storage location
         const token = authService.getToken();
-        await syncPreferredLanguageFromAuthUser(response.data.user);
+        const user_with_locale = await persist_preferred_locale_from_current_ui(response.data.user);
+        await syncPreferredLanguageFromAuthUser(user_with_locale);
         dispatch({
           type: "AUTH_SUCCESS",
-          payload: { user: response.data.user, token: token || "" },
+          payload: { user: user_with_locale, token: token || "" },
         });
       } else {
         dispatch({ type: "AUTH_FAILURE", payload: response.message || "Login failed" });
@@ -221,10 +235,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const response = await authService.loginWithMicrosoft(id_token, remember_me);
       if (response.success && response.data) {
         const token = authService.getToken();
-        await syncPreferredLanguageFromAuthUser(response.data.user);
+        const user_with_locale = await persist_preferred_locale_from_current_ui(response.data.user);
+        await syncPreferredLanguageFromAuthUser(user_with_locale);
         dispatch({
           type: "AUTH_SUCCESS",
-          payload: { user: response.data.user, token: token || "" },
+          payload: { user: user_with_locale, token: token || "" },
         });
       } else {
         dispatch({ type: "AUTH_FAILURE", payload: response.message || "Microsoft sign-in failed" });

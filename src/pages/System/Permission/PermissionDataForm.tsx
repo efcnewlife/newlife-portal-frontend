@@ -1,19 +1,30 @@
 import { resourceService, type ResourceMenuItem } from "@/api/services/resourceService";
 import { verbService, type VerbItem } from "@/api/services/verbService";
+import TranslationTabsForm from "@/components/translation/TranslationTabsForm";
+import { useActiveLocales } from "@/hooks/useActiveLocales";
+import type { AdminTranslationItem } from "@/types/translation";
 import { resolveIcon } from "@/utils/icon-resolver";
+import {
+  buildTranslationPayload,
+  createEmptyTranslationMap,
+  hydrateTranslationMap,
+  validateDefaultLocaleName,
+  type TranslationMap,
+} from "@/utils/translationForm";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Checkbox, ComboBox, Input, Select, TextArea } from "@efcnewlife/newlife-ui";
+import { Button, Checkbox, ComboBox, Input, Select } from "@efcnewlife/newlife-ui";
 
 export interface PermissionFormValues {
   id?: string;
-  name: string;
+  name?: string;
   code: string;
   resourceId: string;
   verbId: string;
   isActive: boolean;
   description?: string;
   remark?: string;
+  translations?: AdminTranslationItem[];
 }
 
 interface PermissionDataFormProps {
@@ -26,15 +37,13 @@ interface PermissionDataFormProps {
 
 const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultValues, onSubmit, onCancel, submitting }) => {
   const { t } = useTranslation();
-  const [values, setValues] = useState<PermissionFormValues>({
-    name: "",
-    code: "",
-    resourceId: "",
-    verbId: "",
-    isActive: true,
-    description: "",
-    remark: "",
-  });
+  const { locales, defaultLocaleId, loading: localesLoading, error: localesError } = useActiveLocales();
+
+  const [code, setCode] = useState("");
+  const [resourceId, setResourceId] = useState("");
+  const [verbId, setVerbId] = useState("");
+  const [isActive, setIsActive] = useState(true);
+  const [translationMap, setTranslationMap] = useState<TranslationMap>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [resources, setResources] = useState<ResourceMenuItem[]>([]);
   const [verbs, setVerbs] = useState<VerbItem[]>([]);
@@ -61,54 +70,59 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
   }, []);
 
   useEffect(() => {
+    if (locales.length === 0) return;
     if (defaultValues) {
-      setValues({
-        id: defaultValues.id,
-        name: defaultValues.name || "",
-        code: defaultValues.code || "",
-        resourceId: defaultValues.resourceId || "",
-        verbId: defaultValues.verbId || "",
-        isActive: defaultValues.isActive ?? true,
-        description: defaultValues.description || "",
-        remark: defaultValues.remark || "",
-      });
+      setCode(defaultValues.code || "");
+      setResourceId(defaultValues.resourceId || "");
+      setVerbId(defaultValues.verbId || "");
+      setIsActive(defaultValues.isActive ?? true);
+      setTranslationMap(
+        hydrateTranslationMap(locales, defaultValues.translations, {
+          name: defaultValues.name,
+          description: defaultValues.description,
+          remark: defaultValues.remark,
+        }),
+      );
     } else {
-      setValues({
-        name: "",
-        code: "",
-        resourceId: "",
-        verbId: "",
-        isActive: true,
-        description: "",
-        remark: "",
-      });
+      setCode("");
+      setResourceId("");
+      setVerbId("");
+      setIsActive(true);
+      setTranslationMap(createEmptyTranslationMap(locales));
     }
-  }, [defaultValues]);
+  }, [defaultValues, locales]);
+
+  useEffect(() => {
+    if (locales.length > 0 && Object.keys(translationMap).length === 0) {
+      setTranslationMap(createEmptyTranslationMap(locales));
+    }
+  }, [locales, translationMap]);
 
   const validate = (): boolean => {
     const next: Record<string, string> = {};
 
-    if (!values.name || values.name.trim().length === 0) {
-      next.name = t("system:permission.form.validation.nameRequired");
-    }
+    const name_error_key = validateDefaultLocaleName(translationMap, defaultLocaleId);
+    if (name_error_key) next.name = t(name_error_key);
 
-    if (!values.code || values.code.trim().length === 0) {
+    if (!code || code.trim().length === 0) {
       next.code = t("system:permission.form.validation.codeRequired");
     }
 
-    if (!values.resourceId) {
+    if (!resourceId) {
       next.resourceId = t("system:permission.form.validation.resourceRequired");
     }
 
-    if (!values.verbId) {
+    if (!verbId) {
       next.verbId = t("system:permission.form.validation.verbRequired");
     }
 
-    if (values.description && values.description.length > 500) {
+    const default_description = defaultLocaleId ? translationMap[defaultLocaleId]?.description : undefined;
+    if (default_description && default_description.length > 500) {
       next.description = t("system:permission.form.validation.descriptionTooLong");
     }
 
-    if (values.remark && values.remark.length > 500) {
+    const default_remark = defaultLocaleId ? translationMap[defaultLocaleId]?.remark : undefined;
+    if (default_remark && default_remark.length > 500) {
       next.remark = t("system:permission.form.validation.remarkTooLong");
     }
 
@@ -119,7 +133,17 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    await onSubmit(values);
+
+    const translations = buildTranslationPayload(translationMap);
+
+    await onSubmit({
+      id: defaultValues?.id,
+      code: code.trim(),
+      resourceId,
+      verbId,
+      isActive,
+      translations,
+    });
   };
 
   return (
@@ -127,27 +151,12 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Input
-            id="name"
-            label={t("system:permission.form.displayName.label")}
-            type="text"
-            placeholder={t("system:permission.form.displayName.placeholder")}
-            value={values.name}
-            onChange={(e) => setValues((v) => ({ ...v, name: e.target.value }))}
-            error={errors.name}
-            hint={t("system:permission.form.displayName.hint")}
-            required
-            clearable
-          />
-        </div>
-
-        <div>
-          <Input
             id="code"
             label={t("system:permission.form.code.label")}
             type="text"
             placeholder={t("system:permission.form.code.placeholder")}
-            value={values.code}
-            onChange={(e) => setValues((v) => ({ ...v, code: e.target.value }))}
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
             error={errors.code}
             hint={t("system:permission.form.code.hint")}
             required
@@ -155,6 +164,22 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
           />
         </div>
       </div>
+
+      <TranslationTabsForm
+        locales={locales}
+        defaultLocaleId={defaultLocaleId}
+        value={translationMap}
+        onChange={setTranslationMap}
+        fields={["name", "description", "remark"]}
+        loading={localesLoading}
+        error={localesError}
+        nameError={errors.name}
+        labels={{
+          name: t("system:permission.form.displayName.label"),
+          description: t("system:permission.form.description.label"),
+          remark: t("system:permission.form.remark.label"),
+        }}
+      />
 
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -172,8 +197,8 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
                       icon: r.icon ? resolveIcon(r.icon, { className: "size-4" }).icon : undefined,
                     }))
             }
-            value={values.resourceId || null}
-            onChange={(value) => setValues((v) => ({ ...v, resourceId: value || "" }))}
+            value={resourceId || null}
+            onChange={(value) => setResourceId(value || "")}
             placeholder={loading ? t("system:permission.form.comboResourcePlaceholder.loading") : t("system:permission.form.comboResourcePlaceholder.idle")}
             disabled={loading}
             error={errors.resourceId}
@@ -197,8 +222,8 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
                     })),
                   ]
             }
-            value={values.verbId}
-            onChange={(value) => setValues((v) => ({ ...v, verbId: value as string }))}
+            value={verbId}
+            onChange={(value) => setVerbId(value as string)}
             error={errors.verbId}
             placeholder={t("system:permission.form.verb.placeholder")}
             disabled={loading}
@@ -212,35 +237,9 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
         <div className="space-y-3">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t("system:permission.form.sectionStatus")}</label>
           <div className="space-y-2">
-            <Checkbox checked={values.isActive} onChange={(checked) => setValues((v) => ({ ...v, isActive: checked }))} label={t("system:permission.form.checkboxActive")} />
+            <Checkbox checked={isActive} onChange={(checked) => setIsActive(checked)} label={t("system:permission.form.checkboxActive")} />
           </div>
         </div>
-      </div>
-
-      <div>
-        <TextArea
-          id="description"
-          label={t("system:permission.form.description.label")}
-          rows={3}
-          placeholder={t("system:permission.form.description.placeholder")}
-          value={values.description || ""}
-          onChange={(value) => setValues((v) => ({ ...v, description: value }))}
-          error={errors.description}
-          hint={errors.description || ""}
-        />
-      </div>
-
-      <div>
-        <TextArea
-          id="remark"
-          label={t("system:permission.form.remark.label")}
-          rows={3}
-          placeholder={t("system:permission.form.remark.placeholder")}
-          value={values.remark || ""}
-          onChange={(value) => setValues((v) => ({ ...v, remark: value }))}
-          error={errors.remark}
-          hint={errors.remark || ""}
-        />
       </div>
 
       <div className="flex justify-end gap-3 pt-2">

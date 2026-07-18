@@ -2,6 +2,7 @@
 import { API_ENDPOINTS, REQUEST_CONFIG } from "@/api";
 import i18n from "@/i18n";
 import type { ApiError, ApiResponse, TokenResponse } from "@/types/api";
+import { deep_keys_to_snake_case } from "@/utils/caseConvert";
 import { notificationManager } from "@/utils/notificationManager";
 import axios, {
   AxiosError,
@@ -324,7 +325,7 @@ class HttpClient {
 
   // Set up default interceptors
   private setupDefaultInterceptors(): void {
-    // Default request interceptor - add auth token
+    // Default request interceptor - add auth token and snake_case outbound params/body
     this.addRequestInterceptor(async (config) => {
       // Get token from authService; it chooses storage based on rememberMe
       const token = this.getTokenFromStorage();
@@ -334,6 +335,15 @@ class HttpClient {
           Authorization: `Bearer ${token}`,
         };
       }
+
+      if (config.data !== undefined && !(config.data instanceof FormData)) {
+        config.data = deep_keys_to_snake_case(config.data);
+      }
+
+      if (config.params && typeof config.params === "object" && !(config.params instanceof URLSearchParams)) {
+        config.params = deep_keys_to_snake_case(config.params) as typeof config.params;
+      }
+
       return config;
     });
 

@@ -52,5 +52,13 @@
       "restoring": "Restoring...",
       "confirm": "Confirm restore"
     }
+  },
+  "translation": {
+    "tabsLabel": "Localized content",
+    "name": "Name",
+    "description": "Description",
+    "remark": "Remark",
+    "defaultLocaleRequired": "Name is required for the default locale.",
+    "loadLocalesFailed": "Failed to load supported locales."
   }
 }

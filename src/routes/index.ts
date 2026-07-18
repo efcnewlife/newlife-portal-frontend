@@ -7,6 +7,9 @@ import { dashboardRoutes } from "./modules/dashboard";
 import { demoRoutes } from "./modules/demo";
 import { errorRoutes } from "./modules/errors";
 import { systemMenuRoutes } from "./modules/System";
+import { facilityMenuRoutes } from "./modules/Facility";
+import { ministryMenuRoutes } from "./modules/Ministry";
+import { orgMenuRoutes } from "./modules/Org";
 
 // Global initialization flag
 let isRoutesInitialized = false;
@@ -23,7 +26,7 @@ export function initializeRoutes(): void {
   }
 
   // Register all module routes (add demo module in development)
-  const modules = [authRoutes, dashboardRoutes, errorRoutes, systemMenuRoutes];
+  const modules = [authRoutes, dashboardRoutes, errorRoutes, systemMenuRoutes, facilityMenuRoutes, ministryMenuRoutes, orgMenuRoutes];
   if (IS_DEV) {
     modules.push(demoRoutes);
   }

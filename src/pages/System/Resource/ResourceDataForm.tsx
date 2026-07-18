@@ -1,12 +1,22 @@
 import { AdminResourceType } from "@/api/services/resourceService";
+import TranslationTabsForm from "@/components/translation/TranslationTabsForm";
+import { useActiveLocales } from "@/hooks/useActiveLocales";
+import type { AdminTranslationItem } from "@/types/translation";
 import { getCommonIconNames, useIconResolver } from "@/utils/icon-resolver";
+import {
+  buildTranslationPayload,
+  createEmptyTranslationMap,
+  hydrateTranslationMap,
+  validateDefaultLocaleName,
+  type TranslationMap,
+} from "@/utils/translationForm";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Checkbox, Input, Select, TextArea } from "@efcnewlife/newlife-ui";
+import { Button, Checkbox, Input, Select } from "@efcnewlife/newlife-ui";
 
 export interface ResourceFormValues {
   id?: string;
-  name: string;
+  name?: string;
   key: string;
   code: string;
   icon: string;
@@ -16,6 +26,7 @@ export interface ResourceFormValues {
   description?: string;
   remark?: string;
   pid?: string;
+  translations?: AdminTranslationItem[];
 }
 
 interface ResourceDataFormProps {
@@ -29,44 +40,57 @@ interface ResourceDataFormProps {
 
 const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues, parentResource, onSubmit, onCancel, submitting }) => {
   const { t } = useTranslation();
-  const [values, setValues] = useState<ResourceFormValues>({
-    name: "",
-    key: "",
-    code: "",
-    icon: "",
-    path: "",
-    type: AdminResourceType.GENERAL,
-    is_visible: true,
-    description: "",
-    remark: "",
-    pid: undefined,
-  });
+  const { locales, defaultLocaleId, loading: localesLoading, error: localesError } = useActiveLocales();
+
+  const [key, setKey] = useState("");
+  const [code, setCode] = useState("");
+  const [icon, setIcon] = useState("");
+  const [path, setPath] = useState("");
+  const [type, setType] = useState<AdminResourceType>(AdminResourceType.GENERAL);
+  const [is_visible, setIsVisible] = useState(true);
+  const [pid, setPid] = useState<string | undefined>();
+  const [translationMap, setTranslationMap] = useState<TranslationMap>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    if (locales.length === 0) return;
     if (defaultValues) {
-      setValues({
-        id: defaultValues.id,
-        name: defaultValues.name || "",
-        key: defaultValues.key || "",
-        code: defaultValues.code || "",
-        icon: defaultValues.icon || "",
-        path: defaultValues.path || "",
-        type: defaultValues.type ?? AdminResourceType.GENERAL,
-        is_visible: defaultValues.is_visible ?? true,
-        description: defaultValues.description || "",
-        remark: defaultValues.remark || "",
-        pid: defaultValues.pid ?? undefined,
-      });
+      setKey(defaultValues.key || "");
+      setCode(defaultValues.code || "");
+      setIcon(defaultValues.icon || "");
+      setPath(defaultValues.path || "");
+      setType(defaultValues.type ?? AdminResourceType.GENERAL);
+      setIsVisible(defaultValues.is_visible ?? true);
+      setPid(defaultValues.pid ?? undefined);
+      setTranslationMap(
+        hydrateTranslationMap(locales, defaultValues.translations, {
+          name: defaultValues.name,
+          description: defaultValues.description,
+          remark: defaultValues.remark,
+        }),
+      );
     } else if (parentResource) {
-      setValues((prev) => ({
-        ...prev,
-        pid: parentResource.id,
-      }));
+      setPid(parentResource.id);
+      setTranslationMap(createEmptyTranslationMap(locales));
+    } else {
+      setKey("");
+      setCode("");
+      setIcon("");
+      setPath("");
+      setType(AdminResourceType.GENERAL);
+      setIsVisible(true);
+      setPid(undefined);
+      setTranslationMap(createEmptyTranslationMap(locales));
     }
-  }, [defaultValues, parentResource]);
+  }, [defaultValues, parentResource, locales]);
 
-  const iconResult = useIconResolver(values.icon, {
+  useEffect(() => {
+    if (locales.length > 0 && Object.keys(translationMap).length === 0) {
+      setTranslationMap(createEmptyTranslationMap(locales));
+    }
+  }, [locales, translationMap]);
+
+  const iconResult = useIconResolver(icon, {
     library: "md",
     className: "size-5",
   });
@@ -76,38 +100,37 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!values.name.trim()) {
-      newErrors.name = t("system:resource.form.validation.nameRequired");
-    }
+    const name_error_key = validateDefaultLocaleName(translationMap, defaultLocaleId);
+    if (name_error_key) newErrors.name = t(name_error_key);
 
-    if (!values.key.trim()) {
+    if (!key.trim()) {
       newErrors.key = t("system:resource.form.validation.keyRequired");
-    } else if (!/^[a-zA-Z0-9_]+$/.test(values.key)) {
+    } else if (!/^[a-zA-Z0-9_]+$/.test(key)) {
       newErrors.key = t("system:resource.form.validation.keyCharset");
     }
 
-    if (!values.code.trim()) {
+    if (!code.trim()) {
       newErrors.code = t("system:resource.form.validation.codeRequired");
     } else {
       const rootPattern = /^[a-zA-Z0-9_]+$/;
       const childPattern = /^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$/;
 
-      if (values.pid) {
-        if (!childPattern.test(values.code)) {
+      if (pid) {
+        if (!childPattern.test(code)) {
           newErrors.code = t("system:resource.form.validation.codeChildFormat");
         }
       } else {
-        if (!rootPattern.test(values.code)) {
+        if (!rootPattern.test(code)) {
           newErrors.code = t("system:resource.form.validation.codeRootFormat");
         }
       }
     }
 
-    if (!values.path?.trim()) {
+    if (!path?.trim()) {
       newErrors.path = t("system:resource.form.validation.pathRequired");
     }
 
-    if (!values.icon?.trim()) {
+    if (!icon?.trim()) {
       newErrors.icon = t("system:resource.form.validation.iconRequired");
     }
 
@@ -117,20 +140,22 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      const submitValues: ResourceFormValues = {
-        ...values,
-        pid: values.pid ? values.pid : undefined,
-      };
-      await onSubmit(submitValues);
-    }
-  };
+    if (!validateForm()) return;
 
-  const handleChange = (field: keyof ResourceFormValues, value: string | number | boolean | undefined) => {
-    setValues((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
-    }
+    const translations = buildTranslationPayload(translationMap);
+
+    const submitValues: ResourceFormValues = {
+      id: defaultValues?.id,
+      key: key.trim(),
+      code: code.trim(),
+      path: path.trim(),
+      icon: icon.trim(),
+      type,
+      is_visible,
+      pid: pid ? pid : undefined,
+      translations,
+    };
+    await onSubmit(submitValues);
   };
 
   const iconHintTail = getCommonIconNames("md").slice(0, 5).join(", ");
@@ -158,27 +183,30 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">{t("system:resource.form.sectionInfo")}</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.name.label")}</label>
-            <Input
-              id="name"
-              type="text"
-              value={values.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-              placeholder={t("system:resource.form.name.placeholder")}
-              className={errors.name ? "border-red-500" : ""}
-            />
-            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-          </div>
+        <TranslationTabsForm
+          locales={locales}
+          defaultLocaleId={defaultLocaleId}
+          value={translationMap}
+          onChange={setTranslationMap}
+          fields={["name", "description", "remark"]}
+          loading={localesLoading}
+          error={localesError}
+          nameError={errors.name}
+          labels={{
+            name: t("system:resource.form.name.label"),
+            description: t("system:resource.form.description.label"),
+            remark: t("system:resource.form.remark.label"),
+          }}
+        />
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 mt-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.key.label")}</label>
             <Input
               id="key"
               type="text"
-              value={values.key}
-              onChange={(e) => handleChange("key", e.target.value)}
+              value={key}
+              onChange={(e) => setKey(e.target.value)}
               placeholder={t("system:resource.form.key.placeholder")}
               className={errors.key ? "border-red-500" : ""}
             />
@@ -190,8 +218,8 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
             <Input
               id="code"
               type="text"
-              value={values.code}
-              onChange={(e) => handleChange("code", e.target.value)}
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
               placeholder={t("system:resource.form.code.placeholder")}
               className={errors.code ? "border-red-500" : ""}
             />
@@ -203,8 +231,8 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
             <Input
               id="path"
               type="text"
-              value={values.path}
-              onChange={(e) => handleChange("path", e.target.value)}
+              value={path}
+              onChange={(e) => setPath(e.target.value)}
               placeholder={t("system:resource.form.path.placeholder")}
               className={errors.path ? "border-red-500" : ""}
             />
@@ -219,8 +247,8 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
                 { value: AdminResourceType.GENERAL, label: t("system:resource.form.type.optionGeneral") },
                 { value: AdminResourceType.SYSTEM, label: t("system:resource.form.type.optionSystem") },
               ]}
-              value={values.type}
-              onChange={(value) => handleChange("type", Number(value))}
+              value={type}
+              onChange={(value) => setType(Number(value))}
               placeholder={t("system:resource.form.type.placeholder")}
             />
           </div>
@@ -230,8 +258,8 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
             <Input
               id="icon"
               type="text"
-              value={values.icon}
-              onChange={(e) => handleChange("icon", e.target.value)}
+              value={icon}
+              onChange={(e) => setIcon(e.target.value)}
               placeholder={t("system:resource.form.icon.placeholder")}
               icon={dynamicIcon}
               iconPosition="left"
@@ -247,34 +275,12 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
           <div className="flex items-center">
             <Checkbox
               id="is_visible"
-              checked={!!values.is_visible}
-              onChange={(checked) => handleChange("is_visible", checked)}
+              checked={!!is_visible}
+              onChange={(checked) => setIsVisible(checked)}
               label={t("system:resource.form.checkboxVisible")}
             />
           </div>
         </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.remark.label")}</label>
-        <Input
-          id="remark"
-          type="text"
-          value={values.remark}
-          onChange={(e) => handleChange("remark", e.target.value)}
-          placeholder={t("system:resource.form.remark.placeholder")}
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.description.label")}</label>
-        <TextArea
-          id="description"
-          value={values.description}
-          onChange={(value) => handleChange("description", value)}
-          placeholder={t("system:resource.form.description.placeholder")}
-          rows={3}
-        />
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">

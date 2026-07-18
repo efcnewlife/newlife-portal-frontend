@@ -1,33 +1,25 @@
-import { userService, type UserUpdate } from "@/api/services/userService";
-import { Button, Checkbox, Input, Select, TextArea } from "@efcnewlife/newlife-ui";
+import { userService, type UserDetail, type UserUpdate } from "@/api/services/userService";
+import { Button, Checkbox, Input, Select } from "@efcnewlife/newlife-ui";
 import { Gender } from "@/const/enums";
 import { useAuth } from "@/context/AuthContext";
+import { format_admin_user_label } from "@/utils/userDisplayName";
 import { useEffect, useState } from "react";
-
-interface UserDetailData {
-  id: string;
-  phone_number: string;
-  email: string;
-  verified: boolean;
-  is_active: boolean;
-  is_superuser: boolean;
-  is_admin: boolean;
-  last_login_at?: string;
-  display_name?: string;
-  gender?: Gender;
-  created_at?: string;
-  updated_at?: string;
-  remark?: string;
-}
 
 interface UserProfileDetailViewProps {
   isEditing: boolean;
   onEditChange?: (editing: boolean) => void;
 }
 
+const buildProfileFormData = (user: UserDetail): UserUpdate => ({
+  phone_number: user.phone_number || "",
+  email: user.email,
+  display_name: user.preferred_name || [user.first_name, user.last_name].filter(Boolean).join(" ").trim() || "",
+  gender: user.gender ?? Gender.Unknown,
+});
+
 const UserProfileDetailView: React.FC<UserProfileDetailViewProps> = ({ isEditing, onEditChange }) => {
   const { user } = useAuth();
-  const [userData, setUserData] = useState<UserDetailData | null>(null);
+  const [userData, setUserData] = useState<UserDetail | null>(null);
   const [formData, setFormData] = useState<UserUpdate | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -41,14 +33,7 @@ const UserProfileDetailView: React.FC<UserProfileDetailViewProps> = ({ isEditing
         const response = await userService.getCurrentUser();
         if (response.success && response.data) {
           setUserData(response.data);
-          // Initialize form data
-          setFormData({
-            phone_number: response.data.phone_number,
-            email: response.data.email,
-            display_name: response.data.display_name || "",
-            gender: response.data.gender ?? Gender.Unknown,
-            remark: response.data.remark || "",
-          });
+          setFormData(buildProfileFormData(response.data));
         } else {
           setError("Failed to load user details");
         }
@@ -66,13 +51,7 @@ const UserProfileDetailView: React.FC<UserProfileDetailViewProps> = ({ isEditing
   // Reset form data when editing is canceled
   useEffect(() => {
     if (!isEditing && userData) {
-      setFormData({
-        phone_number: userData.phone_number,
-        email: userData.email,
-        display_name: userData.display_name || "",
-        gender: userData.gender ?? Gender.Unknown,
-        remark: userData.remark || "",
-      });
+      setFormData(buildProfileFormData(userData));
       setError(null);
     }
   }, [isEditing, userData]);
@@ -104,13 +83,7 @@ const UserProfileDetailView: React.FC<UserProfileDetailViewProps> = ({ isEditing
 
   const handleCancel = () => {
     if (userData) {
-      setFormData({
-        phone_number: userData.phone_number,
-        email: userData.email,
-        display_name: userData.display_name || "",
-        gender: userData.gender ?? Gender.Unknown,
-        remark: userData.remark || "",
-      });
+      setFormData(buildProfileFormData(userData));
     }
     setError(null);
     onEditChange?.(false);
@@ -156,7 +129,7 @@ const UserProfileDetailView: React.FC<UserProfileDetailViewProps> = ({ isEditing
             id="phone_number"
             label="Phone Number"
             type="text"
-            value={isEditing ? formData.phone_number : userData.phone_number}
+            value={isEditing ? formData.phone_number || "" : userData.phone_number || "Not set"}
             onChange={(e) => isEditing && setFormData((f) => (f ? { ...f, phone_number: e.target.value } : null))}
             disabled={!isEditing}
           />
@@ -175,10 +148,30 @@ const UserProfileDetailView: React.FC<UserProfileDetailViewProps> = ({ isEditing
 
         <div>
           <Input
-            id="display_name"
-            label="Display Name"
+            id="first_name"
+            label="First Name"
             type="text"
-            value={isEditing ? formData.display_name || "" : userData.display_name || "Not set"}
+            value={userData.first_name || "Not set"}
+            disabled
+          />
+        </div>
+
+        <div>
+          <Input
+            id="last_name"
+            label="Last Name"
+            type="text"
+            value={userData.last_name || "Not set"}
+            disabled
+          />
+        </div>
+
+        <div>
+          <Input
+            id="preferred_name"
+            label="Preferred Name"
+            type="text"
+            value={isEditing ? formData.display_name || "" : format_admin_user_label(userData) || "Not set"}
             onChange={(e) => isEditing && setFormData((f) => (f ? { ...f, display_name: e.target.value } : null))}
             disabled={!isEditing}
           />
@@ -223,19 +216,6 @@ const UserProfileDetailView: React.FC<UserProfileDetailViewProps> = ({ isEditing
         <div>
           <Checkbox id="is_superuser" checked={userData.is_superuser} disabled label="Superuser" />
         </div>
-      </div>
-
-      {/* Remark */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Remark</label>
-        <TextArea
-          id="remark"
-          placeholder=""
-          value={isEditing ? formData.remark || "" : userData.remark || ""}
-          onChange={(value) => isEditing && setFormData((f) => (f ? { ...f, remark: value } : null))}
-          disabled={!isEditing}
-          rows={3}
-        />
       </div>
 
       {/* Error message */}

@@ -1,0 +1,150 @@
+{
+  "shared": {
+    "yes": "Yes",
+    "no": "No",
+    "active": "Active",
+    "all": "All",
+    "loadFailed": "Failed to load data. Please try again.",
+    "saveFailed": "Failed to save. Please try again.",
+    "deleteFailed": "Failed to delete. Please try again.",
+    "actionFailed": "Action failed. Please try again."
+  },
+  "ministry": {
+    "page": { "title": "Ministries", "description": "Manage ministry units and lifecycle" },
+    "table": {
+      "name": "Name",
+      "ministryType": "Type",
+      "targetAudiences": "Audience",
+      "status": "Status",
+      "ownerPosition": "Owner position",
+      "hasPriorityBooking": "Priority booking",
+      "isActive": "Active",
+      "createdAt": "Created",
+      "updatedAt": "Updated"
+    },
+    "modal": {
+      "createTitle": "Create ministry",
+      "editTitle": "Edit ministry",
+      "detailTitle": "Ministry detail",
+      "deleteSoft": "Delete ministry",
+      "deletePermanent": "Permanently delete ministry",
+      "approveTitle": "Approve ministry",
+      "rejectTitle": "Reject ministry"
+    },
+    "form": {
+      "name": "Name",
+      "ministryTypeId": "Ministry type",
+      "ministryTypePlaceholder": "Select a ministry type",
+      "ministryTypeRequired": "Ministry type is required",
+      "targetAudiences": "Target audiences",
+      "scheduleNote": "Schedule note",
+      "schedules": "Schedules",
+      "ownerPositionId": "Owner position",
+      "ownerPositionPlaceholder": "Select a position",
+      "hasPriorityBooking": "Priority booking",
+      "nameRequired": "Name is required",
+      "members": "Stewards",
+      "membersHint": "Exactly one primary and at least one secondary steward are required before submit."
+    },
+    "status": {
+      "draft": "Draft",
+      "pending_approval": "Pending approval",
+      "active": "Active",
+      "rejected": "Rejected",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "submit": "Submit for approval",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "approve": {
+      "comment": "Comment (optional)"
+    },
+    "reject": {
+      "reason": "Rejection reason",
+      "reasonRequired": "Rejection reason is required",
+      "comment": "Comment (optional)"
+    },
+    "members": {
+      "user": "User",
+      "role": "Role",
+      "email": "Email",
+      "displayName": "Display name",
+      "contactEmail": "Contact email",
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "add": "Add steward",
+      "remove": "Remove",
+      "selectUser": "Select user",
+      "validationPrimary": "Exactly one primary steward is required",
+      "validationSecondary": "At least one secondary steward is required",
+      "duplicateUser": "Each user can only be assigned once"
+    },
+    "detail": {
+      "members": "Members",
+      "noMembers": "No stewards assigned"
+    },
+    "deleteForm": { "entityLabel": "ministry" },
+    "schedule": {
+      "add": "Add schedule",
+      "remove": "Remove",
+      "empty": "No schedules yet",
+      "row": "Schedule {{index}}",
+      "timeOptionalHint": "Leave start/end time empty if time is to be announced (TBA).",
+      "daysOfWeek": "Days of week",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "effectiveFrom": "Effective from",
+      "effectiveTo": "Effective to",
+      "days": {
+        "0": "Mon",
+        "1": "Tue",
+        "2": "Wed",
+        "3": "Thu",
+        "4": "Fri",
+        "5": "Sat",
+        "6": "Sun"
+      }
+    }
+  },
+  "ministryMember": {
+    "page": {
+      "title": "Ministry stewards",
+      "description": "Assign primary and secondary stewards per ministry"
+    },
+    "filter": { "ministry": "Ministry", "selectMinistry": "Select a ministry" },
+    "save": "Save stewards",
+    "search": {
+      "popoverTitle": "Search ministry stewards",
+      "keywordLabel": "Keyword",
+      "keywordPlaceholder": "Filter ministry list by name",
+      "selectMinistryHint": "Use Search to select a ministry before editing stewards.",
+      "chipsTitle": "Active filters",
+      "chipKeyword": "Keyword:",
+      "chipMinistry": "Ministry:"
+    }
+  },
+  "approval": {
+    "page": {
+      "title": "Ministry approvals",
+      "description": "Review ministries pending approval"
+    },
+    "table": {
+      "name": "Name",
+      "ownerPosition": "Owner position",
+      "submittedAt": "Submitted",
+      "status": "Status"
+    },
+    "modal": {
+      "detailTitle": "Pending ministry",
+      "approveTitle": "Approve ministry",
+      "rejectTitle": "Reject ministry"
+    },
+    "detail": {
+      "members": "Stewards",
+      "translations": "Translations",
+      "ownerPosition": "Owner position"
+    }
+  }
+}

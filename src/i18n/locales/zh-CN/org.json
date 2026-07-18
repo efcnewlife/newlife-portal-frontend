@@ -1,0 +1,74 @@
+{
+  "shared": {
+    "yes": "是",
+    "no": "否",
+    "active": "启用",
+    "loadFailed": "加载数据失败，请再试一次。",
+    "saveFailed": "保存失败，请再试一次。",
+    "deleteFailed": "删除失败，请再试一次。"
+  },
+  "position": {
+    "page": {
+      "title": "教会职位",
+      "description": "管理教会领导职位"
+    },
+    "table": {
+      "code": "代码",
+      "team": "团队",
+      "office": "职分",
+      "name": "名称",
+      "canOwnMinistry": "可负责事工",
+      "isActive": "启用",
+      "createdAt": "创建时间"
+    },
+    "modal": {
+      "createTitle": "新增职位",
+      "editTitle": "编辑职位",
+      "detailTitle": "职位详情",
+      "deleteSoft": "删除职位",
+      "deletePermanent": "永久删除职位",
+      "assignTitle": "指派现任"
+    },
+    "form": {
+      "code": "代码",
+      "team": "团队",
+      "office": "职分",
+      "name": "职位名称",
+      "description": "说明",
+      "canOwnMinistry": "可负责事工",
+      "selectTeam": "选择团队",
+      "selectOffice": "选择职分",
+      "codeRequired": "请输入代码",
+      "teamRequired": "请选择团队",
+      "officeRequired": "请选择职分",
+      "nameRequired": "请输入职位名称"
+    },
+    "enums": {
+      "team": {
+        "elder_and_deacon": "长老 & 执事",
+        "pastoral_team": "牧师室"
+      },
+      "office": {
+        "elder": "长老",
+        "deacon": "执事",
+        "pastor": "牧师",
+        "staff": "同工"
+      }
+    },
+    "deleteForm": {
+      "entityLabel": "职位"
+    },
+    "actions": {
+      "assign": "指派现任"
+    },
+    "assign": {
+      "user": "用户",
+      "startAt": "起始日期",
+      "selectUser": "选择用户"
+    },
+    "detail": {
+      "currentIncumbent": "现任",
+      "noIncumbent": "尚未指派"
+    }
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "shared": {
+    "yes": "Yes",
+    "no": "No",
+    "active": "Active",
+    "allRooms": "All rooms",
+    "selectRoom": "Select room",
+    "loadFailed": "Failed to load data. Please try again.",
+    "saveFailed": "Failed to save. Please try again.",
+    "deleteFailed": "Failed to delete. Please try again.",
+    "cancelFailed": "Failed to cancel booking. Please try again.",
+    "searchChipsTitle": "Active filters",
+    "searchChipKeyword": "Keyword:",
+    "searchChipRoom": "Room:"
+  },
+  "room": {
+    "page": { "title": "Rooms", "description": "Manage bookable rooms and spaces" },
+    "table": {
+      "code": "Code",
+      "name": "Name",
+      "roomNumber": "Room number",
+      "capacity": "Capacity",
+      "isActive": "Active",
+      "createdAt": "Created",
+      "updatedAt": "Updated"
+    },
+    "modal": {
+      "createTitle": "Create room",
+      "editTitle": "Edit room",
+      "detailTitle": "Room detail",
+      "deleteSoft": "Delete room",
+      "deletePermanent": "Permanently delete room"
+    },
+    "form": {
+      "code": "Code",
+      "name": "Name",
+      "roomNumber": "Room number",
+      "capacity": "Capacity",
+      "capacityHint": "Optional. Leave blank if capacity is not specified.",
+      "description": "Description",
+      "codeRequired": "Code is required",
+      "nameRequired": "Name is required"
+    },
+    "deleteForm": { "entityLabel": "room" }
+  },
+  "roomSlotTemplate": {
+    "page": { "title": "Room slot templates", "description": "Define recurring slot patterns per room" },
+    "table": {
+      "name": "Name",
+      "daysOfWeek": "Days",
+      "startTime": "Start",
+      "endTime": "End",
+      "slotDuration": "Slot (min)",
+      "isActive": "Active"
+    },
+    "modal": {
+      "createTitle": "Create slot template",
+      "editTitle": "Edit slot template",
+      "deleteSoft": "Delete slot template",
+      "deletePermanent": "Permanently delete slot template"
+    },
+    "form": {
+      "name": "Template name",
+      "daysOfWeek": "Days of week",
+      "daysOfWeekRequired": "Select at least one day",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "slotDurationMinutes": "Slot duration (minutes)",
+      "effectiveFrom": "Effective from",
+      "effectiveTo": "Effective to",
+      "nameRequired": "Name is required"
+    },
+    "deleteForm": { "entityLabel": "slot template" },
+    "search": {
+      "popoverTitle": "Search slot templates",
+      "keywordLabel": "Keyword",
+      "keywordPlaceholder": "Search template name"
+    },
+    "weekdayPresets": {
+      "weekdays": "Weekdays",
+      "everyDay": "Every day",
+      "clear": "Clear"
+    },
+    "days": {
+      "0": "Monday",
+      "1": "Tuesday",
+      "2": "Wednesday",
+      "3": "Thursday",
+      "4": "Friday",
+      "5": "Saturday",
+      "6": "Sunday"
+    }
+  },
+  "rentalRate": {
+    "page": { "title": "Rental rates", "description": "Manage pricing tiers per room" },
+    "table": {
+      "name": "Name",
+      "room": "Room",
+      "billingUnit": "Billing unit",
+      "amount": "Amount",
+      "unitAmount": "Unit amount",
+      "currency": "Currency",
+      "applicability": "Applicability",
+      "isDefault": "Default",
+      "isActive": "Active"
+    },
+    "modal": {
+      "createTitle": "Create rental rate",
+      "editTitle": "Edit rental rate",
+      "deleteSoft": "Delete rental rate",
+      "deletePermanent": "Permanently delete rental rate"
+    },
+    "form": {
+      "billingUnit": "Billing unit",
+      "unitAmount": "Unit amount",
+      "currency": "Currency",
+      "effectiveFrom": "Effective from",
+      "effectiveTo": "Effective to",
+      "isDefault": "Default rate",
+      "remark": "Remark",
+      "facilityRequired": "Room is required",
+      "unitAmountRequired": "Unit amount is required",
+      "applicability": "Applicability",
+      "applicabilityHint": "When this rate applies based on billed hours",
+      "applicabilityMode": "Mode",
+      "applicabilityHours": "Hours",
+      "applicabilityMinHours": "Min hours",
+      "applicabilityMaxHours": "Max hours",
+      "applicabilityMaxExclusive": "Upper bound exclusive (hours < max)",
+      "applicabilityPreview": "Preview",
+      "hoursRequired": "Hours are required",
+      "rangeInvalid": "Min hours must be less than max hours"
+    },
+    "applicability": {
+      "modes": {
+        "always": "Always",
+        "hours_lt": "Hours less than",
+        "hours_gte": "Hours at least",
+        "hours_range": "Hours range"
+      },
+      "summary": {
+        "always": "Always",
+        "hoursLt": "< {{hours}}h",
+        "hoursGte": "≥ {{hours}}h",
+        "hoursRange": "{{min}}–{{max}}h",
+        "unknown": "Custom"
+      }
+    },
+    "billingUnits": {
+      "hourly": "Hourly",
+      "daily_flat": "Daily flat",
+      "per_slot": "Per slot",
+      "flat_per_booking": "Flat per booking"
+    },
+    "deleteForm": { "entityLabel": "rental rate" },
+    "search": {
+      "popoverTitle": "Search rental rates",
+      "keywordLabel": "Keyword",
+      "keywordPlaceholder": "Search name, description, or remark"
+    }
+  },
+  "booking": {
+    "page": { "title": "Bookings", "description": "View and manage facility bookings" },
+    "table": {
+      "user": "User",
+      "facility": "Room",
+      "bookingType": "Type",
+      "startAt": "Start",
+      "endAt": "End",
+      "status": "Status",
+      "quotedAmount": "Quoted"
+    },
+    "modal": { "detailTitle": "Booking detail", "cancelTitle": "Cancel booking" },
+    "detail": {
+      "userEmail": "Email",
+      "status": "Status",
+      "bookingType": "Booking type",
+      "missionAligned": "Mission aligned",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "surcharge": "Surcharge",
+      "deposit": "Deposit",
+      "quoted": "Quoted amount",
+      "cancelReason": "Cancel reason",
+      "rooms": "Room lines",
+      "slots": "Slots"
+    },
+    "cancel": {
+      "reason": "Cancel reason",
+      "scope": "Scope",
+      "scopeSingle": "This occurrence only",
+      "confirm": "Cancel booking"
+    },
+    "status": {
+      "draft": "Draft",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "overridden": "Overridden"
+    },
+    "bookingType": {
+      "one_time": "One-time",
+      "recurring": "Recurring"
+    }
+  },
+  "member": {
+    "page": { "title": "Facility members", "description": "Users with ministry memberships for booking" },
+    "table": {
+      "email": "Email",
+      "displayName": "Display name",
+      "ministries": "Ministries",
+      "lastLoginAt": "Last login"
+    },
+    "modal": { "detailTitle": "Member detail" }
+  },
+  "overrideLog": {
+    "page": { "title": "Booking override logs", "description": "Audit trail for priority booking overrides" },
+    "table": {
+      "facility": "Room",
+      "outcome": "Outcome",
+      "reason": "Reason",
+      "overriddenBy": "Overridden by",
+      "createdAt": "Created at"
+    }
+  },
+  "ministry": {
+    "page": { "title": "Ministries", "description": "Manage ministries and priority booking flags" },
+    "table": {
+      "name": "Name",
+      "status": "Status",
+      "hasPriorityBooking": "Priority booking",
+      "isActive": "Active",
+      "createdAt": "Created",
+      "updatedAt": "Updated"
+    },
+    "modal": {
+      "createTitle": "Create ministry",
+      "editTitle": "Edit ministry",
+      "detailTitle": "Ministry detail",
+      "deleteSoft": "Delete ministry",
+      "deletePermanent": "Permanently delete ministry"
+    },
+    "form": {
+      "name": "Name",
+      "hasPriorityBooking": "Priority booking",
+      "nameRequired": "Name is required"
+    },
+    "status": {
+      "draft": "Draft",
+      "pending_approval": "Pending approval",
+      "active": "Active",
+      "rejected": "Rejected",
+      "inactive": "Inactive"
+    },
+    "deleteForm": { "entityLabel": "ministry" }
+  },
+  "ministryMember": {
+    "page": {
+      "title": "Ministry members",
+      "description": "Browse members filtered by ministry"
+    },
+    "filter": { "ministry": "Ministry" }
+  }
+}

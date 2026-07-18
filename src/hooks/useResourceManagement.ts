@@ -116,6 +116,7 @@ export const useResourceManagement = () => {
             description: data.description,
             remark: data.remark,
             pid: data.pid,
+            translations: data.translations,
           };
           await resourceService.updateResource(selectedResource.id, updateData);
         } else {
@@ -131,6 +132,7 @@ export const useResourceManagement = () => {
             description: data.description,
             remark: data.remark,
             pid: data.pid,
+            translations: data.translations,
           };
           await resourceService.createResource(createData);
         }

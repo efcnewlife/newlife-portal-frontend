@@ -228,6 +228,7 @@ export default function RoleDataPage() {
                 isActive: detail.isActive,
                 description: detail.description || "",
                 remark: detail.remark || "",
+                translations: detail.translations,
                 permissions: detail.permissions.map((p) => p.id),
               });
               openModal();

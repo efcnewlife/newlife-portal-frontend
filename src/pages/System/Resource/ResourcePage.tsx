@@ -468,6 +468,7 @@ export default function ResourcePage() {
                   is_visible: editing.is_visible ?? true,
                   description: editing.description || "",
                   remark: editing.remark || "",
+                  translations: (editing as ApiResourceMenuItem).translations,
                   // Child edit needs pid; fall back to parent.id if missing on detail
                   pid: editing.pid ?? (editing as ApiResourceMenuItem).parent?.id ?? undefined,
                 }

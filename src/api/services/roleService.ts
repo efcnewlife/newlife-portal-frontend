@@ -11,6 +11,7 @@ import {
   updateMockRole,
 } from "@/api/mock/role-mock";
 import type { ApiResponse } from "@/types/api";
+import type { AdminTranslationInput, AdminTranslationItem } from "@/types/translation";
 import { IS_MOCK_API } from "@/config/env";
 import { httpClient } from "./httpClient";
 
@@ -33,6 +34,7 @@ export interface RolePageItem extends Record<string, unknown> {
   deleteReason?: string;
   description?: string;
   remark?: string;
+  translations?: AdminTranslationItem[];
   permissions: RolePermissionItem[];
 }
 
@@ -49,6 +51,7 @@ export interface RoleCreate {
   isActive?: boolean;
   description?: string;
   remark?: string;
+  translations?: AdminTranslationInput[];
   permissions?: string[]; // permission IDs
 }
 

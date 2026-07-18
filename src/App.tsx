@@ -56,8 +56,12 @@ function AppContent() {
     initializeRouteFilter();
   }, [isAuthenticated, user, authLoading, menus, menuLoading]);
 
+  // While re-building routes after login, avoid showing a stale unauthenticated router
+  // (its "/" route redirects to /signin and fights SignInForm's navigate("/")).
+  const is_waiting_for_routes = isAuthenticated && menuLoading;
+
   // Show loading screen until all initialization is complete
-  if (!isInitialized || !router) {
+  if (!isInitialized || !router || is_waiting_for_routes) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

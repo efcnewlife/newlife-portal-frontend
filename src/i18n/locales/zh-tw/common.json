@@ -52,5 +52,13 @@
       "restoring": "還原中...",
       "confirm": "確認還原"
     }
+  },
+  "translation": {
+    "tabsLabel": "多語系內容",
+    "name": "名稱",
+    "description": "說明",
+    "remark": "備註",
+    "defaultLocaleRequired": "預設語系的名稱為必填。",
+    "loadLocalesFailed": "無法載入系統支援的語系清單。"
   }
 }

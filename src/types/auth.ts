@@ -5,6 +5,7 @@ export interface User {
   email: string;
   firstName?: string;
   lastName?: string;
+  preferredName?: string;
   avatar?: string;
   status: "active" | "inactive" | "suspended";
   roles: string[];

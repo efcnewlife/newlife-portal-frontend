@@ -1,0 +1,412 @@
+import {
+  orgService,
+  type PositionCreate,
+  type PositionDetail,
+  type PositionUpdate,
+} from "@/api/services/orgService";
+import type { DataTableColumn, MenuButtonType, PageButtonType } from "@/components/DataPage";
+import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
+import DeleteForm from "@/components/DataPage/DeleteForm";
+import { getRecycleButtonClassName } from "@/components/DataPage/PageButtonTypes";
+import { Button, Input, Modal, ModalForm, type ModalFormHandle, Select, Tooltip } from "@efcnewlife/newlife-ui";
+import { Resource, Verb } from "@/const/enums";
+import { useModal } from "@/hooks/useModal";
+import { userService } from "@/api/services/userService";
+import { DateUtil } from "@/utils/dateUtil";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import PositionDataForm, { type PositionDataFormHandle, type PositionFormValues } from "./PositionDataForm";
+
+type PositionRow = PositionDetail & Record<string, unknown>;
+
+const PositionDataPage = () => {
+  const { t } = useTranslation("org");
+  const [items, setItems] = useState<PositionRow[]>([]);
+  const [total, setTotal] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [orderBy, setOrderBy] = useState<string | undefined>();
+  const [descending, setDescending] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showDeleted, setShowDeleted] = useState(false);
+  const [formMode, setFormMode] = useState<"create" | "edit">("create");
+  const [editing, setEditing] = useState<PositionRow | null>(null);
+  const [formValues, setFormValues] = useState<PositionFormValues | null>(null);
+  const [viewing, setViewing] = useState<PositionRow | null>(null);
+  const [assigning, setAssigning] = useState<PositionRow | null>(null);
+  const [assignUserId, setAssignUserId] = useState("");
+  const [assignStartAt, setAssignStartAt] = useState("");
+  const [users, setUsers] = useState<Array<{ id: string; label: string }>>([]);
+  const [submitting, setSubmitting] = useState(false);
+
+  const { isOpen, openModal, closeModal } = useModal(false);
+  const { isOpen: isDeleteOpen, openModal: openDeleteModal, closeModal: closeDeleteModal } = useModal(false);
+  const { isOpen: isViewOpen, openModal: openViewModal, closeModal: closeViewModal } = useModal(false);
+  const { isOpen: isAssignOpen, openModal: openAssignModal, closeModal: closeAssignModal } = useModal(false);
+  const clearSelectionRef = useRef<() => void>(() => {});
+  const formRef = useRef<PositionDataFormHandle>(null);
+  const modalRef = useRef<ModalFormHandle>(null);
+
+  const fetchPages = useCallback(async () => {
+    clearSelectionRef.current?.();
+    setLoading(true);
+    try {
+      const res = await orgService.getPositionPages({
+        page: currentPage - 1,
+        page_size: pageSize,
+        order_by: orderBy,
+        descending,
+        deleted: showDeleted || undefined,
+      });
+      if (res.success) {
+        setItems((res.data.items || []) as PositionRow[]);
+        setTotal(res.data.total);
+        setCurrentPage((res.data.page ?? 0) + 1);
+      } else {
+        setItems([]);
+        setTotal(0);
+      }
+    } catch {
+      alert(t("shared.loadFailed"));
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, pageSize, orderBy, descending, showDeleted, t]);
+
+  useEffect(() => {
+    void fetchPages();
+  }, [fetchPages]);
+
+  useEffect(() => {
+    void userService.getList({}).then((res) => {
+      if (!res.success) return;
+      const items = res.data?.items || [];
+      setUsers(
+        items.map((u) => ({
+          id: u.id,
+          label: u.displayName ? `${u.displayName} (${u.email || u.id})` : u.email || u.id,
+        })),
+      );
+    });
+  }, []);
+
+  const userOptions = useMemo(
+    () => [{ value: "", label: t("position.assign.selectUser") }, ...users.map((u) => ({ value: u.id, label: u.label }))],
+    [users, t],
+  );
+
+  const positionTeamLabel = useCallback(
+    (value?: string) => (value ? t(`position.enums.team.${value}`) : ""),
+    [t],
+  );
+
+  const positionOfficeLabel = useCallback(
+    (value?: string) => (value ? t(`position.enums.office.${value}`) : ""),
+    [t],
+  );
+
+  const columns: DataTableColumn<PositionRow>[] = useMemo(
+    () => [
+      { key: "code", label: t("position.table.code"), sortable: true, width: "w-32" },
+      {
+        key: "team",
+        label: t("position.table.team"),
+        sortable: true,
+        width: "w-32",
+        render: (value) => positionTeamLabel(String(value || "")),
+      },
+      {
+        key: "office",
+        label: t("position.table.office"),
+        sortable: true,
+        width: "w-32",
+        render: (value) => positionOfficeLabel(String(value || "")),
+      },
+      { key: "name", label: t("position.table.name"), sortable: true, width: "w-40" },
+      {
+        key: "canOwnMinistry",
+        label: t("position.table.canOwnMinistry"),
+        width: "w-28",
+        render: (v) => (v ? t("shared.yes") : t("shared.no")),
+      },
+      {
+        key: "isActive",
+        label: t("position.table.isActive"),
+        width: "w-20",
+        render: (v) => (v ? t("shared.yes") : t("shared.no")),
+      },
+      {
+        key: "createAt",
+        label: t("position.table.createdAt"),
+        sortable: true,
+        width: "w-40",
+        render: (value: unknown) =>
+          value ? (
+            <Tooltip content={DateUtil.format(value as string)}>
+              <span className="text-sm text-gray-600 dark:text-gray-400 cursor-help">
+                {DateUtil.friendlyDate(value as string)}
+              </span>
+            </Tooltip>
+          ) : null,
+      },
+    ],
+    [t, positionTeamLabel, positionOfficeLabel],
+  );
+
+  const toolbarButtons: PageButtonType[] = useMemo(
+    () => [
+      CommonPageButton.ADD(
+        () => {
+          setFormMode("create");
+          setEditing(null);
+          setFormValues(null);
+          openModal();
+        },
+        { visible: !showDeleted },
+      ),
+      CommonPageButton.REFRESH(() => {
+        clearSelectionRef.current?.();
+        void fetchPages();
+      }),
+      CommonPageButton.RECYCLE(
+        () => {
+          setShowDeleted((v) => !v);
+          setCurrentPage(1);
+        },
+        { className: getRecycleButtonClassName(showDeleted) },
+      ),
+    ],
+    [fetchPages, showDeleted, openModal],
+  );
+
+  const rowActions: MenuButtonType<PositionRow>[] = useMemo(
+    () => [
+      CommonRowAction.VIEW(async (row) => {
+        const res = await orgService.getPositionById(row.id);
+        if (res.success) {
+          setViewing(res.data as PositionRow);
+          openViewModal();
+        }
+      }),
+      CommonRowAction.EDIT(
+        async (row) => {
+          const res = await orgService.getPositionById(row.id, { all_locales: true });
+          if (res.success) {
+            const d = res.data;
+            setFormMode("edit");
+            setEditing(row);
+            setFormValues({
+              code: d.code,
+              team: d.team,
+              office: d.office,
+              canOwnMinistry: d.canOwnMinistry,
+              isActive: d.isActive,
+              translations: d.translations,
+            });
+            openModal();
+          }
+        },
+        { visible: !showDeleted },
+      ),
+      {
+        key: "assign",
+        text: t("position.actions.assign"),
+        onClick: (row) => {
+          setAssigning(row);
+          setAssignUserId(row.currentUserId || "");
+          setAssignStartAt("");
+          openAssignModal();
+        },
+        visible: !showDeleted,
+        permission: Verb.Modify,
+      },
+      CommonRowAction.RESTORE(
+        async (row) => {
+          await orgService.restorePositions({ ids: [row.id] });
+          await fetchPages();
+        },
+        { visible: showDeleted },
+      ),
+      CommonRowAction.DELETE((row) => {
+        setEditing(row);
+        openDeleteModal();
+      }),
+    ],
+    [fetchPages, openAssignModal, openModal, openDeleteModal, openViewModal, showDeleted, t],
+  );
+
+  return (
+    <>
+      <DataPage<PositionRow>
+        data={{ page: currentPage, pageSize, total, items }}
+        columns={columns}
+        loading={loading}
+        orderBy={orderBy}
+        descending={descending}
+        resource={Resource.OrgPosition}
+        buttons={toolbarButtons}
+        rowActions={rowActions}
+        onSort={(key, desc) => {
+          setOrderBy(key || undefined);
+          setDescending(!!desc);
+        }}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={(size) => {
+          setPageSize(size);
+          setCurrentPage(1);
+        }}
+        onClearSelectionRef={(fn) => {
+          clearSelectionRef.current = fn;
+        }}
+      />
+
+      <ModalForm
+        ref={modalRef}
+        title={formMode === "create" ? t("position.modal.createTitle") : t("position.modal.editTitle")}
+        isOpen={isOpen}
+        onClose={closeModal}
+        className="max-w-2xl w-full mx-4 p-6"
+        footer={
+          <>
+            <Button variant="outline" size="sm" onClick={closeModal} disabled={submitting}>
+              {t("common:cancel", { ns: "common" })}
+            </Button>
+            <Button variant="primary" size="sm" onClick={() => modalRef.current?.submit()} disabled={submitting}>
+              {t("common:save", { ns: "common" })}
+            </Button>
+          </>
+        }
+        onSubmit={async (e) => {
+          e.preventDefault();
+          if (!formRef.current?.validate()) return;
+          const values = formRef.current.getValues();
+          setSubmitting(true);
+          try {
+            if (formMode === "create") {
+              await orgService.createPosition(values as PositionCreate);
+            } else if (editing?.id) {
+              const { code: _c, ...update } = values;
+              await orgService.updatePosition(editing.id, update as PositionUpdate);
+            }
+            closeModal();
+            await fetchPages();
+          } catch {
+            alert(t("shared.saveFailed"));
+          } finally {
+            setSubmitting(false);
+          }
+        }}
+      >
+        <PositionDataForm ref={formRef} mode={formMode} defaultValues={formValues} />
+      </ModalForm>
+
+      <Modal
+        title={showDeleted ? t("position.modal.deletePermanent") : t("position.modal.deleteSoft")}
+        isOpen={isDeleteOpen}
+        onClose={closeDeleteModal}
+        className="max-w-lg w-full mx-4 p-6"
+      >
+        <DeleteForm
+          entityName={t("position.deleteForm.entityLabel")}
+          isPermanent={showDeleted}
+          submitting={submitting}
+          onCancel={closeDeleteModal}
+          onSubmit={async ({ reason, permanent }) => {
+            if (!editing?.id) return;
+            setSubmitting(true);
+            try {
+              await orgService.deletePosition(editing.id, { reason, permanent });
+              closeDeleteModal();
+              await fetchPages();
+            } catch {
+              alert(t("shared.deleteFailed"));
+            } finally {
+              setSubmitting(false);
+            }
+          }}
+        />
+      </Modal>
+
+      <Modal
+        title={t("position.modal.detailTitle")}
+        isOpen={isViewOpen}
+        onClose={closeViewModal}
+        className="max-w-2xl w-full mx-4 p-6"
+      >
+        {viewing && (
+          <dl className="grid grid-cols-2 gap-3 text-sm">
+            <dt className="text-gray-500">{t("position.table.code")}</dt>
+            <dd>{viewing.code}</dd>
+            <dt className="text-gray-500">{t("position.table.team")}</dt>
+            <dd>{positionTeamLabel(viewing.team)}</dd>
+            <dt className="text-gray-500">{t("position.table.office")}</dt>
+            <dd>{positionOfficeLabel(viewing.office)}</dd>
+            <dt className="text-gray-500">{t("position.table.name")}</dt>
+            <dd>{viewing.name}</dd>
+            <dt className="text-gray-500">{t("position.table.canOwnMinistry")}</dt>
+            <dd>{viewing.canOwnMinistry ? t("shared.yes") : t("shared.no")}</dd>
+            <dt className="text-gray-500">{t("position.detail.currentIncumbent")}</dt>
+            <dd>{viewing.currentUserId || t("position.detail.noIncumbent")}</dd>
+          </dl>
+        )}
+      </Modal>
+
+      <ModalForm
+        title={t("position.modal.assignTitle")}
+        isOpen={isAssignOpen}
+        onClose={closeAssignModal}
+        className="max-w-lg w-full mx-4 p-6"
+        footer={
+          <>
+            <Button variant="outline" size="sm" onClick={closeAssignModal} disabled={submitting}>
+              {t("common:cancel", { ns: "common" })}
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              disabled={submitting || !assignUserId}
+              onClick={async () => {
+                if (!assigning?.id || !assignUserId) return;
+                setSubmitting(true);
+                try {
+                  await orgService.assignPosition(assigning.id, {
+                    userId: assignUserId,
+                    startAt: assignStartAt ? new Date(assignStartAt).toISOString() : undefined,
+                  });
+                  closeAssignModal();
+                  await fetchPages();
+                } catch {
+                  alert(t("shared.saveFailed"));
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+            >
+              {t("position.actions.assign")}
+            </Button>
+          </>
+        }
+        onSubmit={(e) => e.preventDefault()}
+      >
+        <div className="space-y-4">
+          <Select
+            id="position-assign-user"
+            label={t("position.assign.user")}
+            options={userOptions}
+            value={assignUserId}
+            onChange={(v) => setAssignUserId(String(v))}
+          />
+          <Input
+            id="position-assign-start"
+            type="datetime-local"
+            label={t("position.assign.startAt")}
+            value={assignStartAt}
+            onChange={(e) => setAssignStartAt(e.target.value)}
+          />
+        </div>
+      </ModalForm>
+    </>
+  );
+};
+
+export default PositionDataPage;

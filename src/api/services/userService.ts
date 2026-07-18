@@ -10,24 +10,24 @@ export interface UserBase {
 
 export interface UserDetail {
   id: string;
-  phone_number: string;
+  phone_number?: string | null;
   email: string;
   verified: boolean;
   is_active: boolean;
   is_superuser: boolean;
   is_admin: boolean;
-  is_ministry?: boolean;
-  last_login_at?: string;
-  preferred_locale_id?: string;
-  display_name?: string;
+  last_login_at?: string | null;
+  preferred_locale_id?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  preferred_name?: string | null;
   gender?: number; // 0: Unknown, 1: Male, 2: Female
   created_at?: string;
   updated_at?: string;
-  remark?: string;
 }
 
 export interface UserCreate {
-  phone_number: string;
+  phone_number?: string | null;
   email: string;
   password: string;
   password_confirm: string;
@@ -35,20 +35,18 @@ export interface UserCreate {
   is_active?: boolean;
   is_superuser?: boolean;
   is_admin?: boolean;
-  is_ministry?: boolean;
   display_name?: string;
   gender?: number;
   remark?: string;
 }
 
 export interface UserUpdate {
-  phone_number: string;
+  phone_number?: string | null;
   email: string;
   verified?: boolean;
   is_active?: boolean;
   is_superuser?: boolean;
   is_admin?: boolean;
-  is_ministry?: boolean;
   display_name?: string;
   preferred_locale_id?: string;
   gender?: number;
@@ -101,11 +99,12 @@ let mockUsers: MockUser[] = [
     is_active: true,
     is_superuser: true,
     is_admin: true,
-    display_name: "Newlife Portal Admin",
+    first_name: "Newlife",
+    last_name: "Portal Admin",
+    preferred_name: "Newlife Portal Admin",
     gender: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-    remark: "Mock admin account",
     role_ids: ["role-superadmin"],
   },
 ];
@@ -121,7 +120,12 @@ export const userService = {
       const filtered = mockUsers.filter((item) => {
         if ((item.is_deleted || false) !== deleted) return false;
         if (!keyword) return true;
-        return (item.email || "").toLowerCase().includes(keyword) || (item.display_name || "").toLowerCase().includes(keyword);
+        return (
+          (item.email || "").toLowerCase().includes(keyword) ||
+          (item.preferred_name || "").toLowerCase().includes(keyword) ||
+          (item.first_name || "").toLowerCase().includes(keyword) ||
+          (item.last_name || "").toLowerCase().includes(keyword)
+        );
       });
       const start = page * pageSize;
       return {
@@ -152,13 +156,17 @@ export const userService = {
             .filter((item) => !item.is_deleted)
             .filter(
               (item) =>
-                !keyword || (item.email || "").toLowerCase().includes(keyword) || (item.display_name || "").toLowerCase().includes(keyword),
+                !keyword ||
+                (item.email || "").toLowerCase().includes(keyword) ||
+                (item.preferred_name || "").toLowerCase().includes(keyword) ||
+                (item.first_name || "").toLowerCase().includes(keyword) ||
+                (item.last_name || "").toLowerCase().includes(keyword),
             )
             .map((item) => ({
               id: item.id,
               email: item.email,
               phoneNumber: item.phone_number,
-              displayName: item.display_name,
+              displayName: item.preferred_name || [item.first_name, item.last_name].filter(Boolean).join(" ").trim() || undefined,
             })),
         },
       };
@@ -194,9 +202,10 @@ export const userService = {
         is_active: payload.is_active ?? true,
         is_superuser: payload.is_superuser ?? false,
         is_admin: payload.is_admin ?? false,
-        display_name: payload.display_name,
+        first_name: payload.display_name || "",
+        last_name: "",
+        preferred_name: payload.display_name,
         gender: payload.gender,
-        remark: payload.remark,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         role_ids: [],

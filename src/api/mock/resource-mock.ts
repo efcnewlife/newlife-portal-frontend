@@ -107,7 +107,7 @@ export const createMockResource = (data: ResourceCreateData): ApiResponse<{ id: 
   mockResources = [
     {
       id,
-      name: data.name,
+      name: data.translations?.[0]?.name || "",
       key: data.key,
       code: data.code,
       path: data.path,
