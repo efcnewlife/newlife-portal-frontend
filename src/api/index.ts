@@ -24,6 +24,8 @@ export * from "./services/facilityService";
 export { default as facilityService } from "./services/facilityService";
 export * from "./services/orgService";
 export { default as orgService } from "./services/orgService";
+export * from "./services/fileService";
+export { default as fileService } from "./services/fileService";
 
 // Hooks
 export * from "./hooks/useApi";

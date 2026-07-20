@@ -9,6 +9,7 @@ import enFacility from "./locales/en/facility.json";
 import enOrg from "./locales/en/org.json";
 import enMember from "./locales/en/member.json";
 import enMinistry from "./locales/en/ministry.json";
+import enContent from "./locales/en/content.json";
 import zhTwCommon from "./locales/zh-TW/common.json";
 import zhTwAuth from "./locales/zh-TW/auth.json";
 import zhTwErrors from "./locales/zh-TW/errors.json";
@@ -18,6 +19,7 @@ import zhTwFacility from "./locales/zh-TW/facility.json";
 import zhTwOrg from "./locales/zh-TW/org.json";
 import zhTwMember from "./locales/zh-TW/member.json";
 import zhTwMinistry from "./locales/zh-TW/ministry.json";
+import zhTwContent from "./locales/zh-TW/content.json";
 import zhCnCommon from "./locales/zh-CN/common.json";
 import zhCnAuth from "./locales/zh-CN/auth.json";
 import zhCnErrors from "./locales/zh-CN/errors.json";
@@ -27,6 +29,7 @@ import zhCnFacility from "./locales/zh-CN/facility.json";
 import zhCnOrg from "./locales/zh-CN/org.json";
 import zhCnMember from "./locales/zh-CN/member.json";
 import zhCnMinistry from "./locales/zh-CN/ministry.json";
+import zhCnContent from "./locales/zh-CN/content.json";
 import { sync_moment_locale } from "./moment_locale_sync";
 
 /** BCP 47 language tags used as i18next resource keys and persisted locale. */
@@ -108,6 +111,7 @@ void i18n.use(initReactI18next).init({
       org: enOrg,
       member: enMember,
       ministry: enMinistry,
+      content: enContent,
     },
     "zh-TW": {
       common: zhTwCommon,
@@ -119,6 +123,7 @@ void i18n.use(initReactI18next).init({
       org: zhTwOrg,
       member: zhTwMember,
       ministry: zhTwMinistry,
+      content: zhTwContent,
     },
     "zh-CN": {
       common: zhCnCommon,
@@ -130,10 +135,11 @@ void i18n.use(initReactI18next).init({
       org: zhCnOrg,
       member: zhCnMember,
       ministry: zhCnMinistry,
+      content: zhCnContent,
     },
   },
   defaultNS: "common",
-  ns: ["common", "auth", "errors", "system", "language", "facility", "org", "member", "ministry"],
+  ns: ["common", "auth", "errors", "system", "language", "facility", "org", "member", "ministry", "content"],
   lng: initial_lng,
   fallbackLng: "en",
   interpolation: {

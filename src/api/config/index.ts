@@ -97,6 +97,16 @@ export const API_ENDPOINTS = {
     RESTORE: `${ADMIN_API_PREFIX}/demo/restore`,
   },
 
+  // Content (admin)
+  CONTENT: {
+    FILES: {
+      PAGES: `${ADMIN_API_PREFIX}/content/file/pages`,
+      SUMMARY: `${ADMIN_API_PREFIX}/content/file/summary`,
+      UPLOAD: `${ADMIN_API_PREFIX}/content/file/upload`,
+      BULK_DELETE: `${ADMIN_API_PREFIX}/content/file/bulk`,
+    },
+  },
+
   // Facility booking (admin)
   FACILITY: {
     ROOMS: {

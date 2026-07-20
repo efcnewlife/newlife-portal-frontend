@@ -1,0 +1,91 @@
+{
+  "file": {
+    "page": {
+      "title": "File Management",
+      "description": "Manage uploaded images and documents"
+    },
+    "overview": {
+      "allMedia": "All Media",
+      "storageDetails": "Storage Details",
+      "totalUsed": "Total used",
+      "totalFiles": "{{count}} files",
+      "categorySummary": "{{count}} files · {{size}}"
+    },
+    "category": {
+      "images": "Images",
+      "files": "Files"
+    },
+    "browse": {
+      "showing": "Showing {{category}} · {{count}} items",
+      "emptyImages": "No images yet",
+      "emptyFiles": "No files yet",
+      "loadFailed": "Failed to load files"
+    },
+    "table": {
+      "name": "File Name",
+      "category": "Category",
+      "size": "Size",
+      "dateModified": "Date Modified",
+      "actions": "Actions",
+      "preview": "Preview",
+      "deleteOne": "Delete file"
+    },
+    "toolbar": {
+      "upload": "Upload",
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
+      "delete": "Delete",
+      "sort": "Sort by",
+      "sortPlaceholder": "Choose sort order"
+    },
+    "sort": {
+      "dateDesc": "Date (newest)",
+      "dateAsc": "Date (oldest)",
+      "nameAsc": "Name (A-Z)",
+      "nameDesc": "Name (Z-A)",
+      "sizeDesc": "Size (largest)",
+      "sizeAsc": "Size (smallest)"
+    },
+    "upload": {
+      "title": "Upload Files",
+      "close": "Close",
+      "submit": "Upload",
+      "submitting": "Uploading...",
+      "dropHint": "Drag files here or click to browse",
+      "dropActive": "Drop files to upload",
+      "browse": "Browse files",
+      "acceptImages": "PNG, JPG, JPEG, WebP, SVG, GIF, AVIF, APNG",
+      "acceptFiles": "PDF, Word, Excel, PowerPoint, ZIP, RAR, TXT",
+      "acceptMixed": "Images and documents (PNG, JPG, PDF, Word, Excel, PowerPoint, ZIP, RAR, TXT)",
+      "titleMixed": "Upload Media",
+      "maxSizeHint": "Max file size: {{size}}",
+      "fileTooLarge": "File exceeds the {{size}} limit",
+      "oversized": "{{count}} file(s) exceed the size limit",
+      "oversizedBadge": "Too large",
+      "rejectedCount": "{{count}} file(s) were rejected",
+      "rejectedTitle": "These file(s) were not added:",
+      "rejectedFileTooLarge": "{{name}} ({{size}}) — exceeds {{maxSize}} limit",
+      "rejectedFileType": "{{name}} ({{size}}) — file type not allowed",
+      "rejectedFileOther": "{{name}} ({{size}}) — rejected",
+      "selectedCount": "{{count}} file(s) selected",
+      "duplicates": "{{count}} duplicate file(s) detected",
+      "duplicateBadge": "Duplicate",
+      "checking": "Checking...",
+      "remove": "Remove",
+      "unknownType": "Unknown type",
+      "success": "Upload complete",
+      "error": "Upload failed",
+      "duplicateExisting": "File already exists; linked to existing file"
+    },
+    "delete": {
+      "title": "Confirm Delete",
+      "confirmMessage": "Delete {{count}} selected file(s)? This action cannot be undone.",
+      "submit": "Delete",
+      "submitting": "Deleting...",
+      "failed": "Failed to delete files"
+    },
+    "preview": {
+      "title": "Image Preview"
+    }
+  }
+}

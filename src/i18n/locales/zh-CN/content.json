@@ -1,0 +1,91 @@
+{
+  "file": {
+    "page": {
+      "title": "文件管理",
+      "description": "管理已上传的图片与文档"
+    },
+    "overview": {
+      "allMedia": "所有媒体",
+      "storageDetails": "存储空间详情",
+      "totalUsed": "已使用总量",
+      "totalFiles": "{{count}} 个文件",
+      "categorySummary": "{{count}} 个文件 · {{size}}"
+    },
+    "category": {
+      "images": "图片",
+      "files": "文件"
+    },
+    "browse": {
+      "showing": "显示 {{category}} · {{count}} 项",
+      "emptyImages": "目前没有任何图片",
+      "emptyFiles": "目前没有任何文件",
+      "loadFailed": "加载文件失败"
+    },
+    "table": {
+      "name": "文件名称",
+      "category": "分类",
+      "size": "大小",
+      "dateModified": "修改日期",
+      "actions": "操作",
+      "preview": "预览",
+      "deleteOne": "删除文件"
+    },
+    "toolbar": {
+      "upload": "上传",
+      "selectAll": "全选",
+      "deselectAll": "取消全选",
+      "delete": "删除",
+      "sort": "排序方式",
+      "sortPlaceholder": "选择排序方式"
+    },
+    "sort": {
+      "dateDesc": "日期（最新）",
+      "dateAsc": "日期（最旧）",
+      "nameAsc": "名称（A-Z）",
+      "nameDesc": "名称（Z-A）",
+      "sizeDesc": "大小（大到小）",
+      "sizeAsc": "大小（小到大）"
+    },
+    "upload": {
+      "title": "上传文件",
+      "close": "关闭",
+      "submit": "上传",
+      "submitting": "上传中...",
+      "dropHint": "拖拽文件至此或点击选择",
+      "dropActive": "放开以上传文件",
+      "browse": "浏览文件",
+      "acceptImages": "支持 PNG、JPG、JPEG、WebP、SVG、GIF、AVIF、APNG",
+      "acceptFiles": "支持 PDF、Word、Excel、PowerPoint、ZIP、RAR、TXT",
+      "acceptMixed": "支持图片与文档（PNG、JPG、PDF、Word、Excel、PowerPoint、ZIP、RAR、TXT）",
+      "titleMixed": "上传媒体",
+      "maxSizeHint": "单个文件大小上限：{{size}}",
+      "fileTooLarge": "文件超过 {{size}} 上限",
+      "oversized": "{{count}} 个文件超过大小上限",
+      "oversizedBadge": "过大",
+      "rejectedCount": "已拒绝 {{count}} 个文件",
+      "rejectedTitle": "以下文件未加入：",
+      "rejectedFileTooLarge": "{{name}}（{{size}}）— 超过 {{maxSize}} 上限",
+      "rejectedFileType": "{{name}}（{{size}}）— 不支持的文件类型",
+      "rejectedFileOther": "{{name}}（{{size}}）— 已拒绝",
+      "selectedCount": "已选择 {{count}} 个文件",
+      "duplicates": "检测到 {{count}} 个重复文件",
+      "duplicateBadge": "重复",
+      "checking": "检测中...",
+      "remove": "移除",
+      "unknownType": "未知类型",
+      "success": "上传完成",
+      "error": "上传失败",
+      "duplicateExisting": "文件已存在，已引用现有文件"
+    },
+    "delete": {
+      "title": "确认删除",
+      "confirmMessage": "确定要删除所选的 {{count}} 个文件吗？此操作无法撤销。",
+      "submit": "删除",
+      "submitting": "删除中...",
+      "failed": "删除文件失败"
+    },
+    "preview": {
+      "title": "图片预览"
+    }
+  }
+}
