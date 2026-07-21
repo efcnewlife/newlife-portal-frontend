@@ -10,13 +10,14 @@
   "position": {
     "page": {
       "title": "Positions",
-      "description": "Manage church leadership positions"
+      "description": "View who currently holds each church leadership position"
     },
     "table": {
       "code": "Code",
       "team": "Team",
       "office": "Office",
       "name": "Name",
+      "incumbent": "Incumbent",
       "canOwnMinistry": "Can own ministry",
       "isActive": "Active",
       "createdAt": "Created"
@@ -27,7 +28,8 @@
       "detailTitle": "Position detail",
       "deleteSoft": "Delete position",
       "deletePermanent": "Permanently delete position",
-      "assignTitle": "Assign incumbent"
+      "assignTitle": "Assign incumbent",
+      "settingsTitle": "Position settings"
     },
     "form": {
       "code": "Code",
@@ -59,7 +61,8 @@
       "entityLabel": "position"
     },
     "actions": {
-      "assign": "Assign incumbent"
+      "assign": "Assign incumbent",
+      "settings": "Position settings"
     },
     "assign": {
       "user": "User",

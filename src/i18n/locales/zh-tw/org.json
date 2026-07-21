@@ -10,13 +10,14 @@
   "position": {
     "page": {
       "title": "教會職位",
-      "description": "管理教會領導職位"
+      "description": "查看各教會領導職位的現任擔任者"
     },
     "table": {
       "code": "代碼",
       "team": "團隊",
       "office": "職分",
       "name": "名稱",
+      "incumbent": "現任",
       "canOwnMinistry": "可負責事工",
       "isActive": "啟用",
       "createdAt": "建立時間"
@@ -27,7 +28,8 @@
       "detailTitle": "職位詳情",
       "deleteSoft": "刪除職位",
       "deletePermanent": "永久刪除職位",
-      "assignTitle": "指派現任"
+      "assignTitle": "指派現任",
+      "settingsTitle": "職位設定"
     },
     "form": {
       "code": "代碼",
@@ -59,7 +61,8 @@
       "entityLabel": "職位"
     },
     "actions": {
-      "assign": "指派現任"
+      "assign": "指派現任",
+      "settings": "職位設定"
     },
     "assign": {
       "user": "使用者",

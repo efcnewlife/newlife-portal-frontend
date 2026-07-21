@@ -45,6 +45,7 @@ export interface PositionDetail extends PositionListItem {
   deleteReason?: string;
   translations?: PositionTranslationItem[];
   currentUserId?: string;
+  currentUserDisplayName?: string;
 }
 
 export interface PositionWrite {

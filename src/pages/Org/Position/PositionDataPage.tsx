@@ -1,21 +1,14 @@
-import {
-  orgService,
-  type PositionCreate,
-  type PositionDetail,
-  type PositionUpdate,
-} from "@/api/services/orgService";
+import { orgService, type PositionDetail } from "@/api/services/orgService";
+import { userService } from "@/api/services/userService";
 import type { DataTableColumn, MenuButtonType, PageButtonType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
-import DeleteForm from "@/components/DataPage/DeleteForm";
-import { getRecycleButtonClassName } from "@/components/DataPage/PageButtonTypes";
-import { Button, Input, Modal, ModalForm, type ModalFormHandle, Select, Tooltip } from "@efcnewlife/newlife-ui";
+import { Button, Input, Modal, ModalForm, Select } from "@efcnewlife/newlife-ui";
 import { Resource, Verb } from "@/const/enums";
 import { useModal } from "@/hooks/useModal";
-import { userService } from "@/api/services/userService";
-import { DateUtil } from "@/utils/dateUtil";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { MdSettings } from "react-icons/md";
 import { useTranslation } from "react-i18next";
-import PositionDataForm, { type PositionDataFormHandle, type PositionFormValues } from "./PositionDataForm";
+import PositionCatalogModal from "./PositionCatalogModal";
 
 type PositionRow = PositionDetail & Record<string, unknown>;
 
@@ -28,10 +21,6 @@ const PositionDataPage = () => {
   const [orderBy, setOrderBy] = useState<string | undefined>();
   const [descending, setDescending] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showDeleted, setShowDeleted] = useState(false);
-  const [formMode, setFormMode] = useState<"create" | "edit">("create");
-  const [editing, setEditing] = useState<PositionRow | null>(null);
-  const [formValues, setFormValues] = useState<PositionFormValues | null>(null);
   const [viewing, setViewing] = useState<PositionRow | null>(null);
   const [assigning, setAssigning] = useState<PositionRow | null>(null);
   const [assignUserId, setAssignUserId] = useState("");
@@ -39,13 +28,10 @@ const PositionDataPage = () => {
   const [users, setUsers] = useState<Array<{ id: string; label: string }>>([]);
   const [submitting, setSubmitting] = useState(false);
 
-  const { isOpen, openModal, closeModal } = useModal(false);
-  const { isOpen: isDeleteOpen, openModal: openDeleteModal, closeModal: closeDeleteModal } = useModal(false);
   const { isOpen: isViewOpen, openModal: openViewModal, closeModal: closeViewModal } = useModal(false);
   const { isOpen: isAssignOpen, openModal: openAssignModal, closeModal: closeAssignModal } = useModal(false);
+  const { isOpen: isSettingsOpen, openModal: openSettingsModal, closeModal: closeSettingsModal } = useModal(false);
   const clearSelectionRef = useRef<() => void>(() => {});
-  const formRef = useRef<PositionDataFormHandle>(null);
-  const modalRef = useRef<ModalFormHandle>(null);
 
   const fetchPages = useCallback(async () => {
     clearSelectionRef.current?.();
@@ -56,7 +42,6 @@ const PositionDataPage = () => {
         page_size: pageSize,
         order_by: orderBy,
         descending,
-        deleted: showDeleted || undefined,
       });
       if (res.success) {
         setItems((res.data.items || []) as PositionRow[]);
@@ -71,7 +56,7 @@ const PositionDataPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize, orderBy, descending, showDeleted, t]);
+  }, [currentPage, pageSize, orderBy, descending, t]);
 
   useEffect(() => {
     void fetchPages();
@@ -80,9 +65,9 @@ const PositionDataPage = () => {
   useEffect(() => {
     void userService.getList({}).then((res) => {
       if (!res.success) return;
-      const items = res.data?.items || [];
+      const list = res.data?.items || [];
       setUsers(
-        items.map((u) => ({
+        list.map((u) => ({
           id: u.id,
           label: u.displayName ? `${u.displayName} (${u.email || u.id})` : u.email || u.id,
         })),
@@ -107,12 +92,11 @@ const PositionDataPage = () => {
 
   const columns: DataTableColumn<PositionRow>[] = useMemo(
     () => [
-      { key: "code", label: t("position.table.code"), sortable: true, width: "w-32" },
       {
         key: "team",
         label: t("position.table.team"),
         sortable: true,
-        width: "w-32",
+        width: "w-40",
         render: (value) => positionTeamLabel(String(value || "")),
       },
       {
@@ -122,32 +106,12 @@ const PositionDataPage = () => {
         width: "w-32",
         render: (value) => positionOfficeLabel(String(value || "")),
       },
-      { key: "name", label: t("position.table.name"), sortable: true, width: "w-40" },
+      { key: "name", label: t("position.table.name"), sortable: true, width: "w-48" },
       {
-        key: "canOwnMinistry",
-        label: t("position.table.canOwnMinistry"),
-        width: "w-28",
-        render: (v) => (v ? t("shared.yes") : t("shared.no")),
-      },
-      {
-        key: "isActive",
-        label: t("position.table.isActive"),
-        width: "w-20",
-        render: (v) => (v ? t("shared.yes") : t("shared.no")),
-      },
-      {
-        key: "createAt",
-        label: t("position.table.createdAt"),
-        sortable: true,
-        width: "w-40",
-        render: (value: unknown) =>
-          value ? (
-            <Tooltip content={DateUtil.format(value as string)}>
-              <span className="text-sm text-gray-600 dark:text-gray-400 cursor-help">
-                {DateUtil.friendlyDate(value as string)}
-              </span>
-            </Tooltip>
-          ) : null,
+        key: "currentUserDisplayName",
+        label: t("position.table.incumbent"),
+        width: "w-48",
+        render: (value) => (value ? String(value) : t("position.detail.noIncumbent")),
       },
     ],
     [t, positionTeamLabel, positionOfficeLabel],
@@ -155,28 +119,20 @@ const PositionDataPage = () => {
 
   const toolbarButtons: PageButtonType[] = useMemo(
     () => [
-      CommonPageButton.ADD(
-        () => {
-          setFormMode("create");
-          setEditing(null);
-          setFormValues(null);
-          openModal();
-        },
-        { visible: !showDeleted },
-      ),
       CommonPageButton.REFRESH(() => {
         clearSelectionRef.current?.();
         void fetchPages();
       }),
-      CommonPageButton.RECYCLE(
-        () => {
-          setShowDeleted((v) => !v);
-          setCurrentPage(1);
-        },
-        { className: getRecycleButtonClassName(showDeleted) },
-      ),
+      {
+        key: "settings",
+        text: t("position.actions.settings"),
+        icon: <MdSettings />,
+        onClick: openSettingsModal,
+        permission: Verb.Read,
+        variant: "secondary",
+      },
     ],
-    [fetchPages, showDeleted, openModal],
+    [fetchPages, openSettingsModal, t],
   );
 
   const rowActions: MenuButtonType<PositionRow>[] = useMemo(
@@ -188,26 +144,6 @@ const PositionDataPage = () => {
           openViewModal();
         }
       }),
-      CommonRowAction.EDIT(
-        async (row) => {
-          const res = await orgService.getPositionById(row.id, { all_locales: true });
-          if (res.success) {
-            const d = res.data;
-            setFormMode("edit");
-            setEditing(row);
-            setFormValues({
-              code: d.code,
-              team: d.team,
-              office: d.office,
-              canOwnMinistry: d.canOwnMinistry,
-              isActive: d.isActive,
-              translations: d.translations,
-            });
-            openModal();
-          }
-        },
-        { visible: !showDeleted },
-      ),
       {
         key: "assign",
         text: t("position.actions.assign"),
@@ -217,22 +153,10 @@ const PositionDataPage = () => {
           setAssignStartAt("");
           openAssignModal();
         },
-        visible: !showDeleted,
         permission: Verb.Modify,
       },
-      CommonRowAction.RESTORE(
-        async (row) => {
-          await orgService.restorePositions({ ids: [row.id] });
-          await fetchPages();
-        },
-        { visible: showDeleted },
-      ),
-      CommonRowAction.DELETE((row) => {
-        setEditing(row);
-        openDeleteModal();
-      }),
     ],
-    [fetchPages, openAssignModal, openModal, openDeleteModal, openViewModal, showDeleted, t],
+    [openAssignModal, openViewModal, t],
   );
 
   return (
@@ -260,73 +184,6 @@ const PositionDataPage = () => {
         }}
       />
 
-      <ModalForm
-        ref={modalRef}
-        title={formMode === "create" ? t("position.modal.createTitle") : t("position.modal.editTitle")}
-        isOpen={isOpen}
-        onClose={closeModal}
-        className="max-w-2xl w-full mx-4 p-6"
-        footer={
-          <>
-            <Button variant="outline" size="sm" onClick={closeModal} disabled={submitting}>
-              {t("common:cancel", { ns: "common" })}
-            </Button>
-            <Button variant="primary" size="sm" onClick={() => modalRef.current?.submit()} disabled={submitting}>
-              {t("common:save", { ns: "common" })}
-            </Button>
-          </>
-        }
-        onSubmit={async (e) => {
-          e.preventDefault();
-          if (!formRef.current?.validate()) return;
-          const values = formRef.current.getValues();
-          setSubmitting(true);
-          try {
-            if (formMode === "create") {
-              await orgService.createPosition(values as PositionCreate);
-            } else if (editing?.id) {
-              const { code: _c, ...update } = values;
-              await orgService.updatePosition(editing.id, update as PositionUpdate);
-            }
-            closeModal();
-            await fetchPages();
-          } catch {
-            alert(t("shared.saveFailed"));
-          } finally {
-            setSubmitting(false);
-          }
-        }}
-      >
-        <PositionDataForm ref={formRef} mode={formMode} defaultValues={formValues} />
-      </ModalForm>
-
-      <Modal
-        title={showDeleted ? t("position.modal.deletePermanent") : t("position.modal.deleteSoft")}
-        isOpen={isDeleteOpen}
-        onClose={closeDeleteModal}
-        className="max-w-lg w-full mx-4 p-6"
-      >
-        <DeleteForm
-          entityName={t("position.deleteForm.entityLabel")}
-          isPermanent={showDeleted}
-          submitting={submitting}
-          onCancel={closeDeleteModal}
-          onSubmit={async ({ reason, permanent }) => {
-            if (!editing?.id) return;
-            setSubmitting(true);
-            try {
-              await orgService.deletePosition(editing.id, { reason, permanent });
-              closeDeleteModal();
-              await fetchPages();
-            } catch {
-              alert(t("shared.deleteFailed"));
-            } finally {
-              setSubmitting(false);
-            }
-          }}
-        />
-      </Modal>
-
       <Modal
         title={t("position.modal.detailTitle")}
         isOpen={isViewOpen}
@@ -346,7 +203,7 @@ const PositionDataPage = () => {
             <dt className="text-gray-500">{t("position.table.canOwnMinistry")}</dt>
             <dd>{viewing.canOwnMinistry ? t("shared.yes") : t("shared.no")}</dd>
             <dt className="text-gray-500">{t("position.detail.currentIncumbent")}</dt>
-            <dd>{viewing.currentUserId || t("position.detail.noIncumbent")}</dd>
+            <dd>{viewing.currentUserDisplayName || t("position.detail.noIncumbent")}</dd>
           </dl>
         )}
       </Modal>
@@ -405,6 +262,14 @@ const PositionDataPage = () => {
           />
         </div>
       </ModalForm>
+
+      <PositionCatalogModal
+        isOpen={isSettingsOpen}
+        onClose={closeSettingsModal}
+        onCatalogChanged={() => {
+          void fetchPages();
+        }}
+      />
     </>
   );
 };

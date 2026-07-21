@@ -10,13 +10,14 @@
   "position": {
     "page": {
       "title": "教会职位",
-      "description": "管理教会领导职位"
+      "description": "查看各教会领导职位的现任担任者"
     },
     "table": {
       "code": "代码",
       "team": "团队",
       "office": "职分",
       "name": "名称",
+      "incumbent": "现任",
       "canOwnMinistry": "可负责事工",
       "isActive": "启用",
       "createdAt": "创建时间"
@@ -27,7 +28,8 @@
       "detailTitle": "职位详情",
       "deleteSoft": "删除职位",
       "deletePermanent": "永久删除职位",
-      "assignTitle": "指派现任"
+      "assignTitle": "指派现任",
+      "settingsTitle": "职位设定"
     },
     "form": {
       "code": "代码",
@@ -59,7 +61,8 @@
       "entityLabel": "职位"
     },
     "actions": {
-      "assign": "指派现任"
+      "assign": "指派现任",
+      "settings": "职位设定"
     },
     "assign": {
       "user": "用户",
