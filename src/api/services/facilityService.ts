@@ -104,6 +104,35 @@ export type RoomSlotTemplateCreate = Omit<
 >;
 export type RoomSlotTemplateUpdate = RoomSlotTemplateCreate;
 
+// Room blackout
+export type RoomBlackoutKind = "one_off" | "recurring";
+
+export interface RoomBlackoutItem {
+  id: string;
+  facilityId?: string | null;
+  name: string;
+  reason: string;
+  kind: RoomBlackoutKind;
+  blackoutDate?: string;
+  daysOfWeek?: number[];
+  startTime: string;
+  endTime: string;
+  isActive: boolean;
+  effectiveFrom?: string;
+  effectiveTo?: string;
+  createAt?: string;
+  createdBy?: string;
+  updateAt?: string;
+  updatedBy?: string;
+  deleteReason?: string;
+}
+
+export type RoomBlackoutCreate = Omit<
+  RoomBlackoutItem,
+  "id" | "createAt" | "createdBy" | "updateAt" | "updatedBy" | "deleteReason"
+>;
+export type RoomBlackoutUpdate = RoomBlackoutCreate;
+
 // Rental rate
 export type RateApplicabilityLeaf =
   | { op: "hours_gte"; value: number | string }
@@ -334,29 +363,6 @@ export interface BookingCancel {
   cancelReason?: string;
 }
 
-// Member
-export interface MemberMinistryTag {
-  id: string;
-  code: string;
-  name?: string;
-}
-
-export interface MemberListItem {
-  id: string;
-  email?: string;
-  displayName?: string;
-  lastLoginAt?: string;
-  ministries: MemberMinistryTag[];
-}
-
-export interface MemberPagesParams extends PagesParams {
-  ministryId?: string;
-}
-
-export interface MemberMinistriesUpdate {
-  ministryIds: string[];
-}
-
 // Override log
 export interface OverrideLogPagesParams extends PagesParams {
   facilityId?: string;
@@ -464,6 +470,46 @@ class FacilityService {
   async restoreRoomSlotTemplate(id: string): Promise<ApiResponse<void>> {
     if (IS_MOCK_API) return { success: true, data: undefined as void };
     return httpClient.put(API_ENDPOINTS.FACILITY.ROOM_SLOT_TEMPLATES.RESTORE(id));
+  }
+
+  // Room blackouts
+  async getRoomBlackoutPages(params: PagesParams & { facilityId?: string }): Promise<ApiResponse<PagesResponse<RoomBlackoutItem>>> {
+    if (IS_MOCK_API) return emptyPages();
+    return httpClient.get(API_ENDPOINTS.FACILITY.ROOM_BLACKOUTS.PAGES, params as Record<string, unknown>);
+  }
+
+  async getRoomBlackoutList(facilityId?: string | null): Promise<ApiResponse<{ items: RoomBlackoutItem[] }>> {
+    if (IS_MOCK_API) return emptyList();
+    return httpClient.get(API_ENDPOINTS.FACILITY.ROOM_BLACKOUTS.LIST, facilityId ? { facilityId } : undefined);
+  }
+
+  async getRoomBlackoutById(id: string): Promise<ApiResponse<RoomBlackoutItem>> {
+    if (IS_MOCK_API) return { success: true, data: {} as RoomBlackoutItem };
+    return httpClient.get(API_ENDPOINTS.FACILITY.ROOM_BLACKOUTS.DETAIL(id));
+  }
+
+  async createRoomBlackout(payload: RoomBlackoutCreate): Promise<ApiResponse<{ id: string }>> {
+    if (IS_MOCK_API) return { success: true, data: { id: "" } };
+    return httpClient.post(API_ENDPOINTS.FACILITY.ROOM_BLACKOUTS.CREATE, payload);
+  }
+
+  async updateRoomBlackout(id: string, payload: RoomBlackoutUpdate): Promise<ApiResponse<void>> {
+    if (IS_MOCK_API) return { success: true, data: undefined as void };
+    return httpClient.put(API_ENDPOINTS.FACILITY.ROOM_BLACKOUTS.UPDATE(id), payload);
+  }
+
+  async deleteRoomBlackout(id: string, payload: DeletePayload): Promise<ApiResponse<void>> {
+    if (IS_MOCK_API) return { success: true, data: undefined as void };
+    return httpClient.request({
+      method: "DELETE",
+      url: API_ENDPOINTS.FACILITY.ROOM_BLACKOUTS.DELETE(id),
+      data: payload,
+    });
+  }
+
+  async restoreRoomBlackout(id: string): Promise<ApiResponse<void>> {
+    if (IS_MOCK_API) return { success: true, data: undefined as void };
+    return httpClient.put(API_ENDPOINTS.FACILITY.ROOM_BLACKOUTS.RESTORE(id));
   }
 
   // Rental rates
@@ -606,22 +652,6 @@ class FacilityService {
   async cancelBooking(id: string, payload: BookingCancel): Promise<ApiResponse<void>> {
     if (IS_MOCK_API) return { success: true, data: undefined as void };
     return httpClient.post(API_ENDPOINTS.FACILITY.BOOKINGS.CANCEL(id), payload);
-  }
-
-  // Members
-  async getMemberPages(params: MemberPagesParams): Promise<ApiResponse<PagesResponse<MemberListItem>>> {
-    if (IS_MOCK_API) return emptyPages();
-    return httpClient.get(API_ENDPOINTS.FACILITY.MEMBERS.PAGES, params as Record<string, unknown>);
-  }
-
-  async getMemberById(id: string): Promise<ApiResponse<MemberListItem>> {
-    if (IS_MOCK_API) return { success: true, data: {} as MemberListItem };
-    return httpClient.get(API_ENDPOINTS.FACILITY.MEMBERS.DETAIL(id));
-  }
-
-  async replaceMemberMinistries(id: string, payload: MemberMinistriesUpdate): Promise<ApiResponse<void>> {
-    if (IS_MOCK_API) return { success: true, data: undefined as void };
-    return httpClient.put(API_ENDPOINTS.FACILITY.MEMBERS.MINISTRIES(id), payload);
   }
 
   // Override logs

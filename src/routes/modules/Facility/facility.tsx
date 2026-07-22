@@ -1,9 +1,9 @@
 import BookingManagement from "@/pages/Facility/Booking/BookingManagement";
-import MemberManagement from "@/pages/Facility/Member/MemberManagement";
 import OverrideLogManagement from "@/pages/Facility/OverrideLog/OverrideLogManagement";
 import RentalRateManagement from "@/pages/Facility/RentalRate/RentalRateManagement";
 import RoomManagement from "@/pages/Facility/Room/RoomManagement";
 import RoomSlotTemplateManagement from "@/pages/Facility/RoomSlotTemplate/RoomSlotTemplateManagement";
+import RoomBlackoutManagement from "@/pages/Facility/RoomBlackout/RoomBlackoutManagement";
 import { AppRoute } from "@/types/route";
 
 export const facilityRoutes: AppRoute[] = [
@@ -25,6 +25,16 @@ export const facilityRoutes: AppRoute[] = [
       description: "Facility room slot template management",
       requiresAuth: true,
       breadcrumb: ["Facility", "Room Slot Templates"],
+    },
+  },
+  {
+    path: "/facility/room-blackouts",
+    element: <RoomBlackoutManagement />,
+    meta: {
+      title: "Room Blackouts",
+      description: "Facility room blackout management",
+      requiresAuth: true,
+      breadcrumb: ["Facility", "Room Blackouts"],
     },
   },
   {
@@ -55,16 +65,6 @@ export const facilityRoutes: AppRoute[] = [
       description: "Facility booking override log management",
       requiresAuth: true,
       breadcrumb: ["Facility", "Override Logs"],
-    },
-  },
-  {
-    path: "/facility/members",
-    element: <MemberManagement />,
-    meta: {
-      title: "Member Management",
-      description: "Facility member management",
-      requiresAuth: true,
-      breadcrumb: ["Facility", "Members"],
     },
   },
 ];

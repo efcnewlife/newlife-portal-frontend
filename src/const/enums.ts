@@ -66,10 +66,10 @@ export enum Resource {
   // Facility booking
   FacilityRoom = "facility:room",
   FacilityRoomSlotTemplate = "facility:room_slot_template",
+  FacilityRoomBlackout = "facility:room_blackout",
   FacilityRentalRate = "facility:rental_rate",
   FacilityBooking = "facility:booking",
   FacilityBookingOverrideLog = "facility:booking_override_log",
-  FacilityMember = "facility:member",
 
   // Ministry
   MinistryMinistry = "ministry:ministry",

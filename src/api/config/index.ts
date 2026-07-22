@@ -127,6 +127,15 @@ export const API_ENDPOINTS = {
       DELETE: (id: string) => `${ADMIN_API_PREFIX}/facility/room-slot-templates/${id}`,
       RESTORE: (id: string) => `${ADMIN_API_PREFIX}/facility/room-slot-templates/${id}/restore`,
     },
+    ROOM_BLACKOUTS: {
+      PAGES: `${ADMIN_API_PREFIX}/facility/room-blackouts/pages`,
+      LIST: `${ADMIN_API_PREFIX}/facility/room-blackouts/list`,
+      CREATE: `${ADMIN_API_PREFIX}/facility/room-blackouts`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/room-blackouts/${id}`,
+      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/room-blackouts/${id}`,
+      DELETE: (id: string) => `${ADMIN_API_PREFIX}/facility/room-blackouts/${id}`,
+      RESTORE: (id: string) => `${ADMIN_API_PREFIX}/facility/room-blackouts/${id}/restore`,
+    },
     RENTAL_RATES: {
       PAGES: `${ADMIN_API_PREFIX}/facility/rental-rates/pages`,
       LIST: `${ADMIN_API_PREFIX}/facility/rental-rates/list`,
@@ -161,11 +170,6 @@ export const API_ENDPOINTS = {
       DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/bookings/${id}`,
       UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/bookings/${id}`,
       CANCEL: (id: string) => `${ADMIN_API_PREFIX}/facility/bookings/${id}/cancel`,
-    },
-    MEMBERS: {
-      PAGES: `${ADMIN_API_PREFIX}/facility/members/pages`,
-      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/members/${id}`,
-      MINISTRIES: (id: string) => `${ADMIN_API_PREFIX}/facility/members/${id}/ministries`,
     },
     BOOKING_OVERRIDE_LOGS: {
       PAGES: `${ADMIN_API_PREFIX}/facility/booking-override-logs/pages`,

@@ -1,11 +1,11 @@
 import Blank from "@/pages/Blank";
 import Dashboard from "@/pages/Dashboard";
 import BookingManagement from "@/pages/Facility/Booking/BookingManagement";
-import MemberManagement from "@/pages/Facility/Member/MemberManagement";
 import OverrideLogManagement from "@/pages/Facility/OverrideLog/OverrideLogManagement";
 import RentalRateManagement from "@/pages/Facility/RentalRate/RentalRateManagement";
 import RoomManagement from "@/pages/Facility/Room/RoomManagement";
 import RoomSlotTemplateManagement from "@/pages/Facility/RoomSlotTemplate/RoomSlotTemplateManagement";
+import RoomBlackoutManagement from "@/pages/Facility/RoomBlackout/RoomBlackoutManagement";
 import MinistryManagement from "@/pages/Ministry/Ministry/MinistryManagement";
 import MinistryMemberManagement from "@/pages/Ministry/MinistryMember/MinistryMemberManagement";
 import MinistryApprovalManagement from "@/pages/Ministry/Approval/MinistryApprovalManagement";
@@ -32,10 +32,10 @@ const componentRegistry: Record<string, React.ComponentType> = {
   // Facility booking
   FACILITY_ROOM: RoomManagement,
   FACILITY_ROOM_SLOT_TEMPLATE: RoomSlotTemplateManagement,
+  FACILITY_ROOM_BLACKOUT: RoomBlackoutManagement,
   FACILITY_RENTAL_RATE: RentalRateManagement,
   FACILITY_BOOKING: BookingManagement,
   FACILITY_BOOKING_OVERRIDE_LOG: OverrideLogManagement,
-  FACILITY_MEMBER: MemberManagement,
   // Ministry
   MINISTRY_MINISTRY: MinistryManagement,
   MINISTRY_MEMBER: MinistryMemberManagement,

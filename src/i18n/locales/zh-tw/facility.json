@@ -91,6 +91,55 @@
       "6": "星期日"
     }
   },
+  "roomBlackout": {
+    "page": {
+      "title": "不開放時段",
+      "description": "設定單場地或全館關閉時段"
+    },
+    "table": {
+      "name": "名稱",
+      "scope": "範圍",
+      "kind": "類型",
+      "dateOrDays": "日期／星期",
+      "startTime": "開始",
+      "endTime": "結束",
+      "reason": "原因",
+      "isActive": "啟用"
+    },
+    "modal": {
+      "createTitle": "新增不開放時段",
+      "editTitle": "編輯不開放時段",
+      "deleteSoft": "刪除不開放時段",
+      "deletePermanent": "永久刪除不開放時段"
+    },
+    "form": {
+      "allRooms": "全館（全部場地）",
+      "kind": "類型",
+      "name": "名稱",
+      "reason": "原因",
+      "blackoutDate": "日期",
+      "daysOfWeek": "適用星期",
+      "startTime": "開始時間",
+      "endTime": "結束時間",
+      "allDay": "全天（00:00-23:59）",
+      "effectiveFrom": "生效日",
+      "effectiveTo": "失效日",
+      "nameRequired": "請輸入名稱",
+      "reasonRequired": "請輸入原因",
+      "blackoutDateRequired": "請選擇日期",
+      "daysOfWeekRequired": "請至少選擇一天"
+    },
+    "kind": {
+      "one_off": "單次",
+      "recurring": "每週重複"
+    },
+    "deleteForm": { "entityLabel": "不開放時段" },
+    "search": {
+      "popoverTitle": "搜尋不開放時段",
+      "keywordLabel": "關鍵字",
+      "keywordPlaceholder": "搜尋名稱或原因"
+    }
+  },
   "rentalRate": {
     "page": { "title": "租金費率", "description": "管理各場地計價方式" },
     "table": {
@@ -201,16 +250,6 @@
       "one_time": "單次",
       "recurring": "週期"
     }
-  },
-  "member": {
-    "page": { "title": "會員", "description": "具事工身分之預約使用者" },
-    "table": {
-      "email": "電子郵件",
-      "displayName": "顯示名稱",
-      "ministries": "事工",
-      "lastLoginAt": "上次登入"
-    },
-    "modal": { "detailTitle": "會員詳情" }
   },
   "overrideLog": {
     "page": { "title": "覆寫紀錄", "description": "優先預約覆寫稽核紀錄" },

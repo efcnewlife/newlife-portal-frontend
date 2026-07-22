@@ -91,6 +91,55 @@
       "6": "Sunday"
     }
   },
+  "roomBlackout": {
+    "page": {
+      "title": "Room blackouts",
+      "description": "Define closed hours per room or campus-wide"
+    },
+    "table": {
+      "name": "Name",
+      "scope": "Scope",
+      "kind": "Kind",
+      "dateOrDays": "Date / days",
+      "startTime": "Start",
+      "endTime": "End",
+      "reason": "Reason",
+      "isActive": "Active"
+    },
+    "modal": {
+      "createTitle": "Create blackout",
+      "editTitle": "Edit blackout",
+      "deleteSoft": "Delete blackout",
+      "deletePermanent": "Permanently delete blackout"
+    },
+    "form": {
+      "allRooms": "All rooms (campus-wide)",
+      "kind": "Kind",
+      "name": "Name",
+      "reason": "Reason",
+      "blackoutDate": "Date",
+      "daysOfWeek": "Days of week",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "allDay": "All day (00:00-23:59)",
+      "effectiveFrom": "Effective from",
+      "effectiveTo": "Effective to",
+      "nameRequired": "Name is required",
+      "reasonRequired": "Reason is required",
+      "blackoutDateRequired": "Date is required",
+      "daysOfWeekRequired": "Select at least one day"
+    },
+    "kind": {
+      "one_off": "One-off",
+      "recurring": "Recurring"
+    },
+    "deleteForm": { "entityLabel": "blackout" },
+    "search": {
+      "popoverTitle": "Search blackouts",
+      "keywordLabel": "Keyword",
+      "keywordPlaceholder": "Search name or reason"
+    }
+  },
   "rentalRate": {
     "page": { "title": "Rental rates", "description": "Manage pricing tiers per room" },
     "table": {
@@ -201,16 +250,6 @@
       "one_time": "One-time",
       "recurring": "Recurring"
     }
-  },
-  "member": {
-    "page": { "title": "Facility members", "description": "Users with ministry memberships for booking" },
-    "table": {
-      "email": "Email",
-      "displayName": "Display name",
-      "ministries": "Ministries",
-      "lastLoginAt": "Last login"
-    },
-    "modal": { "detailTitle": "Member detail" }
   },
   "overrideLog": {
     "page": { "title": "Booking override logs", "description": "Audit trail for priority booking overrides" },
