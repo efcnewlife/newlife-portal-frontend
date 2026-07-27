@@ -17,7 +17,7 @@
       "targetAudiences": "對象",
       "status": "狀態",
       "ownerPosition": "負責職位",
-      "hasPriorityBooking": "優先預約",
+      "hasPriorityBooking": "優先預訂",
       "isActive": "啟用",
       "createdAt": "建立時間",
       "updatedAt": "更新時間"
@@ -41,7 +41,7 @@
       "schedules": "時段",
       "ownerPositionId": "負責職位",
       "ownerPositionPlaceholder": "請選擇職位",
-      "hasPriorityBooking": "優先預約",
+      "hasPriorityBooking": "優先預訂",
       "nameRequired": "請輸入名稱",
       "members": "負責人",
       "membersHint": "送審前需恰好一位主要負責人與至少一位次要負責人。"

@@ -1,6 +1,6 @@
 import { PopoverType } from "@/components/DataPage";
 import SearchPopoverContent from "@/components/DataPage/SearchPopoverContent";
-import { Input, Select } from "@efcnewlife/newlife-ui";
+import { Checkbox, Input, Select } from "@efcnewlife/newlife-ui";
 import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useRoomListOptions } from "./useRoomListOptions";
@@ -8,6 +8,7 @@ import { useRoomListOptions } from "./useRoomListOptions";
 export interface FacilityRoomScopedSearchFilters {
   keyword?: string;
   facilityId?: string;
+  globalOnly?: boolean;
 }
 
 interface FacilityRoomScopedSearchPopoverProps {
@@ -17,6 +18,8 @@ interface FacilityRoomScopedSearchPopoverProps {
   onClear: () => void;
   keywordLabel: string;
   keywordPlaceholder: string;
+  enableGlobalOnlyFilter?: boolean;
+  globalOnlyLabel?: string;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   trigger: ReactNode;
@@ -30,6 +33,8 @@ const FacilityRoomScopedSearchPopover = ({
   onClear,
   keywordLabel,
   keywordPlaceholder,
+  enableGlobalOnlyFilter = false,
+  globalOnlyLabel,
   isOpen,
   onOpenChange,
   trigger,
@@ -45,7 +50,9 @@ const FacilityRoomScopedSearchPopover = ({
     });
   };
 
-  const hasActiveFilters = Boolean(filters.keyword?.trim() || filters.facilityId);
+  const hasActiveFilters = Boolean(
+    filters.keyword?.trim() || filters.facilityId || (enableGlobalOnlyFilter && filters.globalOnly)
+  );
 
   return (
     <SearchPopoverContent
@@ -75,7 +82,22 @@ const FacilityRoomScopedSearchPopover = ({
             handleFilterChange("facilityId", value && String(value) !== "" ? String(value) : undefined)
           }
           clearable
+          disabled={enableGlobalOnlyFilter && filters.globalOnly}
         />
+        {enableGlobalOnlyFilter && (
+          <Checkbox
+            id="facility-room-scoped-global-only"
+            label={globalOnlyLabel || t("rentalRate.search.globalOnly")}
+            checked={Boolean(filters.globalOnly)}
+            onChange={(checked) => {
+              onFiltersChange({
+                ...filters,
+                globalOnly: checked || undefined,
+                facilityId: checked ? undefined : filters.facilityId,
+              });
+            }}
+          />
+        )}
         {hasActiveFilters && (
           <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
             <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t("shared.searchChipsTitle")}</div>
@@ -88,6 +110,11 @@ const FacilityRoomScopedSearchPopover = ({
               {filters.facilityId && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
                   {t("shared.searchChipRoom")} {roomLabelById.get(filters.facilityId) || filters.facilityId}
+                </span>
+              )}
+              {enableGlobalOnlyFilter && filters.globalOnly && (
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                  {globalOnlyLabel || t("rentalRate.search.globalOnly")}
                 </span>
               )}
             </div>

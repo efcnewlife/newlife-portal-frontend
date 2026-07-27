@@ -136,6 +136,15 @@ export const API_ENDPOINTS = {
       DELETE: (id: string) => `${ADMIN_API_PREFIX}/facility/room-blackouts/${id}`,
       RESTORE: (id: string) => `${ADMIN_API_PREFIX}/facility/room-blackouts/${id}/restore`,
     },
+    RENTAL_RATE_TEMPLATES: {
+      PAGES: `${ADMIN_API_PREFIX}/facility/rental-rate-templates/pages`,
+      LIST: `${ADMIN_API_PREFIX}/facility/rental-rate-templates/list`,
+      CREATE: `${ADMIN_API_PREFIX}/facility/rental-rate-templates`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/rental-rate-templates/${id}`,
+      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/rental-rate-templates/${id}`,
+      DELETE: (id: string) => `${ADMIN_API_PREFIX}/facility/rental-rate-templates/${id}`,
+      RESTORE: (id: string) => `${ADMIN_API_PREFIX}/facility/rental-rate-templates/${id}/restore`,
+    },
     RENTAL_RATES: {
       PAGES: `${ADMIN_API_PREFIX}/facility/rental-rates/pages`,
       LIST: `${ADMIN_API_PREFIX}/facility/rental-rates/list`,

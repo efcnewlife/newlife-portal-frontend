@@ -100,7 +100,7 @@ export function validateApplicabilityDraft(
 ): string | undefined {
   if (draft.mode === "hours_lt" || draft.mode === "hours_gte") {
     if (draft.hours === "" || Number.isNaN(Number(draft.hours))) {
-      return t("rentalRate.form.hoursRequired");
+      return t("rentalRateTemplate.form.hoursRequired");
     }
   }
   if (draft.mode === "hours_range") {
@@ -112,9 +112,9 @@ export function validateApplicabilityDraft(
       Number.isNaN(min) ||
       Number.isNaN(max)
     ) {
-      return t("rentalRate.form.hoursRequired");
+      return t("rentalRateTemplate.form.hoursRequired");
     }
-    if (min >= max) return t("rentalRate.form.rangeInvalid");
+    if (min >= max) return t("rentalRateTemplate.form.rangeInvalid");
   }
   return undefined;
 }
@@ -123,24 +123,24 @@ export function formatApplicabilitySummary(
   rule: RateApplicabilityRule | null | undefined,
   t: TFunction,
 ): string {
-  if (rule == null) return t("rentalRate.applicability.summary.always");
+  if (rule == null) return t("rentalRateTemplate.applicability.summary.always");
   const leaf = unwrapLeaf(rule);
   if (!leaf || typeof leaf.op !== "string") {
-    return t("rentalRate.applicability.summary.unknown");
+    return t("rentalRateTemplate.applicability.summary.unknown");
   }
   if (leaf.op === "hours_lt") {
-    return t("rentalRate.applicability.summary.hoursLt", { hours: leaf.value });
+    return t("rentalRateTemplate.applicability.summary.hoursLt", { hours: leaf.value });
   }
   if (leaf.op === "hours_gte") {
-    return t("rentalRate.applicability.summary.hoursGte", { hours: leaf.value });
+    return t("rentalRateTemplate.applicability.summary.hoursGte", { hours: leaf.value });
   }
   if (leaf.op === "hours_range") {
-    return t("rentalRate.applicability.summary.hoursRange", {
+    return t("rentalRateTemplate.applicability.summary.hoursRange", {
       min: leaf.min ?? 0,
       max: leaf.max,
     });
   }
-  return t("rentalRate.applicability.summary.unknown");
+  return t("rentalRateTemplate.applicability.summary.unknown");
 }
 
 export function formatApplicabilityPreview(draft: ApplicabilityDraft, t: TFunction): string {

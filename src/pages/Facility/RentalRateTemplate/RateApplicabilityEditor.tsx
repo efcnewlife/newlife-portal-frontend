@@ -25,19 +25,19 @@ const RateApplicabilityEditor = ({ value, onChange, error }: RateApplicabilityEd
     <div className="rounded-lg border border-gray-200 bg-gray-50/80 p-4 space-y-4 dark:border-gray-700 dark:bg-gray-900/40">
       <div>
         <p className="text-sm font-medium text-gray-800 dark:text-gray-100">
-          {t("rentalRate.form.applicability")}
+          {t("rentalRateTemplate.form.applicability")}
         </p>
         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          {t("rentalRate.form.applicabilityHint")}
+          {t("rentalRateTemplate.form.applicabilityHint")}
         </p>
       </div>
 
       <Select
         id="rate-applicability-mode"
-        label={t("rentalRate.form.applicabilityMode")}
+        label={t("rentalRateTemplate.form.applicabilityMode")}
         options={MODE_OPTIONS.map((mode) => ({
           value: mode,
-          label: t(`rentalRate.applicability.modes.${mode}`),
+          label: t(`rentalRateTemplate.applicability.modes.${mode}`),
         }))}
         value={value.mode}
         onChange={(v) => setMode(String(v))}
@@ -46,7 +46,7 @@ const RateApplicabilityEditor = ({ value, onChange, error }: RateApplicabilityEd
       {(value.mode === "hours_lt" || value.mode === "hours_gte") && (
         <Input
           id="rate-applicability-hours"
-          label={t("rentalRate.form.applicabilityHours")}
+          label={t("rentalRateTemplate.form.applicabilityHours")}
           type="number"
           min="0"
           step={0.25}
@@ -60,7 +60,7 @@ const RateApplicabilityEditor = ({ value, onChange, error }: RateApplicabilityEd
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
           <Input
             id="rate-applicability-min"
-            label={t("rentalRate.form.applicabilityMinHours")}
+            label={t("rentalRateTemplate.form.applicabilityMinHours")}
             type="number"
             min="0"
             step={0.25}
@@ -70,7 +70,7 @@ const RateApplicabilityEditor = ({ value, onChange, error }: RateApplicabilityEd
           />
           <Input
             id="rate-applicability-max"
-            label={t("rentalRate.form.applicabilityMaxHours")}
+            label={t("rentalRateTemplate.form.applicabilityMaxHours")}
             type="number"
             min="0"
             step={0.25}
@@ -81,7 +81,7 @@ const RateApplicabilityEditor = ({ value, onChange, error }: RateApplicabilityEd
           <div className="md:col-span-2">
             <Checkbox
               id="rate-applicability-max-exclusive"
-              label={t("rentalRate.form.applicabilityMaxExclusive")}
+              label={t("rentalRateTemplate.form.applicabilityMaxExclusive")}
               checked={value.maxExclusive}
               onChange={(checked) => onChange({ ...value, maxExclusive: checked })}
             />
@@ -90,7 +90,7 @@ const RateApplicabilityEditor = ({ value, onChange, error }: RateApplicabilityEd
       )}
 
       <p className="text-sm text-gray-600 dark:text-gray-300">
-        {t("rentalRate.form.applicabilityPreview")}:{" "}
+        {t("rentalRateTemplate.form.applicabilityPreview")}:{" "}
         <span className="font-medium text-gray-900 dark:text-gray-100">
           {formatApplicabilityPreview(value, t)}
         </span>

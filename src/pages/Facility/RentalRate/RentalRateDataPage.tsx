@@ -1,6 +1,7 @@
 import {
   facilityService,
   type RentalRateItem,
+  type RentalRateTemplateItem,
   type RoomListItem,
 } from "@/api/services/facilityService";
 import type { DataTableColumn, MenuButtonType, PageButtonType, PopoverType } from "@/components/DataPage";
@@ -11,11 +12,12 @@ import FacilityRoomScopedSearchPopover, {
   type FacilityRoomScopedSearchFilters,
 } from "@/pages/Facility/shared/FacilityRoomScopedSearchPopover";
 import { Button, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
-import { PopoverPosition, Resource } from "@/const/enums";
+import { PopoverPosition, Resource, Verb } from "@/const/enums";
 import { useModal } from "@/hooks/useModal";
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { formatApplicabilitySummary } from "./applicabilityFormat";
+import { MdOutlineRule } from "react-icons/md";
+import RentalRateTemplatePanel from "@/pages/Facility/RentalRateTemplate/RentalRateTemplatePanel";
 import RentalRateDataForm, { type RentalRateDataFormHandle, type RentalRateFormValues } from "./RentalRateDataForm";
 
 type RateRow = RentalRateItem & Record<string, unknown>;
@@ -31,6 +33,7 @@ const RentalRateDataPage = () => {
   const [searchFilters, setSearchFilters] = useState<FacilityRoomScopedSearchFilters>({});
   const [appliedFilters, setAppliedFilters] = useState<FacilityRoomScopedSearchFilters>({});
   const [rooms, setRooms] = useState<RoomListItem[]>([]);
+  const [templates, setTemplates] = useState<RentalRateTemplateItem[]>([]);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
   const [editing, setEditing] = useState<RateRow | null>(null);
   const [formValues, setFormValues] = useState<RentalRateFormValues | null>(null);
@@ -38,14 +41,30 @@ const RentalRateDataPage = () => {
 
   const { isOpen, openModal, closeModal } = useModal(false);
   const { isOpen: isDeleteOpen, openModal: openDeleteModal, closeModal: closeDeleteModal } = useModal(false);
+  const {
+    isOpen: isTemplatesOpen,
+    openModal: openTemplatesModal,
+    closeModal: closeTemplatesModal,
+  } = useModal(false);
   const formRef = useRef<RentalRateDataFormHandle>(null);
   const modalRef = useRef<ModalFormHandle>(null);
+
+  const loadTemplates = useCallback(async () => {
+    const res = await facilityService.getRentalRateTemplateList();
+    if (res.success) setTemplates(res.data.items || []);
+  }, []);
 
   useEffect(() => {
     void facilityService.getRoomList().then((res) => {
       if (res.success) setRooms(res.data.items || []);
     });
-  }, []);
+    void loadTemplates();
+  }, [loadTemplates]);
+
+  const handleTemplatesClose = useCallback(() => {
+    closeTemplatesModal();
+    void loadTemplates();
+  }, [closeTemplatesModal, loadTemplates]);
 
   const fetchPages = useCallback(async () => {
     setLoading(true);
@@ -89,34 +108,31 @@ const RentalRateDataPage = () => {
         width: "w-40",
         render: (v) => roomLabelById.get(String(v)) || String(v || "—"),
       },
-      { key: "name", label: t("rentalRate.table.name"), width: "w-32" },
+      {
+        key: "templateId",
+        label: t("rentalRate.table.template"),
+        width: "w-40",
+        render: (_v, row) => row.template?.name || String(row.templateId || "—"),
+      },
       {
         key: "billingUnit",
         label: t("rentalRate.table.billingUnit"),
         width: "w-28",
-        render: (v) => t(`rentalRate.billingUnits.${v}`, { defaultValue: String(v) }),
+        render: (_v, row) =>
+          row.template?.billingUnit
+            ? t(`rentalRateTemplate.billingUnits.${row.template.billingUnit}`, {
+                defaultValue: row.template.billingUnit,
+              })
+            : "—",
       },
       {
-        key: "unitAmount",
+        key: "templateAmount",
         label: t("rentalRate.table.amount"),
         width: "w-28",
-        render: (v, row) => `${v ?? ""} ${row.currency || ""}`.trim(),
-      },
-      {
-        key: "applicability",
-        label: t("rentalRate.table.applicability"),
-        width: "w-28",
-        render: (_v, row) => (
-          <span className="text-sm text-gray-700 dark:text-gray-300">
-            {formatApplicabilitySummary(row.applicability, t)}
-          </span>
-        ),
-      },
-      {
-        key: "isDefault",
-        label: t("rentalRate.table.isDefault"),
-        width: "w-20",
-        render: (v) => (v ? t("shared.yes") : t("shared.no")),
+        render: (_v, row) =>
+          row.template
+            ? `${row.template.unitAmount ?? ""} ${row.template.currency || ""}`.trim()
+            : "—",
       },
       {
         key: "isActive",
@@ -177,13 +193,21 @@ const RentalRateDataPage = () => {
           setEditing(null);
           setFormValues({
             facilityId: appliedFilters.facilityId || "",
-            billingUnit: "hourly",
-            unitAmount: "",
+            templateId: "",
+            isActive: true,
           });
           openModal();
         },
         { visible: !showDeleted }
       ),
+      {
+        key: "templates",
+        text: t("rentalRate.toolbar.templates"),
+        icon: <MdOutlineRule className="size-4" />,
+        onClick: openTemplatesModal,
+        outline: true,
+        permission: `${Resource.FacilityRentalRateTemplate}:${Verb.Read}`,
+      },
       CommonPageButton.REFRESH(() => void fetchPages()),
       CommonPageButton.RECYCLE(
         () => {
@@ -193,47 +217,48 @@ const RentalRateDataPage = () => {
         { className: getRecycleButtonClassName(showDeleted) }
       ),
     ];
-  }, [appliedFilters.facilityId, fetchPages, openModal, searchFilters, showDeleted, t]);
+  }, [
+    appliedFilters.facilityId,
+    fetchPages,
+    openModal,
+    openTemplatesModal,
+    searchFilters,
+    showDeleted,
+    t,
+  ]);
 
   const rowActions: MenuButtonType<RateRow>[] = useMemo(
     () => [
       CommonRowAction.EDIT(
         async (row) => {
-          const res = await facilityService.getRentalRateById(row.id, { all_locales: true });
+          const res = await facilityService.getRentalRateById(row.id);
           if (res.success) {
             const d = res.data;
             setFormMode("edit");
             setEditing(row);
             setFormValues({
-              facilityId: d.facilityId,
-              billingUnit: d.billingUnit,
-              unitAmount: String(d.unitAmount),
-              currency: d.currency,
-              isDefault: d.isDefault,
+              facilityId: d.facilityId ?? "",
+              templateId: d.templateId,
               isActive: d.isActive,
-              applicability: d.applicability ?? null,
-              effectiveFrom: d.effectiveFrom,
-              effectiveTo: d.effectiveTo,
-              name: d.name,
-              remark: d.remark,
-              translations: d.translations,
             });
             openModal();
           }
         },
-        { visible: !showDeleted }
+        { visible: () => !showDeleted }
       ),
       CommonRowAction.RESTORE(
         async (row) => {
           await facilityService.restoreRentalRate(row.id);
           await fetchPages();
         },
-        { visible: showDeleted }
+        { visible: () => showDeleted }
       ),
-      CommonRowAction.DELETE((row) => {
-        setEditing(row);
-        openDeleteModal();
-      }),
+      CommonRowAction.DELETE(
+        (row) => {
+          setEditing(row);
+          openDeleteModal();
+        }
+      ),
     ],
     [fetchPages, openModal, openDeleteModal, showDeleted]
   );
@@ -293,8 +318,8 @@ const RentalRateDataPage = () => {
           ref={formRef}
           defaultValues={formValues}
           rooms={rooms}
+          templates={templates}
           facilityLocked={formMode === "edit"}
-          isCreate={formMode === "create"}
         />
       </ModalForm>
 
@@ -311,6 +336,15 @@ const RentalRateDataPage = () => {
             await fetchPages();
           }}
         />
+      </Modal>
+
+      <Modal
+        isOpen={isTemplatesOpen}
+        onClose={handleTemplatesClose}
+        title={t("rentalRateTemplate.page.title")}
+        className="max-w-3xl w-full mx-4 p-6"
+      >
+        <RentalRateTemplatePanel onChanged={() => void loadTemplates()} />
       </Modal>
     </>
   );

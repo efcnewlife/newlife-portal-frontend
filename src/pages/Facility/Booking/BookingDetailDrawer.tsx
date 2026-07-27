@@ -1,4 +1,5 @@
-import type { BookingDetail } from "@/api/services/facilityService";
+import type { BookingDetail, RateApplicabilityRule } from "@/api/services/facilityService";
+import { formatApplicabilitySummary } from "@/pages/Facility/RentalRateTemplate/applicabilityFormat";
 import { DateUtil } from "@/utils/dateUtil";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -37,10 +38,48 @@ const BookingDetailDrawer = ({ booking }: BookingDetailDrawerProps) => {
       {booking.rooms?.length > 0 && (
         <div>
           <h4 className="font-medium mb-2">{t("booking.detail.rooms")}</h4>
-          <ul className="list-disc pl-5 space-y-1">
+          <ul className="space-y-3">
             {booking.rooms.map((line) => (
-              <li key={line.id}>
-                {line.facilityName || line.facilityCode} · {DateUtil.format(line.startAt)} – {DateUtil.format(line.endAt)}
+              <li key={line.id} className="border border-gray-100 dark:border-gray-800 rounded-md p-3">
+                <div className="font-medium mb-1">
+                  {line.facilityName || line.facilityCode} · {DateUtil.format(line.startAt)} –{" "}
+                  {DateUtil.format(line.endAt)}
+                </div>
+                {row(
+                  t("booking.detail.rateName"),
+                  line.rentalRateName || "-"
+                )}
+                {row(
+                  t("booking.detail.billingUnit"),
+                  line.billingUnit
+                    ? t(`rentalRateTemplate.billingUnits.${line.billingUnit}`, {
+                        defaultValue: line.billingUnit,
+                      })
+                    : "-"
+                )}
+                {row(
+                  t("booking.detail.unitAmount"),
+                  line.unitAmount != null
+                    ? `${line.unitAmount} ${line.currency || booking.currency || ""}`
+                    : "-"
+                )}
+                {row(
+                  t("booking.detail.applicability"),
+                  formatApplicabilitySummary(
+                    (line.applicability as RateApplicabilityRule | null | undefined) ?? null,
+                    t
+                  )
+                )}
+                {row(
+                  t("booking.detail.isDefault"),
+                  line.isDefault == null ? "-" : line.isDefault ? t("shared.yes") : t("shared.no")
+                )}
+                {row(
+                  t("booking.detail.lineSubtotal"),
+                  line.lineSubtotal != null
+                    ? `${line.lineSubtotal} ${line.currency || booking.currency || ""}`
+                    : "-"
+                )}
               </li>
             ))}
           </ul>

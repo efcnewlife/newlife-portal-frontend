@@ -133,7 +133,7 @@ export type RoomBlackoutCreate = Omit<
 >;
 export type RoomBlackoutUpdate = RoomBlackoutCreate;
 
-// Rental rate
+// Rental rate applicability (lives on templates)
 export type RateApplicabilityLeaf =
   | { op: "hours_gte"; value: number | string }
   | { op: "hours_lt"; value: number | string }
@@ -145,42 +145,65 @@ export type RateApplicabilityRule =
   | { any: RateApplicabilityRule[] }
   | { not: RateApplicabilityRule };
 
-export interface RentalRateItem {
+// Rental rate template
+export interface RentalRateTemplateItem {
   id: string;
-  facilityId: string;
+  name: string;
   billingUnit: string;
-  unitAmount: string | number;
+  applicability?: RateApplicabilityRule | null;
+  unitAmount: number;
   currency: string;
   isDefault: boolean;
   isActive: boolean;
-  applicability?: RateApplicabilityRule | null;
-  effectiveFrom?: string;
-  effectiveTo?: string;
-  sequence?: number;
-  remark?: string;
-  name?: string;
   createAt?: string;
   createdBy?: string;
   updateAt?: string;
   updatedBy?: string;
   deleteReason?: string;
-  translations?: FacilityTranslationItem[];
 }
 
-export interface RentalRateWrite {
-  facilityId: string;
+export interface RentalRateTemplateWrite {
+  name: string;
   billingUnit: string;
+  applicability?: RateApplicabilityRule | null;
   unitAmount: number;
   currency?: string;
   isDefault?: boolean;
   isActive?: boolean;
+}
+
+export type RentalRateTemplateCreate = RentalRateTemplateWrite;
+export type RentalRateTemplateUpdate = RentalRateTemplateWrite;
+
+export interface RentalRateTemplateEmbed {
+  id: string;
+  name: string;
+  billingUnit: string;
   applicability?: RateApplicabilityRule | null;
-  effectiveFrom?: string;
-  effectiveTo?: string;
-  sequence?: number;
-  remark?: string;
-  name?: string;
-  translations?: FacilityTranslationInput[];
+  unitAmount: number;
+  currency: string;
+  isDefault: boolean;
+  isActive: boolean;
+}
+
+// Rental rate (room/global binding to a template; price from template)
+export interface RentalRateItem {
+  id: string;
+  facilityId?: string | null;
+  templateId: string;
+  isActive: boolean;
+  createAt?: string;
+  createdBy?: string;
+  updateAt?: string;
+  updatedBy?: string;
+  deleteReason?: string;
+  template?: RentalRateTemplateEmbed;
+}
+
+export interface RentalRateWrite {
+  facilityId: string;
+  templateId: string;
+  isActive?: boolean;
 }
 
 export type RentalRateCreate = RentalRateWrite;
@@ -203,8 +226,12 @@ export interface PreviewQuoteRequest {
 export interface PreviewQuoteRoomLineResult {
   facilityId: string;
   billedHours: string | number;
-  pricingTierUsed: string;
-  rentalRateId?: string;
+  rentalRateName: string;
+  billingUnit: string;
+  unitAmount: string | number;
+  currency: string;
+  applicability?: Record<string, unknown> | null;
+  isDefault?: boolean;
   lineSubtotal: string | number;
 }
 
@@ -311,8 +338,12 @@ export interface BookingRoomLine {
   startAt: string;
   endAt: string;
   billedHours?: string | number;
-  pricingTierUsed?: string;
-  rentalRateId?: string;
+  rentalRateName?: string;
+  billingUnit?: string;
+  unitAmount?: string | number;
+  currency?: string;
+  applicability?: Record<string, unknown> | null;
+  isDefault?: boolean;
   lineSubtotal?: string | number;
 }
 
@@ -512,15 +543,61 @@ class FacilityService {
     return httpClient.put(API_ENDPOINTS.FACILITY.ROOM_BLACKOUTS.RESTORE(id));
   }
 
+  // Rental rate templates
+  async getRentalRateTemplatePages(
+    params: PagesParams
+  ): Promise<ApiResponse<PagesResponse<RentalRateTemplateItem>>> {
+    if (IS_MOCK_API) return emptyPages();
+    return httpClient.get(API_ENDPOINTS.FACILITY.RENTAL_RATE_TEMPLATES.PAGES, params as Record<string, unknown>);
+  }
+
+  async getRentalRateTemplateList(): Promise<ApiResponse<{ items: RentalRateTemplateItem[] }>> {
+    if (IS_MOCK_API) return emptyList();
+    return httpClient.get(API_ENDPOINTS.FACILITY.RENTAL_RATE_TEMPLATES.LIST);
+  }
+
+  async getRentalRateTemplateById(id: string): Promise<ApiResponse<RentalRateTemplateItem>> {
+    if (IS_MOCK_API) return { success: true, data: {} as RentalRateTemplateItem };
+    return httpClient.get(API_ENDPOINTS.FACILITY.RENTAL_RATE_TEMPLATES.DETAIL(id));
+  }
+
+  async createRentalRateTemplate(payload: RentalRateTemplateCreate): Promise<ApiResponse<{ id: string }>> {
+    if (IS_MOCK_API) return { success: true, data: { id: "" } };
+    return httpClient.post(API_ENDPOINTS.FACILITY.RENTAL_RATE_TEMPLATES.CREATE, payload);
+  }
+
+  async updateRentalRateTemplate(id: string, payload: RentalRateTemplateUpdate): Promise<ApiResponse<void>> {
+    if (IS_MOCK_API) return { success: true, data: undefined as void };
+    return httpClient.put(API_ENDPOINTS.FACILITY.RENTAL_RATE_TEMPLATES.UPDATE(id), payload);
+  }
+
+  async deleteRentalRateTemplate(id: string, payload: DeletePayload): Promise<ApiResponse<void>> {
+    if (IS_MOCK_API) return { success: true, data: undefined as void };
+    return httpClient.request({
+      method: "DELETE",
+      url: API_ENDPOINTS.FACILITY.RENTAL_RATE_TEMPLATES.DELETE(id),
+      data: payload,
+    });
+  }
+
+  async restoreRentalRateTemplate(id: string): Promise<ApiResponse<void>> {
+    if (IS_MOCK_API) return { success: true, data: undefined as void };
+    return httpClient.put(API_ENDPOINTS.FACILITY.RENTAL_RATE_TEMPLATES.RESTORE(id));
+  }
+
   // Rental rates
-  async getRentalRatePages(params: PagesParams & { facilityId?: string }): Promise<ApiResponse<PagesResponse<RentalRateItem>>> {
+  async getRentalRatePages(
+    params: PagesParams & { facilityId?: string }
+  ): Promise<ApiResponse<PagesResponse<RentalRateItem>>> {
     if (IS_MOCK_API) return emptyPages();
     return httpClient.get(API_ENDPOINTS.FACILITY.RENTAL_RATES.PAGES, params as Record<string, unknown>);
   }
 
-  async getRentalRateList(facilityId?: string): Promise<ApiResponse<{ items: RentalRateItem[] }>> {
+  async getRentalRateList(params?: {
+    facilityId?: string;
+  }): Promise<ApiResponse<{ items: RentalRateItem[] }>> {
     if (IS_MOCK_API) return emptyList();
-    return httpClient.get(API_ENDPOINTS.FACILITY.RENTAL_RATES.LIST, facilityId ? { facilityId } : undefined);
+    return httpClient.get(API_ENDPOINTS.FACILITY.RENTAL_RATES.LIST, params as Record<string, unknown>);
   }
 
   async previewQuote(payload: PreviewQuoteRequest): Promise<ApiResponse<PreviewQuoteResponse>> {
@@ -528,9 +605,9 @@ class FacilityService {
     return httpClient.post(API_ENDPOINTS.FACILITY.RENTAL_RATES.PREVIEW_QUOTE, payload);
   }
 
-  async getRentalRateById(id: string, params?: DetailQueryParams): Promise<ApiResponse<RentalRateItem>> {
+  async getRentalRateById(id: string): Promise<ApiResponse<RentalRateItem>> {
     if (IS_MOCK_API) return { success: true, data: {} as RentalRateItem };
-    return httpClient.get(API_ENDPOINTS.FACILITY.RENTAL_RATES.DETAIL(id), params as Record<string, unknown>);
+    return httpClient.get(API_ENDPOINTS.FACILITY.RENTAL_RATES.DETAIL(id));
   }
 
   async createRentalRate(payload: RentalRateCreate): Promise<ApiResponse<{ id: string }>> {

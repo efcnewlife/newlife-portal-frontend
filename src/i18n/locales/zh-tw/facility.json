@@ -8,13 +8,13 @@
     "loadFailed": "載入失敗，請稍後再試。",
     "saveFailed": "儲存失敗，請稍後再試。",
     "deleteFailed": "刪除失敗，請稍後再試。",
-    "cancelFailed": "取消預約失敗，請稍後再試。",
+    "cancelFailed": "取消預訂失敗，請稍後再試。",
     "searchChipsTitle": "已選條件",
     "searchChipKeyword": "關鍵字：",
     "searchChipRoom": "場地："
   },
   "room": {
-    "page": { "title": "場地管理", "description": "管理可預約場地與空間" },
+    "page": { "title": "場地管理", "description": "管理可預訂場地與空間" },
     "table": {
       "code": "代碼",
       "name": "名稱",
@@ -44,7 +44,7 @@
     "deleteForm": { "entityLabel": "場地" }
   },
   "roomSlotTemplate": {
-    "page": { "title": "時段範本", "description": "設定各場地週期性可預約時段" },
+    "page": { "title": "時段範本", "description": "設定各場地週期性可預訂時段" },
     "table": {
       "name": "名稱",
       "daysOfWeek": "適用星期",
@@ -140,37 +140,44 @@
       "keywordPlaceholder": "搜尋名稱或原因"
     }
   },
-  "rentalRate": {
-    "page": { "title": "租金費率", "description": "管理各場地計價方式" },
+  "rentalRateTemplate": {
+    "page": {
+      "title": "租金費率範本",
+      "description": "定義計費單位與適用條件，供費率綁定使用"
+    },
+    "panel": {
+      "add": "新增範本",
+      "refresh": "重新整理",
+      "loading": "載入範本中...",
+      "empty": "尚無範本",
+      "badgeDefault": "預設",
+      "badgeActive": "啟用",
+      "badgeInactive": "停用"
+    },
     "table": {
       "name": "名稱",
-      "room": "場地",
       "billingUnit": "計費單位",
-      "amount": "金額",
-      "unitAmount": "單價",
-      "currency": "幣別",
       "applicability": "適用條件",
       "isDefault": "預設",
       "isActive": "啟用"
     },
     "modal": {
-      "createTitle": "新增費率",
-      "editTitle": "編輯費率",
-      "deleteSoft": "刪除費率",
-      "deletePermanent": "永久刪除費率"
+      "createTitle": "新增費率範本",
+      "editTitle": "編輯費率範本",
+      "deleteSoft": "刪除費率範本",
+      "deletePermanent": "永久刪除費率範本"
     },
     "form": {
+      "name": "名稱",
       "billingUnit": "計費單位",
-      "unitAmount": "單價",
-      "currency": "幣別",
-      "effectiveFrom": "生效日",
-      "effectiveTo": "失效日",
-      "isDefault": "預設費率",
-      "remark": "備註",
-      "facilityRequired": "請選擇場地",
+      "isDefault": "預設範本",
+      "nameRequired": "請輸入名稱",
+      "unitAmount": "預設單價",
       "unitAmountRequired": "請輸入單價",
+      "unitAmountHint": "選用此範本計價時一律使用此單價",
+      "currency": "幣別",
       "applicability": "適用條件",
-      "applicabilityHint": "依計費時數決定此費率是否適用",
+      "applicabilityHint": "依計費時數決定此範本是否適用",
       "applicabilityMode": "模式",
       "applicabilityHours": "時數",
       "applicabilityMinHours": "最少時數",
@@ -201,15 +208,51 @@
       "per_slot": "每時段",
       "flat_per_booking": "每筆定價"
     },
-    "deleteForm": { "entityLabel": "費率" },
+    "deleteForm": { "entityLabel": "費率範本" },
+    "search": {
+      "popoverTitle": "搜尋費率範本",
+      "keywordLabel": "關鍵字",
+      "keywordPlaceholder": "搜尋範本名稱"
+    }
+  },
+  "rentalRate": {
+    "page": {
+      "title": "租金費率",
+      "description": "將場地綁定至費率範本。金額一律跟隨範本。有綁定時優先用綁定；無綁定或選不出價時改用全部啟用中的範本。"
+    },
+    "toolbar": {
+      "templates": "費率範本"
+    },
+    "table": {
+      "room": "場地",
+      "template": "範本",
+      "billingUnit": "計費單位",
+      "amount": "範本價格",
+      "isActive": "啟用"
+    },
+    "modal": {
+      "createTitle": "新增費率綁定",
+      "editTitle": "編輯費率綁定",
+      "deleteSoft": "刪除費率綁定",
+      "deletePermanent": "永久刪除費率綁定"
+    },
+    "form": {
+      "facility": "場地",
+      "facilityBindingHint": "僅用於房間綁定。金額一律跟隨所選範本。",
+      "followsTemplatePrice": "跟隨範本價：{{amount}} {{currency}}",
+      "template": "費率範本",
+      "templateRequired": "請選擇費率範本",
+      "facilityRequired": "請選擇場地"
+    },
+    "deleteForm": { "entityLabel": "費率綁定" },
     "search": {
       "popoverTitle": "搜尋租金費率",
       "keywordLabel": "關鍵字",
-      "keywordPlaceholder": "搜尋名稱、說明或備註"
+      "keywordPlaceholder": "搜尋範本名稱或計費單位"
     }
   },
   "booking": {
-    "page": { "title": "預約管理", "description": "檢視與管理場地預約" },
+    "page": { "title": "預訂管理", "description": "檢視與管理場地預訂" },
     "table": {
       "user": "使用者",
       "facility": "場地",
@@ -219,11 +262,11 @@
       "status": "狀態",
       "quotedAmount": "報價"
     },
-    "modal": { "detailTitle": "預約詳情", "cancelTitle": "取消預約" },
+    "modal": { "detailTitle": "預訂詳情", "cancelTitle": "取消預訂" },
     "detail": {
       "userEmail": "電子郵件",
       "status": "狀態",
-      "bookingType": "預約類型",
+      "bookingType": "預訂類型",
       "missionAligned": "宣教對齊",
       "subtotal": "小計",
       "discount": "折扣",
@@ -232,7 +275,13 @@
       "quoted": "報價金額",
       "cancelReason": "取消原因",
       "rooms": "場地明細",
-      "slots": "時段"
+      "slots": "時段",
+      "rateName": "收費規則",
+      "billingUnit": "計費單位",
+      "unitAmount": "單價",
+      "applicability": "適用條件",
+      "isDefault": "預設規則",
+      "lineSubtotal": "行小計"
     },
     "cancel": {
       "reason": "取消原因",
@@ -252,7 +301,7 @@
     }
   },
   "overrideLog": {
-    "page": { "title": "覆寫紀錄", "description": "優先預約覆寫稽核紀錄" },
+    "page": { "title": "覆寫紀錄", "description": "優先預訂覆寫稽核紀錄" },
     "table": {
       "facility": "場地",
       "outcome": "結果",
@@ -262,11 +311,11 @@
     }
   },
   "ministry": {
-    "page": { "title": "事工管理", "description": "管理事工與優先預約設定" },
+    "page": { "title": "事工管理", "description": "管理事工與優先預訂設定" },
     "table": {
       "name": "名稱",
       "status": "狀態",
-      "hasPriorityBooking": "優先預約",
+      "hasPriorityBooking": "優先預訂",
       "isActive": "啟用",
       "createdAt": "建立時間",
       "updatedAt": "更新時間"
@@ -280,7 +329,7 @@
     },
     "form": {
       "name": "名稱",
-      "hasPriorityBooking": "優先預約",
+      "hasPriorityBooking": "優先預訂",
       "nameRequired": "請輸入名稱"
     },
     "status": {

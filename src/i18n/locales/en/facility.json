@@ -140,37 +140,44 @@
       "keywordPlaceholder": "Search name or reason"
     }
   },
-  "rentalRate": {
-    "page": { "title": "Rental rates", "description": "Manage pricing tiers per room" },
+  "rentalRateTemplate": {
+    "page": {
+      "title": "Rental rate templates",
+      "description": "Define billing units and applicability rules for rental pricing"
+    },
+    "panel": {
+      "add": "Add template",
+      "refresh": "Refresh",
+      "loading": "Loading templates...",
+      "empty": "No templates yet",
+      "badgeDefault": "Default",
+      "badgeActive": "Active",
+      "badgeInactive": "Inactive"
+    },
     "table": {
       "name": "Name",
-      "room": "Room",
       "billingUnit": "Billing unit",
-      "amount": "Amount",
-      "unitAmount": "Unit amount",
-      "currency": "Currency",
       "applicability": "Applicability",
       "isDefault": "Default",
       "isActive": "Active"
     },
     "modal": {
-      "createTitle": "Create rental rate",
-      "editTitle": "Edit rental rate",
-      "deleteSoft": "Delete rental rate",
-      "deletePermanent": "Permanently delete rental rate"
+      "createTitle": "Create rental rate template",
+      "editTitle": "Edit rental rate template",
+      "deleteSoft": "Delete rental rate template",
+      "deletePermanent": "Permanently delete rental rate template"
     },
     "form": {
+      "name": "Name",
       "billingUnit": "Billing unit",
-      "unitAmount": "Unit amount",
-      "currency": "Currency",
-      "effectiveFrom": "Effective from",
-      "effectiveTo": "Effective to",
-      "isDefault": "Default rate",
-      "remark": "Remark",
-      "facilityRequired": "Room is required",
+      "isDefault": "Default template",
+      "nameRequired": "Name is required",
+      "unitAmount": "Default unit amount",
       "unitAmountRequired": "Unit amount is required",
+      "unitAmountHint": "Unit price used whenever this template is selected for pricing",
+      "currency": "Currency",
       "applicability": "Applicability",
-      "applicabilityHint": "When this rate applies based on billed hours",
+      "applicabilityHint": "When this template applies based on billed hours",
       "applicabilityMode": "Mode",
       "applicabilityHours": "Hours",
       "applicabilityMinHours": "Min hours",
@@ -201,11 +208,47 @@
       "per_slot": "Per slot",
       "flat_per_booking": "Flat per booking"
     },
-    "deleteForm": { "entityLabel": "rental rate" },
+    "deleteForm": { "entityLabel": "rental rate template" },
+    "search": {
+      "popoverTitle": "Search rental rate templates",
+      "keywordLabel": "Keyword",
+      "keywordPlaceholder": "Search template name"
+    }
+  },
+  "rentalRate": {
+    "page": {
+      "title": "Rental rates",
+      "description": "Bind rooms to rate templates. Price always follows the template. Rooms with bindings use those first; otherwise pricing uses all active templates."
+    },
+    "toolbar": {
+      "templates": "Rate templates"
+    },
+    "table": {
+      "room": "Room",
+      "template": "Template",
+      "billingUnit": "Billing unit",
+      "amount": "Template price",
+      "isActive": "Active"
+    },
+    "modal": {
+      "createTitle": "Create rental rate binding",
+      "editTitle": "Edit rental rate binding",
+      "deleteSoft": "Delete rental rate binding",
+      "deletePermanent": "Permanently delete rental rate binding"
+    },
+    "form": {
+      "facility": "Room",
+      "facilityBindingHint": "Room bindings only. Price always follows the selected template.",
+      "followsTemplatePrice": "Price follows template: {{amount}} {{currency}}",
+      "template": "Rate template",
+      "templateRequired": "Template is required",
+      "facilityRequired": "Room is required"
+    },
+    "deleteForm": { "entityLabel": "rental rate binding" },
     "search": {
       "popoverTitle": "Search rental rates",
       "keywordLabel": "Keyword",
-      "keywordPlaceholder": "Search name, description, or remark"
+      "keywordPlaceholder": "Search template name or billing unit"
     }
   },
   "booking": {
@@ -232,7 +275,13 @@
       "quoted": "Quoted amount",
       "cancelReason": "Cancel reason",
       "rooms": "Room lines",
-      "slots": "Slots"
+      "slots": "Slots",
+      "rateName": "Rate rule",
+      "billingUnit": "Billing unit",
+      "unitAmount": "Unit amount",
+      "applicability": "Applicability",
+      "isDefault": "Default rule",
+      "lineSubtotal": "Line subtotal"
     },
     "cancel": {
       "reason": "Cancel reason",

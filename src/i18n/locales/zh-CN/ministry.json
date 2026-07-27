@@ -17,7 +17,7 @@
       "targetAudiences": "对象",
       "status": "状态",
       "ownerPosition": "负责职位",
-      "hasPriorityBooking": "优先预约",
+      "hasPriorityBooking": "优先预订",
       "isActive": "启用",
       "createdAt": "创建时间",
       "updatedAt": "更新时间"
@@ -41,7 +41,7 @@
       "schedules": "时段",
       "ownerPositionId": "负责职位",
       "ownerPositionPlaceholder": "请选择职位",
-      "hasPriorityBooking": "优先预约",
+      "hasPriorityBooking": "优先预订",
       "nameRequired": "请输入名称",
       "members": "负责人",
       "membersHint": "送审前需恰好一位主要负责人与至少一位次要负责人。"

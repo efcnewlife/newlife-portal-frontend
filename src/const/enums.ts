@@ -67,6 +67,7 @@ export enum Resource {
   FacilityRoom = "facility:room",
   FacilityRoomSlotTemplate = "facility:room_slot_template",
   FacilityRoomBlackout = "facility:room_blackout",
+  FacilityRentalRateTemplate = "facility:rental_rate_template",
   FacilityRentalRate = "facility:rental_rate",
   FacilityBooking = "facility:booking",
   FacilityBookingOverrideLog = "facility:booking_override_log",
