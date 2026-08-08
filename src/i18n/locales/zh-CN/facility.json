@@ -262,20 +262,21 @@
       "status": "狀態",
       "quotedAmount": "報價"
     },
-    "modal": { "detailTitle": "预订詳情", "cancelTitle": "取消预订" },
+    "modal": { "detailTitle": "预订详情", "cancelTitle": "取消预订", "createTitle": "创建预订" },
     "detail": {
-      "userEmail": "電子郵件",
-      "status": "狀態",
-      "bookingType": "预订類型",
-      "missionAligned": "宣教對齊",
-      "subtotal": "小計",
+      "userEmail": "电子邮件",
+      "createdBy": "创建者",
+      "status": "状态",
+      "bookingType": "预订类型",
+      "missionAligned": "宣教对齐",
+      "subtotal": "小计",
       "discount": "折扣",
-      "surcharge": "附加費",
-      "deposit": "訂金",
-      "quoted": "報價金額",
+      "surcharge": "附加费",
+      "deposit": "订金",
+      "quoted": "报价金额",
       "cancelReason": "取消原因",
-      "rooms": "場地明細",
-      "slots": "時段",
+      "rooms": "场地明细",
+      "slots": "时段",
       "rateName": "收费规则",
       "billingUnit": "计费单位",
       "unitAmount": "单价",
@@ -283,21 +284,52 @@
       "isDefault": "默认规则",
       "lineSubtotal": "行小计"
     },
+    "form": {
+      "booker": "预订人",
+      "bookerRequired": "必须选择预订人",
+      "rooms": "场地",
+      "roomsRequired": "请至少选择一个场地",
+      "startAt": "开始",
+      "endAt": "结束",
+      "startRequired": "开始时间必填",
+      "endRequired": "结束时间必填",
+      "endAfterStart": "结束时间必须晚于开始时间",
+      "ministry": "事工",
+      "noMinistry": "不指定事工",
+      "missionAligned": "宣教对齐",
+      "surcharges": "附加费",
+      "remark": "备注",
+      "previewQuote": "预览报价",
+      "quoting": "计算中…",
+      "quotedAmount": "报价金额",
+      "quoteNeedTimesRooms": "请先选择场地与时间再预览",
+      "quoteFailed": "预览报价失败"
+    },
+    "view": {
+      "label": "视图模式",
+      "list": "列表",
+      "calendar": "日历",
+      "grid": "网格"
+    },
+    "actions": {
+      "view": "查看",
+      "cancel": "取消"
+    },
     "cancel": {
       "reason": "取消原因",
-      "scope": "範圍",
-      "scopeSingle": "僅此筆",
-      "confirm": "確認取消"
+      "scope": "范围",
+      "scopeSingle": "仅此笔",
+      "confirm": "确认取消"
     },
     "status": {
       "draft": "草稿",
-      "confirmed": "已確認",
+      "confirmed": "已确认",
       "cancelled": "已取消",
-      "overridden": "已覆寫"
+      "overridden": "已覆盖"
     },
     "bookingType": {
-      "one_time": "單次",
-      "recurring": "週期"
+      "one_time": "单次",
+      "recurring": "周期"
     }
   },
   "overrideLog": {

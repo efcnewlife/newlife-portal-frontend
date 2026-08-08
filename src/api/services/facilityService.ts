@@ -369,6 +369,8 @@ export interface BookingDetail extends BookingListItem {
   cancelledAt?: string;
   cancelReason?: string;
   remark?: string;
+  createdById?: string;
+  createdBy?: string;
   rooms: BookingRoomLine[];
   slots: BookingSlot[];
 }
@@ -378,6 +380,17 @@ export interface BookingRoomInput {
   startAt?: string;
   endAt?: string;
   sequence?: number;
+}
+
+export interface BookingCreate {
+  userId: string;
+  startAt: string;
+  endAt: string;
+  isMissionAligned?: boolean;
+  ministryId?: string;
+  rooms: BookingRoomInput[];
+  surchargeCodes?: string[];
+  remark?: string;
 }
 
 export interface BookingUpdate {
@@ -719,6 +732,11 @@ class FacilityService {
   async getBookingById(id: string): Promise<ApiResponse<BookingDetail>> {
     if (IS_MOCK_API) return { success: true, data: {} as BookingDetail };
     return httpClient.get(API_ENDPOINTS.FACILITY.BOOKINGS.DETAIL(id));
+  }
+
+  async createBooking(payload: BookingCreate): Promise<ApiResponse<{ id: string }>> {
+    if (IS_MOCK_API) return { success: true, data: { id: "mock-booking-id" } };
+    return httpClient.post(API_ENDPOINTS.FACILITY.BOOKINGS.CREATE, payload);
   }
 
   async updateBooking(id: string, payload: BookingUpdate): Promise<ApiResponse<BookingDetail>> {

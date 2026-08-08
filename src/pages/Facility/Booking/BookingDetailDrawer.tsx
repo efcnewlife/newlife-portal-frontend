@@ -22,6 +22,10 @@ const BookingDetailDrawer = ({ booking }: BookingDetailDrawerProps) => {
     <div className="space-y-4 text-sm max-h-[70vh] overflow-y-auto pr-2">
       {row(t("booking.table.user"), booking.userDisplayName || booking.userEmail)}
       {row(t("booking.detail.userEmail"), booking.userEmail)}
+      {row(
+        t("booking.detail.createdBy"),
+        booking.createdBy || booking.createdById || "-"
+      )}
       {row(t("booking.table.facility"), booking.facilityName)}
       {row(t("booking.detail.status"), t(`booking.status.${booking.status}`, { defaultValue: booking.status }))}
       {row(t("booking.detail.bookingType"), t(`booking.bookingType.${booking.bookingType}`, { defaultValue: booking.bookingType }))}

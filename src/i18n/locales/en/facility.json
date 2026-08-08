@@ -262,9 +262,10 @@
       "status": "Status",
       "quotedAmount": "Quoted"
     },
-    "modal": { "detailTitle": "Booking detail", "cancelTitle": "Cancel booking" },
+    "modal": { "detailTitle": "Booking detail", "cancelTitle": "Cancel booking", "createTitle": "Create booking" },
     "detail": {
       "userEmail": "Email",
+      "createdBy": "Created by",
       "status": "Status",
       "bookingType": "Booking type",
       "missionAligned": "Mission aligned",
@@ -282,6 +283,37 @@
       "applicability": "Applicability",
       "isDefault": "Default rule",
       "lineSubtotal": "Line subtotal"
+    },
+    "form": {
+      "booker": "Booker",
+      "bookerRequired": "Booker is required",
+      "rooms": "Rooms",
+      "roomsRequired": "Select at least one room",
+      "startAt": "Start",
+      "endAt": "End",
+      "startRequired": "Start time is required",
+      "endRequired": "End time is required",
+      "endAfterStart": "End must be after start",
+      "ministry": "Ministry",
+      "noMinistry": "No ministry",
+      "missionAligned": "Mission aligned",
+      "surcharges": "Surcharges",
+      "remark": "Remark",
+      "previewQuote": "Preview quote",
+      "quoting": "Calculating…",
+      "quotedAmount": "Quoted amount",
+      "quoteNeedTimesRooms": "Select rooms and times before preview",
+      "quoteFailed": "Failed to preview quote"
+    },
+    "view": {
+      "label": "Booking view",
+      "list": "List",
+      "calendar": "Calendar",
+      "grid": "Grid"
+    },
+    "actions": {
+      "view": "View",
+      "cancel": "Cancel"
     },
     "cancel": {
       "reason": "Cancel reason",

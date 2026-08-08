@@ -57,6 +57,17 @@ export const API_ENDPOINTS = {
     LIST: `${ADMIN_API_PREFIX}/locale/list`,
   },
 
+  // System settings (admin)
+  SETTING: {
+    LIST: `${ADMIN_API_PREFIX}/system/settings/list`,
+    BY_KEY: `${ADMIN_API_PREFIX}/system/settings/by-key`,
+    CREATE: `${ADMIN_API_PREFIX}/system/settings`,
+    DETAIL: (id: string) => `${ADMIN_API_PREFIX}/system/settings/${id}`,
+    UPDATE: (id: string) => `${ADMIN_API_PREFIX}/system/settings/${id}`,
+    DELETE: (id: string) => `${ADMIN_API_PREFIX}/system/settings/${id}`,
+    RESTORE: `${ADMIN_API_PREFIX}/system/settings/restore`,
+  },
+
   // Resource management (admin)
   RESOURCES: {
     LIST: `${ADMIN_API_PREFIX}/resource/list`,
@@ -176,6 +187,7 @@ export const API_ENDPOINTS = {
     },
     BOOKINGS: {
       PAGES: `${ADMIN_API_PREFIX}/facility/bookings/pages`,
+      CREATE: `${ADMIN_API_PREFIX}/facility/bookings`,
       DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/bookings/${id}`,
       UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/bookings/${id}`,
       CANCEL: (id: string) => `${ADMIN_API_PREFIX}/facility/bookings/${id}/cancel`,
