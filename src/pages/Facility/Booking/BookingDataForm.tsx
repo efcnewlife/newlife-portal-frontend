@@ -268,7 +268,7 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         rows={3}
       />
       <div className="flex items-center gap-3">
-        <Button type="button" variant="outline" size="sm" onClick={() => void handlePreviewQuote()} disabled={quoting}>
+        <Button variant="outline" size="sm" onClick={() => void handlePreviewQuote()} disabled={quoting}>
           {quoting ? t("booking.form.quoting") : t("booking.form.previewQuote")}
         </Button>
         {quote && (

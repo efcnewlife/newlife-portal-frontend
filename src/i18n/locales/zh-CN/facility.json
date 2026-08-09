@@ -311,9 +311,15 @@
       "calendar": "日历",
       "grid": "网格"
     },
+    "grid": {
+      "room": "房间",
+      "noRooms": "目前没有可用的启用房间。",
+      "addSlot": "在 {{room}} 的 {{hour}} 新增预约"
+    },
     "actions": {
       "view": "查看",
-      "cancel": "取消"
+      "cancel": "取消",
+      "create": "新增预约"
     },
     "cancel": {
       "reason": "取消原因",

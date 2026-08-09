@@ -311,9 +311,15 @@
       "calendar": "Calendar",
       "grid": "Grid"
     },
+    "grid": {
+      "room": "Room",
+      "noRooms": "No active rooms available.",
+      "addSlot": "Create booking in {{room}} at {{hour}}"
+    },
     "actions": {
       "view": "View",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "create": "Create booking"
     },
     "cancel": {
       "reason": "Cancel reason",

@@ -311,9 +311,15 @@
       "calendar": "行事曆",
       "grid": "格狀"
     },
+    "grid": {
+      "room": "房間",
+      "noRooms": "目前沒有可用的啟用房間。",
+      "addSlot": "在 {{room}} 的 {{hour}} 新增預約"
+    },
     "actions": {
       "view": "檢視",
-      "cancel": "取消"
+      "cancel": "取消",
+      "create": "新增預約"
     },
     "cancel": {
       "reason": "取消原因",

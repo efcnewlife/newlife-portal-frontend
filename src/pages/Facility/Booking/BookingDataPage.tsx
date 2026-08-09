@@ -6,14 +6,15 @@ import {
 } from "@/api/services/facilityService";
 import type { DataTableColumn, MenuButtonType, PageButtonType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
+import PageToolbar from "@/components/common/PageToolbar";
 import { useRoomListOptions } from "@/pages/Facility/shared/useRoomListOptions";
-import { Button, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
+import { Button, ButtonGroup, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
 import { Resource, Verb } from "@/const/enums";
 import { usePermissions } from "@/context/AuthContext";
 import { useModal } from "@/hooks/useModal";
 import { DateUtil } from "@/utils/dateUtil";
 import { cn } from "@/utils";
-import { MdCancel } from "react-icons/md";
+import { MdAdd, MdCalendarMonth, MdCancel, MdGridOn, MdViewList } from "react-icons/md";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -21,12 +22,14 @@ import BookingCalendar from "./BookingCalendar";
 import BookingCancelForm from "./BookingCancelForm";
 import BookingDataForm, { type BookingDataFormHandle, type BookingFormValues } from "./BookingDataForm";
 import BookingDetailDrawer from "./BookingDetailDrawer";
+import BookingGrid from "./BookingGrid";
 
 type BookingRow = BookingListItem & Record<string, unknown>;
-type BookingViewMode = "list" | "calendar";
+type BookingViewMode = "list" | "calendar" | "grid";
 
 const parseViewMode = (value: string | null): BookingViewMode => {
   if (value === "calendar") return "calendar";
+  if (value === "grid") return "grid";
   return "list";
 };
 
@@ -51,7 +54,8 @@ const BookingDataPage = () => {
   const canCreate = hasPermission(`${Resource.FacilityBooking}:${Verb.Create}`);
   const [searchParams, setSearchParams] = useSearchParams();
   const viewMode = parseViewMode(searchParams.get("view"));
-  const anchorDate = parseIsoDate(searchParams.get("date"));
+  const dateParam = searchParams.get("date");
+  const anchorDate = useMemo(() => parseIsoDate(dateParam), [dateParam]);
 
   const [items, setItems] = useState<BookingRow[]>([]);
   const [calendarItems, setCalendarItems] = useState<BookingRow[]>([]);
@@ -93,8 +97,9 @@ const BookingDataPage = () => {
 
   const setAnchorDate = useCallback(
     (date: Date) => {
+      const nextDate = toIsoDate(date);
       const params = new URLSearchParams(searchParams);
-      params.set("date", toIsoDate(date));
+      params.set("date", nextDate);
       if (viewMode === "list") {
         params.set("view", "calendar");
       } else {
@@ -144,6 +149,16 @@ const BookingDataPage = () => {
     }
   }, [t, visibleRange]);
 
+  const handleVisibleRangeChange = useCallback((range: { start: Date; end: Date }) => {
+    setVisibleRange((prev) => {
+      const sameMs =
+        !!prev &&
+        prev.start.getTime() === range.start.getTime() &&
+        prev.end.getTime() === range.end.getTime();
+      return sameMs ? prev : range;
+    });
+  }, []);
+
   useEffect(() => {
     if (viewMode === "list") {
       void fetchPages();
@@ -151,10 +166,18 @@ const BookingDataPage = () => {
   }, [fetchPages, viewMode]);
 
   useEffect(() => {
-    if (viewMode === "calendar") {
+    if (viewMode === "calendar" || viewMode === "grid") {
       void fetchCalendarRange();
     }
   }, [fetchCalendarRange, viewMode]);
+
+  const refreshCurrentView = useCallback(async () => {
+    if (viewMode === "calendar" || viewMode === "grid") {
+      await fetchCalendarRange();
+    } else {
+      await fetchPages();
+    }
+  }, [fetchCalendarRange, fetchPages, viewMode]);
 
   const openCreateModal = useCallback(
     (defaults?: Partial<BookingFormValues> | null) => {
@@ -217,14 +240,10 @@ const BookingDataPage = () => {
     () => [
       CommonPageButton.ADD(() => openCreateModal(null)),
       CommonPageButton.REFRESH(() => {
-        if (viewMode === "calendar") {
-          void fetchCalendarRange();
-        } else {
-          void fetchPages();
-        }
+        void refreshCurrentView();
       }),
     ],
-    [fetchCalendarRange, fetchPages, openCreateModal, viewMode]
+    [openCreateModal, refreshCurrentView]
   );
 
   const rowActions: MenuButtonType<BookingRow>[] = useMemo(
@@ -248,26 +267,66 @@ const BookingDataPage = () => {
     [t, openCancel, openBookingDetail]
   );
 
-  const viewToggle = (
-    <div className="mb-4 flex flex-wrap items-center gap-2">
-      <span className="text-sm text-gray-500">{t("booking.view.label")}</span>
-      {(["list", "calendar"] as const).map((mode) => (
-        <Button
-          key={mode}
-          size="sm"
-          variant={viewMode === mode ? "primary" : "outline"}
-          className={cn(viewMode === mode && "pointer-events-none")}
-          onClick={() => setViewMode(mode)}
-        >
-          {t(`booking.view.${mode}`)}
-        </Button>
-      ))}
-    </div>
+  const viewModeButtons = useMemo(
+    () => [
+      {
+        text: t("booking.view.list"),
+        icon: <MdViewList className="size-4" aria-hidden />,
+        iconOnly: true,
+        active: viewMode === "list",
+        onClick: () => setViewMode("list"),
+        className: "h-9 w-9 justify-center px-0 py-0",
+      },
+      {
+        text: t("booking.view.calendar"),
+        icon: <MdCalendarMonth className="size-4" aria-hidden />,
+        iconOnly: true,
+        active: viewMode === "calendar",
+        onClick: () => setViewMode("calendar"),
+        className: "h-9 w-9 justify-center px-0 py-0",
+      },
+      {
+        text: t("booking.view.grid"),
+        icon: <MdGridOn className="size-4" aria-hidden />,
+        iconOnly: true,
+        active: viewMode === "grid",
+        onClick: () => setViewMode("grid"),
+        className: "h-9 w-9 justify-center px-0 py-0",
+      },
+    ],
+    [setViewMode, t, viewMode]
   );
 
+  const showScheduleCreate = (viewMode === "calendar" || viewMode === "grid") && canCreate;
+
   return (
-    <>
-      {viewToggle}
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      <PageToolbar
+        left={
+          showScheduleCreate ? (
+            <Button
+              size="sm"
+              startIcon={<MdAdd className="size-5" aria-hidden />}
+              className="h-9 w-9 !rounded-full !px-0"
+              onClick={() => openCreateModal(null)}
+            >
+              <span className="sr-only">{t("booking.actions.create")}</span>
+            </Button>
+          ) : null
+        }
+        right={
+          <ButtonGroup
+            variant="primary"
+            buttons={viewModeButtons}
+            minWidth="auto"
+            className={cn(
+              "!pb-0 [&>div>div]:!shadow-none",
+              "[&>div>div]:!rounded-full",
+              "[&_button]:first:!rounded-l-full [&_button]:last:!rounded-r-full"
+            )}
+          />
+        }
+      />
 
       {viewMode === "list" && (
         <DataPage<BookingRow>
@@ -286,19 +345,12 @@ const BookingDataPage = () => {
       )}
 
       {viewMode === "calendar" && (
-        <div className="space-y-3">
-          {canCreate && (
-            <div className="flex justify-end">
-              <Button size="sm" onClick={() => openCreateModal(null)}>
-                {t("common:create", { ns: "common" })}
-              </Button>
-            </div>
-          )}
+        <div className="min-h-0 flex-1 space-y-3">
           <BookingCalendar
             anchorDate={anchorDate}
             bookings={calendarItems}
             onAnchorDateChange={setAnchorDate}
-            onVisibleRangeChange={setVisibleRange}
+            onVisibleRangeChange={handleVisibleRangeChange}
             onEventClick={(booking) => void openBookingDetail(booking)}
             onCancelClick={(booking) => {
               setCancelling(booking as BookingRow);
@@ -315,6 +367,26 @@ const BookingDataPage = () => {
         </div>
       )}
 
+      {viewMode === "grid" && (
+        <div className="min-h-0 flex-1">
+          <BookingGrid
+            anchorDate={anchorDate}
+            rooms={rooms}
+            bookings={calendarItems}
+            canCreate={canCreate}
+            onAnchorDateChange={setAnchorDate}
+            onVisibleRangeChange={handleVisibleRangeChange}
+            onBookingClick={(booking) => void openBookingDetail(booking)}
+            onAddCell={(facilityId, startLocal, endLocal) => {
+              openCreateModal({
+                facilityIds: [facilityId],
+                startAtLocal: startLocal,
+                endAtLocal: endLocal,
+              });
+            }}
+          />
+        </div>
+      )}
       <Modal
         isOpen={isDetailOpen}
         onClose={closeDetail}
@@ -339,11 +411,7 @@ const BookingDataPage = () => {
             try {
               await facilityService.cancelBooking(cancelling.id, payload);
               closeCancel();
-              if (viewMode === "calendar") {
-                await fetchCalendarRange();
-              } else {
-                await fetchPages();
-              }
+              await refreshCurrentView();
             } catch {
               alert(t("shared.cancelFailed"));
             } finally {
@@ -390,11 +458,7 @@ const BookingDataPage = () => {
           try {
             await facilityService.createBooking(payload);
             closeCreate();
-            if (viewMode === "calendar") {
-              await fetchCalendarRange();
-            } else {
-              await fetchPages();
-            }
+            await refreshCurrentView();
           } catch {
             alert(t("shared.saveFailed"));
           } finally {
@@ -404,7 +468,7 @@ const BookingDataPage = () => {
       >
         <BookingDataForm ref={formRef} defaultValues={formDefaults} rooms={rooms} />
       </ModalForm>
-    </>
+    </div>
   );
 };
 

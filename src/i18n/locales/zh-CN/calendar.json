@@ -1,0 +1,18 @@
+{
+  "views": {
+    "day": "日",
+    "week": "周",
+    "month": "月"
+  },
+  "today": "今天",
+  "weekOfMonth": "第 {{week}} 周",
+  "addBooking": "新增预约",
+  "nav": {
+    "previousDay": "上一天",
+    "previousWeek": "上一周",
+    "previousMonth": "上一月",
+    "nextDay": "下一天",
+    "nextWeek": "下一周",
+    "nextMonth": "下一月"
+  }
+}

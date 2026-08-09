@@ -3,7 +3,7 @@ import { IS_MOCK_API } from "@/config/env";
 
 export interface UserBase {
   id: string;
-  phoneNumber?: string;
+  phoneNumber?: string | null;
   email?: string;
   displayName?: string;
 }

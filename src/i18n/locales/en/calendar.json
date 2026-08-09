@@ -1,0 +1,18 @@
+{
+  "views": {
+    "day": "Day",
+    "week": "Week",
+    "month": "Month"
+  },
+  "today": "Today",
+  "weekOfMonth": "Week {{week}}",
+  "addBooking": "Add booking",
+  "nav": {
+    "previousDay": "Previous day",
+    "previousWeek": "Previous week",
+    "previousMonth": "Previous month",
+    "nextDay": "Next day",
+    "nextWeek": "Next week",
+    "nextMonth": "Next month"
+  }
+}
