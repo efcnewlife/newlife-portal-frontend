@@ -154,6 +154,8 @@ const RoomSlotTemplateDataForm = forwardRef<RoomSlotTemplateDataFormHandle, Prop
           value={startTime}
           onChange={(value) => setStartTime(value)}
           clearable={false}
+          minuteStep={15}
+          ampm
           labels={pickerLabels}
         />
       </div>
@@ -164,6 +166,8 @@ const RoomSlotTemplateDataForm = forwardRef<RoomSlotTemplateDataFormHandle, Prop
           value={endTime}
           onChange={(value) => setEndTime(value)}
           clearable={false}
+          minuteStep={15}
+          ampm
           labels={pickerLabels}
         />
       </div>

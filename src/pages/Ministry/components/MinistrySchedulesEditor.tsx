@@ -109,6 +109,7 @@ const MinistrySchedulesEditor = ({ value, onChange, error }: MinistrySchedulesEd
                 label={t("ministry.schedule.startTime")}
                 value={schedule.startTime}
                 onChange={(next) => updateSchedule(index, { startTime: next })}
+                ampm
                 labels={pickerLabels}
               />
               <TimePicker
@@ -116,6 +117,7 @@ const MinistrySchedulesEditor = ({ value, onChange, error }: MinistrySchedulesEd
                 label={t("ministry.schedule.endTime")}
                 value={schedule.endTime}
                 onChange={(next) => updateSchedule(index, { endTime: next })}
+                ampm
                 labels={pickerLabels}
               />
             </div>

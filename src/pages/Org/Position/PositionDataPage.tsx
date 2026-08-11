@@ -265,6 +265,7 @@ const PositionDataPage = () => {
             value={assignStartAt}
             onChange={(value) => setAssignStartAt(value)}
             timezone={displayTimezone}
+            ampm
             showSubmitButton={false}
             labels={pickerLabels}
           />

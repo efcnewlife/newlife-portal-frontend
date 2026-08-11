@@ -292,8 +292,10 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         id="booking-start"
         label={t("booking.form.startAt")}
         value={startAt}
-        onChange={(value) => setStartAt(value)}
+        onChange={(value: Dayjs | null) => setStartAt(value)}
         timezone={displayTimezone}
+        minuteStep={15}
+        ampm
         showSubmitButton={false}
         labels={pickerLabels}
         error={errors.startAt}
@@ -303,8 +305,10 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         id="booking-end"
         label={t("booking.form.endAt")}
         value={endAt}
-        onChange={(value) => setEndAt(value)}
+        onChange={(value: Dayjs | null) => setEndAt(value)}
         timezone={displayTimezone}
+        minuteStep={15}
+        ampm
         showSubmitButton={false}
         labels={pickerLabels}
         error={errors.endAt}

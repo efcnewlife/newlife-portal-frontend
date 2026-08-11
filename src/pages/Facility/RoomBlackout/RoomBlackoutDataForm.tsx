@@ -227,6 +227,8 @@ const RoomBlackoutDataForm = forwardRef<RoomBlackoutDataFormHandle, Props>(funct
           value={startTime}
           onChange={(value) => setStartTime(value)}
           clearable={false}
+          minuteStep={15}
+          ampm
           labels={pickerLabels}
         />
       </div>
@@ -237,6 +239,8 @@ const RoomBlackoutDataForm = forwardRef<RoomBlackoutDataFormHandle, Props>(funct
           value={endTime}
           onChange={(value) => setEndTime(value)}
           clearable={false}
+          minuteStep={15}
+          ampm
           labels={pickerLabels}
         />
       </div>
