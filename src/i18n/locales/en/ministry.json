@@ -9,6 +9,13 @@
     "deleteFailed": "Failed to delete. Please try again.",
     "actionFailed": "Action failed. Please try again."
   },
+  "picker": {
+    "clear": "Clear",
+    "today": "Today",
+    "submit": "OK",
+    "cancel": "Cancel",
+    "now": "Now"
+  },
   "ministry": {
     "page": { "title": "Ministries", "description": "Manage ministry units and lifecycle" },
     "table": {

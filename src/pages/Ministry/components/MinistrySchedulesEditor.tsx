@@ -1,21 +1,62 @@
 import type { MinistryScheduleItem } from "@/api/services/ministryService";
-import { Button, Checkbox, Input } from "@efcnewlife/newlife-ui";
+import { apiDateToDayjs, apiTimeToDayjs, dayjsToApiDate, dayjsToApiTime } from "@/utils/dayjsApi";
+import { Button, Checkbox, DatePicker, TimePicker } from "@efcnewlife/newlife-ui";
+import type { Dayjs } from "dayjs";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const WEEKDAY_VALUES = [0, 1, 2, 3, 4, 5, 6] as const;
 
-const emptySchedule = (): MinistryScheduleItem => ({
+export interface MinistryScheduleDraft {
+  daysOfWeek: number[];
+  startTime: Dayjs | null;
+  endTime: Dayjs | null;
+  effectiveFrom: Dayjs | null;
+  effectiveTo: Dayjs | null;
+}
+
+export const scheduleItemToDraft = (item: MinistryScheduleItem): MinistryScheduleDraft => ({
+  daysOfWeek: item.daysOfWeek || [],
+  startTime: apiTimeToDayjs(item.startTime),
+  endTime: apiTimeToDayjs(item.endTime),
+  effectiveFrom: apiDateToDayjs(item.effectiveFrom),
+  effectiveTo: apiDateToDayjs(item.effectiveTo),
+});
+
+export const scheduleDraftToItem = (draft: MinistryScheduleDraft): MinistryScheduleItem => ({
+  daysOfWeek: draft.daysOfWeek,
+  startTime: dayjsToApiTime(draft.startTime),
+  endTime: dayjsToApiTime(draft.endTime),
+  effectiveFrom: dayjsToApiDate(draft.effectiveFrom),
+  effectiveTo: dayjsToApiDate(draft.effectiveTo),
+});
+
+const emptySchedule = (): MinistryScheduleDraft => ({
   daysOfWeek: [],
+  startTime: null,
+  endTime: null,
+  effectiveFrom: null,
+  effectiveTo: null,
 });
 
 interface MinistrySchedulesEditorProps {
-  value: MinistryScheduleItem[];
-  onChange: (schedules: MinistryScheduleItem[]) => void;
+  value: MinistryScheduleDraft[];
+  onChange: (schedules: MinistryScheduleDraft[]) => void;
   error?: string;
 }
 
 const MinistrySchedulesEditor = ({ value, onChange, error }: MinistrySchedulesEditorProps) => {
   const { t } = useTranslation("ministry");
+  const pickerLabels = useMemo(
+    () => ({
+      clear: t("picker.clear"),
+      today: t("picker.today"),
+      submit: t("picker.submit"),
+      cancel: t("picker.cancel"),
+      now: t("picker.now"),
+    }),
+    [t]
+  );
 
   const toggleDay = (index: number, day: number, checked: boolean) => {
     const next = value.map((item, i) => {
@@ -29,7 +70,7 @@ const MinistrySchedulesEditor = ({ value, onChange, error }: MinistrySchedulesEd
     onChange(next);
   };
 
-  const updateSchedule = (index: number, patch: Partial<MinistryScheduleItem>) => {
+  const updateSchedule = (index: number, patch: Partial<MinistryScheduleDraft>) => {
     onChange(value.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   };
 
@@ -72,43 +113,37 @@ const MinistrySchedulesEditor = ({ value, onChange, error }: MinistrySchedulesEd
             </div>
             <p className="text-xs text-gray-500">{t("ministry.schedule.timeOptionalHint")}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <Input
+              <TimePicker
                 id={`ministry-schedule-start-${index}`}
                 label={t("ministry.schedule.startTime")}
-                type="time"
-                value={(schedule.startTime || "").slice(0, 5)}
-                onChange={(e) =>
-                  updateSchedule(index, {
-                    startTime: e.target.value ? (e.target.value.length === 5 ? `${e.target.value}:00` : e.target.value) : undefined,
-                  })
-                }
+                value={schedule.startTime}
+                onChange={(next) => updateSchedule(index, { startTime: next })}
+                labels={pickerLabels}
               />
-              <Input
+              <TimePicker
                 id={`ministry-schedule-end-${index}`}
                 label={t("ministry.schedule.endTime")}
-                type="time"
-                value={(schedule.endTime || "").slice(0, 5)}
-                onChange={(e) =>
-                  updateSchedule(index, {
-                    endTime: e.target.value ? (e.target.value.length === 5 ? `${e.target.value}:00` : e.target.value) : undefined,
-                  })
-                }
+                value={schedule.endTime}
+                onChange={(next) => updateSchedule(index, { endTime: next })}
+                labels={pickerLabels}
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <Input
+              <DatePicker
                 id={`ministry-schedule-from-${index}`}
                 label={t("ministry.schedule.effectiveFrom")}
-                type="date"
-                value={schedule.effectiveFrom || ""}
-                onChange={(e) => updateSchedule(index, { effectiveFrom: e.target.value || undefined })}
+                value={schedule.effectiveFrom}
+                onChange={(next) => updateSchedule(index, { effectiveFrom: next })}
+                showTodayButton={false}
+                labels={pickerLabels}
               />
-              <Input
+              <DatePicker
                 id={`ministry-schedule-to-${index}`}
                 label={t("ministry.schedule.effectiveTo")}
-                type="date"
-                value={schedule.effectiveTo || ""}
-                onChange={(e) => updateSchedule(index, { effectiveTo: e.target.value || undefined })}
+                value={schedule.effectiveTo}
+                onChange={(next) => updateSchedule(index, { effectiveTo: next })}
+                showTodayButton={false}
+                labels={pickerLabels}
               />
             </div>
           </div>
@@ -119,3 +154,7 @@ const MinistrySchedulesEditor = ({ value, onChange, error }: MinistrySchedulesEd
 };
 
 export default MinistrySchedulesEditor;
+
+// Keep React import usage stable for Fast Refresh when drafts hydrate from API items.
+void useEffect;
+void useState;

@@ -2,9 +2,11 @@ import { orgService, type PositionDetail } from "@/api/services/orgService";
 import { userService } from "@/api/services/userService";
 import type { DataTableColumn, MenuButtonType, PageButtonType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
-import { Button, Input, Modal, ModalForm, Select } from "@efcnewlife/newlife-ui";
+import { dayjsToApiUtcIso, getLocalTimezone } from "@/utils/dayjsApi";
+import { Button, DateTimePicker, Modal, ModalForm, Select } from "@efcnewlife/newlife-ui";
 import { Resource, Verb } from "@/const/enums";
 import { useModal } from "@/hooks/useModal";
+import type { Dayjs } from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MdSettings } from "react-icons/md";
 import { useTranslation } from "react-i18next";
@@ -24,7 +26,7 @@ const PositionDataPage = () => {
   const [viewing, setViewing] = useState<PositionRow | null>(null);
   const [assigning, setAssigning] = useState<PositionRow | null>(null);
   const [assignUserId, setAssignUserId] = useState("");
-  const [assignStartAt, setAssignStartAt] = useState("");
+  const [assignStartAt, setAssignStartAt] = useState<Dayjs | null>(null);
   const [users, setUsers] = useState<Array<{ id: string; label: string }>>([]);
   const [submitting, setSubmitting] = useState(false);
 
@@ -74,6 +76,18 @@ const PositionDataPage = () => {
       );
     });
   }, []);
+
+  const displayTimezone = useMemo(() => getLocalTimezone(), []);
+  const pickerLabels = useMemo(
+    () => ({
+      clear: t("picker.clear"),
+      today: t("picker.today"),
+      submit: t("picker.submit"),
+      cancel: t("picker.cancel"),
+      now: t("picker.now"),
+    }),
+    [t]
+  );
 
   const userOptions = useMemo(
     () => [{ value: "", label: t("position.assign.selectUser") }, ...users.map((u) => ({ value: u.id, label: u.label }))],
@@ -150,7 +164,7 @@ const PositionDataPage = () => {
         onClick: (row) => {
           setAssigning(row);
           setAssignUserId(row.currentUserId || "");
-          setAssignStartAt("");
+          setAssignStartAt(null);
           openAssignModal();
         },
         permission: Verb.Modify,
@@ -228,7 +242,7 @@ const PositionDataPage = () => {
                 try {
                   await orgService.assignPosition(assigning.id, {
                     userId: assignUserId,
-                    startAt: assignStartAt ? new Date(assignStartAt).toISOString() : undefined,
+                    startAt: dayjsToApiUtcIso(assignStartAt),
                   });
                   closeAssignModal();
                   await fetchPages();
@@ -253,12 +267,14 @@ const PositionDataPage = () => {
             value={assignUserId}
             onChange={(v) => setAssignUserId(String(v))}
           />
-          <Input
+          <DateTimePicker
             id="position-assign-start"
-            type="datetime-local"
             label={t("position.assign.startAt")}
             value={assignStartAt}
-            onChange={(e) => setAssignStartAt(e.target.value)}
+            onChange={(value) => setAssignStartAt(value)}
+            timezone={displayTimezone}
+            showSubmitButton={false}
+            labels={pickerLabels}
           />
         </div>
       </ModalForm>

@@ -1,6 +1,8 @@
-import { Button, Checkbox, Input, Select } from "@efcnewlife/newlife-ui";
+import { Button, Checkbox, DatePicker, Input, Select, TimePicker } from "@efcnewlife/newlife-ui";
 import type { RoomListItem } from "@/api/services/facilityService";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { apiDateToDayjs, apiTimeToDayjs, dayjsToApiDate, dayjsToApiTime } from "@/utils/dayjsApi";
+import type { Dayjs } from "dayjs";
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export interface RoomSlotTemplateFormValues {
@@ -35,29 +37,44 @@ const RoomSlotTemplateDataForm = forwardRef<RoomSlotTemplateDataFormHandle, Prop
   ref
 ) {
   const { t } = useTranslation("facility");
+  const pickerLabels = useMemo(
+    () => ({
+      clear: t("picker.clear"),
+      today: t("picker.today"),
+      submit: t("picker.submit"),
+      cancel: t("picker.cancel"),
+      now: t("picker.now"),
+    }),
+    [t]
+  );
+
   const [facilityId, setFacilityId] = useState(defaultValues?.facilityId || "");
   const [name, setName] = useState(defaultValues?.name || "");
   const [daysOfWeek, setDaysOfWeek] = useState<number[]>(defaultValues?.daysOfWeek ?? WEEKDAYS_PRESET);
-  const [startTime, setStartTime] = useState(defaultValues?.startTime?.slice(0, 5) || "09:00");
-  const [endTime, setEndTime] = useState(defaultValues?.endTime?.slice(0, 5) || "17:00");
+  const [startTime, setStartTime] = useState<Dayjs | null>(() =>
+    apiTimeToDayjs(defaultValues?.startTime || "09:00")
+  );
+  const [endTime, setEndTime] = useState<Dayjs | null>(() => apiTimeToDayjs(defaultValues?.endTime || "17:00"));
   const [slotDurationMinutes, setSlotDurationMinutes] = useState(
     String(defaultValues?.slotDurationMinutes ?? 60)
   );
   const [isActive, setIsActive] = useState(defaultValues?.isActive ?? true);
-  const [effectiveFrom, setEffectiveFrom] = useState(defaultValues?.effectiveFrom || "");
-  const [effectiveTo, setEffectiveTo] = useState(defaultValues?.effectiveTo || "");
+  const [effectiveFrom, setEffectiveFrom] = useState<Dayjs | null>(() =>
+    apiDateToDayjs(defaultValues?.effectiveFrom)
+  );
+  const [effectiveTo, setEffectiveTo] = useState<Dayjs | null>(() => apiDateToDayjs(defaultValues?.effectiveTo));
   const [errors, setErrors] = useState<{ name?: string; facilityId?: string; daysOfWeek?: string }>({});
 
   useEffect(() => {
     setFacilityId(defaultValues?.facilityId || "");
     setName(defaultValues?.name || "");
     setDaysOfWeek(defaultValues?.daysOfWeek ?? WEEKDAYS_PRESET);
-    setStartTime(defaultValues?.startTime?.slice(0, 5) || "09:00");
-    setEndTime(defaultValues?.endTime?.slice(0, 5) || "17:00");
+    setStartTime(apiTimeToDayjs(defaultValues?.startTime || "09:00"));
+    setEndTime(apiTimeToDayjs(defaultValues?.endTime || "17:00"));
     setSlotDurationMinutes(String(defaultValues?.slotDurationMinutes ?? 60));
     setIsActive(defaultValues?.isActive ?? true);
-    setEffectiveFrom(defaultValues?.effectiveFrom || "");
-    setEffectiveTo(defaultValues?.effectiveTo || "");
+    setEffectiveFrom(apiDateToDayjs(defaultValues?.effectiveFrom));
+    setEffectiveTo(apiDateToDayjs(defaultValues?.effectiveTo));
   }, [defaultValues]);
 
   const roomOptions = rooms.map((r) => ({
@@ -87,12 +104,12 @@ const RoomSlotTemplateDataForm = forwardRef<RoomSlotTemplateDataFormHandle, Prop
       facilityId,
       name: name.trim(),
       daysOfWeek,
-      startTime: startTime.length === 5 ? `${startTime}:00` : startTime,
-      endTime: endTime.length === 5 ? `${endTime}:00` : endTime,
+      startTime: dayjsToApiTime(startTime) || "09:00:00",
+      endTime: dayjsToApiTime(endTime) || "17:00:00",
       slotDurationMinutes: Number(slotDurationMinutes),
       isActive,
-      effectiveFrom: effectiveFrom || undefined,
-      effectiveTo: effectiveTo || undefined,
+      effectiveFrom: dayjsToApiDate(effectiveFrom),
+      effectiveTo: dayjsToApiDate(effectiveTo),
     }),
   }));
 
@@ -139,10 +156,24 @@ const RoomSlotTemplateDataForm = forwardRef<RoomSlotTemplateDataFormHandle, Prop
         {errors.daysOfWeek ? <p className="text-sm text-red-600 mt-1">{errors.daysOfWeek}</p> : null}
       </div>
       <div>
-        <Input id="slot-start" label={t("roomSlotTemplate.form.startTime")} type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+        <TimePicker
+          id="slot-start"
+          label={t("roomSlotTemplate.form.startTime")}
+          value={startTime}
+          onChange={(value) => setStartTime(value)}
+          clearable={false}
+          labels={pickerLabels}
+        />
       </div>
       <div>
-        <Input id="slot-end" label={t("roomSlotTemplate.form.endTime")} type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+        <TimePicker
+          id="slot-end"
+          label={t("roomSlotTemplate.form.endTime")}
+          value={endTime}
+          onChange={(value) => setEndTime(value)}
+          clearable={false}
+          labels={pickerLabels}
+        />
       </div>
       <div>
         <Input
@@ -154,10 +185,24 @@ const RoomSlotTemplateDataForm = forwardRef<RoomSlotTemplateDataFormHandle, Prop
         />
       </div>
       <div>
-        <Input id="slot-from" label={t("roomSlotTemplate.form.effectiveFrom")} type="date" value={effectiveFrom} onChange={(e) => setEffectiveFrom(e.target.value)} />
+        <DatePicker
+          id="slot-from"
+          label={t("roomSlotTemplate.form.effectiveFrom")}
+          value={effectiveFrom}
+          onChange={(value) => setEffectiveFrom(value)}
+          showTodayButton={false}
+          labels={pickerLabels}
+        />
       </div>
       <div>
-        <Input id="slot-to" label={t("roomSlotTemplate.form.effectiveTo")} type="date" value={effectiveTo} onChange={(e) => setEffectiveTo(e.target.value)} />
+        <DatePicker
+          id="slot-to"
+          label={t("roomSlotTemplate.form.effectiveTo")}
+          value={effectiveTo}
+          onChange={(value) => setEffectiveTo(value)}
+          showTodayButton={false}
+          labels={pickerLabels}
+        />
       </div>
       <div className="md:col-span-2">
         <Checkbox id="slot-active" label={t("shared.active")} checked={isActive} onChange={setIsActive} />

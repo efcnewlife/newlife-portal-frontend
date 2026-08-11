@@ -5,15 +5,17 @@ import {
 } from "@/api/services/facilityService";
 import ministryService, { type MinistryListItem } from "@/api/services/ministryService";
 import userService, { type UserBase } from "@/api/services/userService";
-import { Button, Checkbox, Input, Select, TextArea } from "@efcnewlife/newlife-ui";
+import { getLocalTimezone } from "@/utils/dayjsApi";
+import { Button, Checkbox, DateTimePicker, Select, TextArea } from "@efcnewlife/newlife-ui";
+import type { Dayjs } from "dayjs";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export interface BookingFormValues {
   userId: string;
   facilityIds: string[];
-  startAtLocal: string;
-  endAtLocal: string;
+  startAt: Dayjs | null;
+  endAt: Dayjs | null;
   ministryId: string | null;
   isMissionAligned: boolean;
   surchargeCodes: string[];
@@ -30,13 +32,11 @@ interface Props {
   rooms: Array<{ id: string; code: string; name?: string }>;
 }
 
-const billedHoursBetween = (startLocal: string, endLocal: string): number => {
-  const start = new Date(startLocal);
-  const end = new Date(endLocal);
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end <= start) {
+const billedHoursBetween = (startAt: Dayjs | null, endAt: Dayjs | null): number => {
+  if (startAt == null || endAt == null || !startAt.isValid() || !endAt.isValid() || !endAt.isAfter(startAt)) {
     return 0;
   }
-  return Math.round(((end.getTime() - start.getTime()) / 3_600_000) * 100) / 100;
+  return Math.round((endAt.diff(startAt, "millisecond") / 3_600_000) * 100) / 100;
 };
 
 const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function BookingDataForm(
@@ -44,10 +44,22 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
   ref
 ) {
   const { t } = useTranslation("facility");
+  const displayTimezone = useMemo(() => getLocalTimezone(), []);
+  const pickerLabels = useMemo(
+    () => ({
+      clear: t("picker.clear"),
+      today: t("picker.today"),
+      submit: t("picker.submit"),
+      cancel: t("picker.cancel"),
+      now: t("picker.now"),
+    }),
+    [t]
+  );
+
   const [userId, setUserId] = useState(defaultValues?.userId || "");
   const [facilityIds, setFacilityIds] = useState<string[]>(defaultValues?.facilityIds || []);
-  const [startAtLocal, setStartAtLocal] = useState(defaultValues?.startAtLocal || "");
-  const [endAtLocal, setEndAtLocal] = useState(defaultValues?.endAtLocal || "");
+  const [startAt, setStartAt] = useState<Dayjs | null>(defaultValues?.startAt ?? null);
+  const [endAt, setEndAt] = useState<Dayjs | null>(defaultValues?.endAt ?? null);
   const [ministryId, setMinistryId] = useState<string>(defaultValues?.ministryId || "");
   const [isMissionAligned, setIsMissionAligned] = useState(defaultValues?.isMissionAligned ?? false);
   const [surchargeCodes, setSurchargeCodes] = useState<string[]>(defaultValues?.surchargeCodes || []);
@@ -61,15 +73,15 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
   const [errors, setErrors] = useState<{
     userId?: string;
     facilityIds?: string;
-    startAtLocal?: string;
-    endAtLocal?: string;
+    startAt?: string;
+    endAt?: string;
   }>({});
 
   useEffect(() => {
     setUserId(defaultValues?.userId || "");
     setFacilityIds(defaultValues?.facilityIds || []);
-    setStartAtLocal(defaultValues?.startAtLocal || "");
-    setEndAtLocal(defaultValues?.endAtLocal || "");
+    setStartAt(defaultValues?.startAt ?? null);
+    setEndAt(defaultValues?.endAt ?? null);
     setMinistryId(defaultValues?.ministryId || "");
     setIsMissionAligned(defaultValues?.isMissionAligned ?? false);
     setSurchargeCodes(defaultValues?.surchargeCodes || []);
@@ -141,10 +153,10 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
       const next: typeof errors = {};
       if (!userId) next.userId = t("booking.form.bookerRequired");
       if (!facilityIds.length) next.facilityIds = t("booking.form.roomsRequired");
-      if (!startAtLocal) next.startAtLocal = t("booking.form.startRequired");
-      if (!endAtLocal) next.endAtLocal = t("booking.form.endRequired");
-      if (startAtLocal && endAtLocal && new Date(endAtLocal) <= new Date(startAtLocal)) {
-        next.endAtLocal = t("booking.form.endAfterStart");
+      if (!startAt) next.startAt = t("booking.form.startRequired");
+      if (!endAt) next.endAt = t("booking.form.endRequired");
+      if (startAt && endAt && !endAt.isAfter(startAt)) {
+        next.endAt = t("booking.form.endAfterStart");
       }
       setErrors(next);
       return Object.keys(next).length === 0;
@@ -152,8 +164,8 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
     getValues: () => ({
       userId,
       facilityIds,
-      startAtLocal,
-      endAtLocal,
+      startAt,
+      endAt,
       ministryId: ministryId || null,
       isMissionAligned,
       surchargeCodes,
@@ -162,11 +174,11 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
   }));
 
   const handlePreviewQuote = async () => {
-    if (!facilityIds.length || !startAtLocal || !endAtLocal) {
+    if (!facilityIds.length || !startAt || !endAt) {
       setQuoteError(t("booking.form.quoteNeedTimesRooms"));
       return;
     }
-    const hours = billedHoursBetween(startAtLocal, endAtLocal);
+    const hours = billedHoursBetween(startAt, endAt);
     if (hours <= 0) {
       setQuoteError(t("booking.form.endAfterStart"));
       return;
@@ -219,22 +231,26 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         error={errors.facilityIds}
         required
       />
-      <Input
+      <DateTimePicker
         id="booking-start"
-        type="datetime-local"
         label={t("booking.form.startAt")}
-        value={startAtLocal}
-        onChange={(e) => setStartAtLocal(e.target.value)}
-        error={errors.startAtLocal}
+        value={startAt}
+        onChange={(value) => setStartAt(value)}
+        timezone={displayTimezone}
+        showSubmitButton={false}
+        labels={pickerLabels}
+        error={errors.startAt}
         required
       />
-      <Input
+      <DateTimePicker
         id="booking-end"
-        type="datetime-local"
         label={t("booking.form.endAt")}
-        value={endAtLocal}
-        onChange={(e) => setEndAtLocal(e.target.value)}
-        error={errors.endAtLocal}
+        value={endAt}
+        onChange={(value) => setEndAt(value)}
+        timezone={displayTimezone}
+        showSubmitButton={false}
+        labels={pickerLabels}
+        error={errors.endAt}
         required
       />
       <Select

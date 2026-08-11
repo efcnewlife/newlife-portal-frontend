@@ -1,6 +1,8 @@
-import { Button, Checkbox, Input, Select } from "@efcnewlife/newlife-ui";
+import { Button, Checkbox, DatePicker, Input, Select, TimePicker } from "@efcnewlife/newlife-ui";
 import type { RoomListItem } from "@/api/services/facilityService";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { apiDateToDayjs, apiTimeToDayjs, dayjsToApiDate, dayjsToApiTime } from "@/utils/dayjsApi";
+import type { Dayjs } from "dayjs";
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export type RoomBlackoutKind = "one_off" | "recurring";
@@ -39,6 +41,17 @@ const RoomBlackoutDataForm = forwardRef<RoomBlackoutDataFormHandle, Props>(funct
   ref
 ) {
   const { t } = useTranslation("facility");
+  const pickerLabels = useMemo(
+    () => ({
+      clear: t("picker.clear"),
+      today: t("picker.today"),
+      submit: t("picker.submit"),
+      cancel: t("picker.cancel"),
+      now: t("picker.now"),
+    }),
+    [t]
+  );
+
   const [facilityId, setFacilityId] = useState<string>(
     defaultValues?.facilityId === null || defaultValues?.facilityId === undefined
       ? ALL_ROOMS_VALUE
@@ -47,13 +60,17 @@ const RoomBlackoutDataForm = forwardRef<RoomBlackoutDataFormHandle, Props>(funct
   const [name, setName] = useState(defaultValues?.name || "");
   const [reason, setReason] = useState(defaultValues?.reason || "");
   const [kind, setKind] = useState<RoomBlackoutKind>(defaultValues?.kind || "one_off");
-  const [blackoutDate, setBlackoutDate] = useState(defaultValues?.blackoutDate || "");
+  const [blackoutDate, setBlackoutDate] = useState<Dayjs | null>(() => apiDateToDayjs(defaultValues?.blackoutDate));
   const [daysOfWeek, setDaysOfWeek] = useState<number[]>(defaultValues?.daysOfWeek ?? WEEKDAYS_PRESET);
-  const [startTime, setStartTime] = useState(defaultValues?.startTime?.slice(0, 5) || "09:00");
-  const [endTime, setEndTime] = useState(defaultValues?.endTime?.slice(0, 5) || "17:00");
+  const [startTime, setStartTime] = useState<Dayjs | null>(() =>
+    apiTimeToDayjs(defaultValues?.startTime || "09:00")
+  );
+  const [endTime, setEndTime] = useState<Dayjs | null>(() => apiTimeToDayjs(defaultValues?.endTime || "17:00"));
   const [isActive, setIsActive] = useState(defaultValues?.isActive ?? true);
-  const [effectiveFrom, setEffectiveFrom] = useState(defaultValues?.effectiveFrom || "");
-  const [effectiveTo, setEffectiveTo] = useState(defaultValues?.effectiveTo || "");
+  const [effectiveFrom, setEffectiveFrom] = useState<Dayjs | null>(() =>
+    apiDateToDayjs(defaultValues?.effectiveFrom)
+  );
+  const [effectiveTo, setEffectiveTo] = useState<Dayjs | null>(() => apiDateToDayjs(defaultValues?.effectiveTo));
   const [errors, setErrors] = useState<{
     name?: string;
     reason?: string;
@@ -70,13 +87,13 @@ const RoomBlackoutDataForm = forwardRef<RoomBlackoutDataFormHandle, Props>(funct
     setName(defaultValues?.name || "");
     setReason(defaultValues?.reason || "");
     setKind(defaultValues?.kind || "one_off");
-    setBlackoutDate(defaultValues?.blackoutDate || "");
+    setBlackoutDate(apiDateToDayjs(defaultValues?.blackoutDate));
     setDaysOfWeek(defaultValues?.daysOfWeek ?? WEEKDAYS_PRESET);
-    setStartTime(defaultValues?.startTime?.slice(0, 5) || "09:00");
-    setEndTime(defaultValues?.endTime?.slice(0, 5) || "17:00");
+    setStartTime(apiTimeToDayjs(defaultValues?.startTime || "09:00"));
+    setEndTime(apiTimeToDayjs(defaultValues?.endTime || "17:00"));
     setIsActive(defaultValues?.isActive ?? true);
-    setEffectiveFrom(defaultValues?.effectiveFrom || "");
-    setEffectiveTo(defaultValues?.effectiveTo || "");
+    setEffectiveFrom(apiDateToDayjs(defaultValues?.effectiveFrom));
+    setEffectiveTo(apiDateToDayjs(defaultValues?.effectiveTo));
   }, [defaultValues]);
 
   const roomOptions = [
@@ -102,8 +119,8 @@ const RoomBlackoutDataForm = forwardRef<RoomBlackoutDataFormHandle, Props>(funct
   };
 
   const applyAllDay = () => {
-    setStartTime("00:00");
-    setEndTime("23:59");
+    setStartTime(apiTimeToDayjs("00:00:00"));
+    setEndTime(apiTimeToDayjs("23:59:00"));
   };
 
   useImperativeHandle(ref, () => ({
@@ -123,13 +140,13 @@ const RoomBlackoutDataForm = forwardRef<RoomBlackoutDataFormHandle, Props>(funct
       name: name.trim(),
       reason: reason.trim(),
       kind,
-      blackoutDate: kind === "one_off" ? blackoutDate || undefined : undefined,
+      blackoutDate: kind === "one_off" ? dayjsToApiDate(blackoutDate) : undefined,
       daysOfWeek: kind === "recurring" ? daysOfWeek : [],
-      startTime: startTime.length === 5 ? `${startTime}:00` : startTime,
-      endTime: endTime.length === 5 ? `${endTime}:00` : endTime,
+      startTime: dayjsToApiTime(startTime) || "09:00:00",
+      endTime: dayjsToApiTime(endTime) || "17:00:00",
       isActive,
-      effectiveFrom: kind === "recurring" ? effectiveFrom || undefined : undefined,
-      effectiveTo: kind === "recurring" ? effectiveTo || undefined : undefined,
+      effectiveFrom: kind === "recurring" ? dayjsToApiDate(effectiveFrom) : undefined,
+      effectiveTo: kind === "recurring" ? dayjsToApiDate(effectiveTo) : undefined,
     }),
   }));
 
@@ -173,12 +190,13 @@ const RoomBlackoutDataForm = forwardRef<RoomBlackoutDataFormHandle, Props>(funct
       </div>
       {kind === "one_off" ? (
         <div>
-          <Input
+          <DatePicker
             id="blackout-date"
             label={t("roomBlackout.form.blackoutDate")}
-            type="date"
             value={blackoutDate}
-            onChange={(e) => setBlackoutDate(e.target.value)}
+            onChange={(value) => setBlackoutDate(value)}
+            showTodayButton={false}
+            labels={pickerLabels}
             error={errors.blackoutDate}
           />
         </div>
@@ -211,21 +229,23 @@ const RoomBlackoutDataForm = forwardRef<RoomBlackoutDataFormHandle, Props>(funct
         </div>
       )}
       <div>
-        <Input
+        <TimePicker
           id="blackout-start"
           label={t("roomBlackout.form.startTime")}
-          type="time"
           value={startTime}
-          onChange={(e) => setStartTime(e.target.value)}
+          onChange={(value) => setStartTime(value)}
+          clearable={false}
+          labels={pickerLabels}
         />
       </div>
       <div>
-        <Input
+        <TimePicker
           id="blackout-end"
           label={t("roomBlackout.form.endTime")}
-          type="time"
           value={endTime}
-          onChange={(e) => setEndTime(e.target.value)}
+          onChange={(value) => setEndTime(value)}
+          clearable={false}
+          labels={pickerLabels}
         />
       </div>
       <div className="md:col-span-2">
@@ -236,21 +256,23 @@ const RoomBlackoutDataForm = forwardRef<RoomBlackoutDataFormHandle, Props>(funct
       {kind === "recurring" ? (
         <>
           <div>
-            <Input
+            <DatePicker
               id="blackout-from"
               label={t("roomBlackout.form.effectiveFrom")}
-              type="date"
               value={effectiveFrom}
-              onChange={(e) => setEffectiveFrom(e.target.value)}
+              onChange={(value) => setEffectiveFrom(value)}
+              showTodayButton={false}
+              labels={pickerLabels}
             />
           </div>
           <div>
-            <Input
+            <DatePicker
               id="blackout-to"
               label={t("roomBlackout.form.effectiveTo")}
-              type="date"
               value={effectiveTo}
-              onChange={(e) => setEffectiveTo(e.target.value)}
+              onChange={(value) => setEffectiveTo(value)}
+              showTodayButton={false}
+              labels={pickerLabels}
             />
           </div>
         </>

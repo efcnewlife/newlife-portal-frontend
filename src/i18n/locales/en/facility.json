@@ -13,6 +13,13 @@
     "searchChipKeyword": "Keyword:",
     "searchChipRoom": "Room:"
   },
+  "picker": {
+    "clear": "Clear",
+    "today": "Today",
+    "submit": "OK",
+    "cancel": "Cancel",
+    "now": "Now"
+  },
   "room": {
     "page": { "title": "Rooms", "description": "Manage bookable rooms and spaces" },
     "table": {

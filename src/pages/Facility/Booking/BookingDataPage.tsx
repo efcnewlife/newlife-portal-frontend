@@ -13,6 +13,7 @@ import { Resource, Verb } from "@/const/enums";
 import { usePermissions } from "@/context/AuthContext";
 import { useModal } from "@/hooks/useModal";
 import { DateUtil } from "@/utils/dateUtil";
+import { dayjsToApiUtcIso, localDatetimeInputToDayjs } from "@/utils/dayjsApi";
 import { cn } from "@/utils";
 import { MdAdd, MdCalendarMonth, MdCancel, MdGridOn, MdViewList } from "react-icons/md";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -45,8 +46,6 @@ const toIsoDate = (date: Date): string => {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 };
-
-const localDatetimeToUtcIso = (localValue: string): string => new Date(localValue).toISOString();
 
 const BookingDataPage = () => {
   const { t } = useTranslation("facility");
@@ -359,8 +358,8 @@ const BookingDataPage = () => {
             onAddSlot={(startLocal, endLocal) => {
               if (!canCreate) return;
               openCreateModal({
-                startAtLocal: startLocal,
-                endAtLocal: endLocal,
+                startAt: localDatetimeInputToDayjs(startLocal),
+                endAt: localDatetimeInputToDayjs(endLocal),
               });
             }}
           />
@@ -380,8 +379,8 @@ const BookingDataPage = () => {
             onAddCell={(facilityId, startLocal, endLocal) => {
               openCreateModal({
                 facilityIds: [facilityId],
-                startAtLocal: startLocal,
-                endAtLocal: endLocal,
+                startAt: localDatetimeInputToDayjs(startLocal),
+                endAt: localDatetimeInputToDayjs(endLocal),
               });
             }}
           />
@@ -441,10 +440,13 @@ const BookingDataPage = () => {
           e.preventDefault();
           if (!formRef.current?.validate()) return;
           const values = formRef.current.getValues();
+          const startAt = dayjsToApiUtcIso(values.startAt);
+          const endAt = dayjsToApiUtcIso(values.endAt);
+          if (!startAt || !endAt) return;
           const payload: BookingCreate = {
             userId: values.userId,
-            startAt: localDatetimeToUtcIso(values.startAtLocal),
-            endAt: localDatetimeToUtcIso(values.endAtLocal),
+            startAt,
+            endAt,
             isMissionAligned: values.isMissionAligned,
             ministryId: values.ministryId || undefined,
             rooms: values.facilityIds.map((facilityId, index) => ({

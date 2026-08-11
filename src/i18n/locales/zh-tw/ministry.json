@@ -9,6 +9,13 @@
     "deleteFailed": "刪除失敗，請稍後再試。",
     "actionFailed": "操作失敗，請稍後再試。"
   },
+  "picker": {
+    "clear": "清除",
+    "today": "今天",
+    "submit": "確定",
+    "cancel": "取消",
+    "now": "現在"
+  },
   "ministry": {
     "page": { "title": "事工管理", "description": "管理事工單位與生命週期" },
     "table": {

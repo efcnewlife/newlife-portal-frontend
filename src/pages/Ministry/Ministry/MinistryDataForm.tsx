@@ -7,7 +7,11 @@ import MinistryMembersEditor, {
   type MinistryMemberDraft,
   validateMinistryMembers,
 } from "@/pages/Ministry/components/MinistryMembersEditor";
-import MinistrySchedulesEditor from "@/pages/Ministry/components/MinistrySchedulesEditor";
+import MinistrySchedulesEditor, {
+  scheduleDraftToItem,
+  scheduleItemToDraft,
+  type MinistryScheduleDraft,
+} from "@/pages/Ministry/components/MinistrySchedulesEditor";
 import {
   buildTranslationPayload,
   createEmptyTranslationMap,
@@ -55,7 +59,9 @@ const MinistryDataForm = forwardRef<
   const [ownerPositionId, setOwnerPositionId] = useState(defaultValues?.ownerPositionId || "");
   const [ministryTypeId, setMinistryTypeId] = useState(defaultValues?.ministryTypeId || "");
   const [targetAudienceIds, setTargetAudienceIds] = useState<string[]>(defaultValues?.targetAudienceIds || []);
-  const [schedules, setSchedules] = useState<MinistryScheduleItem[]>(defaultValues?.schedules || []);
+  const [schedules, setSchedules] = useState<MinistryScheduleDraft[]>(
+    () => (defaultValues?.schedules || []).map(scheduleItemToDraft)
+  );
   const [positions, setPositions] = useState<AssignablePositionItem[]>([]);
   const [ministryTypes, setMinistryTypes] = useState<MinistryCatalogItem[]>([]);
   const [targetAudiences, setTargetAudiences] = useState<MinistryCatalogItem[]>([]);
@@ -82,7 +88,7 @@ const MinistryDataForm = forwardRef<
     setOwnerPositionId(defaultValues?.ownerPositionId || "");
     setMinistryTypeId(defaultValues?.ministryTypeId || "");
     setTargetAudienceIds(defaultValues?.targetAudienceIds || []);
-    setSchedules(defaultValues?.schedules || []);
+    setSchedules((defaultValues?.schedules || []).map(scheduleItemToDraft));
     setHasPriorityBooking(defaultValues?.hasPriorityBooking ?? false);
     setIsActive(defaultValues?.isActive ?? true);
     setMembers(defaultValues?.members || []);
@@ -160,7 +166,7 @@ const MinistryDataForm = forwardRef<
         ownerPositionId: ownerPositionId || undefined,
         ministryTypeId: ministryTypeId || undefined,
         targetAudienceIds,
-        schedules,
+        schedules: schedules.map(scheduleDraftToItem),
         hasPriorityBooking,
         isActive,
         translations,
