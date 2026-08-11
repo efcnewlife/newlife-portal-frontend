@@ -6,6 +6,7 @@ import { dayjsToApiUtcIso, getLocalTimezone } from "@/utils/dayjsApi";
 import { Button, DateTimePicker, Modal, ModalForm, Select } from "@efcnewlife/newlife-ui";
 import { Resource, Verb } from "@/const/enums";
 import { useModal } from "@/hooks/useModal";
+import { usePickerLabels } from "@/hooks/usePickerLabels";
 import type { Dayjs } from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MdSettings } from "react-icons/md";
@@ -78,16 +79,7 @@ const PositionDataPage = () => {
   }, []);
 
   const displayTimezone = useMemo(() => getLocalTimezone(), []);
-  const pickerLabels = useMemo(
-    () => ({
-      clear: t("picker.clear"),
-      today: t("picker.today"),
-      submit: t("picker.submit"),
-      cancel: t("picker.cancel"),
-      now: t("picker.now"),
-    }),
-    [t]
-  );
+  const pickerLabels = usePickerLabels();
 
   const userOptions = useMemo(
     () => [{ value: "", label: t("position.assign.selectUser") }, ...users.map((u) => ({ value: u.id, label: u.label }))],

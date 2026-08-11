@@ -5,10 +5,11 @@ import {
 } from "@/api/services/facilityService";
 import ministryService, { type MinistryListItem } from "@/api/services/ministryService";
 import userService, { type UserBase } from "@/api/services/userService";
+import { usePickerLabels } from "@/hooks/usePickerLabels";
 import { getLocalTimezone } from "@/utils/dayjsApi";
-import { Button, Checkbox, DateTimePicker, Select, TextArea } from "@efcnewlife/newlife-ui";
+import { Button, Checkbox, ComboBox, DateTimePicker, Select, TextArea } from "@efcnewlife/newlife-ui";
 import type { Dayjs } from "dayjs";
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export interface BookingFormValues {
@@ -32,6 +33,8 @@ interface Props {
   rooms: Array<{ id: string; code: string; name?: string }>;
 }
 
+const USER_SEARCH_DEBOUNCE_MS = 300;
+
 const billedHoursBetween = (startAt: Dayjs | null, endAt: Dayjs | null): number => {
   if (startAt == null || endAt == null || !startAt.isValid() || !endAt.isValid() || !endAt.isAfter(startAt)) {
     return 0;
@@ -39,22 +42,15 @@ const billedHoursBetween = (startAt: Dayjs | null, endAt: Dayjs | null): number 
   return Math.round((endAt.diff(startAt, "millisecond") / 3_600_000) * 100) / 100;
 };
 
+const userOptionLabel = (user: UserBase): string => user.displayName || user.email || user.id;
+
 const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function BookingDataForm(
   { defaultValues, rooms },
   ref
 ) {
   const { t } = useTranslation("facility");
   const displayTimezone = useMemo(() => getLocalTimezone(), []);
-  const pickerLabels = useMemo(
-    () => ({
-      clear: t("picker.clear"),
-      today: t("picker.today"),
-      submit: t("picker.submit"),
-      cancel: t("picker.cancel"),
-      now: t("picker.now"),
-    }),
-    [t]
-  );
+  const pickerLabels = usePickerLabels();
 
   const [userId, setUserId] = useState(defaultValues?.userId || "");
   const [facilityIds, setFacilityIds] = useState<string[]>(defaultValues?.facilityIds || []);
@@ -65,6 +61,8 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
   const [surchargeCodes, setSurchargeCodes] = useState<string[]>(defaultValues?.surchargeCodes || []);
   const [remark, setRemark] = useState(defaultValues?.remark || "");
   const [users, setUsers] = useState<UserBase[]>([]);
+  const [selectedUser, setSelectedUser] = useState<UserBase | null>(null);
+  const [usersLoading, setUsersLoading] = useState(false);
   const [ministries, setMinistries] = useState<MinistryListItem[]>([]);
   const [surcharges, setSurcharges] = useState<SurchargeItem[]>([]);
   const [quote, setQuote] = useState<PreviewQuoteResponse | null>(null);
@@ -86,38 +84,87 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
     setIsMissionAligned(defaultValues?.isMissionAligned ?? false);
     setSurchargeCodes(defaultValues?.surchargeCodes || []);
     setRemark(defaultValues?.remark || "");
+    setSelectedUser(null);
     setQuote(null);
     setQuoteError(null);
     setErrors({});
   }, [defaultValues]);
 
+  const userSearchRequestId = useRef(0);
+  const userSearchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     void (async () => {
       try {
-        const [userRes, ministryRes, surchargeRes] = await Promise.all([
-          userService.getList({ keyword: "" }),
+        const [ministryRes, surchargeRes] = await Promise.all([
           ministryService.getMinistryList(),
           facilityService.listSurcharges(),
         ]);
-        if (userRes.success) setUsers(userRes.data.items || []);
         if (ministryRes.success) setMinistries((ministryRes.data.items || []).filter((m) => m.status === "active"));
         if (surchargeRes.success) setSurcharges((surchargeRes.data.items || []).filter((s) => s.isActive));
       } catch {
-        setUsers([]);
         setMinistries([]);
         setSurcharges([]);
       }
     })();
   }, []);
 
-  const userOptions = useMemo(
-    () =>
-      users.map((user) => ({
-        value: user.id,
-        label: user.displayName || user.email || user.id,
-      })),
-    [users]
+  useEffect(() => {
+    return () => {
+      if (userSearchTimeoutRef.current) clearTimeout(userSearchTimeoutRef.current);
+    };
+  }, []);
+
+  const searchUsers = useCallback(async (keyword: string) => {
+    const requestId = ++userSearchRequestId.current;
+    setUsersLoading(true);
+    try {
+      const res = await userService.getList({ keyword });
+      if (requestId !== userSearchRequestId.current) return;
+      if (res.success) {
+        setUsers(res.data.items || []);
+      } else {
+        setUsers([]);
+      }
+    } catch {
+      if (requestId !== userSearchRequestId.current) return;
+      setUsers([]);
+    } finally {
+      if (requestId === userSearchRequestId.current) {
+        setUsersLoading(false);
+      }
+    }
+  }, []);
+
+  const handleUserQueryChange = useCallback(
+    (query: string) => {
+      if (userSearchTimeoutRef.current) clearTimeout(userSearchTimeoutRef.current);
+      userSearchTimeoutRef.current = setTimeout(() => {
+        void searchUsers(query.trim());
+      }, USER_SEARCH_DEBOUNCE_MS);
+    },
+    [searchUsers]
   );
+
+  const handleUserOpen = useCallback(() => {
+    if (users.length === 0 && !usersLoading) {
+      void searchUsers("");
+    }
+  }, [searchUsers, users.length, usersLoading]);
+
+  const userOptions = useMemo(() => {
+    const byId = new Map<string, UserBase>();
+    for (const user of users) {
+      byId.set(user.id, user);
+    }
+    if (selectedUser) {
+      byId.set(selectedUser.id, selectedUser);
+    }
+    return Array.from(byId.values()).map((user) => ({
+      value: user.id,
+      label: userOptionLabel(user),
+    }));
+  }, [selectedUser, users]);
 
   const roomOptions = useMemo(
     () =>
@@ -212,13 +259,23 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
 
   return (
     <div className="space-y-4">
-      <Select
+      <ComboBox<string>
         id="booking-booker"
         label={t("booking.form.booker")}
         options={userOptions}
-        value={userId}
-        onChange={(v) => setUserId(String(v || ""))}
+        value={userId || null}
+        onChange={(value) => {
+          const nextId = value || "";
+          setUserId(nextId);
+          setSelectedUser(nextId ? users.find((user) => user.id === nextId) || selectedUser : null);
+        }}
+        onQueryChange={handleUserQueryChange}
+        onOpen={handleUserOpen}
+        loading={usersLoading}
+        filterFunction={() => true}
+        placeholder={t("booking.form.bookerSearchPlaceholder")}
         error={errors.userId}
+        clearable
         required
       />
       <Select

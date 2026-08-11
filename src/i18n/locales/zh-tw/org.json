@@ -7,13 +7,6 @@
     "saveFailed": "儲存失敗，請再試一次。",
     "deleteFailed": "刪除失敗，請再試一次。"
   },
-  "picker": {
-    "clear": "清除",
-    "today": "今天",
-    "submit": "確定",
-    "cancel": "取消",
-    "now": "現在"
-  },
   "position": {
     "page": {
       "title": "教會職位",

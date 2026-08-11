@@ -2,6 +2,7 @@
 layer(base);
 
 @import "tailwindcss";
+@import "@efcnewlife/newlife-ui/theme/required-roles.css";
 
 @source "../node_modules/@efcnewlife/newlife-ui/dist";
 
@@ -166,6 +167,29 @@ layer(base);
   --z-index-9999: 9999;
   --z-index-99999: 99999;
   --z-index-999999: 999999;
+}
+
+.dark {
+  /* Role remaps for dark mode. Do not nest @theme here (Tailwind v4 merges it into :root). */
+  --color-surface: var(--color-gray-900);
+  --color-on-surface: rgb(255 255 255 / 0.9);
+  --color-on-surface-variant: var(--color-gray-400);
+  --color-surface-variant: var(--color-gray-800);
+  --color-surface-container: var(--color-gray-900);
+  --color-surface-container-high: var(--color-gray-dark);
+  --color-surface-dim: var(--color-gray-900);
+
+  --color-primary-container: color-mix(in srgb, var(--color-brand-500) 15%, transparent);
+  --color-on-primary-container: var(--color-brand-400);
+
+  --color-outline: var(--color-gray-700);
+  --color-outline-variant: var(--color-gray-800);
+  --color-outline-focus: var(--color-brand-800);
+
+  --color-error-container: color-mix(in srgb, var(--color-error-500) 15%, transparent);
+  --color-success-container: color-mix(in srgb, var(--color-success-500) 15%, transparent);
+  --color-warning-container: color-mix(in srgb, var(--color-warning-500) 15%, transparent);
+  --color-info-container: color-mix(in srgb, var(--color-info) 15%, transparent);
 }
 
 /*

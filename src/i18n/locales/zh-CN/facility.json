@@ -13,13 +13,6 @@
     "searchChipKeyword": "关键字：",
     "searchChipRoom": "场地："
   },
-  "picker": {
-    "clear": "清除",
-    "today": "今天",
-    "submit": "确定",
-    "cancel": "取消",
-    "now": "现在"
-  },
   "room": {
     "page": { "title": "場地管理", "description": "管理可预订場地與空間" },
     "table": {
@@ -294,6 +287,7 @@
     "form": {
       "booker": "预订人",
       "bookerRequired": "必须选择预订人",
+      "bookerSearchPlaceholder": "以姓名或 email 搜寻预订人",
       "rooms": "场地",
       "roomsRequired": "请至少选择一个场地",
       "startAt": "开始",

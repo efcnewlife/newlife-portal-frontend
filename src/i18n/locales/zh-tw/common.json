@@ -60,5 +60,12 @@
     "remark": "備註",
     "defaultLocaleRequired": "預設語系的名稱為必填。",
     "loadLocalesFailed": "無法載入系統支援的語系清單。"
+  },
+  "picker": {
+    "clear": "清除",
+    "today": "今天",
+    "submit": "確定",
+    "cancel": "取消",
+    "now": "現在"
   }
 }

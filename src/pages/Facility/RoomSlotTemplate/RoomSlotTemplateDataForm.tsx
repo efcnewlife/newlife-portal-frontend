@@ -1,8 +1,9 @@
 import { Button, Checkbox, DatePicker, Input, Select, TimePicker } from "@efcnewlife/newlife-ui";
 import type { RoomListItem } from "@/api/services/facilityService";
+import { usePickerLabels } from "@/hooks/usePickerLabels";
 import { apiDateToDayjs, apiTimeToDayjs, dayjsToApiDate, dayjsToApiTime } from "@/utils/dayjsApi";
 import type { Dayjs } from "dayjs";
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export interface RoomSlotTemplateFormValues {
@@ -37,16 +38,7 @@ const RoomSlotTemplateDataForm = forwardRef<RoomSlotTemplateDataFormHandle, Prop
   ref
 ) {
   const { t } = useTranslation("facility");
-  const pickerLabels = useMemo(
-    () => ({
-      clear: t("picker.clear"),
-      today: t("picker.today"),
-      submit: t("picker.submit"),
-      cancel: t("picker.cancel"),
-      now: t("picker.now"),
-    }),
-    [t]
-  );
+  const pickerLabels = usePickerLabels();
 
   const [facilityId, setFacilityId] = useState(defaultValues?.facilityId || "");
   const [name, setName] = useState(defaultValues?.name || "");

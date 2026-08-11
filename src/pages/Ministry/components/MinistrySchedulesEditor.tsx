@@ -1,8 +1,8 @@
 import type { MinistryScheduleItem } from "@/api/services/ministryService";
+import { usePickerLabels } from "@/hooks/usePickerLabels";
 import { apiDateToDayjs, apiTimeToDayjs, dayjsToApiDate, dayjsToApiTime } from "@/utils/dayjsApi";
 import { Button, Checkbox, DatePicker, TimePicker } from "@efcnewlife/newlife-ui";
 import type { Dayjs } from "dayjs";
-import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const WEEKDAY_VALUES = [0, 1, 2, 3, 4, 5, 6] as const;
@@ -47,16 +47,7 @@ interface MinistrySchedulesEditorProps {
 
 const MinistrySchedulesEditor = ({ value, onChange, error }: MinistrySchedulesEditorProps) => {
   const { t } = useTranslation("ministry");
-  const pickerLabels = useMemo(
-    () => ({
-      clear: t("picker.clear"),
-      today: t("picker.today"),
-      submit: t("picker.submit"),
-      cancel: t("picker.cancel"),
-      now: t("picker.now"),
-    }),
-    [t]
-  );
+  const pickerLabels = usePickerLabels();
 
   const toggleDay = (index: number, day: number, checked: boolean) => {
     const next = value.map((item, i) => {
@@ -154,7 +145,3 @@ const MinistrySchedulesEditor = ({ value, onChange, error }: MinistrySchedulesEd
 };
 
 export default MinistrySchedulesEditor;
-
-// Keep React import usage stable for Fast Refresh when drafts hydrate from API items.
-void useEffect;
-void useState;

@@ -7,13 +7,6 @@
     "saveFailed": "Failed to save. Please try again.",
     "deleteFailed": "Failed to delete. Please try again."
   },
-  "picker": {
-    "clear": "Clear",
-    "today": "Today",
-    "submit": "OK",
-    "cancel": "Cancel",
-    "now": "Now"
-  },
   "position": {
     "page": {
       "title": "Positions",
