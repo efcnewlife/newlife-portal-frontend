@@ -11,3 +11,15 @@ _Avoid_: DateRangePicker as the default control for these fields, treating an op
 **Booking start / Booking end**:
 The start and end instants of a facility booking (`startAt` / `endAt` on the API as UTC ISO). The admin UI edits them as date-and-time values with a display timezone, not as date-only or time-only fields.
 _Avoid_: calendar-date-only booking, wall-clock string as the domain meaning of the instant
+
+**DataTable**:
+The Portal admin list shell built on `@efcnewlife/newlife-ui` Table primitives, plus pagination, sorting, row selection, and context menu. It is a host composite, not the library Table itself.
+_Avoid_: Table (when meaning the Portal list page), DataGrid, Grid
+
+**Table row hover**:
+Transient visual emphasis on a DataTable data row while the pointer is over that row. It is affordance only and does not mean the row is selected.
+_Avoid_: row highlight as selection, hover action / hover callback as the default meaning of hover
+
+**Selected row**:
+A DataTable data row that is currently in the selection set (checkbox multi-select or programmed selection keys). Selection is persistent until cleared; table row hover may stack on top of it.
+_Avoid_: treating hover as selection, confusing sticky header chrome with selection

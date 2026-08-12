@@ -105,6 +105,8 @@ export interface DataTableProps<T> {
   headerClassName?: string;
   /** Row CSS class name */
   rowClassName?: string;
+  /** Whether data rows show table row hover (default true) */
+  rowHover?: boolean;
   /** Row key */
   rowKey?: keyof T | ((row: T) => string);
   /** Callback for clearing selection */

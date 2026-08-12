@@ -31,6 +31,8 @@ interface DataPageProps<T extends Record<string, unknown>> {
   onItemsPerPageChange?: (pageSize: number) => void;
   /** Container style class name */
   className?: string;
+  /** Whether data rows show table row hover (default true) */
+  rowHover?: boolean;
   /** Callback to clear selected state */
   onClearSelectionRef?: (clearFn: () => void) => void;
   /** Function to get reordering information */
@@ -64,6 +66,7 @@ export default function DataPage<T extends Record<string, unknown>>({
   onPageChange,
   onItemsPerPageChange,
   className,
+  rowHover = true,
   onClearSelectionRef,
   getReorderInfo,
   onReorder,
@@ -84,6 +87,7 @@ export default function DataPage<T extends Record<string, unknown>>({
           onSort={onSort}
           onRowSelect={onRowSelect}
           rowActions={rowActions}
+          rowHover={rowHover}
           onClearSelectionRef={onClearSelectionRef}
           getReorderInfo={getReorderInfo}
           onReorder={onReorder}
