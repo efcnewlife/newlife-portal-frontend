@@ -53,13 +53,5 @@
     "vite": "^6.1.0",
     "vite-plugin-svgr": "^4.3.0",
     "vitest": "^3.2.7"
-  },
-  "pnpm": {
-    "overrides": {
-      "react-helmet-async>react": "^16.8.0 || ^17 || ^18 || ^19"
-    },
-    "ignoredBuiltDependencies": [
-      "esbuild"
-    ]
   }
 }

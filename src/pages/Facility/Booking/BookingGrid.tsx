@@ -187,11 +187,11 @@ const BookingGrid = ({
         <div>
           <h2 className="text-base font-semibold text-gray-900 dark:text-white">
             <time dateTime={`${anchorDate.getFullYear()}-${pad(anchorDate.getMonth() + 1)}-${pad(anchorDate.getDate())}`}>
-              {formatDate(anchorDate, "full", locale)}
+              {formatDate(anchorDate, "full")}
             </time>
           </h2>
           <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-            {formatWeekday(anchorDate, "full", locale)} · {t("booking.view.grid")}
+            {formatWeekday(anchorDate, "full")} · {t("booking.view.grid")}
           </p>
         </div>
         <NavigationButtons
