@@ -1,5 +1,6 @@
 import { Checkbox, Spinner, TableBody, TableCell, TableRow, Tooltip } from "@efcnewlife/newlife-ui";
 import { Fragment } from "react";
+import { getDataTableRowClassName } from "./getDataTableRowClassName";
 import { DataTableColumn } from "./types";
 
 interface DataTableBodyProps<T> {
@@ -21,6 +22,8 @@ interface DataTableBodyProps<T> {
   rowKey?: keyof T | ((row: T) => string);
   /** Row CSS class name */
   rowClassName?: string;
+  /** Whether data rows show table row hover (default true) */
+  rowHover?: boolean;
   /** Loading state */
   loading?: boolean;
   /** Empty-data message */
@@ -40,6 +43,7 @@ export default function DataTableBody<T extends Record<string, unknown>>({
   onRowContextMenu,
   rowKey = "id",
   rowClassName,
+  rowHover = true,
   loading = false,
   emptyMessage = "No data available",
   expandedKeys,
@@ -170,7 +174,11 @@ export default function DataTableBody<T extends Record<string, unknown>>({
         return (
           <Fragment key={key}>
             <TableRow
-              className={`border-l border-b border-gray-100 dark:border-white/[0.05] ${rowClassName}`}
+              className={getDataTableRowClassName({
+                isSelected,
+                rowHover,
+                rowClassName,
+              })}
               onContextMenu={(e: React.MouseEvent<HTMLTableRowElement>) => onRowContextMenu?.(row, index, e)}
             >
               {/* Selection column */}

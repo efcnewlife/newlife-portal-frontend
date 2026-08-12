@@ -26,6 +26,7 @@ export default function DataTable<T extends Record<string, unknown>>({
   className,
   headerClassName,
   rowClassName,
+  rowHover = true,
   rowKey = "id",
   onClearSelectionRef,
   getReorderInfo,
@@ -362,6 +363,7 @@ export default function DataTable<T extends Record<string, unknown>>({
             onRowContextMenu={handleRowContextMenu}
             rowKey={rowKey}
             rowClassName={rowClassName}
+            rowHover={rowHover}
             loading={loading}
             emptyMessage={emptyMessage}
             expandedKeys={expandedKeys}
