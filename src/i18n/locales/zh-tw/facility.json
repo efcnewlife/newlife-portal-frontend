@@ -337,6 +337,12 @@
     "bookingType": {
       "one_time": "單次",
       "recurring": "週期"
+    },
+    "errors": {
+      "schedulingConflict": "{{room}} 此時段與其他預訂衝突",
+      "schedulingConflictGeneric": "此時段與其他預訂衝突",
+      "roomBlackout": "{{room}} 此時段不開放",
+      "roomBlackoutGeneric": "此時段不開放"
     }
   },
   "overrideLog": {
