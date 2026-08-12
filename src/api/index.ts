@@ -16,6 +16,8 @@ export * from "./services/resourceService";
 export { default as resourceService } from "./services/resourceService";
 export * from "./services/roleService";
 export { default as roleService } from "./services/roleService";
+export * from "./services/settingService";
+export { default as settingService } from "./services/settingService";
 export * from "./services/userService";
 export { default as userService } from "./services/userService";
 export * from "./services/verbService";

@@ -61,6 +61,7 @@ export enum Resource {
   SystemPermission = "system:permission",
   SystemResource = "system:resource",
   SystemRole = "system:role",
+  SystemSetting = "system:setting",
   SystemUser = "system:user",
 
   // Facility booking

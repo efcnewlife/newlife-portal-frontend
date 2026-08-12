@@ -49,7 +49,11 @@ export const createLocalDateTime = (dateTimeString: string): Date => {
   return createLocalDate(datePart, { hours, minutes, seconds });
 };
 
-export const formatDate = (date: Date, format: "full" | "short" | "month-year" | "year" = "full"): string => {
+export const formatDate = (
+  date: Date,
+  format: "full" | "short" | "month-year" | "year" = "full",
+  locale = "en"
+): string => {
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
@@ -58,21 +62,21 @@ export const formatDate = (date: Date, format: "full" | "short" | "month-year" |
 
   switch (format) {
     case "short":
-      return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      return date.toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" });
     case "month-year":
-      return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+      return date.toLocaleDateString(locale, { month: "long", year: "numeric" });
     case "year":
       return date.getFullYear().toString();
     default:
-      return date.toLocaleDateString("en-US", options);
+      return date.toLocaleDateString(locale, options);
   }
 };
 
-export const formatWeekday = (date: Date, format: "full" | "short" = "short"): string => {
+export const formatWeekday = (date: Date, format: "full" | "short" = "short", locale = "en"): string => {
   if (format === "full") {
-    return date.toLocaleDateString("en-US", { weekday: "long" });
+    return date.toLocaleDateString(locale, { weekday: "long" });
   }
-  return date.toLocaleDateString("en-US", { weekday: "short" });
+  return date.toLocaleDateString(locale, { weekday: "short" });
 };
 
 export const getStartOfWeek = (date: Date): Date => {

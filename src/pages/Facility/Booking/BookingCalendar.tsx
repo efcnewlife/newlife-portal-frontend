@@ -78,13 +78,22 @@ const BookingCalendar = ({
     () =>
       bookings
         .filter((booking) => booking.status !== "cancelled")
-        .map((booking) => ({
-          id: booking.id,
-          title: booking.userDisplayName || booking.userEmail || booking.facilityName || booking.id,
-          start: booking.startAt,
-          end: booking.endAt,
-          item: booking,
-        })),
+        .map((booking) => {
+          const roomNames =
+            booking.facilityNames && booking.facilityNames.length > 0
+              ? booking.facilityNames
+              : booking.facilityName
+                ? [booking.facilityName]
+                : [];
+          return {
+            id: booking.id,
+            title: booking.userDisplayName || booking.userEmail || booking.facilityName || booking.id,
+            start: booking.startAt,
+            end: booking.endAt,
+            tags: roomNames,
+            item: booking,
+          };
+        }),
     [bookings]
   );
 

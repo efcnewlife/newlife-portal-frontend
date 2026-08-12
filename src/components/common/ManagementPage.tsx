@@ -1,6 +1,6 @@
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import PageMeta from "@/components/common/PageMeta";
-import { ReactNode } from "react";
+import { usePageHeader } from "@/context/PageHeaderContext";
+import { ReactNode, useEffect } from "react";
 
 interface ManagementPageProps {
   title: string;
@@ -9,14 +9,20 @@ interface ManagementPageProps {
 }
 
 const ManagementPage: React.FC<ManagementPageProps> = ({ title, description, children }) => {
+  const { setPageTitle } = usePageHeader();
+
+  // Publish the page title to the header breadcrumb; clear it on unmount.
+  useEffect(() => {
+    setPageTitle(title);
+    return () => setPageTitle("");
+  }, [title, setPageTitle]);
+
   return (
     <div className="flex flex-col h-[calc(100vh-120px)] gap-3">
       <PageMeta title={title} description={description} />
-      <PageBreadcrumb pageTitle={title} />
       <div className="flex-1 min-h-0">{children}</div>
     </div>
   );
 };
 
 export default ManagementPage;
-

@@ -52,8 +52,7 @@ const formatHourLabel = (hour: number, locale: string): string => {
   });
 };
 
-const roomLabel = (room: { code: string; name?: string }): string =>
-  room.name ? `${room.code} - ${room.name}` : room.code;
+const roomLabel = (room: { code: string; name?: string }): string => room.name || room.code;
 
 interface GridBlockLayout {
   booking: BookingListItem;

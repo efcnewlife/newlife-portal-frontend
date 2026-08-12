@@ -2,6 +2,7 @@ import ResourceManagement from "@/pages/System/Resource/ResourceManagement";
 import RoleManagement from "@/pages/System/Role/RoleManagement";
 import UserManagement from "@/pages/System/User/UserManagement";
 import PermissionManagement from "@/pages/System/Permission/PermissionManagement";
+import SettingManagement from "@/pages/System/Setting/SettingManagement";
 import { AppRoute } from "@/types/route";
 import Blank from "@/pages/Blank";
 
@@ -44,6 +45,16 @@ export const systemRoutes: AppRoute[] = [
       description: "System role management",
       requiresAuth: true,
       breadcrumb: ["System", "Roles"],
+    },
+  },
+  {
+    path: "/system/settings",
+    element: <SettingManagement />,
+    meta: {
+      title: "System Settings",
+      description: "Manage system runtime settings",
+      requiresAuth: true,
+      breadcrumb: ["System", "Settings"],
     },
   },
   {

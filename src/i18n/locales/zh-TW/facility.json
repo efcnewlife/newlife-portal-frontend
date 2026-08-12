@@ -313,6 +313,8 @@
       "bookerSearchPlaceholder": "以姓名或 email 搜尋預訂人",
       "rooms": "場地",
       "roomsRequired": "請至少選擇一個場地",
+      "roomsMax": "最多只能選擇 {{count}} 個場地",
+      "roomsMaxHint": "最多 {{count}} 個場地",
       "startAt": "開始",
       "endAt": "結束",
       "startRequired": "開始時間必填",

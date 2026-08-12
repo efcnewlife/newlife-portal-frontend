@@ -16,6 +16,7 @@ import PermissionManagement from "@/pages/System/Permission/PermissionManagement
 import ResourceManagement from "@/pages/System/Resource/ResourceManagement";
 import RoleManagement from "@/pages/System/Role/RoleManagement";
 import UserManagement from "@/pages/System/User/UserManagement";
+import SettingManagement from "@/pages/System/Setting/SettingManagement";
 import React from "react";
 
 // Register routable components keyed by backend resource key
@@ -27,6 +28,7 @@ const componentRegistry: Record<string, React.ComponentType> = {
   SYSTEM_RESOURCE: ResourceManagement,
   SYSTEM_PERMISSION: PermissionManagement,
   SYSTEM_ROLE: RoleManagement,
+  SYSTEM_SETTING: SettingManagement,
   SYSTEM_FCM_DEVICE: Blank,
   SYSTEM_LOG: Blank,
   // Facility booking

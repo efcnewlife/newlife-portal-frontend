@@ -1,15 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 import { ENV_CONFIG } from "@/config/env";
 import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
+import HelpButton from "../components/header/HelpButton";
 import UserDropdown from "../components/header/UserDropdown";
+import { usePageHeader } from "../context/PageHeaderContext";
 import { useSidebar } from "../context/SidebarContext";
 
 const AppHeader: React.FC = () => {
+  const { t } = useTranslation();
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
 
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
+  const { pageTitle } = usePageHeader();
 
   const handleToggle = () => {
     if (window.innerWidth >= 1280) {
@@ -45,9 +50,9 @@ const AppHeader: React.FC = () => {
   return (
     <header className="sticky top-0 flex w-full bg-white border-gray-200 z-99999 dark:border-gray-800 dark:bg-gray-900 xl:border-b">
       <div className="flex flex-col items-center justify-between grow xl:flex-row xl:px-6">
-        <div className="flex items-center justify-between w-full gap-2 px-3 py-3 border-b border-gray-200 dark:border-gray-800 sm:gap-4 xl:justify-normal xl:border-b-0 xl:px-0 lg:py-4">
+        <div className="flex items-center justify-between w-full gap-2 px-3 py-3 border-b border-gray-200 dark:border-gray-800 sm:gap-4 xl:justify-normal xl:border-b-0 xl:px-0 lg:py-3">
           <button
-            className={`items-center justify-center  w-10 h-10 text-gray-500 border-gray-200 rounded-lg z-99999 dark:border-gray-800 flex dark:text-gray-400 lg:h-11 lg:w-11 xl:border ${
+            className={`items-center justify-center  w-10 h-10 text-gray-500 border-gray-200 rounded-lg z-99999 dark:border-gray-800 flex dark:text-gray-400 lg:h-11 lg:w-11 xl:hidden ${
               isMobileOpen ? "bg-gray-100 dark:bg-white/[0.03]" : ""
             }`}
             onClick={handleToggle}
@@ -92,13 +97,36 @@ const AppHeader: React.FC = () => {
               />
             </svg>
           </button>
+
+          {/* Page breadcrumb (desktop, left-aligned) */}
+          {pageTitle && (
+            <nav className="hidden min-w-0 xl:flex xl:items-center">
+              <ol className="flex min-w-0 items-center gap-1.5">
+                <li>
+                  <Link
+                    to="/"
+                    className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  >
+                    {t("common:home")}
+                  </Link>
+                </li>
+                <li className="text-gray-400 dark:text-gray-500" aria-hidden>
+                  <svg className="stroke-current" width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366" stroke="" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </li>
+                <li className="truncate text-sm font-semibold text-gray-800 dark:text-white/90">{pageTitle}</li>
+              </ol>
+            </nav>
+          )}
         </div>
         <div
           className={`${
             isApplicationMenuOpen ? "flex" : "hidden"
-          } items-center justify-between w-full gap-4 px-5 py-4 xl:flex shadow-theme-md xl:justify-end xl:px-0 xl:shadow-none`}
+          } items-center justify-between w-full gap-4 px-5 py-3 xl:flex shadow-theme-md xl:justify-end xl:px-0 xl:shadow-none`}
         >
           <div className="flex items-center gap-2 2xsm:gap-3">
+            <HelpButton />
             {/* <!-- Dark Mode Toggler --> */}
             <ThemeToggleButton />
             {/* <!-- Dark Mode Toggler --> */}

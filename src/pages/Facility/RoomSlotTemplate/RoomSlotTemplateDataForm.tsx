@@ -71,7 +71,7 @@ const RoomSlotTemplateDataForm = forwardRef<RoomSlotTemplateDataFormHandle, Prop
 
   const roomOptions = rooms.map((r) => ({
     value: r.id,
-    label: r.name ? `${r.code} - ${r.name}` : r.code,
+    label: r.name || r.code,
   }));
 
   const toggleDay = (day: number, checked: boolean) => {

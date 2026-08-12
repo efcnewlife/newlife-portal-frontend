@@ -1,25 +1,20 @@
-import {
-  facilityService,
-  type BookingCreate,
-  type BookingDetail,
-  type BookingListItem,
-} from "@/api/services/facilityService";
+import { facilityService, type BookingCreate, type BookingDetail, type BookingListItem } from "@/api/services/facilityService";
 import type { DataTableColumn, MenuButtonType, PageButtonType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
 import PageToolbar from "@/components/common/PageToolbar";
-import { useRoomListOptions } from "@/pages/Facility/shared/useRoomListOptions";
-import { Button, ButtonGroup, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
 import { Resource, Verb } from "@/const/enums";
 import { usePermissions } from "@/context/AuthContext";
 import { useModal } from "@/hooks/useModal";
+import { useRoomListOptions } from "@/pages/Facility/shared/useRoomListOptions";
+import { cn } from "@/utils";
 import { DateUtil } from "@/utils/dateUtil";
 import { notificationManager } from "@/utils/notificationManager";
 import { dayjsToApiUtcIso, localDatetimeInputToDayjs } from "@/utils/dayjsApi";
-import { cn } from "@/utils";
-import { MdAdd, MdCalendarMonth, MdCancel, MdGridOn, MdViewList } from "react-icons/md";
+import { Button, ButtonGroup, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
+import { MdAdd, MdCalendarMonth, MdCancel, MdGridOn, MdViewList } from "react-icons/md";
+import { useSearchParams } from "react-router";
 import BookingCalendar from "./BookingCalendar";
 import BookingCancelForm from "./BookingCancelForm";
 import BookingDataForm, { type BookingDataFormHandle, type BookingFormValues } from "./BookingDataForm";
@@ -93,7 +88,7 @@ const BookingDataPage = () => {
       }
       setSearchParams(params, { replace: true });
     },
-    [anchorDate, searchParams, setSearchParams]
+    [anchorDate, searchParams, setSearchParams],
   );
 
   const setAnchorDate = useCallback(
@@ -108,7 +103,7 @@ const BookingDataPage = () => {
       }
       setSearchParams(params, { replace: true });
     },
-    [searchParams, setSearchParams, viewMode]
+    [searchParams, setSearchParams, viewMode],
   );
 
   const fetchPages = useCallback(async () => {
@@ -152,10 +147,7 @@ const BookingDataPage = () => {
 
   const handleVisibleRangeChange = useCallback((range: { start: Date; end: Date }) => {
     setVisibleRange((prev) => {
-      const sameMs =
-        !!prev &&
-        prev.start.getTime() === range.start.getTime() &&
-        prev.end.getTime() === range.end.getTime();
+      const sameMs = !!prev && prev.start.getTime() === range.start.getTime() && prev.end.getTime() === range.end.getTime();
       return sameMs ? prev : range;
     });
   }, []);
@@ -185,7 +177,7 @@ const BookingDataPage = () => {
       setFormDefaults(defaults || null);
       openCreate();
     },
-    [openCreate]
+    [openCreate],
   );
 
   const openBookingDetail = useCallback(
@@ -196,7 +188,7 @@ const BookingDataPage = () => {
         openDetail();
       }
     },
-    [openDetail]
+    [openDetail],
   );
 
   const columns: DataTableColumn<BookingRow>[] = useMemo(
@@ -234,7 +226,7 @@ const BookingDataPage = () => {
       },
       { key: "quotedAmount", label: t("booking.table.quotedAmount"), width: "w-24" },
     ],
-    [t]
+    [t],
   );
 
   const toolbarButtons: PageButtonType[] = useMemo(
@@ -244,7 +236,7 @@ const BookingDataPage = () => {
         void refreshCurrentView();
       }),
     ],
-    [openCreateModal, refreshCurrentView]
+    [openCreateModal, refreshCurrentView],
   );
 
   const rowActions: MenuButtonType<BookingRow>[] = useMemo(
@@ -265,7 +257,7 @@ const BookingDataPage = () => {
         visible: (row) => row.status !== "cancelled",
       },
     ],
-    [t, openCancel, openBookingDetail]
+    [t, openCancel, openBookingDetail],
   );
 
   const viewModeButtons = useMemo(
@@ -295,7 +287,7 @@ const BookingDataPage = () => {
         className: "h-9 w-9 justify-center px-0 py-0",
       },
     ],
-    [setViewMode, t, viewMode]
+    [setViewMode, t, viewMode],
   );
 
   const showScheduleCreate = (viewMode === "calendar" || viewMode === "grid") && canCreate;
@@ -323,7 +315,7 @@ const BookingDataPage = () => {
             className={cn(
               "!pb-0 [&>div>div]:!shadow-none",
               "[&>div>div]:!rounded-full",
-              "[&_button]:first:!rounded-l-full [&_button]:last:!rounded-r-full"
+              "[&_button]:first:!rounded-l-full [&_button]:last:!rounded-r-full",
             )}
           />
         }

@@ -30,7 +30,7 @@ export const useRoomListOptions = () => {
       { value: "", label: t("shared.allRooms") },
       ...rooms.map((room) => ({
         value: room.id,
-        label: room.name ? `${room.code} - ${room.name}` : room.code,
+        label: room.name || room.code,
       })),
     ],
     [rooms, t],
@@ -39,7 +39,7 @@ export const useRoomListOptions = () => {
   const roomLabelById = useMemo(() => {
     const map = new Map<string, string>();
     for (const room of rooms) {
-      map.set(room.id, room.name ? `${room.code} - ${room.name}` : room.code);
+      map.set(room.id, room.name || room.code);
     }
     return map;
   }, [rooms]);

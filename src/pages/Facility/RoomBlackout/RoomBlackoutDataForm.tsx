@@ -92,7 +92,7 @@ const RoomBlackoutDataForm = forwardRef<RoomBlackoutDataFormHandle, Props>(funct
     { value: ALL_ROOMS_VALUE, label: t("roomBlackout.form.allRooms") },
     ...rooms.map((r) => ({
       value: r.id,
-      label: r.name ? `${r.code} - ${r.name}` : r.code,
+      label: r.name || r.code,
     })),
   ];
 

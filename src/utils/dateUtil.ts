@@ -23,10 +23,10 @@ export class DateUtil {
   /**
    * Format date
    * @param date date value
-   * @param format Format string, default 'YYYYYearMMmoonDDday HH:mm'
+   * @param format Format string, default 'YYYY-MM-DD HH:mm'
    * @returns Formatted date string
    */
-  static format(date: unknown, format: string = "YYYYYearMMmoonDDday HH:mm"): string | undefined {
+  static format(date: unknown, format: string = "YYYY-MM-DD HH:mm"): string | undefined {
     const momentDate = this.parseDate(date);
     return momentDate ? momentDate.format(format) : undefined;
   }

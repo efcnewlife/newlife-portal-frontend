@@ -1,5 +1,6 @@
 import { Button } from "@efcnewlife/newlife-ui";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 import { CalendarView, DateRange } from "./types";
 import { canNavigateNext, canNavigatePrevious } from "./utils";
 
@@ -14,28 +15,6 @@ interface NavigationButtonsProps {
   showToday?: boolean;
 }
 
-const getNavigationLabel = (currentView: CalendarView): string => {
-  switch (currentView) {
-    case "day":
-      return "Previous day";
-    case "week":
-      return "Previous week";
-    case "month":
-      return "Previous month";
-  }
-};
-
-const getNextLabel = (currentView: CalendarView): string => {
-  switch (currentView) {
-    case "day":
-      return "Next day";
-    case "week":
-      return "Next week";
-    case "month":
-      return "Next month";
-  }
-};
-
 const NavigationButtons = ({
   currentDate,
   currentView,
@@ -46,8 +25,31 @@ const NavigationButtons = ({
   showNav = true,
   showToday = true,
 }: NavigationButtonsProps) => {
+  const { t } = useTranslation("calendar");
   const showPreviousNext = showNav;
   const showTodayButton = showToday;
+
+  const getPreviousLabel = (view: CalendarView): string => {
+    switch (view) {
+      case "day":
+        return t("nav.previousDay");
+      case "week":
+        return t("nav.previousWeek");
+      case "month":
+        return t("nav.previousMonth");
+    }
+  };
+
+  const getNextLabel = (view: CalendarView): string => {
+    switch (view) {
+      case "day":
+        return t("nav.nextDay");
+      case "week":
+        return t("nav.nextWeek");
+      case "month":
+        return t("nav.nextMonth");
+    }
+  };
 
   // If neither nav nor today should be shown, return null
   if (!showPreviousNext && !showTodayButton) {
@@ -96,13 +98,13 @@ const NavigationButtons = ({
           disabled={!canNavigatePrevious(currentDate, currentView, validRange)}
           className={getPreviousClasses()}
         >
-          <span className="sr-only">{getNavigationLabel(currentView)}</span>
+          <span className="sr-only">{getPreviousLabel(currentView)}</span>
           <MdChevronLeft className="size-5" />
         </button>
       )}
       {showTodayButton && (
         <Button onClick={onToday} variant="outline" size="sm" className={getTodayClasses()}>
-          Today
+          {t("today")}
         </Button>
       )}
       {showPreviousNext && (

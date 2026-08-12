@@ -6,7 +6,7 @@ import AppSidebar from "./AppSidebar";
 import AiPageBreadcrumb from "../components/ai/AiPageBreadcrumb";
 
 const AlternativeLayoutContent: React.FC = () => {
-  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
+  const { isExpanded, isMobileOpen } = useSidebar();
   const location = useLocation();
 
   // Function to get page title based on current route
@@ -32,7 +32,7 @@ const AlternativeLayoutContent: React.FC = () => {
       </div>
       <div
         className={`flex-1 transition-all duration-300 ease-in-out ${
-          isExpanded || isHovered ? "xl:ml-[290px]" : "xl:ml-[90px]"
+          isExpanded ? "xl:ml-[290px]" : "xl:ml-[90px]"
         } ${isMobileOpen ? "ml-0" : ""}`}
       >
         <AppHeader />

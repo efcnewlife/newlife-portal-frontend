@@ -42,6 +42,8 @@ const billedHoursBetween = (startAt: Dayjs | null, endAt: Dayjs | null): number 
   return Math.round((endAt.diff(startAt, "millisecond") / 3_600_000) * 100) / 100;
 };
 
+const MAX_BOOKING_ROOMS = 3;
+
 const userOptionLabel = (user: UserBase): string => user.displayName || user.email || user.id;
 
 const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function BookingDataForm(
@@ -170,7 +172,7 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
     () =>
       rooms.map((room) => ({
         value: room.id,
-        label: room.name ? `${room.code} - ${room.name}` : room.code,
+        label: room.name || room.code,
       })),
     [rooms]
   );
@@ -200,6 +202,9 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
       const next: typeof errors = {};
       if (!userId) next.userId = t("booking.form.bookerRequired");
       if (!facilityIds.length) next.facilityIds = t("booking.form.roomsRequired");
+      else if (facilityIds.length > MAX_BOOKING_ROOMS) {
+        next.facilityIds = t("booking.form.roomsMax", { count: MAX_BOOKING_ROOMS });
+      }
       if (!startAt) next.startAt = t("booking.form.startRequired");
       if (!endAt) next.endAt = t("booking.form.endRequired");
       if (startAt && endAt && !endAt.isAfter(startAt)) {
@@ -284,8 +289,23 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         options={roomOptions}
         value={facilityIds}
         multiple
-        onChange={(v) => setFacilityIds((Array.isArray(v) ? v : [v]).map((item) => String(item || "")).filter(Boolean))}
+        onChange={(v) => {
+          const nextIds = (Array.isArray(v) ? v : [v]).map((item) => String(item || "")).filter(Boolean);
+          setFacilityIds(nextIds);
+          setErrors((prev) => {
+            if (nextIds.length > MAX_BOOKING_ROOMS) {
+              return {
+                ...prev,
+                facilityIds: t("booking.form.roomsMax", { count: MAX_BOOKING_ROOMS }),
+              };
+            }
+            if (!prev.facilityIds) return prev;
+            const { facilityIds: _removed, ...rest } = prev;
+            return rest;
+          });
+        }}
         error={errors.facilityIds}
+        hint={t("booking.form.roomsMaxHint", { count: MAX_BOOKING_ROOMS })}
         required
       />
       <DateTimePicker

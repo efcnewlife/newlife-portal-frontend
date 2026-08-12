@@ -590,5 +590,79 @@
       "permissionIdHeading": "Permission ID",
       "labelActiveStatus": "Active status"
     }
+  },
+  "setting": {
+    "page": {
+      "title": "System settings",
+      "description": "Manage system runtime settings"
+    },
+    "table": {
+      "namespace": "Namespace",
+      "settingKey": "Key",
+      "valueType": "Type",
+      "value": "Value",
+      "isActive": "Active",
+      "remark": "Remark"
+    },
+    "search": {
+      "popoverTitle": "Search settings",
+      "namespaceLabel": "Namespace",
+      "namespacePlaceholder": "e.g. facility",
+      "chipsTitle": "Active filters",
+      "chipNamespacePrefix": "Namespace:"
+    },
+    "feedback": {
+      "loadFailed": "Failed to load settings.",
+      "detailLoadFailed": "Failed to load setting detail.",
+      "saveFailed": "Failed to save setting.",
+      "deleteFailed": "Failed to delete setting.",
+      "restoreFailed": "Failed to restore setting."
+    },
+    "modal": {
+      "createTitle": "Create setting",
+      "editTitle": "Edit setting"
+    },
+    "deleteForm": {
+      "entityLabel": "setting"
+    },
+    "form": {
+      "namespace": {
+        "label": "Namespace"
+      },
+      "settingKey": {
+        "label": "Key"
+      },
+      "valueType": {
+        "label": "Value type"
+      },
+      "value": {
+        "label": "Value",
+        "booleanLabel": "Enabled",
+        "timezoneHint": "IANA timezone, e.g. America/Toronto",
+        "addRow": "Add",
+        "removeRow": "Remove row",
+        "keyPlaceholder": "Key",
+        "valuePlaceholder": "Value",
+        "objectHint": "Add key-value pairs. Numbers, true/false, and JSON are auto-detected.",
+        "arrayHint": "Add items in order. Numbers, true/false, and JSON are auto-detected."
+      },
+      "remark": {
+        "label": "Remark",
+        "placeholder": "Optional remark"
+      },
+      "isActive": {
+        "label": "Active"
+      },
+      "validation": {
+        "namespaceRequired": "Namespace is required",
+        "settingKeyRequired": "Key is required",
+        "valueRequired": "Value is required",
+        "numberInvalid": "Enter a valid number",
+        "objectEmpty": "Add at least one key-value pair",
+        "objectKeyRequired": "Key is required when value is set",
+        "objectDuplicateKey": "Duplicate keys are not allowed",
+        "arrayEmpty": "Add at least one array item"
+      }
+    }
   }
 }

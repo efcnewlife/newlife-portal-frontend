@@ -1,4 +1,5 @@
 import { MdAdd } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 import EventBlock from "./EventBlock";
 import { CalendarViewProps } from "./types";
 import { filterEventsByDateRange, formatWeekday, getWeekDates, isDateInRange } from "./utils";
@@ -12,6 +13,8 @@ const WeekView = ({
   onAddEvent,
   onEventContextMenu,
 }: CalendarViewProps) => {
+  const { t, i18n } = useTranslation("calendar");
+  const locale = i18n.language || "en";
   const weekDates = getWeekDates(currentDate);
   const startOfWeek = weekDates[0];
   const endOfWeek = weekDates[6];
@@ -137,7 +140,7 @@ const WeekView = ({
                 isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
               }`}
             >
-              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{formatWeekday(date, "short")}</span>
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{formatWeekday(date, "short", locale)}</span>
               <span
                 className={`flex h-6 items-center justify-center text-xs font-semibold ${
                   isToday
@@ -213,7 +216,7 @@ const WeekView = ({
                                 onAddEvent(date, startTime, endTime);
                               }}
                               className="flex items-center justify-center size-7 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
-                              aria-label="Add event"
+                              aria-label={t("addBooking")}
                             >
                               <MdAdd className="size-4" />
                             </button>

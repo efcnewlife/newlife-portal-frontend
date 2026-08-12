@@ -14,7 +14,10 @@
     "searchChipRoom": "场地："
   },
   "room": {
-    "page": { "title": "場地管理", "description": "管理可预订場地與空間" },
+    "page": {
+      "title": "場地管理",
+      "description": "管理可预订場地與空間"
+    },
     "table": {
       "code": "代碼",
       "name": "名稱",
@@ -41,10 +44,15 @@
       "codeRequired": "請輸入代碼",
       "nameRequired": "請輸入名稱"
     },
-    "deleteForm": { "entityLabel": "場地" }
+    "deleteForm": {
+      "entityLabel": "場地"
+    }
   },
   "roomSlotTemplate": {
-    "page": { "title": "時段範本", "description": "設定各場地週期性可预订時段" },
+    "page": {
+      "title": "時段範本",
+      "description": "設定各場地週期性可预订時段"
+    },
     "table": {
       "name": "名稱",
       "daysOfWeek": "適用星期",
@@ -70,7 +78,9 @@
       "effectiveTo": "失效日",
       "nameRequired": "請輸入名稱"
     },
-    "deleteForm": { "entityLabel": "时段范本" },
+    "deleteForm": {
+      "entityLabel": "时段范本"
+    },
     "search": {
       "popoverTitle": "搜索时段范本",
       "keywordLabel": "关键字",
@@ -133,7 +143,9 @@
       "one_off": "单次",
       "recurring": "每周重复"
     },
-    "deleteForm": { "entityLabel": "不开放时段" },
+    "deleteForm": {
+      "entityLabel": "不开放时段"
+    },
     "search": {
       "popoverTitle": "搜索不开放时段",
       "keywordLabel": "关键字",
@@ -208,7 +220,9 @@
       "per_slot": "每时段",
       "flat_per_booking": "每笔定价"
     },
-    "deleteForm": { "entityLabel": "费率模板" },
+    "deleteForm": {
+      "entityLabel": "费率模板"
+    },
     "search": {
       "popoverTitle": "搜索费率模板",
       "keywordLabel": "关键字",
@@ -244,7 +258,9 @@
       "templateRequired": "请选择费率模板",
       "facilityRequired": "请选择场地"
     },
-    "deleteForm": { "entityLabel": "费率绑定" },
+    "deleteForm": {
+      "entityLabel": "费率绑定"
+    },
     "search": {
       "popoverTitle": "搜索租金费率",
       "keywordLabel": "关键字",
@@ -252,7 +268,10 @@
     }
   },
   "booking": {
-    "page": { "title": "预订管理", "description": "檢視與管理場地预订" },
+    "page": {
+      "title": "预订管理",
+      "description": "檢視與管理場地预订"
+    },
     "table": {
       "user": "使用者",
       "facility": "場地",
@@ -262,7 +281,11 @@
       "status": "狀態",
       "quotedAmount": "報價"
     },
-    "modal": { "detailTitle": "预订详情", "cancelTitle": "取消预订", "createTitle": "创建预订" },
+    "modal": {
+      "detailTitle": "预订详情",
+      "cancelTitle": "取消预订",
+      "createTitle": "创建预订"
+    },
     "detail": {
       "userEmail": "电子邮件",
       "createdBy": "创建者",
@@ -290,6 +313,8 @@
       "bookerSearchPlaceholder": "以姓名或 email 搜寻预订人",
       "rooms": "场地",
       "roomsRequired": "请至少选择一个场地",
+      "roomsMax": "最多只能选择 {{count}} 个场地",
+      "roomsMaxHint": "最多 {{count}} 个场地",
       "startAt": "开始",
       "endAt": "结束",
       "startRequired": "开始时间必填",
@@ -346,7 +371,10 @@
     }
   },
   "overrideLog": {
-    "page": { "title": "覆寫紀錄", "description": "優先预订覆寫稽核紀錄" },
+    "page": {
+      "title": "覆寫紀錄",
+      "description": "優先预订覆寫稽核紀錄"
+    },
     "table": {
       "facility": "場地",
       "outcome": "結果",
@@ -356,7 +384,10 @@
     }
   },
   "ministry": {
-    "page": { "title": "事工管理", "description": "管理事工與優先预订設定" },
+    "page": {
+      "title": "事工管理",
+      "description": "管理事工與優先预订設定"
+    },
     "table": {
       "name": "名稱",
       "status": "狀態",
@@ -384,10 +415,17 @@
       "rejected": "已拒絕",
       "inactive": "停用"
     },
-    "deleteForm": { "entityLabel": "事工" }
+    "deleteForm": {
+      "entityLabel": "事工"
+    }
   },
   "ministryMember": {
-    "page": { "title": "事工成員", "description": "依事工篩選成員清單" },
-    "filter": { "ministry": "事工" }
+    "page": {
+      "title": "事工成員",
+      "description": "依事工篩選成員清單"
+    },
+    "filter": {
+      "ministry": "事工"
+    }
   }
 }

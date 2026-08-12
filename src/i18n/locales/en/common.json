@@ -1,6 +1,8 @@
 {
   "home": "Home",
   "menu": "Menu",
+  "openSidebar": "Open Sidebar",
+  "closeSidebar": "Close Sidebar",
   "system": "System",
   "search": "Search",
   "clear": "Clear",
@@ -33,6 +35,13 @@
   "enabled": "Enabled",
   "disabled": "Disabled",
   "none": "-",
+  "picker": {
+    "clear": "Clear",
+    "today": "Today",
+    "submit": "OK",
+    "cancel": "Cancel",
+    "now": "Now"
+  },
   "forms": {
     "delete": {
       "reasonRequiredSoftDeletion": "A reason is required for soft deletion.",
@@ -61,11 +70,32 @@
     "defaultLocaleRequired": "Name is required for the default locale.",
     "loadLocalesFailed": "Failed to load supported locales."
   },
-  "picker": {
-    "clear": "Clear",
-    "today": "Today",
-    "submit": "OK",
-    "cancel": "Cancel",
-    "now": "Now"
+  "help": {
+    "button": "Help",
+    "title": "How to use this portal",
+    "close": "Got it",
+    "intro": "Menus and action buttons appear based on your account permissions. If you do not see an action, you may not have access to it.",
+    "sections": {
+      "navigation": {
+        "title": "Navigation",
+        "body": "Use the left sidebar to open pages you can access. Collapse or expand the sidebar with the menu button in the header."
+      },
+      "listPages": {
+        "title": "List pages",
+        "body": "On list management pages, use the toolbar to search, create, refresh, and open the recycle bin. Select rows when bulk actions are available."
+      },
+      "contextMenu": {
+        "title": "Context menu",
+        "body": "Right-click a table row to open the context menu for actions such as edit, delete, restore, or move up/down. On the resource tree page, right-click a tree item the same way."
+      },
+      "recycle": {
+        "title": "Delete and restore",
+        "body": "Soft-deleted records can be restored from the recycle bin. Permanent deletion cannot be undone."
+      },
+      "appearance": {
+        "title": "Theme and language",
+        "body": "Toggle light or dark theme from the header. Change language from the user menu in the top-right corner."
+      }
+    }
   }
 }

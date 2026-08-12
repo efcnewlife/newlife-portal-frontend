@@ -1,19 +1,20 @@
 import { Outlet } from "react-router";
 import { ScrollToTop } from "../components/common/ScrollToTop";
+import { PageHeaderProvider } from "../context/PageHeaderContext";
 import { SidebarProvider, useSidebar } from "../context/SidebarContext";
 import AppHeader from "./AppHeader";
 import AppSidebar from "./AppSidebar";
 import Backdrop from "./Backdrop";
 
 const LayoutContent: React.FC = () => {
-  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
+  const { isExpanded, isMobileOpen } = useSidebar();
 
   return (
     <div className="min-h-screen xl:flex">
       <AppSidebar />
       <Backdrop />
       <div
-        className={`flex-1 transition-all duration-300 ease-in-out ${isExpanded || isHovered ? "xl:ml-[290px]" : "xl:ml-[90px]"} ${
+        className={`flex-1 transition-all duration-300 ease-in-out ${isExpanded ? "xl:ml-[290px]" : "xl:ml-[90px]"} ${
           isMobileOpen ? "ml-0" : ""
         }`}
       >
@@ -29,8 +30,10 @@ const LayoutContent: React.FC = () => {
 const AppLayout: React.FC = () => {
   return (
     <SidebarProvider>
-      <LayoutContent />
-      <ScrollToTop />
+      <PageHeaderProvider>
+        <LayoutContent />
+        <ScrollToTop />
+      </PageHeaderProvider>
     </SidebarProvider>
   );
 };

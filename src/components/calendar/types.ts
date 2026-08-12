@@ -7,6 +7,8 @@ export interface CalendarEvent {
   end: string | Date;
   textColor?: string;
   backgroundColor?: string;
+  /** Optional labels (e.g. room names) shown under the title */
+  tags?: string[];
   item?: unknown;
 }
 

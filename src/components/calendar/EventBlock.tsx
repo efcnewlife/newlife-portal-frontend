@@ -1,5 +1,9 @@
+import { Tooltip } from "@efcnewlife/newlife-ui";
 import { cn } from "@/utils";
+import { useTranslation } from "react-i18next";
 import { CalendarEvent } from "./types";
+
+const MAX_VISIBLE_TAGS = 2;
 
 export interface EventColorClasses {
   bg: string;
@@ -43,8 +47,13 @@ export interface EventBlockProps {
  * Event block component for rendering calendar events
  */
 const EventBlock = ({ event, top, height, isSpanning, isContinuing, onEventClick, onContextMenu }: EventBlockProps) => {
+  const { i18n } = useTranslation("calendar");
+  const locale = i18n.language || "en";
   const eventStart = new Date(event.start);
   const eventEnd = new Date(event.end);
+  const tags = event.tags?.filter(Boolean) || [];
+  const visibleTags = tags.slice(0, MAX_VISIBLE_TAGS);
+  const overflowTags = tags.slice(MAX_VISIBLE_TAGS);
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -55,16 +64,13 @@ const EventBlock = ({ event, top, height, isSpanning, isContinuing, onEventClick
   };
 
   // Always display original event times
-  const startTimeString = eventStart.toLocaleTimeString("en-US", {
+  const timeOptions: Intl.DateTimeFormatOptions = {
     hour: "numeric",
     minute: "2-digit",
-    hour12: true,
-  });
-  const endTimeString = eventEnd.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
+    hour12: locale.startsWith("en"),
+  };
+  const startTimeString = eventStart.toLocaleTimeString(locale, timeOptions);
+  const endTimeString = eventEnd.toLocaleTimeString(locale, timeOptions);
 
   // Get default classes based on preset color name (if any)
   const defaultClasses = getDefaultColorClasses();
@@ -114,6 +120,13 @@ const EventBlock = ({ event, top, height, isSpanning, isContinuing, onEventClick
     return "px-1.5 py-1.5";
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onEventClick?.(event);
+    }
+  };
+
   return (
     <div
       className={`absolute w-full ${getPaddingClasses()}`}
@@ -122,9 +135,11 @@ const EventBlock = ({ event, top, height, isSpanning, isContinuing, onEventClick
         height: `${height}px`,
       }}
     >
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => onEventClick?.(event)}
+        onKeyDown={handleKeyDown}
         onContextMenu={handleContextMenu}
         className={cn(
           "flex h-full w-full flex-1 cursor-pointer flex-col gap-0.5",
@@ -138,20 +153,35 @@ const EventBlock = ({ event, top, height, isSpanning, isContinuing, onEventClick
         style={inlineStyles}
       >
         <div className="flex w-full flex-col items-start relative">
-          <div className="flex w-full flex-col items-start">
+          <div className="flex w-full flex-col items-start gap-0.5">
             <div
               className={cn("text-xs font-semibold text-start", colorClasses.text)}
               style={inlineStyles.color ? { color: inlineStyles.color } : undefined}
             >
               {event.title}
             </div>
+            {visibleTags.length > 0 && height > 28 && (
+              <div
+                className={cn("flex max-w-full items-center gap-0.5 text-[10px] leading-tight", colorClasses.timeText)}
+                style={inlineStyles.color ? { color: inlineStyles.color } : undefined}
+              >
+                <span className="truncate">{visibleTags.join(", ")}</span>
+                {overflowTags.length > 0 && (
+                  <Tooltip content={overflowTags.join(", ")} placement="top">
+                    <span className={cn("shrink-0 rounded px-0.5 font-semibold", colorClasses.text)}>
+                      +{overflowTags.length}
+                    </span>
+                  </Tooltip>
+                )}
+              </div>
+            )}
             <div className={cn("text-xs", colorClasses.timeText)} style={inlineStyles.color ? { color: inlineStyles.color } : undefined}>
               {startTimeString}
               {height > 48 && ` – ${endTimeString}`}
             </div>
           </div>
         </div>
-      </button>
+      </div>
     </div>
   );
 };

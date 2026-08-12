@@ -1,11 +1,17 @@
+import { useTranslation } from "react-i18next";
 import { CalendarViewProps } from "./types";
-import { filterEventsByDate, getMonthDays, isDateInRange } from "./utils";
+import { filterEventsByDate, formatWeekday, getMonthDays, isDateInRange } from "./utils";
 
 const MonthView = ({ currentDate, events = [], validRange, onEventClick, onDateChange }: CalendarViewProps) => {
+  const { i18n } = useTranslation("calendar");
+  const locale = i18n.language || "en";
   const days = getMonthDays(currentDate);
 
   // Weekday labels - always start with Sunday
-  const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const weekdayLabels = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(2024, 0, 7 + index); // 2024-01-07 is Sunday
+    return formatWeekday(date, "short", locale);
+  });
 
   const getEventsForDay = (date: string) => {
     return filterEventsByDate(events, new Date(date));
@@ -24,8 +30,8 @@ const MonthView = ({ currentDate, events = [], validRange, onEventClick, onDateC
   return (
     <div className="flex flex-auto flex-col rounded-b-2xl border-x border-b border-gray-300 dark:border-white/10">
       <div className="grid grid-cols-7 gap-px border-b border-gray-300 bg-gray-200 text-center text-xs/6 font-semibold text-gray-700 flex-none dark:border-white/5 dark:bg-white/15 dark:text-gray-300">
-        {weekdayLabels.map((label) => (
-          <div key={label} className="flex justify-center bg-white py-2 dark:bg-gray-900">
+        {weekdayLabels.map((label, index) => (
+          <div key={`${label}-${index}`} className="flex justify-center bg-white py-2 dark:bg-gray-900">
             <span>{label}</span>
           </div>
         ))}
@@ -79,10 +85,10 @@ const MonthView = ({ currentDate, events = [], validRange, onEventClick, onDateC
                   <ol className="mt-2">
                     {dayEvents.slice(0, 2).map((event) => {
                       const eventStart = new Date(event.start);
-                      const timeString = eventStart.toLocaleTimeString("en-US", {
+                      const timeString = eventStart.toLocaleTimeString(locale, {
                         hour: "numeric",
                         minute: "2-digit",
-                        hour12: true,
+                        hour12: locale.startsWith("en"),
                       });
                       return (
                         <li key={event.id}>

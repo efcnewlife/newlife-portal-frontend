@@ -42,7 +42,7 @@ const RentalRateDataForm = forwardRef<
 
   const roomOptions = rooms.map((r) => ({
     value: r.id,
-    label: r.name ? `${r.code} - ${r.name}` : r.code,
+    label: r.name || r.code,
   }));
 
   const templateOptions = templates.map((tpl) => ({

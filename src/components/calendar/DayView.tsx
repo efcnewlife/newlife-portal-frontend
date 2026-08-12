@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { MdAdd } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 import EventBlock from "./EventBlock";
 import { CalendarViewProps } from "./types";
-import { getMonthDays, isDateInRange } from "./utils";
+import { formatDate, getMonthDays, isDateInRange } from "./utils";
 
 const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateChange, onEventContextMenu, onAddEvent }: CalendarViewProps) => {
+  const { t, i18n } = useTranslation("calendar");
+  const locale = i18n.language || "en";
   // Filter events that overlap with the current day (including multi-day events)
   const getEventsForDay = (date: Date) => {
     const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
@@ -184,7 +187,7 @@ const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateCha
                             onAddEvent(currentDate, startTime, endTime);
                           }}
                           className="flex items-center justify-center size-7 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
-                          aria-label="Add event"
+                          aria-label={t("addBooking")}
                         >
                           <MdAdd className="size-4" />
                         </button>
@@ -228,7 +231,7 @@ const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateCha
             onClick={handleMiniCalendarPrevious}
             className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500 dark:text-gray-400 dark:hover:text-white"
           >
-            <span className="sr-only">Previous month</span>
+            <span className="sr-only">{t("nav.previousMonth")}</span>
             <svg className="size-5" viewBox="0 0 20 20" fill="currentColor">
               <path
                 fillRule="evenodd"
@@ -238,14 +241,14 @@ const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateCha
             </svg>
           </button>
           <div className="flex-auto text-sm font-semibold">
-            {miniCalendarMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+            {formatDate(miniCalendarMonth, "month-year", locale)}
           </div>
           <button
             type="button"
             onClick={handleMiniCalendarNext}
             className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500 dark:text-gray-400 dark:hover:text-white"
           >
-            <span className="sr-only">Next month</span>
+            <span className="sr-only">{t("nav.nextMonth")}</span>
             <svg className="size-5" viewBox="0 0 20 20" fill="currentColor">
               <path
                 fillRule="evenodd"
@@ -256,13 +259,11 @@ const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateCha
           </button>
         </div>
         <div className="mt-6 grid grid-cols-7 text-center text-xs/6 text-gray-500 dark:text-gray-400">
-          <div>S</div>
-          <div>M</div>
-          <div>T</div>
-          <div>W</div>
-          <div>T</div>
-          <div>F</div>
-          <div>S</div>
+          {Array.from({ length: 7 }, (_, index) => {
+            const date = new Date(2024, 0, 7 + index); // Sunday-start
+            const label = date.toLocaleDateString(locale, { weekday: "narrow" });
+            return <div key={`mini-weekday-${index}`}>{label}</div>;
+          })}
         </div>
         <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow-sm ring-1 ring-gray-200 dark:bg-white/10 dark:shadow-none dark:ring-white/10">
           {miniCalendarDays.map((day) => {

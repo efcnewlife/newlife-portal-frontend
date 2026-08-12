@@ -1,4 +1,5 @@
 import { Badge, Button, ButtonGroup } from "@efcnewlife/newlife-ui";
+import { useTranslation } from "react-i18next";
 import NavigationButtons from "./NavigationButtons";
 import { CalendarView, DateRange } from "./types";
 import { formatDate, formatWeekday, getEndOfWeek, getStartOfWeek } from "./utils";
@@ -28,6 +29,9 @@ const CalendarToolBar = ({
   onAddEvent,
   showNavigationButtons = { nav: true, today: true },
 }: CalendarToolBarProps) => {
+  const { t, i18n } = useTranslation("calendar");
+  const locale = i18n.language || "en";
+
   // Calculate week number of the month (1-based)
   // Week starts on Sunday (0)
   const getWeekNumber = (date: Date): number => {
@@ -53,7 +57,7 @@ const CalendarToolBar = ({
 
     if (availableViews.includes("day")) {
       buttons.push({
-        text: "Day",
+        text: t("views.day"),
         onClick: () => onViewChange("day"),
         active: currentView === "day",
         className: "h-9 py-0 px-3 text-sm",
@@ -62,7 +66,7 @@ const CalendarToolBar = ({
 
     if (availableViews.includes("week")) {
       buttons.push({
-        text: "Week",
+        text: t("views.week"),
         onClick: () => onViewChange("week"),
         active: currentView === "week",
         className: "h-9 py-0 px-3 text-sm",
@@ -71,7 +75,7 @@ const CalendarToolBar = ({
 
     if (availableViews.includes("month")) {
       buttons.push({
-        text: "Month",
+        text: t("views.month"),
         onClick: () => onViewChange("month"),
         active: currentView === "month",
         className: "h-9 py-0 px-3 text-sm",
@@ -84,22 +88,22 @@ const CalendarToolBar = ({
   const getTitle = (): string => {
     switch (currentView) {
       case "day":
-        return formatDate(currentDate, "full");
+        return formatDate(currentDate, "full", locale);
       case "week":
-        return formatDate(currentDate, "month-year");
+        return formatDate(currentDate, "month-year", locale);
       case "month":
-        return formatDate(currentDate, "month-year");
+        return formatDate(currentDate, "month-year", locale);
     }
   };
 
   const formatDateForSubtitle = (date: Date): string => {
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    return date.toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" });
   };
 
   const getSubtitle = (): string | null => {
     switch (currentView) {
       case "day":
-        return formatWeekday(currentDate, "full");
+        return formatWeekday(currentDate, "full", locale);
       case "week": {
         const startOfWeek = getStartOfWeek(currentDate);
         const endOfWeek = getEndOfWeek(currentDate);
@@ -181,7 +185,7 @@ const CalendarToolBar = ({
   };
 
   const calendarIconDate = getCalendarIconDate();
-  const monthAbbr = calendarIconDate.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
+  const monthAbbr = calendarIconDate.toLocaleDateString(locale, { month: "short" }).toUpperCase();
   const day = calendarIconDate.getDate();
 
   return (
@@ -198,7 +202,7 @@ const CalendarToolBar = ({
           <h1 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
             <time dateTime={currentDate.toISOString().split("T")[0]}>{getTitle()}</time>
             <Badge variant="solid" color="primary" size="sm">
-              Week {getWeekNumber(currentDate)}
+              {t("weekOfMonth", { week: getWeekNumber(currentDate) })}
             </Badge>
           </h1>
           {getSubtitle() && <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{getSubtitle()}</p>}
@@ -231,7 +235,7 @@ const CalendarToolBar = ({
               size="sm"
               className="h-9 bg-brand-500 hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 dark:bg-brand-600 dark:hover:bg-brand-700 dark:focus-visible:outline-brand-700"
             >
-              Add event
+              {t("addBooking")}
             </Button>
           )}
         </div>

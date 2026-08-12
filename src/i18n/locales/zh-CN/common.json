@@ -1,6 +1,8 @@
 {
   "home": "首页",
   "menu": "选单",
+  "openSidebar": "打开侧边栏",
+  "closeSidebar": "关闭侧边栏",
   "system": "系统",
   "search": "搜寻",
   "clear": "清除",
@@ -33,6 +35,13 @@
   "enabled": "启用",
   "disabled": "停用",
   "none": "-",
+  "picker": {
+    "clear": "清除",
+    "today": "今天",
+    "submit": "确定",
+    "cancel": "取消",
+    "now": "现在"
+  },
   "forms": {
     "delete": {
       "reasonRequiredSoftDeletion": "软删除时请填写原因。",
@@ -61,11 +70,32 @@
     "defaultLocaleRequired": "默认语言的名称必填。",
     "loadLocalesFailed": "无法加载系统支持的语言列表。"
   },
-  "picker": {
-    "clear": "清除",
-    "today": "今天",
-    "submit": "确定",
-    "cancel": "取消",
-    "now": "现在"
+  "help": {
+    "button": "说明",
+    "title": "如何使用本系统",
+    "close": "知道了",
+    "intro": "菜单与操作按钮会依账号权限显示。若看不到某个操作，可能是尚未被授权。",
+    "sections": {
+      "navigation": {
+        "title": "导航",
+        "body": "左侧菜单会列出您可访问的页面，点击即可进入。可用 Header 的菜单按钮收合或展开侧栏。"
+      },
+      "listPages": {
+        "title": "列表页",
+        "body": "在列表管理页可使用工具栏进行搜索、新增、刷新，以及打开回收站。若有批量操作，请先勾选数据行。"
+      },
+      "contextMenu": {
+        "title": "右键菜单（Context Menu）",
+        "body": "在数据行上点击鼠标右键，可打开内容菜单进行编辑、删除、还原或上下移动等操作。资源树页面同样可对节点点击右键。"
+      },
+      "recycle": {
+        "title": "删除与还原",
+        "body": "软删除的数据可从回收站还原。永久删除后无法恢复，请谨慎操作。"
+      },
+      "appearance": {
+        "title": "主题与语言",
+        "body": "可在 Header 切换浅色／深色主题；语言请至右上角用户菜单变更。"
+      }
+    }
   }
 }

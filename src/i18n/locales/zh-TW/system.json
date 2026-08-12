@@ -590,5 +590,79 @@
       "permissionIdHeading": "權限 ID",
       "labelActiveStatus": "啟用狀態"
     }
+  },
+  "setting": {
+    "page": {
+      "title": "系統設定",
+      "description": "管理系統動態設定"
+    },
+    "table": {
+      "namespace": "命名空間",
+      "settingKey": "鍵值",
+      "valueType": "類型",
+      "value": "值",
+      "isActive": "啟用",
+      "remark": "備註"
+    },
+    "search": {
+      "popoverTitle": "搜尋設定",
+      "namespaceLabel": "命名空間",
+      "namespacePlaceholder": "例如 facility",
+      "chipsTitle": "目前篩選",
+      "chipNamespacePrefix": "命名空間："
+    },
+    "feedback": {
+      "loadFailed": "載入設定失敗。",
+      "detailLoadFailed": "載入設定詳情失敗。",
+      "saveFailed": "儲存設定失敗。",
+      "deleteFailed": "刪除設定失敗。",
+      "restoreFailed": "還原設定失敗。"
+    },
+    "modal": {
+      "createTitle": "新增設定",
+      "editTitle": "編輯設定"
+    },
+    "deleteForm": {
+      "entityLabel": "設定"
+    },
+    "form": {
+      "namespace": {
+        "label": "命名空間"
+      },
+      "settingKey": {
+        "label": "鍵值"
+      },
+      "valueType": {
+        "label": "值類型"
+      },
+      "value": {
+        "label": "值",
+        "booleanLabel": "啟用",
+        "timezoneHint": "IANA 時區，例如 America/Toronto",
+        "addRow": "新增",
+        "removeRow": "刪除此列",
+        "keyPlaceholder": "鍵",
+        "valuePlaceholder": "值",
+        "objectHint": "新增鍵值對。數字、true/false、JSON 會自動辨識。",
+        "arrayHint": "依序新增項目。數字、true/false、JSON 會自動辨識。"
+      },
+      "remark": {
+        "label": "備註",
+        "placeholder": "選填備註"
+      },
+      "isActive": {
+        "label": "啟用"
+      },
+      "validation": {
+        "namespaceRequired": "請輸入命名空間",
+        "settingKeyRequired": "請輸入鍵值",
+        "valueRequired": "請輸入值",
+        "numberInvalid": "請輸入有效數字",
+        "objectEmpty": "請至少新增一組鍵值",
+        "objectKeyRequired": "有值時必須填寫鍵",
+        "objectDuplicateKey": "鍵不可重複",
+        "arrayEmpty": "請至少新增一個陣列項目"
+      }
+    }
   }
 }

@@ -14,7 +14,10 @@
     "searchChipRoom": "Room:"
   },
   "room": {
-    "page": { "title": "Rooms", "description": "Manage bookable rooms and spaces" },
+    "page": {
+      "title": "Rooms",
+      "description": "Manage bookable rooms and spaces"
+    },
     "table": {
       "code": "Code",
       "name": "Name",
@@ -41,10 +44,15 @@
       "codeRequired": "Code is required",
       "nameRequired": "Name is required"
     },
-    "deleteForm": { "entityLabel": "room" }
+    "deleteForm": {
+      "entityLabel": "room"
+    }
   },
   "roomSlotTemplate": {
-    "page": { "title": "Room slot templates", "description": "Define recurring slot patterns per room" },
+    "page": {
+      "title": "Room slot templates",
+      "description": "Define recurring slot patterns per room"
+    },
     "table": {
       "name": "Name",
       "daysOfWeek": "Days",
@@ -70,7 +78,9 @@
       "effectiveTo": "Effective to",
       "nameRequired": "Name is required"
     },
-    "deleteForm": { "entityLabel": "slot template" },
+    "deleteForm": {
+      "entityLabel": "slot template"
+    },
     "search": {
       "popoverTitle": "Search slot templates",
       "keywordLabel": "Keyword",
@@ -133,7 +143,9 @@
       "one_off": "One-off",
       "recurring": "Recurring"
     },
-    "deleteForm": { "entityLabel": "blackout" },
+    "deleteForm": {
+      "entityLabel": "blackout"
+    },
     "search": {
       "popoverTitle": "Search blackouts",
       "keywordLabel": "Keyword",
@@ -208,7 +220,9 @@
       "per_slot": "Per slot",
       "flat_per_booking": "Flat per booking"
     },
-    "deleteForm": { "entityLabel": "rental rate template" },
+    "deleteForm": {
+      "entityLabel": "rental rate template"
+    },
     "search": {
       "popoverTitle": "Search rental rate templates",
       "keywordLabel": "Keyword",
@@ -244,7 +258,9 @@
       "templateRequired": "Template is required",
       "facilityRequired": "Room is required"
     },
-    "deleteForm": { "entityLabel": "rental rate binding" },
+    "deleteForm": {
+      "entityLabel": "rental rate binding"
+    },
     "search": {
       "popoverTitle": "Search rental rates",
       "keywordLabel": "Keyword",
@@ -252,7 +268,10 @@
     }
   },
   "booking": {
-    "page": { "title": "Bookings", "description": "View and manage facility bookings" },
+    "page": {
+      "title": "Bookings",
+      "description": "View and manage facility bookings"
+    },
     "table": {
       "user": "User",
       "facility": "Room",
@@ -262,7 +281,11 @@
       "status": "Status",
       "quotedAmount": "Quoted"
     },
-    "modal": { "detailTitle": "Booking detail", "cancelTitle": "Cancel booking", "createTitle": "Create booking" },
+    "modal": {
+      "detailTitle": "Booking detail",
+      "cancelTitle": "Cancel booking",
+      "createTitle": "Create booking"
+    },
     "detail": {
       "userEmail": "Email",
       "createdBy": "Created by",
@@ -290,6 +313,8 @@
       "bookerSearchPlaceholder": "Search booker by name or email",
       "rooms": "Rooms",
       "roomsRequired": "Select at least one room",
+      "roomsMax": "Select at most {{count}} rooms",
+      "roomsMaxHint": "Up to {{count}} rooms",
       "startAt": "Start",
       "endAt": "End",
       "startRequired": "Start time is required",
@@ -346,7 +371,10 @@
     }
   },
   "overrideLog": {
-    "page": { "title": "Booking override logs", "description": "Audit trail for priority booking overrides" },
+    "page": {
+      "title": "Booking override logs",
+      "description": "Audit trail for priority booking overrides"
+    },
     "table": {
       "facility": "Room",
       "outcome": "Outcome",
@@ -356,7 +384,10 @@
     }
   },
   "ministry": {
-    "page": { "title": "Ministries", "description": "Manage ministries and priority booking flags" },
+    "page": {
+      "title": "Ministries",
+      "description": "Manage ministries and priority booking flags"
+    },
     "table": {
       "name": "Name",
       "status": "Status",
@@ -384,13 +415,17 @@
       "rejected": "Rejected",
       "inactive": "Inactive"
     },
-    "deleteForm": { "entityLabel": "ministry" }
+    "deleteForm": {
+      "entityLabel": "ministry"
+    }
   },
   "ministryMember": {
     "page": {
       "title": "Ministry members",
       "description": "Browse members filtered by ministry"
     },
-    "filter": { "ministry": "Ministry" }
+    "filter": {
+      "ministry": "Ministry"
+    }
   }
 }

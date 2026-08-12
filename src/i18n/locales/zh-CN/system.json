@@ -590,5 +590,79 @@
       "permissionIdHeading": "权限 ID",
       "labelActiveStatus": "启用状态"
     }
+  },
+  "setting": {
+    "page": {
+      "title": "系统设置",
+      "description": "管理系统动态设置"
+    },
+    "table": {
+      "namespace": "命名空间",
+      "settingKey": "键名",
+      "valueType": "类型",
+      "value": "值",
+      "isActive": "启用",
+      "remark": "备注"
+    },
+    "search": {
+      "popoverTitle": "搜索设置",
+      "namespaceLabel": "命名空间",
+      "namespacePlaceholder": "例如 facility",
+      "chipsTitle": "当前筛选",
+      "chipNamespacePrefix": "命名空间："
+    },
+    "feedback": {
+      "loadFailed": "加载设置失败。",
+      "detailLoadFailed": "加载设置详情失败。",
+      "saveFailed": "保存设置失败。",
+      "deleteFailed": "删除设置失败。",
+      "restoreFailed": "还原设置失败。"
+    },
+    "modal": {
+      "createTitle": "新增设置",
+      "editTitle": "编辑设置"
+    },
+    "deleteForm": {
+      "entityLabel": "设置"
+    },
+    "form": {
+      "namespace": {
+        "label": "命名空间"
+      },
+      "settingKey": {
+        "label": "键名"
+      },
+      "valueType": {
+        "label": "值类型"
+      },
+      "value": {
+        "label": "值",
+        "booleanLabel": "启用",
+        "timezoneHint": "IANA 时区，例如 America/Toronto",
+        "addRow": "新增",
+        "removeRow": "删除此行",
+        "keyPlaceholder": "键",
+        "valuePlaceholder": "值",
+        "objectHint": "新增键值对。数字、true/false、JSON 会自动识别。",
+        "arrayHint": "按顺序新增项目。数字、true/false、JSON 会自动识别。"
+      },
+      "remark": {
+        "label": "备注",
+        "placeholder": "可选备注"
+      },
+      "isActive": {
+        "label": "启用"
+      },
+      "validation": {
+        "namespaceRequired": "请输入命名空间",
+        "settingKeyRequired": "请输入键名",
+        "valueRequired": "请输入值",
+        "numberInvalid": "请输入有效数字",
+        "objectEmpty": "请至少新增一组键值",
+        "objectKeyRequired": "有值时必须填写键",
+        "objectDuplicateKey": "键不可重复",
+        "arrayEmpty": "请至少新增一个数组项目"
+      }
+    }
   }
 }
