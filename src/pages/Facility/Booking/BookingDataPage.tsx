@@ -13,6 +13,7 @@ import { Resource, Verb } from "@/const/enums";
 import { usePermissions } from "@/context/AuthContext";
 import { useModal } from "@/hooks/useModal";
 import { DateUtil } from "@/utils/dateUtil";
+import { notificationManager } from "@/utils/notificationManager";
 import { dayjsToApiUtcIso, localDatetimeInputToDayjs } from "@/utils/dayjsApi";
 import { cn } from "@/utils";
 import { MdAdd, MdCalendarMonth, MdCancel, MdGridOn, MdViewList } from "react-icons/md";
@@ -24,6 +25,7 @@ import BookingCancelForm from "./BookingCancelForm";
 import BookingDataForm, { type BookingDataFormHandle, type BookingFormValues } from "./BookingDataForm";
 import BookingDetailDrawer from "./BookingDetailDrawer";
 import BookingGrid from "./BookingGrid";
+import { resolveBookingSaveErrorMessage } from "./bookingSaveError";
 
 type BookingRow = BookingListItem & Record<string, unknown>;
 type BookingViewMode = "list" | "calendar" | "grid";
@@ -461,8 +463,12 @@ const BookingDataPage = () => {
             await facilityService.createBooking(payload);
             closeCreate();
             await refreshCurrentView();
-          } catch {
-            alert(t("shared.saveFailed"));
+          } catch (error) {
+            notificationManager.show({
+              variant: "error",
+              title: resolveBookingSaveErrorMessage(error, rooms, t),
+              position: "top-right",
+            });
           } finally {
             setSubmitting(false);
           }

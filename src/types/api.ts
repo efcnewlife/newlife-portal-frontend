@@ -39,6 +39,8 @@ export interface BackendErrorDetail {
   detail?: string;
   debug_detail?: unknown;
   url?: string;
+  error_code?: string;
+  context?: Record<string, unknown>;
   [key: string]: unknown;
 }
 

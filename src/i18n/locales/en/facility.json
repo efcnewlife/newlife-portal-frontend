@@ -337,6 +337,12 @@
     "bookingType": {
       "one_time": "One-time",
       "recurring": "Recurring"
+    },
+    "errors": {
+      "schedulingConflict": "{{room}} conflicts with another booking in this time slot",
+      "schedulingConflictGeneric": "This time slot conflicts with another booking",
+      "roomBlackout": "{{room}} is not available in this time slot",
+      "roomBlackoutGeneric": "This time slot is not available"
     }
   },
   "overrideLog": {
