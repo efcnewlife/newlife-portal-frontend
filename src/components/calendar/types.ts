@@ -16,6 +16,8 @@ export interface CalendarEvent {
 export interface EventHorizontalLayout {
   leftPercent: number;
   widthPercent: number;
+  /** Greedy column index; higher draws on top in the card stack. */
+  laneIndex?: number;
 }
 
 export interface CalendarDay {

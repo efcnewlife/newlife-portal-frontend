@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { MdAdd } from "react-icons/md";
 import { useTranslation } from "react-i18next";
+import { MdAdd } from "react-icons/md";
 import DensityOverflowControl from "./DensityOverflowControl";
 import EventBlock from "./EventBlock";
 import { packDayEventLanes } from "./packDayEventLanes";
@@ -168,17 +168,17 @@ const DayView = ({
               {timeSlots.map((slot) => {
                 const isLastSlot = slot.index === 47;
                 const top = slot.index * 48; // Each slot is 48px
-                
+
                 // Calculate start time for this slot (HH:mm format)
                 const startHour = slot.hour;
                 const startMinute = slot.isHalfHour ? 30 : 0;
                 const startTime = `${startHour.toString().padStart(2, "0")}:${startMinute.toString().padStart(2, "0")}`;
-                
+
                 // Calculate end time for this slot (30 minutes later, HH:mm format)
                 const endHour = slot.isHalfHour ? (slot.hour + 1) % 24 : slot.hour;
                 const endMinute = slot.isHalfHour ? 0 : 30;
                 const endTime = `${endHour.toString().padStart(2, "0")}:${endMinute.toString().padStart(2, "0")}`;
-                
+
                 return (
                   <div
                     key={slot.index}
@@ -236,6 +236,7 @@ const DayView = ({
                     horizontalLayout={{
                       leftPercent: placement.leftPercent,
                       widthPercent: placement.widthPercent,
+                      laneIndex: placement.laneIndex,
                     }}
                     onEventClick={onEventClick}
                     onContextMenu={onEventContextMenu}
@@ -276,9 +277,7 @@ const DayView = ({
               />
             </svg>
           </button>
-          <div className="flex-auto text-sm font-semibold">
-            {formatDate(miniCalendarMonth, "month-year", locale)}
-          </div>
+          <div className="flex-auto text-sm font-semibold">{formatDate(miniCalendarMonth, "month-year", locale)}</div>
           <button
             type="button"
             onClick={handleMiniCalendarNext}
@@ -306,7 +305,7 @@ const DayView = ({
             // Parse date string (YYYY-MM-DD) as local time
             const [year, month, dayNum] = day.date.split("-").map(Number);
             const dayDate = new Date(year, month - 1, dayNum);
-            
+
             // Normalize currentDate to local timezone for comparison
             const normalizedCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
             const normalizedDayDate = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate());

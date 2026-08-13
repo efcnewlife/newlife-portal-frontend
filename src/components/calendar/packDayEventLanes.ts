@@ -30,6 +30,12 @@ interface NormalizedEvent {
   end: Date;
 }
 
+/** Fraction of the day column each later lane indents from the left (card stack). */
+export const OVERLAY_INDENT_RATIO = 0.12;
+
+/** Minimum width fraction so high lane indices stay clickable. */
+export const OVERLAY_MIN_WIDTH_RATIO = 0.2;
+
 const toDate = (value: string | Date): Date => (value instanceof Date ? value : new Date(value));
 
 const normalizeEvent = (event: PackableEvent): NormalizedEvent => {
@@ -93,10 +99,7 @@ const findCollisionGroups = (events: NormalizedEvent[]): NormalizedEvent[][] => 
   });
 };
 
-const packGroup = (
-  group: NormalizedEvent[],
-  maxLaneCount: number,
-): { placements: EventLanePlacement[]; overflow: CollisionGroupOverflow | null } => {
+const assignColumns = (group: NormalizedEvent[]): Map<string, number> => {
   const sorted = [...group].sort((left, right) => {
     const byStart = left.startMs - right.startMs;
     if (byStart !== 0) {
@@ -119,11 +122,33 @@ const packGroup = (
     columnById.set(event.id, column);
   });
 
-  const columnsNeeded = Math.max(1, columnEnds.length);
-  const visibleLaneCount = Math.min(columnsNeeded, maxLaneCount);
-  const widthPercent = 100 / visibleLaneCount;
+  return columnById;
+};
+
+const overlayPlacement = (laneIndex: number): { leftPercent: number; widthPercent: number } => {
+  const leftRatio = Math.min(laneIndex * OVERLAY_INDENT_RATIO, 1 - OVERLAY_MIN_WIDTH_RATIO);
+  const leftPercent = leftRatio * 100;
+  return {
+    leftPercent,
+    widthPercent: 100 - leftPercent,
+  };
+};
+
+const packGroup = (
+  group: NormalizedEvent[],
+  maxLaneCount: number,
+): { placements: EventLanePlacement[]; overflow: CollisionGroupOverflow | null } => {
+  const columnById = assignColumns(group);
   const placements: EventLanePlacement[] = [];
   let undrawnCount = 0;
+
+  const sorted = [...group].sort((left, right) => {
+    const byStart = left.startMs - right.startMs;
+    if (byStart !== 0) {
+      return byStart;
+    }
+    return right.endMs - left.endMs;
+  });
 
   sorted.forEach((event) => {
     const laneIndex = columnById.get(event.id) ?? 0;
@@ -131,10 +156,11 @@ const packGroup = (
       undrawnCount += 1;
       return;
     }
+    const { leftPercent, widthPercent } = overlayPlacement(laneIndex);
     placements.push({
       id: event.id,
       laneIndex,
-      leftPercent: (laneIndex / visibleLaneCount) * 100,
+      leftPercent,
       widthPercent,
     });
   });
@@ -158,11 +184,11 @@ export const packDayEventLanes = (events: PackableEvent[], maxLaneCount: number)
     return { placements: [], overflows: [] };
   }
 
-  const groups = findCollisionGroups(events.map(normalizeEvent));
+  const normalized = events.map(normalizeEvent);
   const placements: EventLanePlacement[] = [];
   const overflows: CollisionGroupOverflow[] = [];
 
-  groups.forEach((group) => {
+  findCollisionGroups(normalized).forEach((group) => {
     const packed = packGroup(group, maxLaneCount);
     placements.push(...packed.placements);
     if (packed.overflow) {

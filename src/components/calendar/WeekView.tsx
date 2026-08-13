@@ -1,5 +1,5 @@
-import { MdAdd } from "react-icons/md";
 import { useTranslation } from "react-i18next";
+import { MdAdd } from "react-icons/md";
 import DensityOverflowControl from "./DensityOverflowControl";
 import EventBlock from "./EventBlock";
 import { packDayEventLanes } from "./packDayEventLanes";
@@ -151,8 +151,8 @@ const WeekView = ({
                   isToday
                     ? "w-6 rounded-full bg-indigo-600 text-white dark:bg-indigo-500"
                     : isSelected
-                    ? "w-6 rounded-full bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                    : "text-gray-900 dark:text-white"
+                      ? "w-6 rounded-full bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+                      : "text-gray-900 dark:text-white"
                 }`}
               >
                 {date.getDate()}
@@ -257,6 +257,7 @@ const WeekView = ({
                         horizontalLayout={{
                           leftPercent: placement.leftPercent,
                           widthPercent: placement.widthPercent,
+                          laneIndex: placement.laneIndex,
                         }}
                         onEventClick={onEventClick}
                         onContextMenu={onEventContextMenu}

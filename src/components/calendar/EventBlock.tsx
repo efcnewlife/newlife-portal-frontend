@@ -1,6 +1,7 @@
-import { Tooltip } from "@efcnewlife/newlife-ui";
 import { cn } from "@/utils";
+import { Tooltip } from "@efcnewlife/newlife-ui";
 import { useTranslation } from "react-i18next";
+import { formatEventTimeClock, formatEventTimeRange } from "./formatEventTime";
 import { CalendarEvent, EventHorizontalLayout } from "./types";
 
 const MAX_VISIBLE_TAGS = 2;
@@ -26,8 +27,8 @@ const getDefaultColorClasses = (): EventColorClasses => {
     bg: "bg-brand-50",
     border: "border-brand-200",
     hoverBg: "hover:bg-brand-100",
-    text: "text-brand-500",
-    timeText: "text-brand-400",
+    text: "text-gray-900",
+    timeText: "text-gray-900",
   };
 };
 
@@ -47,16 +48,7 @@ export interface EventBlockProps {
 /**
  * Event block component for rendering calendar events
  */
-const EventBlock = ({
-  event,
-  top,
-  height,
-  isSpanning,
-  isContinuing,
-  horizontalLayout,
-  onEventClick,
-  onContextMenu,
-}: EventBlockProps) => {
+const EventBlock = ({ event, top, height, isSpanning, isContinuing, horizontalLayout, onEventClick, onContextMenu }: EventBlockProps) => {
   const { i18n } = useTranslation("calendar");
   const locale = i18n.language || "en";
   const eventStart = new Date(event.start);
@@ -64,6 +56,8 @@ const EventBlock = ({
   const tags = event.tags?.filter(Boolean) || [];
   const visibleTags = tags.slice(0, MAX_VISIBLE_TAGS);
   const overflowTags = tags.slice(MAX_VISIBLE_TAGS);
+  const timeRangeLabel = formatEventTimeRange(eventStart, eventEnd, locale);
+  const timeLabel = height > 48 ? timeRangeLabel : formatEventTimeClock(eventStart, locale);
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -72,15 +66,6 @@ const EventBlock = ({
       onContextMenu(event, e);
     }
   };
-
-  // Always display original event times
-  const timeOptions: Intl.DateTimeFormatOptions = {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: locale.startsWith("en"),
-  };
-  const startTimeString = eventStart.toLocaleTimeString(locale, timeOptions);
-  const endTimeString = eventEnd.toLocaleTimeString(locale, timeOptions);
 
   // Get default classes based on preset color name (if any)
   const defaultClasses = getDefaultColorClasses();
@@ -114,20 +99,9 @@ const EventBlock = ({
     } else if (isSpanning) {
       return "rounded-t-md border-x border-t";
     } else if (isContinuing) {
-      return "rounded-b-md pt-3 border-x border-b";
+      return "rounded-b-md border-x border-b";
     }
     return "rounded-md border";
-  };
-
-  const getPaddingClasses = (): string => {
-    if (isSpanning && isContinuing) {
-      return "px-1.5";
-    } else if (isSpanning) {
-      return "pt-2 px-1.5";
-    } else if (isContinuing) {
-      return "px-1.5 pb-1.5";
-    }
-    return "px-1.5 py-1.5";
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -137,67 +111,75 @@ const EventBlock = ({
     }
   };
 
+  const tooltipContent = (
+    <div className="max-w-xs space-y-0.5 text-start leading-tight">
+      <div className="font-semibold">{event.title}</div>
+      <div>{timeRangeLabel}</div>
+      {tags.length > 0 && <div className="font-normal opacity-90">{tags.join(", ")}</div>}
+    </div>
+  );
+
+  // 1px vertical inset keeps a hairline gap between stacked events without pushing text down.
+  const verticalInsetPx = isSpanning && isContinuing ? 0 : 1;
+  const layoutTop = top + (isContinuing ? 0 : verticalInsetPx);
+  const layoutHeight = Math.max(height - (isSpanning ? verticalInsetPx : verticalInsetPx * 2), 1);
+
   return (
     <div
-      className={cn(
-        "absolute",
-        horizontalLayout ? "z-10 box-border min-w-0 overflow-hidden" : "w-full",
-        getPaddingClasses(),
-      )}
+      className={cn("absolute px-1 py-1", horizontalLayout ? "box-border min-w-0 overflow-hidden" : "w-full")}
       style={{
-        top: `${top}px`,
-        height: `${height}px`,
-        left: horizontalLayout ? `${horizontalLayout.leftPercent}%` : 0,
-        width: horizontalLayout ? `${horizontalLayout.widthPercent}%` : "100%",
+        top: `${layoutTop}px`,
+        height: `${layoutHeight}px`,
+        ...(horizontalLayout
+          ? {
+              left: `${horizontalLayout.leftPercent}%`,
+              width: `${horizontalLayout.widthPercent}%`,
+              zIndex: 10 + (horizontalLayout.laneIndex ?? 0),
+            }
+          : {}),
       }}
     >
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={() => onEventClick?.(event)}
-        onKeyDown={handleKeyDown}
-        onContextMenu={handleContextMenu}
-        className={cn(
-          "flex h-full w-full flex-1 cursor-pointer flex-col gap-0.5",
-          getEventClasses(),
-          "px-1 py-0.5",
-          colorClasses.bg,
-          colorClasses.border,
-          colorClasses.hoverBg,
-          "relative",
-        )}
-        style={inlineStyles}
-      >
-        <div className="flex w-full flex-col items-start relative">
-          <div className="flex w-full flex-col items-start gap-0.5">
+      <Tooltip content={tooltipContent} placement="top" className="!flex h-full w-full" contentClassName="pointer-events-none">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => onEventClick?.(event)}
+          onKeyDown={handleKeyDown}
+          onContextMenu={handleContextMenu}
+          className={cn(
+            "relative flex h-full w-full min-w-0 cursor-pointer flex-col justify-start gap-0 overflow-hidden px-1 py-1 leading-none",
+            getEventClasses(),
+            colorClasses.bg,
+            colorClasses.border,
+            colorClasses.hoverBg,
+          )}
+          style={inlineStyles}
+        >
+          <div
+            className={cn("truncate text-start text-xs font-semibold leading-none", colorClasses.text)}
+            style={inlineStyles.color ? { color: inlineStyles.color } : undefined}
+          >
+            {event.title}
+          </div>
+          <div
+            className={cn("truncate text-xs leading-none", colorClasses.timeText)}
+            style={inlineStyles.color ? { color: inlineStyles.color } : undefined}
+          >
+            {timeLabel}
+          </div>
+          {visibleTags.length > 0 && height > 48 && (
             <div
-              className={cn("text-xs font-semibold text-start", colorClasses.text)}
+              className={cn("flex max-w-full items-center gap-0.5 text-[10px] leading-none", colorClasses.timeText)}
               style={inlineStyles.color ? { color: inlineStyles.color } : undefined}
             >
-              {event.title}
+              <span className="truncate">{visibleTags.join(", ")}</span>
+              {overflowTags.length > 0 && (
+                <span className={cn("shrink-0 rounded px-0.5 font-semibold", colorClasses.text)}>+{overflowTags.length}</span>
+              )}
             </div>
-            {visibleTags.length > 0 && height > 28 && (
-              <div
-                className={cn("flex max-w-full items-center gap-0.5 text-[10px] leading-tight", colorClasses.timeText)}
-                style={inlineStyles.color ? { color: inlineStyles.color } : undefined}
-              >
-                <span className="truncate">{visibleTags.join(", ")}</span>
-                {overflowTags.length > 0 && (
-                  <Tooltip content={overflowTags.join(", ")} placement="top">
-                    <span className={cn("shrink-0 rounded px-0.5 font-semibold", colorClasses.text)}>
-                      +{overflowTags.length}
-                    </span>
-                  </Tooltip>
-                )}
-              </div>
-            )}
-            <div className={cn("text-xs", colorClasses.timeText)} style={inlineStyles.color ? { color: inlineStyles.color } : undefined}>
-              {startTimeString}
-              {height > 48 && ` – ${endTimeString}`}
-            </div>
-          </div>
+          )}
         </div>
-      </div>
+      </Tooltip>
     </div>
   );
 };
