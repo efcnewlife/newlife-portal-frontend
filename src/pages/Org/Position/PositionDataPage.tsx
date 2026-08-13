@@ -2,6 +2,7 @@ import { orgService, type PositionDetail } from "@/api/services/orgService";
 import { userService } from "@/api/services/userService";
 import type { DataTableColumn, MenuButtonType, PageButtonType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
+import { DateUtil } from "@/utils/dateUtil";
 import { dayjsToApiUtcIso, getLocalTimezone } from "@/utils/dayjsApi";
 import { Button, DateTimePicker, Modal, ModalForm, Select } from "@efcnewlife/newlife-ui";
 import { Resource, Verb } from "@/const/enums";
@@ -266,6 +267,7 @@ const PositionDataPage = () => {
             onChange={(value) => setAssignStartAt(value)}
             timezone={displayTimezone}
             ampm
+            format={DateUtil.DATETIME_DISPLAY_FORMAT}
             showSubmitButton={false}
             labels={pickerLabels}
           />
