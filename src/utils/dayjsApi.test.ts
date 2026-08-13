@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
+import dayjs from "./dayjsSetup";
 import {
   apiDateToDayjs,
   apiTimeToDayjs,
@@ -12,9 +10,6 @@ import {
   getLocalTimezone,
   localDatetimeInputToDayjs,
 } from "./dayjsApi";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 describe("dayjsApi calendar date", () => {
   it("formats Dayjs to YYYY-MM-DD for the API", () => {

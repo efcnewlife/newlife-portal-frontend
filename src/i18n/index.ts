@@ -33,7 +33,7 @@ import zhCnMember from "./locales/zh-CN/member.json";
 import zhCnMinistry from "./locales/zh-CN/ministry.json";
 import zhCnContent from "./locales/zh-CN/content.json";
 import zhCnCalendar from "./locales/zh-CN/calendar.json";
-import { sync_moment_locale } from "./moment_locale_sync";
+import { sync_dayjs_locale } from "./dayjs_locale_sync";
 
 /** BCP 47 language tags used as i18next resource keys and persisted locale. */
 export type AppLocale = "en" | "zh-TW" | "zh-CN";
@@ -153,11 +153,11 @@ void i18n.use(initReactI18next).init({
   },
 });
 
-sync_moment_locale(i18n.language);
+sync_dayjs_locale(i18n.language);
 
 i18n.on("languageChanged", (lng) => {
   localStorage.setItem(LOCALE_STORAGE_KEY, lng);
-  sync_moment_locale(lng);
+  sync_dayjs_locale(lng);
 });
 
 export default i18n;
