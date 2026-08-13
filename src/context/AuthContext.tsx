@@ -1,5 +1,5 @@
-import { ensure_msal_ready, MSAL_LOGIN_SCOPES } from "@/auth/msalInstance";
 import { localeService } from "@/api";
+import { ensure_msal_ready, MSAL_LOGIN_SCOPES } from "@/auth/msalInstance";
 import { IS_SKIP_AUTH } from "@/config/env";
 import i18n, { build_locale_code, change_app_language } from "@/i18n";
 import { getRolesFromToken, getScopesFromToken, hasPermissionInScopes } from "@/utils/jwt";

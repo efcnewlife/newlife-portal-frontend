@@ -12,6 +12,18 @@ _Avoid_: DateRangePicker as the default control for these fields, treating an op
 The start and end instants of a facility booking (`startAt` / `endAt` on the API as UTC ISO). The admin UI edits them as date-and-time values with a display timezone, not as date-only or time-only fields.
 _Avoid_: calendar-date-only booking, wall-clock string as the domain meaning of the instant
 
+**Calendar booking event**:
+The Calendar view's unit is one booking: a single block keyed by booking id, showing Booker and Booking start / Booking end. Time is the block's vertical span.
+_Avoid_: one block per room, duplicating the same booking across Calendar columns, treating Grid's Primary facility as the Calendar mapping rule
+
+**Calendar collision group**:
+Calendar booking events on the same day column that overlap through a chain of intervals (connected overlap). They are laid out in equal-width side-by-side lanes, with lane count computed per group (a solo event still spans the day column). Visible lanes are the first K from greedy packing (earliest Booking start, then latest Booking end). K is lower in week than in day. Each drawn Calendar booking event stays its own clickable block. Same-room overlap is a Scheduling Conflict and should not appear as confirmed events.
+_Avoid_: representative + `+N` list as the v1 Calendar layout, stacking full-width blocks, day-wide column count that shrinks unrelated later events, expanding a lane into empty neighbors, treating this as Grid occupancy, one lane per room
+
+**Calendar density overflow**:
+The control on a Calendar collision group when the group needs more lanes than K. It shows how many events were not drawn and switches Booking view mode to `grid` for that date. It is not a list of the hidden bookings.
+_Avoid_: popover of remainder bookings, silent truncation, opening the representative's detail from this control
+
 **DataTable**:
 The Portal admin list shell built on `@efcnewlife/newlife-ui` Table primitives, plus pagination, sorting, row selection, and context menu. It is a host composite, not the library Table itself.
 _Avoid_: Table (when meaning the Portal list page), DataGrid, Grid

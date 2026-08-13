@@ -1,6 +1,6 @@
+import { NotificationContainer } from "@efcnewlife/newlife-ui";
 import { useEffect, useState } from "react";
 import { RouterProvider } from "react-router";
-import { NotificationContainer } from "@efcnewlife/newlife-ui";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { MenuProvider, useMenuData } from "./context/MenuContext";
 import { NotificationProvider } from "./context/NotificationContext";
@@ -23,6 +23,7 @@ function AppContent() {
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();
   const { menus, isLoading: menuLoading } = useMenuData();
   const [router, setRouter] = useState<ReturnType<typeof routeFilterManager.createRouteConfig> | null>(null);
+  const [router_epoch, setRouterEpoch] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Unified routing initialization logic
@@ -43,9 +44,12 @@ function AppContent() {
           menus,
         });
 
-        // Create routing configuration
+        // Create routing configuration. Remount RouterProvider (router_epoch) so it
+        // does not keep the previous router's matches and remap them by auto-id
+        // onto the new table (e.g. authenticated /signin id "1" -> /forgot-password).
         const newRouter = routeFilterManager.createRouteConfig();
         setRouter(newRouter);
+        setRouterEpoch((epoch) => epoch + 1);
         setIsInitialized(true);
       } catch (error) {
         console.error("Failed to initialize route filter:", error);
@@ -74,7 +78,7 @@ function AppContent() {
 
   return (
     <>
-      <RouterProvider router={router} />
+      <RouterProvider key={router_epoch} router={router} />
     </>
   );
 }

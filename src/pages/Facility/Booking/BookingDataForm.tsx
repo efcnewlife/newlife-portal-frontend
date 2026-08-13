@@ -1,8 +1,4 @@
-import {
-  facilityService,
-  type PreviewQuoteResponse,
-  type SurchargeItem,
-} from "@/api/services/facilityService";
+import { facilityService, type PreviewQuoteResponse, type SurchargeItem } from "@/api/services/facilityService";
 import ministryService, { type MinistryListItem } from "@/api/services/ministryService";
 import userService, { type UserBase } from "@/api/services/userService";
 import { usePickerLabels } from "@/hooks/usePickerLabels";
@@ -47,10 +43,7 @@ const MAX_BOOKING_ROOMS = 3;
 
 const userOptionLabel = (user: UserBase): string => user.displayName || user.email || user.id;
 
-const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function BookingDataForm(
-  { defaultValues, rooms },
-  ref
-) {
+const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function BookingDataForm({ defaultValues, rooms }, ref) {
   const { t } = useTranslation("facility");
   const displayTimezone = useMemo(() => getLocalTimezone(), []);
   const pickerLabels = usePickerLabels();
@@ -99,10 +92,7 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
   useEffect(() => {
     void (async () => {
       try {
-        const [ministryRes, surchargeRes] = await Promise.all([
-          ministryService.getMinistryList(),
-          facilityService.listSurcharges(),
-        ]);
+        const [ministryRes, surchargeRes] = await Promise.all([ministryService.getMinistryList(), facilityService.listSurcharges()]);
         if (ministryRes.success) setMinistries((ministryRes.data.items || []).filter((m) => m.status === "active"));
         if (surchargeRes.success) setSurcharges((surchargeRes.data.items || []).filter((s) => s.isActive));
       } catch {
@@ -146,7 +136,7 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         void searchUsers(query.trim());
       }, USER_SEARCH_DEBOUNCE_MS);
     },
-    [searchUsers]
+    [searchUsers],
   );
 
   const handleUserOpen = useCallback(() => {
@@ -175,7 +165,7 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         value: room.id,
         label: room.name || room.code,
       })),
-    [rooms]
+    [rooms],
   );
 
   const ministryOptions = useMemo(
@@ -186,7 +176,7 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         label: ministry.name || ministry.id,
       })),
     ],
-    [ministries, t]
+    [ministries, t],
   );
 
   const surchargeOptions = useMemo(
@@ -195,7 +185,7 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         value: item.code,
         label: `${item.code} (${item.unitAmount} ${item.currency})`,
       })),
-    [surcharges]
+    [surcharges],
   );
 
   useImperativeHandle(ref, () => ({
@@ -356,17 +346,9 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         options={surchargeOptions}
         value={surchargeCodes}
         multiple
-        onChange={(v) =>
-          setSurchargeCodes((Array.isArray(v) ? v : [v]).map((item) => String(item || "")).filter(Boolean))
-        }
+        onChange={(v) => setSurchargeCodes((Array.isArray(v) ? v : [v]).map((item) => String(item || "")).filter(Boolean))}
       />
-      <TextArea
-        id="booking-remark"
-        label={t("booking.form.remark")}
-        value={remark}
-        onChange={setRemark}
-        rows={3}
-      />
+      <TextArea id="booking-remark" label={t("booking.form.remark")} value={remark} onChange={setRemark} rows={3} />
       <div className="flex items-center gap-3">
         <Button variant="outline" size="sm" onClick={() => void handlePreviewQuote()} disabled={quoting}>
           {quoting ? t("booking.form.quoting") : t("booking.form.previewQuote")}
