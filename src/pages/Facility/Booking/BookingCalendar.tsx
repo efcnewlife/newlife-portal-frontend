@@ -11,6 +11,7 @@ interface BookingCalendarProps {
   onEventClick: (booking: BookingListItem) => void;
   onCancelClick: (booking: BookingListItem) => void;
   onAddSlot: (startLocal: string, endLocal: string) => void;
+  onDensityOverflow: (date: Date) => void;
 }
 
 const toLocalDatetimeValue = (date: Date): string => {
@@ -51,6 +52,7 @@ const BookingCalendar = ({
   onEventClick,
   onCancelClick,
   onAddSlot,
+  onDensityOverflow,
 }: BookingCalendarProps) => {
   const { t } = useTranslation("facility");
   const [calendarLayout, setCalendarLayout] = useState<CalendarView>("week");
@@ -87,7 +89,7 @@ const BookingCalendar = ({
                 : [];
           return {
             id: booking.id,
-            title: booking.userDisplayName || booking.userEmail || booking.facilityName || booking.id,
+            title: booking.userDisplayName || booking.userEmail || "",
             start: booking.startAt,
             end: booking.endAt,
             tags: roomNames,
@@ -126,6 +128,7 @@ const BookingCalendar = ({
           end.setHours(endHour || 10, endMinute || 0, 0, 0);
           onAddSlot(toLocalDatetimeValue(start), toLocalDatetimeValue(end));
         }}
+        onDensityOverflow={onDensityOverflow}
       />
 
       {contextMenu && (

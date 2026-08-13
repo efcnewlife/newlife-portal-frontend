@@ -17,8 +17,8 @@ The Calendar view's unit is one booking: a single block keyed by booking id, sho
 _Avoid_: one block per room, duplicating the same booking across Calendar columns, treating Grid's Primary facility as the Calendar mapping rule
 
 **Calendar collision group**:
-Calendar booking events on the same day column that overlap through a chain of intervals (connected overlap). They are laid out in equal-width side-by-side lanes, with lane count computed per group (a solo event still spans the day column). Visible lanes are the first K from greedy packing (earliest Booking start, then latest Booking end). K is lower in week than in day. Each drawn Calendar booking event stays its own clickable block. Same-room overlap is a Scheduling Conflict and should not appear as confirmed events.
-_Avoid_: representative + `+N` list as the v1 Calendar layout, stacking full-width blocks, day-wide column count that shrinks unrelated later events, expanding a lane into empty neighbors, treating this as Grid occupancy, one lane per room
+Calendar booking events on the same day column that overlap through a chain of intervals (connected overlap). Greedy packing assigns columns; later columns overlay the earlier ones with a fixed left indent and flush to the day column's right edge (card stack). Column 0 stays full width. K is the max concurrent columns in the group (lower in week than in day). Each drawn Calendar booking event stays its own clickable block. Same-room overlap is a Scheduling Conflict and should not appear as confirmed events.
+_Avoid_: representative + `+N` list as the v1 Calendar layout, stacking full-width blocks with no indent, equal-width tiles that shrink a long booking for its whole duration, containment nesting boxes, treating this as Grid occupancy, one lane per room
 
 **Calendar density overflow**:
 The control on a Calendar collision group when the group needs more lanes than K. It shows how many events were not drawn and switches Booking view mode to `grid` for that date. It is not a list of the hidden bookings.

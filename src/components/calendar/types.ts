@@ -12,6 +12,14 @@ export interface CalendarEvent {
   item?: unknown;
 }
 
+/** Horizontal placement as percent of the day column. Omitted layout stays full width. */
+export interface EventHorizontalLayout {
+  leftPercent: number;
+  widthPercent: number;
+  /** Greedy column index; higher draws on top in the card stack. */
+  laneIndex?: number;
+}
+
 export interface CalendarDay {
   date: string;
   isCurrentMonth?: boolean;
@@ -41,6 +49,7 @@ export interface CalendarProps {
   onEventClick?: (event: CalendarEvent) => void;
   onEventContextMenu?: (event: CalendarEvent, mouseEvent: React.MouseEvent) => void;
   onAddEvent?: (date?: Date, startTime?: string, endTime?: string) => void;
+  onDensityOverflow?: (date: Date) => void;
   showNavigationButtons?:
     | boolean
     | {
@@ -58,4 +67,5 @@ export interface CalendarViewProps {
   onEventClick?: (event: CalendarEvent) => void;
   onEventContextMenu?: (event: CalendarEvent, mouseEvent: React.MouseEvent) => void;
   onAddEvent?: (date?: Date, startTime?: string, endTime?: string) => void;
+  onDensityOverflow?: (date: Date) => void;
 }

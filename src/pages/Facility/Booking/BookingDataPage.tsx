@@ -74,16 +74,16 @@ const BookingDataPage = () => {
   const modalRef = useRef<ModalFormHandle>(null);
 
   const setViewMode = useCallback(
-    (next: BookingViewMode) => {
+    (next: BookingViewMode, date?: Date) => {
       const params = new URLSearchParams(searchParams);
       if (next === "list") {
         params.delete("view");
       } else {
         params.set("view", next);
       }
-      if (next === "list") {
-        // List may ignore date; keep or drop — leave date if present for share restore when switching back
-      } else if (!params.get("date")) {
+      if (date) {
+        params.set("date", toIsoDate(date));
+      } else if (next !== "list" && !params.get("date")) {
         params.set("date", toIsoDate(anchorDate));
       }
       setSearchParams(params, { replace: true });
@@ -356,6 +356,7 @@ const BookingDataPage = () => {
                 endAt: localDatetimeInputToDayjs(endLocal),
               });
             }}
+            onDensityOverflow={(date) => setViewMode("grid", date)}
           />
         </div>
       )}

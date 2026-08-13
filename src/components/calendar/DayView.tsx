@@ -1,11 +1,24 @@
 import { useEffect, useState } from "react";
-import { MdAdd } from "react-icons/md";
 import { useTranslation } from "react-i18next";
+import { MdAdd } from "react-icons/md";
+import DensityOverflowControl from "./DensityOverflowControl";
 import EventBlock from "./EventBlock";
+import { packDayEventLanes } from "./packDayEventLanes";
 import { CalendarViewProps } from "./types";
 import { formatDate, getMonthDays, isDateInRange } from "./utils";
 
-const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateChange, onEventContextMenu, onAddEvent }: CalendarViewProps) => {
+const DAY_MAX_EVENT_LANES = 10;
+
+const DayView = ({
+  currentDate,
+  events = [],
+  validRange,
+  onEventClick,
+  onDateChange,
+  onEventContextMenu,
+  onAddEvent,
+  onDensityOverflow,
+}: CalendarViewProps) => {
   const { t, i18n } = useTranslation("calendar");
   const locale = i18n.language || "en";
   // Filter events that overlap with the current day (including multi-day events)
@@ -22,6 +35,8 @@ const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateCha
   };
 
   const dayEvents = getEventsForDay(currentDate);
+  const packed = packDayEventLanes(dayEvents, DAY_MAX_EVENT_LANES);
+  const placementById = new Map(packed.placements.map((placement) => [placement.id, placement]));
   const [miniCalendarMonth, setMiniCalendarMonth] = useState(currentDate);
 
   // Sync mini calendar month when currentDate changes
@@ -153,17 +168,17 @@ const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateCha
               {timeSlots.map((slot) => {
                 const isLastSlot = slot.index === 47;
                 const top = slot.index * 48; // Each slot is 48px
-                
+
                 // Calculate start time for this slot (HH:mm format)
                 const startHour = slot.hour;
                 const startMinute = slot.isHalfHour ? 30 : 0;
                 const startTime = `${startHour.toString().padStart(2, "0")}:${startMinute.toString().padStart(2, "0")}`;
-                
+
                 // Calculate end time for this slot (30 minutes later, HH:mm format)
                 const endHour = slot.isHalfHour ? (slot.hour + 1) % 24 : slot.hour;
                 const endMinute = slot.isHalfHour ? 0 : 30;
                 const endTime = `${endHour.toString().padStart(2, "0")}:${endMinute.toString().padStart(2, "0")}`;
-                
+
                 return (
                   <div
                     key={slot.index}
@@ -199,6 +214,9 @@ const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateCha
 
               {/* Events */}
               {dayEvents.map((event) => {
+                const placement = placementById.get(String(event.id));
+                if (!placement) return null;
+
                 const eventTop = getEventTop(event.start, currentDate);
                 const eventHeight = getEventHeight(event.start, event.end, currentDate);
                 const isSpanning = isEventSpanningToNextDay(event.start, event.end, currentDate);
@@ -215,11 +233,30 @@ const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateCha
                     isContinuing={isContinuing}
                     isFullDay={isFullDay}
                     dayDate={currentDate}
+                    horizontalLayout={{
+                      leftPercent: placement.leftPercent,
+                      widthPercent: placement.widthPercent,
+                      laneIndex: placement.laneIndex,
+                    }}
                     onEventClick={onEventClick}
                     onContextMenu={onEventContextMenu}
                   />
                 );
               })}
+              {onDensityOverflow &&
+                packed.overflows.map((overflow, overflowIndex) => {
+                  const groupTop = getEventTop(overflow.start, currentDate);
+                  const groupHeight = getEventHeight(overflow.start, overflow.end, currentDate);
+                  return (
+                    <DensityOverflowControl
+                      key={`overflow-${overflowIndex}`}
+                      count={overflow.undrawnCount}
+                      date={currentDate}
+                      top={Math.max(groupTop, groupTop + groupHeight - 22)}
+                      onActivate={onDensityOverflow}
+                    />
+                  );
+                })}
             </div>
           </div>
         </div>
@@ -240,9 +277,7 @@ const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateCha
               />
             </svg>
           </button>
-          <div className="flex-auto text-sm font-semibold">
-            {formatDate(miniCalendarMonth, "month-year", locale)}
-          </div>
+          <div className="flex-auto text-sm font-semibold">{formatDate(miniCalendarMonth, "month-year", locale)}</div>
           <button
             type="button"
             onClick={handleMiniCalendarNext}
@@ -270,7 +305,7 @@ const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateCha
             // Parse date string (YYYY-MM-DD) as local time
             const [year, month, dayNum] = day.date.split("-").map(Number);
             const dayDate = new Date(year, month - 1, dayNum);
-            
+
             // Normalize currentDate to local timezone for comparison
             const normalizedCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
             const normalizedDayDate = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate());

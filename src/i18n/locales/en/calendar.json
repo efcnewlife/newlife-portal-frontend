@@ -7,6 +7,8 @@
   "today": "Today",
   "weekOfMonth": "Week {{week}}",
   "addBooking": "Add booking",
+  "densityOverflow": "{{count}} more — view in Grid",
+  "densityOverflowAria": "Switch to Grid to see {{count}} hidden bookings",
   "nav": {
     "previousDay": "Previous day",
     "previousWeek": "Previous week",

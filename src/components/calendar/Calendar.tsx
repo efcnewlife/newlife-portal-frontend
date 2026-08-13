@@ -16,6 +16,7 @@ const Calendar = ({
   onEventClick,
   onEventContextMenu,
   onAddEvent,
+  onDensityOverflow,
   showNavigationButtons = true,
 }: CalendarProps) => {
   const [selectedDate, setSelectedDate] = useState<Date>(currentDate);
@@ -121,6 +122,7 @@ const Calendar = ({
       onEventClick,
       onEventContextMenu,
       onAddEvent,
+      onDensityOverflow,
     };
 
     switch (currentView) {
