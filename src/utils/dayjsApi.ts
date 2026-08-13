@@ -1,11 +1,4 @@
-import dayjs, { type Dayjs } from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(customParseFormat);
+import dayjs, { type Dayjs } from "./dayjsSetup";
 
 /** Fixed conventional calendar day for time-of-day Day.js values (matches newlife-ui). */
 export const TIME_OF_DAY_ANCHOR = "1970-01-01";
