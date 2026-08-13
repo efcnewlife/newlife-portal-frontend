@@ -1,11 +1,24 @@
 import { useEffect, useState } from "react";
 import { MdAdd } from "react-icons/md";
 import { useTranslation } from "react-i18next";
+import DensityOverflowControl from "./DensityOverflowControl";
 import EventBlock from "./EventBlock";
+import { packDayEventLanes } from "./packDayEventLanes";
 import { CalendarViewProps } from "./types";
 import { formatDate, getMonthDays, isDateInRange } from "./utils";
 
-const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateChange, onEventContextMenu, onAddEvent }: CalendarViewProps) => {
+const DAY_MAX_EVENT_LANES = 10;
+
+const DayView = ({
+  currentDate,
+  events = [],
+  validRange,
+  onEventClick,
+  onDateChange,
+  onEventContextMenu,
+  onAddEvent,
+  onDensityOverflow,
+}: CalendarViewProps) => {
   const { t, i18n } = useTranslation("calendar");
   const locale = i18n.language || "en";
   // Filter events that overlap with the current day (including multi-day events)
@@ -22,6 +35,8 @@ const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateCha
   };
 
   const dayEvents = getEventsForDay(currentDate);
+  const packed = packDayEventLanes(dayEvents, DAY_MAX_EVENT_LANES);
+  const placementById = new Map(packed.placements.map((placement) => [placement.id, placement]));
   const [miniCalendarMonth, setMiniCalendarMonth] = useState(currentDate);
 
   // Sync mini calendar month when currentDate changes
@@ -199,6 +214,9 @@ const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateCha
 
               {/* Events */}
               {dayEvents.map((event) => {
+                const placement = placementById.get(String(event.id));
+                if (!placement) return null;
+
                 const eventTop = getEventTop(event.start, currentDate);
                 const eventHeight = getEventHeight(event.start, event.end, currentDate);
                 const isSpanning = isEventSpanningToNextDay(event.start, event.end, currentDate);
@@ -215,11 +233,29 @@ const DayView = ({ currentDate, events = [], validRange, onEventClick, onDateCha
                     isContinuing={isContinuing}
                     isFullDay={isFullDay}
                     dayDate={currentDate}
+                    horizontalLayout={{
+                      leftPercent: placement.leftPercent,
+                      widthPercent: placement.widthPercent,
+                    }}
                     onEventClick={onEventClick}
                     onContextMenu={onEventContextMenu}
                   />
                 );
               })}
+              {onDensityOverflow &&
+                packed.overflows.map((overflow, overflowIndex) => {
+                  const groupTop = getEventTop(overflow.start, currentDate);
+                  const groupHeight = getEventHeight(overflow.start, overflow.end, currentDate);
+                  return (
+                    <DensityOverflowControl
+                      key={`overflow-${overflowIndex}`}
+                      count={overflow.undrawnCount}
+                      date={currentDate}
+                      top={Math.max(groupTop, groupTop + groupHeight - 22)}
+                      onActivate={onDensityOverflow}
+                    />
+                  );
+                })}
             </div>
           </div>
         </div>

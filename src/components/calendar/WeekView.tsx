@@ -1,8 +1,12 @@
 import { MdAdd } from "react-icons/md";
 import { useTranslation } from "react-i18next";
+import DensityOverflowControl from "./DensityOverflowControl";
 import EventBlock from "./EventBlock";
+import { packDayEventLanes } from "./packDayEventLanes";
 import { CalendarViewProps } from "./types";
 import { filterEventsByDateRange, formatWeekday, getWeekDates, isDateInRange } from "./utils";
+
+const WEEK_MAX_EVENT_LANES = 4;
 
 const WeekView = ({
   currentDate,
@@ -12,6 +16,7 @@ const WeekView = ({
   onDateChange,
   onAddEvent,
   onEventContextMenu,
+  onDensityOverflow,
 }: CalendarViewProps) => {
   const { t, i18n } = useTranslation("calendar");
   const locale = i18n.language || "en";
@@ -173,6 +178,8 @@ const WeekView = ({
         <div className="grid flex-1 grid-cols-7">
           {weekDates.map((date, dayIndex) => {
             const dayEvents = getEventsForDay(date);
+            const packed = packDayEventLanes(dayEvents, WEEK_MAX_EVENT_LANES);
+            const placementById = new Map(packed.placements.map((placement) => [placement.id, placement]));
             const isLastColumn = dayIndex === 6;
             return (
               <div key={dayIndex} className="flex flex-col border-gray-300 dark:border-white/10">
@@ -228,6 +235,9 @@ const WeekView = ({
 
                   {/* Events */}
                   {dayEvents.map((event) => {
+                    const placement = placementById.get(String(event.id));
+                    if (!placement) return null;
+
                     const eventTop = getEventTop(event.start, date);
                     const eventHeight = getEventHeight(event.start, event.end, date);
                     const isSpanning = isEventSpanningToNextDay(event.start, event.end, date);
@@ -244,11 +254,29 @@ const WeekView = ({
                         isContinuing={isContinuing}
                         isFullDay={isFullDay}
                         dayDate={date}
+                        horizontalLayout={{
+                          leftPercent: placement.leftPercent,
+                          widthPercent: placement.widthPercent,
+                        }}
                         onEventClick={onEventClick}
                         onContextMenu={onEventContextMenu}
                       />
                     );
                   })}
+                  {onDensityOverflow &&
+                    packed.overflows.map((overflow, overflowIndex) => {
+                      const groupTop = getEventTop(overflow.start, date);
+                      const groupHeight = getEventHeight(overflow.start, overflow.end, date);
+                      return (
+                        <DensityOverflowControl
+                          key={`overflow-${dayIndex}-${overflowIndex}`}
+                          count={overflow.undrawnCount}
+                          date={date}
+                          top={Math.max(groupTop, groupTop + groupHeight - 22)}
+                          onActivate={onDensityOverflow}
+                        />
+                      );
+                    })}
                 </div>
               </div>
             );

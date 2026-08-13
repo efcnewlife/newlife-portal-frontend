@@ -7,6 +7,8 @@
   "today": "今天",
   "weekOfMonth": "第 {{week}} 周",
   "addBooking": "新增预约",
+  "densityOverflow": "另有 {{count}} 笔，改以 Grid 查看",
+  "densityOverflowAria": "切换到 Grid 以查看未显示的 {{count}} 笔预约",
   "nav": {
     "previousDay": "上一天",
     "previousWeek": "上一周",

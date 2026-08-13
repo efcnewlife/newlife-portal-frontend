@@ -7,6 +7,8 @@
   "today": "今天",
   "weekOfMonth": "第 {{week}} 週",
   "addBooking": "新增預約",
+  "densityOverflow": "另有 {{count}} 筆，改以 Grid 檢視",
+  "densityOverflowAria": "切換到 Grid 以查看未顯示的 {{count}} 筆預約",
   "nav": {
     "previousDay": "上一天",
     "previousWeek": "上一週",

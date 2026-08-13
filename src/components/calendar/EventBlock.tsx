@@ -1,7 +1,7 @@
 import { Tooltip } from "@efcnewlife/newlife-ui";
 import { cn } from "@/utils";
 import { useTranslation } from "react-i18next";
-import { CalendarEvent } from "./types";
+import { CalendarEvent, EventHorizontalLayout } from "./types";
 
 const MAX_VISIBLE_TAGS = 2;
 
@@ -39,6 +39,7 @@ export interface EventBlockProps {
   isContinuing?: boolean; // Event continues from previous day
   isFullDay?: boolean; // Event is fully within this day
   dayDate?: Date; // The date this event block represents
+  horizontalLayout?: EventHorizontalLayout;
   onEventClick?: (event: CalendarEvent) => void;
   onContextMenu?: (event: CalendarEvent, mouseEvent: React.MouseEvent) => void;
 }
@@ -46,7 +47,16 @@ export interface EventBlockProps {
 /**
  * Event block component for rendering calendar events
  */
-const EventBlock = ({ event, top, height, isSpanning, isContinuing, onEventClick, onContextMenu }: EventBlockProps) => {
+const EventBlock = ({
+  event,
+  top,
+  height,
+  isSpanning,
+  isContinuing,
+  horizontalLayout,
+  onEventClick,
+  onContextMenu,
+}: EventBlockProps) => {
   const { i18n } = useTranslation("calendar");
   const locale = i18n.language || "en";
   const eventStart = new Date(event.start);
@@ -129,10 +139,16 @@ const EventBlock = ({ event, top, height, isSpanning, isContinuing, onEventClick
 
   return (
     <div
-      className={`absolute w-full ${getPaddingClasses()}`}
+      className={cn(
+        "absolute",
+        horizontalLayout ? "z-10 box-border min-w-0 overflow-hidden" : "w-full",
+        getPaddingClasses(),
+      )}
       style={{
         top: `${top}px`,
         height: `${height}px`,
+        left: horizontalLayout ? `${horizontalLayout.leftPercent}%` : 0,
+        width: horizontalLayout ? `${horizontalLayout.widthPercent}%` : "100%",
       }}
     >
       <div
