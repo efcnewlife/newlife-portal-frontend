@@ -68,7 +68,7 @@ const FileTableList = ({ files, selectedKeys, onSelect, onDeleteOne }: FileTable
                   {file.size !== undefined ? formatBytes(file.size) : "-"}
                 </td>
                 <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
-                  {file.createdAt ? DateUtil.format(file.createdAt, "YYYY-MM-DD HH:mm") : "-"}
+                  {file.createdAt ? DateUtil.format(file.createdAt) : "-"}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">

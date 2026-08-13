@@ -6,6 +6,7 @@ import {
 import ministryService, { type MinistryListItem } from "@/api/services/ministryService";
 import userService, { type UserBase } from "@/api/services/userService";
 import { usePickerLabels } from "@/hooks/usePickerLabels";
+import { DateUtil } from "@/utils/dateUtil";
 import { getLocalTimezone } from "@/utils/dayjsApi";
 import { Button, Checkbox, ComboBox, DateTimePicker, Select, TextArea } from "@efcnewlife/newlife-ui";
 import type { Dayjs } from "dayjs";
@@ -316,6 +317,7 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         timezone={displayTimezone}
         minuteStep={15}
         ampm
+        format={DateUtil.DATETIME_DISPLAY_FORMAT}
         showSubmitButton={false}
         labels={pickerLabels}
         error={errors.startAt}
@@ -329,6 +331,7 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         timezone={displayTimezone}
         minuteStep={15}
         ampm
+        format={DateUtil.DATETIME_DISPLAY_FORMAT}
         showSubmitButton={false}
         labels={pickerLabels}
         error={errors.endAt}

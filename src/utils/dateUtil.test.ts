@@ -20,11 +20,18 @@ describe("DateUtil display contract", () => {
 
   describe("format", () => {
     it("formats a valid wall-clock datetime with the default pattern", () => {
-      expect(DateUtil.format("2026-03-15 14:30")).toBe("2026-03-15 14:30");
+      expect(DateUtil.format("2026-03-15 14:30")).toBe("2026-03-15 02:30 PM");
     });
 
     it("formats an ISO local datetime as wall-clock with the default pattern", () => {
-      expect(DateUtil.format("2026-03-15T14:30:00")).toBe("2026-03-15 14:30");
+      expect(DateUtil.format("2026-03-15T14:30:00")).toBe("2026-03-15 02:30 PM");
+    });
+
+    it("uses DATETIME_DISPLAY_FORMAT when the pattern is omitted", () => {
+      expect(DateUtil.DATETIME_DISPLAY_FORMAT).toBe("YYYY-MM-DD hh:mm A");
+      expect(DateUtil.format("2026-03-15 14:30")).toBe(
+        DateUtil.format("2026-03-15 14:30", DateUtil.DATETIME_DISPLAY_FORMAT)
+      );
     });
 
     it("formats a valid datetime with a custom pattern", () => {

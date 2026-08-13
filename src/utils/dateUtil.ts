@@ -14,13 +14,15 @@ const parseDisplayDate = (date: unknown) => {
  * `@/i18n` (`sync_dayjs_locale`) so `fromNow()` matches UI language.
  */
 export class DateUtil {
+  static readonly DATETIME_DISPLAY_FORMAT = "YYYY-MM-DD hh:mm A";
+
   /**
    * Format date
    * @param date date value
-   * @param format Format string, default 'YYYY-MM-DD HH:mm'
+   * @param format Format string, default DATETIME_DISPLAY_FORMAT
    * @returns Formatted date string
    */
-  static format(date: unknown, format: string = "YYYY-MM-DD HH:mm"): string | undefined {
+  static format(date: unknown, format: string = DateUtil.DATETIME_DISPLAY_FORMAT): string | undefined {
     const parsed = parseDisplayDate(date);
     return parsed ? parsed.format(format) : undefined;
   }
