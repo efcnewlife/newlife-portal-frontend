@@ -212,6 +212,15 @@ layer(base);
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+  /* Rectangular hit boxes for links; SVG paint holes must not steal hit-testing. */
+  a[href] {
+    display: inline-block;
+  }
+  button svg,
+  [role="button"] svg,
+  a svg {
+    pointer-events: none;
+  }
   body {
     @apply relative font-normal font-outfit z-1 bg-gray-50;
   }
