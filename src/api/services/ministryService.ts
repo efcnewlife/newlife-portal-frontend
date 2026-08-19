@@ -118,6 +118,13 @@ const emptyList = <T>(): ApiResponse<{ items: T[] }> => ({
   data: { items: [] },
 });
 
+export interface StewardDirectoryParams {
+  page?: number;
+  page_size?: number;
+  q?: string;
+  status?: string;
+}
+
 class MinistryService {
   async getMinistryPages(params: PagesParams): Promise<ApiResponse<PagesResponse<MinistryDetail>>> {
     if (IS_MOCK_API) return emptyPages();
@@ -127,6 +134,13 @@ class MinistryService {
   async getMinistryList(): Promise<ApiResponse<{ items: MinistryListItem[] }>> {
     if (IS_MOCK_API) return emptyList();
     return httpClient.get(API_ENDPOINTS.MINISTRY.MINISTRIES.LIST);
+  }
+
+  async getStewardDirectory(
+    params: StewardDirectoryParams,
+  ): Promise<ApiResponse<PagesResponse<MinistryListItem>>> {
+    if (IS_MOCK_API) return emptyPages();
+    return httpClient.get(API_ENDPOINTS.MINISTRY.MINISTRIES.STEWARD_DIRECTORY, params as Record<string, unknown>);
   }
 
   async getMinistryById(id: string, params?: DetailQueryParams): Promise<ApiResponse<MinistryDetail>> {

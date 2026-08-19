@@ -44,7 +44,8 @@
       "hasPriorityBooking": "优先预订",
       "nameRequired": "请输入名称",
       "members": "负责人",
-      "membersHint": "送审前需恰好一位主要负责人与至少一位次要负责人。"
+      "membersHint": "送审前需恰好一位主要负责人与至少一位次要负责人。",
+      "editStewardsLink": "到事工成员页编辑负责人"
     },
     "status": {
       "draft": "草稿",
@@ -113,9 +114,19 @@
       "title": "事工成员",
       "description": "指派事工主要与次要负责人"
     },
-    "filter": { "ministry": "事工", "selectMinistry": "请选择事工" },
+    "filter": {
+      "ministry": "事工",
+      "selectMinistry": "请选择事工",
+      "status": "状态",
+      "allStatuses": "全部状态"
+    },
     "save": "保存成员",
+    "refresh": "重新加载",
+    "emptyRail": "没有符合搜索的事工。",
+    "emptyDetail": "请选择事工以编辑负责人名单。",
     "search": {
+      "queryLabel": "搜索",
+      "queryPlaceholder": "事工名称或负责人姓名／Email",
       "popoverTitle": "搜索事工成员",
       "keywordLabel": "关键字",
       "keywordPlaceholder": "按事工名称筛选列表",
@@ -123,6 +134,11 @@
       "chipsTitle": "已选条件",
       "chipKeyword": "关键字：",
       "chipMinistry": "事工："
+    },
+    "unsaved": {
+      "title": "尚未保存的负责人变更",
+      "body": "切换事工或离开此页前，请先保存或放弃当前的名单。",
+      "discard": "放弃"
     }
   },
   "approval": {

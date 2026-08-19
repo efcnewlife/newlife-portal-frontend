@@ -44,7 +44,8 @@
       "hasPriorityBooking": "優先預訂",
       "nameRequired": "請輸入名稱",
       "members": "負責人",
-      "membersHint": "送審前需恰好一位主要負責人與至少一位次要負責人。"
+      "membersHint": "送審前需恰好一位主要負責人與至少一位次要負責人。",
+      "editStewardsLink": "到事工成員頁編輯負責人"
     },
     "status": {
       "draft": "草稿",
@@ -113,9 +114,19 @@
       "title": "事工成員",
       "description": "指派事工主要與次要負責人"
     },
-    "filter": { "ministry": "事工", "selectMinistry": "請選擇事工" },
+    "filter": {
+      "ministry": "事工",
+      "selectMinistry": "請選擇事工",
+      "status": "狀態",
+      "allStatuses": "全部狀態"
+    },
     "save": "儲存成員",
+    "refresh": "重新載入",
+    "emptyRail": "沒有符合搜尋的事工。",
+    "emptyDetail": "請選擇事工以編輯負責人名單。",
     "search": {
+      "queryLabel": "搜尋",
+      "queryPlaceholder": "事工名稱或負責人姓名／Email",
       "popoverTitle": "搜尋事工成員",
       "keywordLabel": "關鍵字",
       "keywordPlaceholder": "依事工名稱篩選列表",
@@ -123,6 +134,11 @@
       "chipsTitle": "已選條件",
       "chipKeyword": "關鍵字：",
       "chipMinistry": "事工："
+    },
+    "unsaved": {
+      "title": "尚未儲存的負責人變更",
+      "body": "切換事工或離開此頁前，請先儲存或捨棄目前的名單。",
+      "discard": "捨棄"
     }
   },
   "approval": {

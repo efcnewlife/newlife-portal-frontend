@@ -287,11 +287,9 @@ const MinistryDataPage = () => {
           setSubmitting(true);
           try {
             if (formMode === "create") {
-              await ministryService.createMinistry(ministryPayload as MinistryCreate);
-            } else if (editing?.id) {
-              await ministryService.updateMinistry(editing.id, ministryPayload as MinistryUpdate);
-              if (canEditMembers && members) {
-                await ministryService.replaceMinistryMembers(editing.id, {
+              const created = await ministryService.createMinistry(ministryPayload as MinistryCreate);
+              if (canEditMembers && members && created.success && created.data.id) {
+                await ministryService.replaceMinistryMembers(created.data.id, {
                   members: members.map((m) => ({
                     userId: m.userId,
                     memberRole: m.memberRole,
@@ -299,6 +297,8 @@ const MinistryDataPage = () => {
                   })),
                 });
               }
+            } else if (editing?.id) {
+              await ministryService.updateMinistry(editing.id, ministryPayload as MinistryUpdate);
             }
             closeModal();
             await fetchPages();
@@ -314,7 +314,8 @@ const MinistryDataPage = () => {
           mode={formMode}
           defaultValues={formValues}
           showMembers={canEditMembers}
-          validateMembers={false}
+          validateMembers={formMode === "create"}
+          ministryId={editing?.id}
         />
       </ModalForm>
 
