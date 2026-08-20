@@ -10,7 +10,10 @@
     "actionFailed": "操作失敗，請稍後再試。"
   },
   "ministry": {
-    "page": { "title": "事工管理", "description": "管理事工單位與生命週期" },
+    "page": {
+      "title": "事工管理",
+      "description": "管理事工單位與生命週期"
+    },
     "table": {
       "name": "名稱",
       "ministryType": "類型",
@@ -72,12 +75,17 @@
       "role": "角色",
       "email": "電子郵件",
       "displayName": "顯示名稱",
-      "contactEmail": "聯絡信箱",
+      "contactEmail": "額外聯絡信箱",
       "primary": "主要負責人",
       "secondary": "次要負責人",
       "add": "新增負責人",
+      "addPrimary": "新增主要負責人",
+      "addSecondary": "新增次要負責人",
       "remove": "移除",
       "selectUser": "選擇使用者",
+      "primaryHint": "只能有一位主要負責人。",
+      "emptyPrimary": "尚未指派主要負責人",
+      "emptySecondary": "尚未指派次要負責人",
       "validationPrimary": "需恰好一位主要負責人",
       "validationSecondary": "至少需要一位次要負責人",
       "duplicateUser": "同一使用者不可重複指派"
@@ -86,7 +94,9 @@
       "members": "成員",
       "noMembers": "尚未指派負責人"
     },
-    "deleteForm": { "entityLabel": "事工" },
+    "deleteForm": {
+      "entityLabel": "事工"
+    },
     "schedule": {
       "add": "新增時段",
       "remove": "移除",
@@ -123,7 +133,26 @@
     "save": "儲存成員",
     "refresh": "重新載入",
     "emptyRail": "沒有符合搜尋的事工。",
-    "emptyDetail": "請選擇事工以編輯負責人名單。",
+    "emptyDetail": "請選擇事工以查看負責人名單。",
+    "updated": "更新於 {{time}}",
+    "editModal": {
+      "title": "編輯負責人 — {{name}}"
+    },
+    "sections": {
+      "overview": "事工概要",
+      "owner": "擁有職位",
+      "stewards": "負責人"
+    },
+    "sort": {
+      "label": "排序",
+      "fieldName": "名稱",
+      "fieldUpdated": "更新",
+      "fieldCreated": "建立",
+      "ascending": "升冪",
+      "descending": "降冪",
+      "inactive": "未啟用",
+      "toggleAria": "依 {{field}} 排序，目前為 {{direction}}"
+    },
     "search": {
       "queryLabel": "搜尋",
       "queryPlaceholder": "事工名稱或負責人姓名／Email",

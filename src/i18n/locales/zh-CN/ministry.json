@@ -10,7 +10,10 @@
     "actionFailed": "操作失败，请稍后再试。"
   },
   "ministry": {
-    "page": { "title": "事工管理", "description": "管理事工单位与生命周期" },
+    "page": {
+      "title": "事工管理",
+      "description": "管理事工单位与生命周期"
+    },
     "table": {
       "name": "名称",
       "ministryType": "类型",
@@ -72,12 +75,17 @@
       "role": "角色",
       "email": "电子邮件",
       "displayName": "显示名称",
-      "contactEmail": "联系邮箱",
+      "contactEmail": "额外联系邮箱",
       "primary": "主要负责人",
       "secondary": "次要负责人",
       "add": "新增负责人",
+      "addPrimary": "新增主要负责人",
+      "addSecondary": "新增次要负责人",
       "remove": "移除",
       "selectUser": "选择用户",
+      "primaryHint": "只能有一位主要负责人。",
+      "emptyPrimary": "尚未指派主要负责人",
+      "emptySecondary": "尚未指派次要负责人",
       "validationPrimary": "需恰好一位主要负责人",
       "validationSecondary": "至少需要一位次要负责人",
       "duplicateUser": "同一用户不可重复指派"
@@ -86,7 +94,9 @@
       "members": "成员",
       "noMembers": "尚未指派负责人"
     },
-    "deleteForm": { "entityLabel": "事工" },
+    "deleteForm": {
+      "entityLabel": "事工"
+    },
     "schedule": {
       "add": "新增时段",
       "remove": "移除",
@@ -123,7 +133,26 @@
     "save": "保存成员",
     "refresh": "重新加载",
     "emptyRail": "没有符合搜索的事工。",
-    "emptyDetail": "请选择事工以编辑负责人名单。",
+    "emptyDetail": "请选择事工以查看负责人名单。",
+    "updated": "更新于 {{time}}",
+    "editModal": {
+      "title": "编辑负责人 — {{name}}"
+    },
+    "sections": {
+      "overview": "事工概要",
+      "owner": "拥有职位",
+      "stewards": "负责人"
+    },
+    "sort": {
+      "label": "排序",
+      "fieldName": "名称",
+      "fieldUpdated": "更新",
+      "fieldCreated": "创建",
+      "ascending": "升序",
+      "descending": "降序",
+      "inactive": "未启用",
+      "toggleAria": "按 {{field}} 排序，当前为 {{direction}}"
+    },
     "search": {
       "queryLabel": "搜索",
       "queryPlaceholder": "事工名称或负责人姓名／Email",

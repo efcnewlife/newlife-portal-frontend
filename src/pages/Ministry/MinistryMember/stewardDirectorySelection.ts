@@ -32,17 +32,20 @@ export interface ResolveStewardDirectorySelectionInput {
 
 export type ResolveStewardDirectorySelectionResult =
   | { action: "select"; ministryId: string; syncUrl: boolean }
+  | { action: "reload"; ministryId: string }
   | { action: "keep" }
   | { action: "clear" }
   | { action: "block" };
 
-export const resolveStewardDirectorySelection = (
-  input: ResolveStewardDirectorySelectionInput,
-): ResolveStewardDirectorySelectionResult => {
+export const resolveStewardDirectorySelection = (input: ResolveStewardDirectorySelectionInput): ResolveStewardDirectorySelectionResult => {
   const { reason, urlMinistryId, railIds, currentSelectedId, isDirty, requestedId } = input;
 
   if (reason === "rail-click") {
-    if (!requestedId || requestedId === currentSelectedId) return { action: "keep" };
+    if (!requestedId) return { action: "keep" };
+    if (requestedId === currentSelectedId) {
+      if (isDirty) return { action: "keep" };
+      return { action: "reload", ministryId: requestedId };
+    }
     if (isDirty) return { action: "block" };
     return { action: "select", ministryId: requestedId, syncUrl: true };
   }

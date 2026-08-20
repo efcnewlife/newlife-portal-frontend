@@ -2,16 +2,10 @@
 import { API_ENDPOINTS } from "@/api";
 import { IS_MOCK_API } from "@/config/env";
 import type { ApiResponse } from "@/types/api";
-import type {
-  BulkIdsPayload,
-  DeletePayload,
-  DetailQueryParams,
-  PagesParams,
-  PagesResponse,
-} from "./facilityService";
+import type { BulkIdsPayload, DeletePayload, DetailQueryParams, PagesParams, PagesResponse } from "./facilityService";
 import { httpClient } from "./httpClient";
 
-export type { PagesParams, DetailQueryParams, DeletePayload, BulkIdsPayload, PagesResponse };
+export type { BulkIdsPayload, DeletePayload, DetailQueryParams, PagesParams, PagesResponse };
 
 export interface MinistryListItem {
   id: string;
@@ -21,6 +15,8 @@ export interface MinistryListItem {
   isActive: boolean;
   ministryType?: MinistryCatalogRef;
   targetAudiences?: MinistryCatalogRef[];
+  createAt?: string;
+  updateAt?: string;
 }
 
 export interface MinistryCatalogRef {
@@ -123,6 +119,8 @@ export interface StewardDirectoryParams {
   page_size?: number;
   q?: string;
   status?: string;
+  order_by?: string;
+  descending?: boolean;
 }
 
 class MinistryService {
@@ -136,9 +134,7 @@ class MinistryService {
     return httpClient.get(API_ENDPOINTS.MINISTRY.MINISTRIES.LIST);
   }
 
-  async getStewardDirectory(
-    params: StewardDirectoryParams,
-  ): Promise<ApiResponse<PagesResponse<MinistryListItem>>> {
+  async getStewardDirectory(params: StewardDirectoryParams): Promise<ApiResponse<PagesResponse<MinistryListItem>>> {
     if (IS_MOCK_API) return emptyPages();
     return httpClient.get(API_ENDPOINTS.MINISTRY.MINISTRIES.STEWARD_DIRECTORY, params as Record<string, unknown>);
   }

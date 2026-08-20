@@ -1,41 +1,21 @@
-import type { MinistryMemberItem } from "@/api/services/ministryService";
 import { userService } from "@/api/services/userService";
-import { Button, Input, Select } from "@efcnewlife/newlife-ui";
+import {
+  groupMinistryMembersByRole,
+  type MinistryMemberDraft,
+  userSelectOptionsForMember,
+} from "@/pages/Ministry/components/ministryMemberDraft";
+import { cn } from "@/utils";
+import { Alert, Button, Input, Select } from "@efcnewlife/newlife-ui";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MdDelete } from "react-icons/md";
 
-export type MinistryMemberDraft = {
-  userId: string;
-  memberRole: "primary" | "secondary";
-  email?: string;
-  displayName?: string;
-  contactEmail?: string;
-};
-
-export const validateMinistryMembers = (
-  members: MinistryMemberDraft[],
-  t: (key: string) => string,
-): string | null => {
-  const user_ids = members.map((m) => m.userId).filter(Boolean);
-  if (new Set(user_ids).size !== user_ids.length) {
-    return t("ministry.members.duplicateUser");
-  }
-  const primary_count = members.filter((m) => m.memberRole === "primary").length;
-  const secondary_count = members.filter((m) => m.memberRole === "secondary").length;
-  if (primary_count !== 1) return t("ministry.members.validationPrimary");
-  if (secondary_count < 1) return t("ministry.members.validationSecondary");
-  return null;
-};
-
-export const ministryMembersToDraft = (members: MinistryMemberItem[]): MinistryMemberDraft[] =>
-  members.map((m) => ({
-    userId: m.userId,
-    memberRole: m.memberRole === "primary" ? "primary" : "secondary",
-    email: m.email,
-    displayName: m.displayName,
-    contactEmail: m.contactEmail,
-  }));
+export {
+  groupMinistryMembersByRole,
+  ministryMembersToDraft,
+  validateMinistryMembers,
+} from "@/pages/Ministry/components/ministryMemberDraft";
+export type { MinistryMemberDraft };
 
 interface MinistryMembersEditorProps {
   value: MinistryMemberDraft[];
@@ -43,6 +23,12 @@ interface MinistryMembersEditorProps {
   disabled?: boolean;
   error?: string;
 }
+
+const emptyMember = (memberRole: "primary" | "secondary"): MinistryMemberDraft => ({
+  userId: "",
+  memberRole,
+  contactEmail: "",
+});
 
 const MinistryMembersEditor = ({ value, onChange, disabled = false, error }: MinistryMembersEditorProps) => {
   const { t } = useTranslation("ministry");
@@ -63,103 +49,171 @@ const MinistryMembersEditor = ({ value, onChange, disabled = false, error }: Min
     });
   }, []);
 
-  const userOptions = useMemo(
-    () => [{ value: "", label: t("ministry.members.selectUser") }, ...users.map((u) => ({ value: u.id, label: u.label }))],
-    [users, t],
-  );
+  const { primary, secondary } = groupMinistryMembersByRole(value);
 
-  const roleOptions = useMemo(
-    () => [
-      { value: "primary", label: t("ministry.members.primary") },
-      { value: "secondary", label: t("ministry.members.secondary") },
-    ],
-    [t],
-  );
-
-  const updateMember = (index: number, patch: Partial<MinistryMemberDraft>) => {
-    const next = value.map((item, i) => (i === index ? { ...item, ...patch } : item));
-    onChange(next);
+  const emit = (nextPrimary: MinistryMemberDraft[], nextSecondary: MinistryMemberDraft[]) => {
+    onChange([
+      ...nextPrimary.map((member) => ({ ...member, memberRole: "primary" as const })),
+      ...nextSecondary.map((member) => ({ ...member, memberRole: "secondary" as const })),
+    ]);
   };
 
-  const addMember = () => {
-    onChange([...value, { userId: "", memberRole: "secondary", contactEmail: "" }]);
+  const selectedUserIds = useMemo(() => new Set(value.map((member) => member.userId).filter(Boolean)), [value]);
+
+  const userOptionsFor = (member: MinistryMemberDraft) =>
+    userSelectOptionsForMember(member, users, selectedUserIds, t("ministry.members.selectUser"));
+
+  const patchMember = (role: "primary" | "secondary", index: number, patch: Partial<MinistryMemberDraft>) => {
+    if (role === "primary") {
+      emit(
+        primary.map((member, i) => (i === index ? { ...member, ...patch } : member)),
+        secondary,
+      );
+      return;
+    }
+    emit(
+      primary,
+      secondary.map((member, i) => (i === index ? { ...member, ...patch } : member)),
+    );
   };
 
-  const removeMember = (index: number) => {
-    onChange(value.filter((_, i) => i !== index));
+  const applyUser = (role: "primary" | "secondary", index: number, userId: string) => {
+    const user = users.find((u) => u.id === userId);
+    const current = role === "primary" ? primary[index] : secondary[index];
+    patchMember(role, index, {
+      userId,
+      email: user?.email,
+      displayName: user?.displayName,
+      contactEmail: current?.contactEmail || user?.email,
+    });
   };
+
+  const canAddPrimary = primary.length === 0;
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t("ministry.form.members")}</p>
-        <Button variant="outline" size="sm" onClick={addMember} disabled={disabled}>
-          {t("ministry.members.add")}
-        </Button>
-      </div>
-      <p className="text-xs text-gray-500">{t("ministry.form.membersHint")}</p>
+    <div className="space-y-5">
+      <Alert variant="warning" size="sm" width="full" title={t("ministry.form.membersHint")} />
       {error ? <p className="text-xs text-red-600">{error}</p> : null}
-      {value.length === 0 ? (
-        <p className="text-sm text-gray-500">{t("ministry.detail.noMembers")}</p>
-      ) : (
-        <div className="space-y-2">
-          {value.map((member, index) => (
-            <div key={`${member.userId || "new"}-${index}`} className="space-y-2 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
-              <div className="grid grid-cols-12 gap-2 items-end">
-                <div className="col-span-6">
-                  <Select
-                    id={`ministry-member-user-${index}`}
-                    label={t("ministry.members.user")}
-                    options={userOptions}
-                    value={member.userId}
-                    disabled={disabled}
-                    onChange={(v) => {
-                      const user_id = String(v);
-                      const user = users.find((u) => u.id === user_id);
-                      updateMember(index, {
-                        userId: user_id,
-                        email: user?.email,
-                        displayName: user?.displayName,
-                        contactEmail: member.contactEmail || user?.email,
-                      });
-                    }}
-                  />
-                </div>
-                <div className="col-span-5">
-                  <Select
-                    id={`ministry-member-role-${index}`}
-                    label={t("ministry.members.role")}
-                    options={roleOptions}
-                    value={member.memberRole}
-                    disabled={disabled}
-                    onChange={(v) => updateMember(index, { memberRole: String(v) as "primary" | "secondary" })}
-                  />
-                </div>
-                <div className="col-span-1 flex justify-end pb-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    aria-label={t("ministry.members.remove")}
-                    disabled={disabled}
-                    onClick={() => removeMember(index)}
-                  >
-                    <MdDelete />
-                  </Button>
-                </div>
-              </div>
-              <Input
-                id={`ministry-member-contact-email-${index}`}
-                label={t("ministry.members.contactEmail")}
-                value={member.contactEmail || ""}
-                disabled={disabled}
-                onChange={(e) => updateMember(index, { contactEmail: e.target.value || undefined })}
-              />
-            </div>
-          ))}
+      <section className="space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t("ministry.members.primary")}</p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => emit([emptyMember("primary")], secondary)}
+            disabled={disabled || !canAddPrimary}
+          >
+            {t("ministry.members.addPrimary")}
+          </Button>
         </div>
-      )}
+        <p className="text-xs text-gray-500">{t("ministry.members.primaryHint")}</p>
+        {primary.length === 0 ? (
+          <p className="text-sm text-gray-500">{t("ministry.members.emptyPrimary")}</p>
+        ) : (
+          <div className="space-y-2">
+            {primary.map((member, index) => (
+              <MemberFields
+                key={`primary-${member.userId || "new"}-${index}`}
+                idPrefix={`ministry-member-primary-${index}`}
+                member={member}
+                disabled={disabled}
+                userOptions={userOptionsFor(member)}
+                t={t}
+                onUserChange={(userId) => applyUser("primary", index, userId)}
+                onContactChange={(contactEmail) => patchMember("primary", index, { contactEmail })}
+                onRemove={() =>
+                  emit(
+                    primary.filter((_, i) => i !== index),
+                    secondary,
+                  )
+                }
+              />
+            ))}
+          </div>
+        )}
+      </section>
+      <section className="space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t("ministry.members.secondary")}</p>
+          <Button variant="outline" size="sm" onClick={() => emit(primary, [...secondary, emptyMember("secondary")])} disabled={disabled}>
+            {t("ministry.members.addSecondary")}
+          </Button>
+        </div>
+        {secondary.length === 0 ? (
+          <p className="text-sm text-gray-500">{t("ministry.members.emptySecondary")}</p>
+        ) : (
+          <div className="space-y-2">
+            {secondary.map((member, index) => (
+              <MemberFields
+                key={`secondary-${member.userId || "new"}-${index}`}
+                idPrefix={`ministry-member-secondary-${index}`}
+                member={member}
+                disabled={disabled}
+                userOptions={userOptionsFor(member)}
+                t={t}
+                onUserChange={(userId) => applyUser("secondary", index, userId)}
+                onContactChange={(contactEmail) => patchMember("secondary", index, { contactEmail })}
+                onRemove={() =>
+                  emit(
+                    primary,
+                    secondary.filter((_, i) => i !== index),
+                  )
+                }
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 };
+
+interface MemberFieldsProps {
+  idPrefix: string;
+  member: MinistryMemberDraft;
+  disabled: boolean;
+  userOptions: Array<{ value: string; label: string }>;
+  t: (key: string) => string;
+  onUserChange: (userId: string) => void;
+  onContactChange: (contactEmail: string | undefined) => void;
+  onRemove: () => void;
+}
+
+const MemberFields = ({ idPrefix, member, disabled, userOptions, t, onUserChange, onContactChange, onRemove }: MemberFieldsProps) => (
+  <div className="space-y-2 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+    <div className="flex items-end gap-2">
+      <div className="min-w-0 flex-1">
+        <Select
+          id={`${idPrefix}-user`}
+          label={t("ministry.members.user")}
+          options={userOptions}
+          value={member.userId}
+          disabled={disabled}
+          onChange={(v) => onUserChange(String(v))}
+        />
+      </div>
+      <button
+        type="button"
+        className={cn(
+          "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-red-200 text-red-600 hover:bg-red-50",
+          "dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-500/10",
+          disabled && "cursor-not-allowed opacity-50 hover:bg-transparent dark:hover:bg-transparent",
+        )}
+        aria-label={t("ministry.members.remove")}
+        disabled={disabled}
+        onClick={onRemove}
+      >
+        <MdDelete className="size-5" />
+      </button>
+    </div>
+    <Input
+      id={`${idPrefix}-contact-email`}
+      label={t("ministry.members.contactEmail")}
+      value={member.contactEmail || ""}
+      disabled={disabled}
+      onChange={(e) => onContactChange(e.target.value || undefined)}
+    />
+  </div>
+);
 
 export default MinistryMembersEditor;

@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  parseMinistryQueryId,
-  resolveStewardDirectorySelection,
-  withMinistryQueryId,
-} from "./stewardDirectorySelection";
+import { parseMinistryQueryId, resolveStewardDirectorySelection, withMinistryQueryId } from "./stewardDirectorySelection";
 
 describe("ministry query param", () => {
   it("parses ministry id from search", () => {
@@ -68,6 +64,32 @@ describe("resolveStewardDirectorySelection", () => {
         requestedId: "b",
       }),
     ).toEqual({ action: "select", ministryId: "b", syncUrl: true });
+  });
+
+  it("reloads details when clicking the already selected rail item", () => {
+    expect(
+      resolveStewardDirectorySelection({
+        reason: "rail-click",
+        urlMinistryId: "a",
+        railIds: rail,
+        currentSelectedId: "a",
+        isDirty: false,
+        requestedId: "a",
+      }),
+    ).toEqual({ action: "reload", ministryId: "a" });
+  });
+
+  it("keeps a dirty selection when re-clicking the same rail item", () => {
+    expect(
+      resolveStewardDirectorySelection({
+        reason: "rail-click",
+        urlMinistryId: "a",
+        railIds: rail,
+        currentSelectedId: "a",
+        isDirty: true,
+        requestedId: "a",
+      }),
+    ).toEqual({ action: "keep" });
   });
 
   it("keeps a dirty selection when a filter drops it from the rail", () => {
