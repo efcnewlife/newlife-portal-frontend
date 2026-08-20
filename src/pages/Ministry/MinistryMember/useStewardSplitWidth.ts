@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent} from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 
 const DEFAULT_RAIL_WIDTH = 300;
 const MIN_RAIL_WIDTH = 250;
