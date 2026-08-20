@@ -36,6 +36,7 @@ This document helps AI agents quickly understand the **Newlife Portal** admin SP
 
 ```bash
 pnpm install              # requires NODE_AUTH_TOKEN (GitHub Packages)
+./scripts/install-git-hooks.sh   # once per clone
 pnpm run dev              # http://localhost:5173 (strictPort — fails if taken)
 pnpm run type-check       # tsc -b --noEmit (required in CI)
 pnpm run test             # vitest run
@@ -44,9 +45,14 @@ pnpm run lint             # eslint . (not required for agent checks)
 pnpm run build            # tsc -b && vite build
 pnpm run build:stg        # --mode staging
 pnpm run build:prod       # --mode production
+./scripts/check-branch-name.test.sh
 ```
 
-CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile` and **`pnpm run type-check` only** on PRs/pushes to `main` and `develop`. It does not run `test` or `lint`.
+CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile` and **`pnpm run type-check` only** on PRs/pushes to `main` and `develop`. It does not run `test` or `lint`. PRs also run `.github/workflows/branch-name.yml` (`Branch name` check).
+
+### Branch names
+
+Topic branches: `{type}/{issue-number}-{short-description}` (types: `feat` `fix` `hotfix` `refactor` `perf` `test` `docs` `chore` `build` `ci`). Exceptions: `release/x.y.z`, `spike/{short-description}`, plus `main` / `develop`. Local: `.githooks/pre-push` after install. Emergency: `git push --no-verify`. Consider marking `Branch name` required in GitHub branch protection.
 
 Copy `.env.example` → `.env.local` before running locally. Copy `.envrc.example` → `.envrc` (or export `NODE_AUTH_TOKEN`) so pnpm can install `@efcnewlife/newlife-ui`.
 
