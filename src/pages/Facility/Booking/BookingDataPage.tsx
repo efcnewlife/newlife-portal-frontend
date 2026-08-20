@@ -9,7 +9,7 @@ import { useRoomListOptions } from "@/pages/Facility/shared/useRoomListOptions";
 import { cn } from "@/utils";
 import { DateUtil } from "@/utils/dateUtil";
 import { dayjsToApiUtcIso, localDatetimeInputToDayjs } from "@/utils/dayjsApi";
-import { notificationManager } from "@/utils/notificationManager";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import { Button, ButtonGroup, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -118,8 +118,11 @@ const BookingDataPage = () => {
         setTotal(res.data.total);
         setCurrentPage((res.data.page ?? 0) + 1);
       }
-    } catch {
-      alert(t("shared.loadFailed"));
+    } catch (error) {
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -138,8 +141,11 @@ const BookingDataPage = () => {
       if (res.success) {
         setCalendarItems((res.data.items || []) as BookingRow[]);
       }
-    } catch {
-      alert(t("shared.loadFailed"));
+    } catch (error) {
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -404,10 +410,14 @@ const BookingDataPage = () => {
             setSubmitting(true);
             try {
               await facilityService.cancelBooking(cancelling.id, payload);
+              notifySuccess({ title: t("common:feedback.updated") });
               closeCancel();
               await refreshCurrentView();
-            } catch {
-              alert(t("shared.cancelFailed"));
+            } catch (error) {
+              notifyApiError(error, {
+                title: t("common:feedback.cancelFailed"),
+                fallbackDescription: t("common:feedback.cancelFailedDesc"),
+              });
             } finally {
               setSubmitting(false);
             }
@@ -454,13 +464,14 @@ const BookingDataPage = () => {
           setSubmitting(true);
           try {
             await facilityService.createBooking(payload);
+            notifySuccess({ title: t("common:feedback.created") });
             closeCreate();
             await refreshCurrentView();
           } catch (error) {
-            notificationManager.show({
-              variant: "error",
-              title: resolveBookingSaveErrorMessage(error, rooms, t),
-              position: "top-right",
+            notifyApiError(error, {
+              title: t("common:feedback.saveFailed"),
+              fallbackDescription: t("common:feedback.saveFailedDesc"),
+              resolveDescription: (apiError) => resolveBookingSaveErrorMessage(apiError, rooms, t),
             });
           } finally {
             setSubmitting(false);

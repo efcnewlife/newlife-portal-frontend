@@ -5,6 +5,7 @@ import { Resource } from "@/const/enums";
 import { DateUtil } from "@/utils/dateUtil";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { notifyApiError } from "@/utils/operationFeedback";
 
 type LogRow = OverrideLogItem & Record<string, unknown>;
 
@@ -28,8 +29,8 @@ const OverrideLogDataPage = () => {
         setTotal(res.data.total);
         setCurrentPage((res.data.page ?? 0) + 1);
       }
-    } catch {
-      alert(t("shared.loadFailed"));
+    } catch (error) {
+      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
     } finally {
       setLoading(false);
     }

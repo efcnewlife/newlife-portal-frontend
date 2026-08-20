@@ -17,6 +17,7 @@ import { PopoverPosition, Resource } from "@/const/enums";
 import { useModal } from "@/hooks/useModal";
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import RoomSlotTemplateDataForm, {
   type RoomSlotTemplateDataFormHandle,
   type RoomSlotTemplateFormValues,
@@ -67,8 +68,8 @@ const RoomSlotTemplateDataPage = () => {
         setTotal(res.data.total);
         setCurrentPage((res.data.page ?? 0) + 1);
       }
-    } catch {
-      alert(t("shared.loadFailed"));
+    } catch (error) {
+      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
     } finally {
       setLoading(false);
     }
@@ -200,8 +201,16 @@ const RoomSlotTemplateDataPage = () => {
       ),
       CommonRowAction.RESTORE(
         async (row) => {
-          await facilityService.restoreRoomSlotTemplate(row.id);
-          await fetchPages();
+          try {
+            await facilityService.restoreRoomSlotTemplate(row.id);
+            notifySuccess({ title: t("common:feedback.restored") });
+            await fetchPages();
+          } catch (error) {
+            notifyApiError(error, {
+              title: t("common:feedback.actionFailed"),
+              fallbackDescription: t("common:feedback.actionFailedDesc"),
+            });
+          }
         },
         { visible: showDeleted }
       ),
@@ -256,13 +265,15 @@ const RoomSlotTemplateDataPage = () => {
           try {
             if (formMode === "create") {
               await facilityService.createRoomSlotTemplate(values as RoomSlotTemplateCreate);
+              notifySuccess({ title: t("common:feedback.created") });
             } else if (editing?.id) {
               await facilityService.updateRoomSlotTemplate(editing.id, values as RoomSlotTemplateUpdate);
+              notifySuccess({ title: t("common:feedback.updated") });
             }
             closeModal();
             await fetchPages();
-          } catch {
-            alert(t("shared.saveFailed"));
+          } catch (error) {
+            notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
           } finally {
             setSubmitting(false);
           }
@@ -280,6 +291,7 @@ const RoomSlotTemplateDataPage = () => {
           onSubmit={async ({ reason, permanent }) => {
             if (!editing?.id) return;
             await facilityService.deleteRoomSlotTemplate(editing.id, { reason, permanent });
+            notifySuccess({ title: t("common:feedback.deleted") });
             closeDeleteModal();
             await fetchPages();
           }}

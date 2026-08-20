@@ -15,6 +15,7 @@ import FacilityRoomScopedSearchPopover, {
 import { Button, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
 import { PopoverPosition, Resource } from "@/const/enums";
 import { useModal } from "@/hooks/useModal";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import RoomBlackoutDataForm, {
@@ -100,8 +101,11 @@ const RoomBlackoutDataPage = () => {
         setTotal(res.data.total);
         setCurrentPage((res.data.page ?? 0) + 1);
       }
-    } catch {
-      alert(t("shared.loadFailed"));
+    } catch (error) {
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -262,8 +266,16 @@ const RoomBlackoutDataPage = () => {
       ),
       CommonRowAction.RESTORE(
         async (row) => {
-          await facilityService.restoreRoomBlackout(row.id);
-          await fetchPages();
+          try {
+            await facilityService.restoreRoomBlackout(row.id);
+            notifySuccess({ title: t("common:feedback.restored") });
+            await fetchPages();
+          } catch (error) {
+            notifyApiError(error, {
+              title: t("common:feedback.actionFailed"),
+              fallbackDescription: t("common:feedback.actionFailedDesc"),
+            });
+          }
         },
         { visible: showDeleted }
       ),
@@ -272,7 +284,7 @@ const RoomBlackoutDataPage = () => {
         openDeleteModal();
       }),
     ],
-    [fetchPages, openModal, openDeleteModal, showDeleted]
+    [fetchPages, openModal, openDeleteModal, showDeleted, t]
   );
 
   return (
@@ -319,13 +331,15 @@ const RoomBlackoutDataPage = () => {
           try {
             if (formMode === "create") {
               await facilityService.createRoomBlackout(payload);
+              notifySuccess({ title: t("common:feedback.created") });
             } else if (editing?.id) {
               await facilityService.updateRoomBlackout(editing.id, payload as RoomBlackoutUpdate);
+              notifySuccess({ title: t("common:feedback.updated") });
             }
             closeModal();
             await fetchPages();
-          } catch {
-            alert(t("shared.saveFailed"));
+          } catch (error) {
+            notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
           } finally {
             setSubmitting(false);
           }
@@ -342,9 +356,20 @@ const RoomBlackoutDataPage = () => {
           onCancel={closeDeleteModal}
           onSubmit={async ({ reason, permanent }) => {
             if (!editing?.id) return;
-            await facilityService.deleteRoomBlackout(editing.id, { reason, permanent });
-            closeDeleteModal();
-            await fetchPages();
+            try {
+              setSubmitting(true);
+              await facilityService.deleteRoomBlackout(editing.id, { reason, permanent });
+              notifySuccess({ title: t("common:feedback.deleted") });
+              closeDeleteModal();
+              await fetchPages();
+            } catch (error) {
+              notifyApiError(error, {
+                title: t("common:feedback.deleteFailed"),
+                fallbackDescription: t("common:feedback.deleteFailedDesc"),
+              });
+            } finally {
+              setSubmitting(false);
+            }
           }}
         />
       </Modal>

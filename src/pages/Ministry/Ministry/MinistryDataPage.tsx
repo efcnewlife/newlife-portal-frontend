@@ -13,6 +13,7 @@ import { Resource, Verb } from "@/const/enums";
 import { usePermissions } from "@/context/AuthContext";
 import { useModal } from "@/hooks/useModal";
 import { DateUtil } from "@/utils/dateUtil";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import MinistryDataForm, {
@@ -41,6 +42,7 @@ const MinistryDataPage = () => {
   const [viewing, setViewing] = useState<MinistryRow | null>(null);
   const [actionRow, setActionRow] = useState<MinistryRow | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [rejectReasonError, setRejectReasonError] = useState("");
   const [approveComment, setApproveComment] = useState("");
   const [rejectComment, setRejectComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -66,8 +68,11 @@ const MinistryDataPage = () => {
         setTotal(res.data.total);
         setCurrentPage((res.data.page ?? 0) + 1);
       }
-    } catch {
-      alert(t("shared.loadFailed"));
+    } catch (error) {
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -200,9 +205,13 @@ const MinistryDataPage = () => {
         onClick: async (row) => {
           try {
             await ministryService.submitMinistry(row.id);
+            notifySuccess({ title: t("common:feedback.saved") });
             await fetchPages();
-          } catch {
-            alert(t("shared.actionFailed"));
+          } catch (error) {
+            notifyApiError(error, {
+              title: t("common:feedback.actionFailed"),
+              fallbackDescription: t("common:feedback.actionFailedDesc"),
+            });
           }
         },
         visible: (row) => !showDeleted && (row.status === "draft" || row.status === "rejected"),
@@ -225,6 +234,7 @@ const MinistryDataPage = () => {
         onClick: (row) => {
           setActionRow(row);
           setRejectReason("");
+          setRejectReasonError("");
           setRejectComment("");
           openRejectModal();
         },
@@ -234,8 +244,16 @@ const MinistryDataPage = () => {
       },
       CommonRowAction.RESTORE(
         async (row) => {
-          await ministryService.restoreMinistries({ ids: [row.id] });
-          await fetchPages();
+          try {
+            await ministryService.restoreMinistries({ ids: [row.id] });
+            notifySuccess({ title: t("common:feedback.restored") });
+            await fetchPages();
+          } catch (error) {
+            notifyApiError(error, {
+              title: t("common:feedback.actionFailed"),
+              fallbackDescription: t("common:feedback.actionFailedDesc"),
+            });
+          }
         },
         { visible: showDeleted },
       ),
@@ -300,10 +318,16 @@ const MinistryDataPage = () => {
             } else if (editing?.id) {
               await ministryService.updateMinistry(editing.id, ministryPayload as MinistryUpdate);
             }
+            notifySuccess({
+              title: formMode === "create" ? t("common:feedback.created") : t("common:feedback.updated"),
+            });
             closeModal();
             await fetchPages();
-          } catch {
-            alert(t("shared.saveFailed"));
+          } catch (error) {
+            notifyApiError(error, {
+              title: t("common:feedback.saveFailed"),
+              fallbackDescription: t("common:feedback.saveFailedDesc"),
+            });
           } finally {
             setSubmitting(false);
           }
@@ -327,9 +351,17 @@ const MinistryDataPage = () => {
           onCancel={closeDeleteModal}
           onSubmit={async ({ reason, permanent }) => {
             if (!editing?.id) return;
-            await ministryService.deleteMinistry(editing.id, { reason, permanent });
-            closeDeleteModal();
-            await fetchPages();
+            try {
+              await ministryService.deleteMinistry(editing.id, { reason, permanent });
+              notifySuccess({ title: t("common:feedback.deleted") });
+              closeDeleteModal();
+              await fetchPages();
+            } catch (error) {
+              notifyApiError(error, {
+                title: t("common:feedback.deleteFailed"),
+                fallbackDescription: t("common:feedback.deleteFailedDesc"),
+              });
+            }
           }}
         />
       </Modal>
@@ -386,10 +418,14 @@ const MinistryDataPage = () => {
               setSubmitting(true);
               try {
                 await ministryService.approveMinistry(actionRow.id, { comment: approveComment || undefined });
+                notifySuccess({ title: t("common:feedback.saved") });
                 closeApproveModal();
                 await fetchPages();
-              } catch {
-                alert(t("shared.actionFailed"));
+              } catch (error) {
+                notifyApiError(error, {
+                  title: t("common:feedback.actionFailed"),
+                  fallbackDescription: t("common:feedback.actionFailedDesc"),
+                });
               } finally {
                 setSubmitting(false);
               }
@@ -410,7 +446,11 @@ const MinistryDataPage = () => {
           id="ministry-reject-reason"
           label={t("ministry.reject.reason")}
           value={rejectReason}
-          onChange={(e) => setRejectReason(e.target.value)}
+          error={rejectReasonError}
+          onChange={(e) => {
+            setRejectReason(e.target.value);
+            if (rejectReasonError) setRejectReasonError("");
+          }}
         />
         <div className="mt-3">
           <TextArea
@@ -432,7 +472,7 @@ const MinistryDataPage = () => {
             onClick={async () => {
               if (!actionRow?.id) return;
               if (!rejectReason.trim()) {
-                alert(t("ministry.reject.reasonRequired"));
+                setRejectReasonError(t("ministry.reject.reasonRequired"));
                 return;
               }
               setSubmitting(true);
@@ -441,10 +481,14 @@ const MinistryDataPage = () => {
                   rejectionReason: rejectReason.trim(),
                   comment: rejectComment || undefined,
                 });
+                notifySuccess({ title: t("common:feedback.saved") });
                 closeRejectModal();
                 await fetchPages();
-              } catch {
-                alert(t("shared.actionFailed"));
+              } catch (error) {
+                notifyApiError(error, {
+                  title: t("common:feedback.actionFailed"),
+                  fallbackDescription: t("common:feedback.actionFailedDesc"),
+                });
               } finally {
                 setSubmitting(false);
               }

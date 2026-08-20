@@ -91,6 +91,17 @@ const UserDataForm: React.FC<UserDataFormProps> = ({ mode, defaultValues, onSubm
       next.email = t("system:user.form.validation.emailInvalid");
     }
 
+    if (mode === "create") {
+      if (!values.password || values.password.trim().length === 0) {
+        next.password = t("system:user.form.validation.passwordRequired");
+      }
+      if (!values.password_confirm || values.password_confirm.trim().length === 0) {
+        next.password_confirm = t("system:user.form.validation.passwordConfirmRequired");
+      } else if (values.password && values.password_confirm !== values.password) {
+        next.password_confirm = t("system:user.form.validation.passwordMismatch");
+      }
+    }
+
     if (values.first_name && values.first_name.length > 64) {
       next.first_name = t("system:user.form.validation.firstNameTooLong");
     }
@@ -146,6 +157,34 @@ const UserDataForm: React.FC<UserDataFormProps> = ({ mode, defaultValues, onSubm
           />
         </div>
       </div>
+      {mode === "create" && (
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Input
+              id="password"
+              type="password"
+              label={t("system:user.form.password.label")}
+              placeholder={t("system:user.form.password.placeholder")}
+              value={values.password || ""}
+              onChange={(e) => setValues((v) => ({ ...v, password: e.target.value }))}
+              error={errors.password || undefined}
+              required
+            />
+          </div>
+          <div>
+            <Input
+              id="password_confirm"
+              type="password"
+              label={t("system:user.form.passwordConfirm.label")}
+              placeholder={t("system:user.form.passwordConfirm.placeholder")}
+              value={values.password_confirm || ""}
+              onChange={(e) => setValues((v) => ({ ...v, password_confirm: e.target.value }))}
+              error={errors.password_confirm || undefined}
+              required
+            />
+          </div>
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Input

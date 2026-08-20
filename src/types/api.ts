@@ -48,6 +48,8 @@ export interface ApiError {
   code: number;
   message: string;
   details?: BackendErrorDetail;
+  /** Set when httpClient already showed a Transport failure toast. */
+  transportNotified?: boolean;
 }
 
 export interface LoadingState {

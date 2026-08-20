@@ -11,6 +11,7 @@ import { Button, Modal, ModalForm, type ModalFormHandle, Tooltip } from "@efcnew
 import { Resource } from "@/const/enums";
 import { useModal } from "@/hooks/useModal";
 import { DateUtil } from "@/utils/dateUtil";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import RoomDataForm, { type RoomDataFormHandle, type RoomFormValues } from "./RoomDataForm";
@@ -61,8 +62,11 @@ const RoomDataPage = () => {
         setItems([]);
         setTotal(0);
       }
-    } catch {
-      alert(t("shared.loadFailed"));
+    } catch (error) {
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -179,7 +183,13 @@ const RoomDataPage = () => {
           try {
             setSubmitting(true);
             await facilityService.restoreRooms({ ids: [row.id] });
+            notifySuccess({ title: t("common:feedback.restored") });
             await fetchPages();
+          } catch (error) {
+            notifyApiError(error, {
+              title: t("common:feedback.actionFailed"),
+              fallbackDescription: t("common:feedback.actionFailedDesc"),
+            });
           } finally {
             setSubmitting(false);
           }
@@ -191,7 +201,7 @@ const RoomDataPage = () => {
         openDeleteModal();
       }),
     ],
-    [fetchPages, openModal, openDeleteModal, openViewModal, showDeleted]
+    [fetchPages, openModal, openDeleteModal, openViewModal, showDeleted, t]
   );
 
   const pagedData = useMemo(
@@ -252,10 +262,16 @@ const RoomDataPage = () => {
               const { code: _c, ...update } = values;
               await facilityService.updateRoom(editing.id, update as RoomUpdate);
             }
+            notifySuccess({
+              title: formMode === "create" ? t("common:feedback.created") : t("common:feedback.updated"),
+            });
             closeModal();
             await fetchPages();
-          } catch {
-            alert(t("shared.saveFailed"));
+          } catch (error) {
+            notifyApiError(error, {
+              title: t("common:feedback.saveFailed"),
+              fallbackDescription: t("common:feedback.saveFailedDesc"),
+            });
           } finally {
             setSubmitting(false);
           }
@@ -279,10 +295,14 @@ const RoomDataPage = () => {
             try {
               setSubmitting(true);
               await facilityService.deleteRoom(editing.id, { reason, permanent });
+              notifySuccess({ title: t("common:feedback.deleted") });
               closeDeleteModal();
               await fetchPages();
-            } catch {
-              alert(t("shared.deleteFailed"));
+            } catch (error) {
+              notifyApiError(error, {
+                title: t("common:feedback.deleteFailed"),
+                fallbackDescription: t("common:feedback.deleteFailedDesc"),
+              });
             } finally {
               setSubmitting(false);
             }

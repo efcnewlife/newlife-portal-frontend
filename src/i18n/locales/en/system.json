@@ -389,6 +389,9 @@
         "phoneInvalid": "Enter a valid phone number.",
         "emailRequired": "Enter an email.",
         "emailInvalid": "Enter a valid email address.",
+        "passwordRequired": "Enter a password.",
+        "passwordConfirmRequired": "Confirm the password.",
+        "passwordMismatch": "Passwords do not match.",
         "firstNameTooLong": "First name cannot exceed 64 characters.",
         "lastNameTooLong": "Last name cannot exceed 64 characters.",
         "preferredNameTooLong": "Preferred name cannot exceed 64 characters.",
@@ -398,6 +401,14 @@
         "label": "Email",
         "placeholder": "Enter email",
         "hint": "e.g. user@example.com"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Enter password"
+      },
+      "passwordConfirm": {
+        "label": "Confirm password",
+        "placeholder": "Confirm password"
       },
       "firstName": {
         "label": "First name",

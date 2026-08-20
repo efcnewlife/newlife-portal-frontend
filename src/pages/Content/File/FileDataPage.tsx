@@ -18,6 +18,7 @@ import MediaCategoryCards from "./MediaCategoryCards";
 import StorageDetailsCard from "./StorageDetailsCard";
 import type { FileItem, FileSummaryResponse, MediaCategory, SortOrder } from "./types";
 import { convertFileGridItemToFileItem, convertSortOrderToApiParams, mediaCategoryLabelKey, resolveMediaCategoryFromFile } from "./utils";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 
 const PAGE_SIZE_OPTIONS = [25, 50, 75, 100];
 
@@ -78,8 +79,8 @@ const FileDataPage = () => {
         setFiles([]);
         setTotalEntries(0);
       }
-    } catch {
-      alert(t("file.browse.loadFailed"));
+    } catch (error) {
+      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
     } finally {
       setLoading(false);
     }
@@ -162,11 +163,12 @@ const FileDataPage = () => {
       const response = await fileService.bulkDelete({ ids: selectedKeys });
       if (response.success) {
         setSelectedKeys([]);
+        notifySuccess({ title: t("common:feedback.deleted") });
         closeDeleteModal();
         await refreshAll();
       }
-    } catch {
-      alert(t("file.delete.failed"));
+    } catch (error) {
+      notifyApiError(error, { title: t("common:feedback.deleteFailed"), fallbackDescription: t("common:feedback.deleteFailedDesc") });
     } finally {
       setDeleting(false);
     }

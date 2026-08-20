@@ -12,6 +12,7 @@ import { useModal } from "@/hooks/useModal";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PersonDataForm, { type PersonDataFormHandle, type PersonFormValues } from "./PersonDataForm";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 
 type PersonRow = MemberPersonDetail & Record<string, unknown>;
 
@@ -45,8 +46,8 @@ const PersonDataPage = () => {
         setTotal(res.data.total);
         setCurrentPage((res.data.page ?? 0) + 1);
       }
-    } catch {
-      alert(t("shared.loadFailed"));
+    } catch (error) {
+      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
     } finally {
       setLoading(false);
     }
@@ -150,6 +151,7 @@ const PersonDataPage = () => {
           try {
             if (formMode === "create") {
               await orgService.createMemberPerson(values as MemberPersonCreate);
+              notifySuccess({ title: t("common:feedback.created") });
             } else if (editing?.id) {
               await orgService.updateMemberPerson(editing.id, {
                 legalName: values.legalName,
@@ -157,11 +159,12 @@ const PersonDataPage = () => {
               if (values.userId && values.userId !== editing.userId) {
                 await orgService.linkMemberPerson(editing.id, { userId: values.userId });
               }
+              notifySuccess({ title: t("common:feedback.updated") });
             }
             closeModal();
             await fetchPages();
-          } catch {
-            alert(t("shared.saveFailed"));
+          } catch (error) {
+            notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
           } finally {
             setSubmitting(false);
           }

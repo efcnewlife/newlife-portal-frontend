@@ -389,6 +389,9 @@
         "phoneInvalid": "请输入有效的手机号码。",
         "emailRequired": "请输入电子邮件。",
         "emailInvalid": "请输入有效的电子邮件格式。",
+        "passwordRequired": "请输入密码。",
+        "passwordConfirmRequired": "请再次确认密码。",
+        "passwordMismatch": "两次输入的密码不一致。",
         "firstNameTooLong": "名字不能超过 64 个字符。",
         "lastNameTooLong": "姓氏不能超过 64 个字符。",
         "preferredNameTooLong": "惯用名称不能超过 64 个字符。",
@@ -398,6 +401,14 @@
         "label": "电子邮件",
         "placeholder": "请输入电子邮件",
         "hint": "例如：user@example.com"
+      },
+      "password": {
+        "label": "密码",
+        "placeholder": "请输入密码"
+      },
+      "passwordConfirm": {
+        "label": "确认密码",
+        "placeholder": "请再次输入密码"
       },
       "firstName": {
         "label": "名字",

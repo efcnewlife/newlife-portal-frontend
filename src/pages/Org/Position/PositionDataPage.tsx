@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MdSettings } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import PositionCatalogModal from "./PositionCatalogModal";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 
 type PositionRow = PositionDetail & Record<string, unknown>;
 
@@ -55,8 +56,8 @@ const PositionDataPage = () => {
         setItems([]);
         setTotal(0);
       }
-    } catch {
-      alert(t("shared.loadFailed"));
+    } catch (error) {
+      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
     } finally {
       setLoading(false);
     }
@@ -237,10 +238,11 @@ const PositionDataPage = () => {
                     userId: assignUserId,
                     startAt: dayjsToApiUtcIso(assignStartAt),
                   });
+                  notifySuccess({ title: t("common:feedback.saved") });
                   closeAssignModal();
                   await fetchPages();
-                } catch {
-                  alert(t("shared.saveFailed"));
+                } catch (error) {
+                  notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
                 } finally {
                   setSubmitting(false);
                 }

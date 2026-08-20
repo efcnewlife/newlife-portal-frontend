@@ -13,6 +13,7 @@ import ResourceDeleteForm from "./ResourceDeleteForm";
 import ResourceDetailView from "./ResourceDetailView";
 import { ResourceToolbar } from "./ResourceToolbar";
 import { ResourceTreeView } from "./ResourceTreeView";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 
 export default function ResourcePage() {
   const { t } = useTranslation();
@@ -99,9 +100,9 @@ export default function ResourcePage() {
   const refreshResources = useCallback(async () => {
     try {
       await fetchResources();
-    } catch (e) {
-      console.error("refreshResources failed:", e);
-      alert(t("system:resource.feedback.refreshFailedAlert"));
+    } catch (err) {
+      console.error("refreshResources failed:", err);
+      notifyApiError(err, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
     }
   }, [fetchResources, t]);
 
@@ -194,7 +195,7 @@ export default function ResourcePage() {
           selectResource(resource);
           openModal("edit", resource);
         }
-      } catch {
+      } catch (error) {
         // On error, still use row data
         selectResource(resource);
         openModal("edit", resource);
@@ -233,10 +234,11 @@ export default function ResourcePage() {
       setSubmitting(true);
       try {
         await deleteResource(editing.id, data.reason, data.permanent);
+        notifySuccess({ title: t("common:feedback.deleted") });
         closeDeleteModal();
-      } catch (e) {
-        console.error("deleteResource failed:", e);
-        alert(t("system:resource.feedback.deleteFailedAlert"));
+      } catch (err) {
+        console.error("deleteResource failed:", err);
+        notifyApiError(err, { title: t("common:feedback.deleteFailed"), fallbackDescription: t("common:feedback.deleteFailedDesc") });
       } finally {
         setSubmitting(false);
       }
@@ -262,10 +264,11 @@ export default function ResourcePage() {
         for (const id of ids) {
           await restoreResource(id);
         }
+        notifySuccess({ title: t("common:feedback.restored") });
         closeRestoreModal();
-      } catch (e) {
-        console.error("restoreResource failed:", e);
-        alert(t("system:resource.feedback.restoreFailedAlert"));
+      } catch (error) {
+        console.error("restoreResource failed:", error);
+        notifyApiError(error, { title: t("common:feedback.actionFailed"), fallbackDescription: t("common:feedback.actionFailedDesc") });
       } finally {
         setSubmitting(false);
       }
@@ -278,9 +281,10 @@ export default function ResourcePage() {
     async (resource: ResourceMenuItem) => {
       try {
         await moveUp(resource.id);
-      } catch (e) {
-        console.error("moveUp failed:", e);
-        alert(t("system:resource.feedback.moveUpFailedAlert"));
+        notifySuccess({ title: t("common:feedback.saved") });
+      } catch (error) {
+        console.error("moveUp failed:", error);
+        notifyApiError(error, { title: t("common:feedback.actionFailed"), fallbackDescription: t("common:feedback.actionFailedDesc") });
       }
       hideContextMenu();
     },
@@ -291,9 +295,10 @@ export default function ResourcePage() {
     async (resource: ResourceMenuItem) => {
       try {
         await moveDown(resource.id);
-      } catch (e) {
-        console.error("moveDown failed:", e);
-        alert(t("system:resource.feedback.moveDownFailedAlert"));
+        notifySuccess({ title: t("common:feedback.saved") });
+      } catch (error) {
+        console.error("moveDown failed:", error);
+        notifyApiError(error, { title: t("common:feedback.actionFailed"), fallbackDescription: t("common:feedback.actionFailedDesc") });
       }
       hideContextMenu();
     },
@@ -318,11 +323,12 @@ export default function ResourcePage() {
       setSubmitting(true);
       try {
         await resourceService.changeParent(editing.id, { pid: parentId });
+        notifySuccess({ title: t("common:feedback.saved") });
         await fetchResources();
         closeChangeParentModal();
-      } catch (e) {
-        console.error("changeParent failed:", e);
-        alert(t("system:resource.feedback.changeParentFailedAlert"));
+      } catch (error) {
+        console.error("changeParent failed:", error);
+        notifyApiError(error, { title: t("common:feedback.actionFailed"), fallbackDescription: t("common:feedback.actionFailedDesc") });
       } finally {
         setSubmitting(false);
       }
@@ -341,15 +347,18 @@ export default function ResourcePage() {
       setSubmitting(true);
       try {
         await saveResource(values as ResourceFormData);
+        notifySuccess({
+          title: formMode === "create" ? t("common:feedback.created") : t("common:feedback.updated"),
+        });
         closeModal();
-      } catch (e) {
-        console.error("saveResource failed:", e);
-        alert(t("system:resource.feedback.saveFailedAlert"));
+      } catch (err) {
+        console.error("saveResource failed:", err);
+        notifyApiError(err, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
       } finally {
         setSubmitting(false);
       }
     },
-    [saveResource, closeModal, t]
+    [formMode, saveResource, closeModal, t]
   );
 
   // Click outside closes context menu

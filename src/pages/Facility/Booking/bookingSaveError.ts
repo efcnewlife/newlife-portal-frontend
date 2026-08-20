@@ -27,9 +27,9 @@ export const resolveBookingSaveErrorMessage = (
   error: unknown,
   rooms: BookingRoomOption[],
   t: Translate,
-): string => {
+): string | undefined => {
   if (!isApiError(error)) {
-    return t("shared.saveFailed");
+    return undefined;
   }
 
   const errorCode = typeof error.details?.error_code === "string" ? error.details.error_code : undefined;
@@ -48,5 +48,5 @@ export const resolveBookingSaveErrorMessage = (
       : t("booking.errors.roomBlackoutGeneric");
   }
 
-  return t("shared.saveFailed");
+  return undefined;
 };

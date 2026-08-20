@@ -7,8 +7,7 @@ import {
   validateMinistryMembers,
   type MinistryMemberDraft,
 } from "@/pages/Ministry/components/MinistryMembersEditor";
-import type { ApiError } from "@/types/api";
-import { notificationManager } from "@/utils/notificationManager";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useBlocker, useSearchParams } from "react-router";
@@ -26,16 +25,6 @@ const DIRECTORY_PAGE_SIZE = 100;
 const MINISTRY_STATUSES = ["draft", "pending_approval", "active", "rejected", "inactive"] as const;
 
 const draftsEqual = (left: MinistryMemberDraft[], right: MinistryMemberDraft[]): boolean => JSON.stringify(left) === JSON.stringify(right);
-
-const notifyError = (title: string, error?: unknown) => {
-  const message = (error as ApiError | undefined)?.message;
-  notificationManager.show({
-    variant: "error",
-    title,
-    description: message && message !== title ? message : undefined,
-    position: "top-right",
-  });
-};
 
 export const useStewardDirectoryPage = () => {
   const { t, i18n } = useTranslation("ministry");
@@ -139,7 +128,10 @@ export const useStewardDirectoryPage = () => {
         }
       } catch (error) {
         if (selectedIdRef.current === ministryId) {
-          notifyError(t("shared.loadFailed"), error);
+          notifyApiError(error, {
+            title: t("common:feedback.loadFailed"),
+            fallbackDescription: t("common:feedback.loadFailedDesc"),
+          });
         }
       } finally {
         if (selectedIdRef.current === ministryId) {
@@ -184,7 +176,10 @@ export const useStewardDirectoryPage = () => {
           descending: sortParams.descending,
         });
         if (!res.success) {
-          notifyError(t("shared.loadFailed"));
+          notifyApiError(undefined, {
+            title: t("common:feedback.loadFailed"),
+            fallbackDescription: t("common:feedback.loadFailedDesc"),
+          });
           break;
         }
         const batch = res.data.items || [];
@@ -214,7 +209,10 @@ export const useStewardDirectoryPage = () => {
         setSelectedMinistry(null);
       }
     } catch (error) {
-      notifyError(t("shared.loadFailed"), error);
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoadingRail(false);
     }
@@ -318,12 +316,16 @@ export const useStewardDirectoryPage = () => {
       await ministryService.replaceMinistryMembers(selectedId, {
         members: members.filter((member) => member.userId),
       });
+      notifySuccess({ title: t("common:feedback.saved") });
       setMemberError(undefined);
       await loadRoster(selectedId);
       setIsEditing(false);
       return true;
     } catch (error) {
-      notifyError(t("shared.saveFailed"), error);
+      notifyApiError(error, {
+        title: t("common:feedback.saveFailed"),
+        fallbackDescription: t("common:feedback.saveFailedDesc"),
+      });
       return false;
     } finally {
       setSaving(false);
