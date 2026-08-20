@@ -18,9 +18,9 @@ const ManagementPage: React.FC<ManagementPageProps> = ({ title, description, chi
   }, [title, setPageTitle]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-120px)] gap-3">
+    <div className="flex h-[calc(100vh-120px)] min-w-0 w-full max-w-full flex-col gap-3">
       <PageMeta title={title} description={description} />
-      <div className="flex-1 min-h-0">{children}</div>
+      <div className="min-h-0 min-w-0 w-full flex-1">{children}</div>
     </div>
   );
 };

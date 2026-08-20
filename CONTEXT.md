@@ -40,6 +40,30 @@ _Avoid_: representative + `+N` list as the v1 Calendar layout, stacking full-wid
 The control on a Calendar collision group when the group needs more lanes than K. It shows how many events were not drawn and switches Booking view mode to `grid` for that date. It is not a list of the hidden bookings.
 _Avoid_: popover of remainder bookings, silent truncation, opening the representative's detail from this control
 
+**Booking Grid**:
+The admin day-scoped occupancy map: rooms as frozen rows, time as a horizontally scrollable 00:00–24:00 axis. It is not Calendar-with-rooms and not the List DataTable.
+_Avoid_: Calendar week/day layout rules, Primary-only row placement, stretching hour columns to fill the viewport
+
+**Grid cell**:
+One 30-minute create target on Booking Grid. There are 48 cells per day; the last is 23:30–24:00. The trailing 12:00 AM label is not a cell.
+_Avoid_: 60-minute cells, a 49th cell at 24:00, Room slot template duration as cell size
+
+**Grid occupancy block**:
+A continuous bar for one booking on one room row, from Booking start / Booking end clipped to the Grid day window. Multi-room bookings reuse the same interval on every `facilityIds` row.
+_Avoid_: discrete timetable cell fill, per-room intervals on the same booking, matching rooms by `facilityNames`
+
+**Grid day window**:
+The operator-local half-open day `[00:00, 24:00)` of the Booking Grid anchor date. Same local-day rule as Calendar.
+_Avoid_: facility timezone as the day boundary, an 08:00–22:00 window
+
+**Primary facility**:
+The first room line on a booking (`facilityId` on the list item). List room filters use this key. Booking Grid occupancy uses `facilityIds` (with Primary fallback), not Primary alone.
+_Avoid_: treating Primary as the only occupied room on Grid
+
+**Booking view mode**:
+Which admin booking surface is active: `list`, `calendar`, or `grid` (URL/`view` state).
+_Avoid_: conflating Calendar packing with Grid occupancy
+
 **DataTable**:
 The Portal admin list shell built on `@efcnewlife/newlife-ui` Table primitives, plus pagination, sorting, row selection, and context menu. It is a host composite, not the library Table itself.
 _Avoid_: Table (when meaning the Portal list page), DataGrid, Grid

@@ -320,6 +320,7 @@ export interface BookingListItem {
   userDisplayName?: string;
   facilityId?: string;
   facilityName?: string;
+  facilityIds?: string[];
   facilityNames?: string[];
   bookingType: string;
   startAt: string;
