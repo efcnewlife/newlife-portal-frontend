@@ -7,6 +7,7 @@ import MinistryMembersEditor, {
   type MinistryMemberDraft,
   validateMinistryMembers,
 } from "@/pages/Ministry/components/MinistryMembersEditor";
+import { withMinistryQueryId } from "@/pages/Ministry/MinistryMember/stewardDirectorySelection";
 import MinistrySchedulesEditor, {
   scheduleDraftToItem,
   scheduleItemToDraft,
@@ -22,6 +23,7 @@ import {
 import { Checkbox, Select } from "@efcnewlife/newlife-ui";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 
 const ALL_AGES_CODE = "all_ages";
 
@@ -49,8 +51,9 @@ const MinistryDataForm = forwardRef<
     defaultValues?: Partial<MinistryFormValues> | null;
     showMembers?: boolean;
     validateMembers?: boolean;
+    ministryId?: string;
   }
->(function MinistryDataForm({ mode, defaultValues, showMembers = false, validateMembers = false }, ref) {
+>(function MinistryDataForm({ mode, defaultValues, showMembers = false, validateMembers = false, ministryId }, ref) {
   const { t } = useTranslation("ministry");
   const { t: tCommon } = useTranslation("common");
   const { t: tOrg } = useTranslation("org");
@@ -224,8 +227,29 @@ const MinistryDataForm = forwardRef<
         />
         <Checkbox id="ministry-active" label={t("shared.active")} checked={isActive} onChange={setIsActive} />
       </div>
-      {showMembers && mode === "edit" ? (
+      {mode === "create" && showMembers ? (
         <MinistryMembersEditor value={members} onChange={setMembers} error={errors.members} />
+      ) : null}
+      {mode === "edit" && showMembers ? (
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t("ministry.form.members")}</p>
+          {members.length === 0 ? (
+            <p className="text-sm text-gray-500">{t("ministry.detail.noMembers")}</p>
+          ) : (
+            <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+              {members.map((member) => (
+                <li key={member.userId}>
+                  {member.displayName || member.email || member.userId} — {t(`ministry.members.${member.memberRole}`, { defaultValue: member.memberRole })}
+                </li>
+              ))}
+            </ul>
+          )}
+          {ministryId ? (
+            <Link className="text-sm text-brand-600 hover:underline" to={`/ministry/members${withMinistryQueryId("", ministryId)}`}>
+              {t("ministry.form.editStewardsLink")}
+            </Link>
+          ) : null}
+        </div>
       ) : null}
     </div>
   );

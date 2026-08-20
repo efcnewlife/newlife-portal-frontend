@@ -4,6 +4,22 @@ Admin SPA for Newlife Core — menus, RBAC, facility booking admin, ministry/org
 
 ## Language
 
+### Ministry stewards
+
+**Ministry Steward**:
+A user assigned to a Ministry as `primary` or `secondary` on that Ministry's steward roster. This is who may represent the Ministry (including booking on behalf). It is not a pastoral Person record and not the facility-booking "priority member" identity.
+_Avoid_: Ministry Member (when meaning booking priority), Member Person (`/org/members`), owner (that is the Position incumbent)
+
+**Steward roster**:
+The full set of Ministry Stewards for one Ministry. Domain rule: exactly one primary steward and at least one secondary steward.
+_Avoid_: treating primary/secondary as auth.role or org.position, a roster with zero or many primaries
+
+**Steward directory query**:
+A query whose result is Ministries, not membership rows. It may match a Ministry name or a Steward's display name/email. A match does not return the Steward roster; the roster loads for the selected Ministry.
+_Avoid_: one row per steward, treating this as Member Person search, stuffing the roster into the directory payload
+
+### Admin lists
+
 **Effective from / Effective to**:
 Optional calendar-day bounds for when a room slot template, room blackout rule, or ministry schedule applies. In admin forms they are two independent optional dates, not one contiguous range selection.
 _Avoid_: DateRangePicker as the default control for these fields, treating an open-ended bound as an invalid half-range

@@ -10,7 +10,10 @@
     "actionFailed": "Action failed. Please try again."
   },
   "ministry": {
-    "page": { "title": "Ministries", "description": "Manage ministry units and lifecycle" },
+    "page": {
+      "title": "Ministries",
+      "description": "Manage ministry units and lifecycle"
+    },
     "table": {
       "name": "Name",
       "ministryType": "Type",
@@ -44,7 +47,8 @@
       "hasPriorityBooking": "Priority booking",
       "nameRequired": "Name is required",
       "members": "Stewards",
-      "membersHint": "Exactly one primary and at least one secondary steward are required before submit."
+      "membersHint": "Exactly one primary and at least one secondary steward are required before submit.",
+      "editStewardsLink": "Edit stewards on the Ministry Members page"
     },
     "status": {
       "draft": "Draft",
@@ -71,12 +75,17 @@
       "role": "Role",
       "email": "Email",
       "displayName": "Display name",
-      "contactEmail": "Contact email",
+      "contactEmail": "Additional Contact Email",
       "primary": "Primary",
       "secondary": "Secondary",
       "add": "Add steward",
+      "addPrimary": "Add primary",
+      "addSecondary": "Add secondary",
       "remove": "Remove",
       "selectUser": "Select user",
+      "primaryHint": "Only one primary steward is allowed.",
+      "emptyPrimary": "No primary steward",
+      "emptySecondary": "No secondary stewards",
       "validationPrimary": "Exactly one primary steward is required",
       "validationSecondary": "At least one secondary steward is required",
       "duplicateUser": "Each user can only be assigned once"
@@ -85,7 +94,9 @@
       "members": "Members",
       "noMembers": "No stewards assigned"
     },
-    "deleteForm": { "entityLabel": "ministry" },
+    "deleteForm": {
+      "entityLabel": "ministry"
+    },
     "schedule": {
       "add": "Add schedule",
       "remove": "Remove",
@@ -113,9 +124,38 @@
       "title": "Ministry stewards",
       "description": "Assign primary and secondary stewards per ministry"
     },
-    "filter": { "ministry": "Ministry", "selectMinistry": "Select a ministry" },
+    "filter": {
+      "ministry": "Ministry",
+      "selectMinistry": "Select a ministry",
+      "status": "Status",
+      "allStatuses": "All statuses"
+    },
     "save": "Save stewards",
+    "refresh": "Refresh",
+    "emptyRail": "No ministries match this search.",
+    "emptyDetail": "Select a ministry to view its steward roster.",
+    "updated": "Updated {{time}}",
+    "editModal": {
+      "title": "Edit stewards — {{name}}"
+    },
+    "sections": {
+      "overview": "Ministry overview",
+      "owner": "Owner position",
+      "stewards": "Stewards"
+    },
+    "sort": {
+      "label": "Sort",
+      "fieldName": "Name",
+      "fieldUpdated": "Updated",
+      "fieldCreated": "Created",
+      "ascending": "ascending",
+      "descending": "descending",
+      "inactive": "not active",
+      "toggleAria": "Sort by {{field}}, currently {{direction}}"
+    },
     "search": {
+      "queryLabel": "Search",
+      "queryPlaceholder": "Ministry name or steward name/email",
       "popoverTitle": "Search ministry stewards",
       "keywordLabel": "Keyword",
       "keywordPlaceholder": "Filter ministry list by name",
@@ -123,6 +163,11 @@
       "chipsTitle": "Active filters",
       "chipKeyword": "Keyword:",
       "chipMinistry": "Ministry:"
+    },
+    "unsaved": {
+      "title": "Unsaved steward changes",
+      "body": "Save or discard this roster before leaving or switching ministries.",
+      "discard": "Discard"
     }
   },
   "approval": {

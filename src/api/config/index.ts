@@ -208,6 +208,7 @@ export const API_ENDPOINTS = {
       DELETE: (id: string) => `${ADMIN_API_PREFIX}/ministry/ministries/${id}`,
       RESTORE: `${ADMIN_API_PREFIX}/ministry/ministries/restore`,
       MEMBERS: (id: string) => `${ADMIN_API_PREFIX}/ministry/ministries/${id}/members`,
+      STEWARD_DIRECTORY: `${ADMIN_API_PREFIX}/ministry/ministries/steward-directory`,
       SUBMIT: (id: string) => `${ADMIN_API_PREFIX}/ministry/ministries/${id}/submit`,
       APPROVE: (id: string) => `${ADMIN_API_PREFIX}/ministry/ministries/${id}/approve`,
       REJECT: (id: string) => `${ADMIN_API_PREFIX}/ministry/ministries/${id}/reject`,
