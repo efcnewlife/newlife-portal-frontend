@@ -93,10 +93,7 @@ const BookingGrid = ({
     });
   };
 
-  const blocksByRoom = useMemo(
-    () => layoutGridOccupancyBlocks(bookings, rooms, anchorDate),
-    [anchorDate, bookings, rooms]
-  );
+  const blocksByRoom = useMemo(() => layoutGridOccupancyBlocks(bookings, rooms, anchorDate), [anchorDate, bookings, rooms]);
 
   const shiftDay = (delta: number) => {
     const next = new Date(anchorDate);
@@ -144,7 +141,7 @@ const BookingGrid = ({
           <div
             className={cn(
               "flex shrink-0 flex-col border-r border-gray-200 bg-white dark:border-white/10 dark:bg-gray-900",
-              ROOM_COLUMN_WIDTH_CLASS
+              ROOM_COLUMN_WIDTH_CLASS,
             )}
           >
             <div className="flex h-9 shrink-0 items-center border-b border-gray-200 bg-gray-50 px-3 text-xs font-medium text-gray-500 dark:border-white/10 dark:bg-gray-800/80 dark:text-gray-400">
@@ -183,7 +180,7 @@ const BookingGrid = ({
                         "pointer-events-none absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-[10px] font-medium text-gray-500 dark:text-gray-400",
                         hour === 0 && "translate-x-0",
                         hour === 24 && "-translate-x-full",
-                        hour !== 0 && hour !== 24 && "-translate-x-1/2"
+                        hour !== 0 && hour !== 24 && "-translate-x-1/2",
                       )}
                       style={{ left: `${((hour * 60) / GRID_DAY_MINUTES) * 100}%` }}
                     >
@@ -212,7 +209,7 @@ const BookingGrid = ({
                             cellIndex % 2 === 1 && "border-r-gray-200/80 dark:border-r-white/10",
                             cellIndex === GRID_CELL_COUNT - 1 && "border-r-0",
                             canCreate && "hover:bg-brand-50/60 dark:hover:bg-brand-500/10",
-                            !canCreate && "cursor-default"
+                            !canCreate && "cursor-default",
                           )}
                           onClick={() => handleCellClick(room.id, cellIndex)}
                         />
