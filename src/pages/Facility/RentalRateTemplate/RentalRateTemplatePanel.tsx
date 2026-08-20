@@ -12,6 +12,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MdAdd, MdDelete, MdEdit, MdRefresh } from "react-icons/md";
 import { formatApplicabilitySummary } from "./applicabilityFormat";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import RentalRateTemplateDataForm, {
   type RentalRateTemplateDataFormHandle,
   type RentalRateTemplateFormValues,
@@ -47,8 +48,8 @@ const RentalRateTemplatePanel = ({ onChanged }: RentalRateTemplatePanelProps) =>
       if (res.success) {
         setItems(res.data.items || []);
       }
-    } catch {
-      alert(t("shared.loadFailed"));
+    } catch (error) {
+      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
     } finally {
       setLoading(false);
     }
@@ -211,14 +212,16 @@ const RentalRateTemplatePanel = ({ onChanged }: RentalRateTemplatePanelProps) =>
           try {
             if (formMode === "create") {
               await facilityService.createRentalRateTemplate(formRef.current.getValues());
+              notifySuccess({ title: t("common:feedback.created") });
             } else if (editing?.id) {
               await facilityService.updateRentalRateTemplate(editing.id, formRef.current.getValues());
+              notifySuccess({ title: t("common:feedback.updated") });
             }
             closeModal();
             await fetchList();
             notifyChanged();
-          } catch {
-            alert(t("shared.saveFailed"));
+          } catch (error) {
+            notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
           } finally {
             setSubmitting(false);
           }
@@ -246,11 +249,12 @@ const RentalRateTemplatePanel = ({ onChanged }: RentalRateTemplatePanelProps) =>
                 reason,
                 permanent: permanent || false,
               });
+              notifySuccess({ title: t("common:feedback.deleted") });
               closeDeleteModal();
               await fetchList();
               notifyChanged();
-            } catch {
-              alert(t("shared.saveFailed"));
+            } catch (error) {
+              notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
             } finally {
               setSubmitting(false);
             }

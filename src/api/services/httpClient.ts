@@ -105,12 +105,15 @@ class HttpClient {
       const apiError: ApiError = {
         code: HttpStatusCode.RequestTimeout,
         message: i18n.t("errors:timeout"),
+        transportNotified: true,
       };
       notificationManager.show({
         variant: "error",
         title: i18n.t("errors:timeout"),
         description: i18n.t("errors:timeout"),
         position: "top-right",
+        hideDuration: 5000,
+        autoClose: true,
       });
       return apiError;
     }
@@ -155,12 +158,15 @@ class HttpClient {
     const apiError: ApiError = {
       code: 0,
       message: i18n.t("errors:network"),
+      transportNotified: true,
     };
     notificationManager.show({
       variant: "error",
       title: i18n.t("errors:network"),
       description: i18n.t("errors:network"),
       position: "top-right",
+      hideDuration: 5000,
+      autoClose: true,
     });
     return apiError;
   }

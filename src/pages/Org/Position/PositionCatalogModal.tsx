@@ -14,6 +14,7 @@ import { useModal } from "@/hooks/useModal";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PositionDataForm, { type PositionDataFormHandle, type PositionFormValues } from "./PositionDataForm";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 
 type PositionRow = PositionDetail & Record<string, unknown>;
 
@@ -63,8 +64,8 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
         setItems([]);
         setTotal(0);
       }
-    } catch {
-      alert(t("shared.loadFailed"));
+    } catch (error) {
+      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
     } finally {
       setLoading(false);
     }
@@ -174,8 +175,16 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
       ),
       CommonRowAction.RESTORE(
         async (row) => {
-          await orgService.restorePositions({ ids: [row.id] });
-          await refreshAfterMutation();
+          try {
+            await orgService.restorePositions({ ids: [row.id] });
+            notifySuccess({ title: t("common:feedback.restored") });
+            await refreshAfterMutation();
+          } catch (error) {
+            notifyApiError(error, {
+              title: t("common:feedback.actionFailed"),
+              fallbackDescription: t("common:feedback.actionFailedDesc"),
+            });
+          }
         },
         { visible: showDeleted },
       ),
@@ -184,7 +193,7 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
         openDeleteModal();
       }),
     ],
-    [openFormModal, openDeleteModal, refreshAfterMutation, showDeleted],
+    [openFormModal, openDeleteModal, refreshAfterMutation, showDeleted, t],
   );
 
   return (
@@ -249,14 +258,16 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
           try {
             if (formMode === "create") {
               await orgService.createPosition(values as PositionCreate);
+              notifySuccess({ title: t("common:feedback.created") });
             } else if (editing?.id) {
               const { code: _c, ...update } = values;
               await orgService.updatePosition(editing.id, update as PositionUpdate);
+              notifySuccess({ title: t("common:feedback.updated") });
             }
             closeFormModal();
             await refreshAfterMutation();
-          } catch {
-            alert(t("shared.saveFailed"));
+          } catch (error) {
+            notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
           } finally {
             setSubmitting(false);
           }
@@ -281,10 +292,11 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
             setSubmitting(true);
             try {
               await orgService.deletePosition(editing.id, { reason, permanent });
+              notifySuccess({ title: t("common:feedback.deleted") });
               closeDeleteModal();
               await refreshAfterMutation();
-            } catch {
-              alert(t("shared.deleteFailed"));
+            } catch (error) {
+              notifyApiError(error, { title: t("common:feedback.deleteFailed"), fallbackDescription: t("common:feedback.deleteFailedDesc") });
             } finally {
               setSubmitting(false);
             }

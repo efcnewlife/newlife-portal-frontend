@@ -68,6 +68,36 @@ _Avoid_: conflating Calendar packing with Grid occupancy
 The Portal admin list shell built on `@efcnewlife/newlife-ui` Table primitives, plus pagination, sorting, row selection, and context menu. It is a host composite, not the library Table itself.
 _Avoid_: Table (when meaning the Portal list page), DataGrid, Grid
 
+### Operation feedback
+
+**Operation feedback**:
+The outcome notice shown after an admin mutation or load attempt (create, update, delete, restore, cancel, bind, save, fetch). It is a toast via `@efcnewlife/newlife-ui` notification (`success` | `warning` | `error`), not a blocking dialog. CRUD success always shows Operation feedback.
+_Avoid_: `window.alert`, treating confirmation Modal as the outcome notice, treating field `error` props as operation feedback, silent success after CRUD
+
+**Form field error**:
+Inline validation on a single control (or a small local group) before or instead of submit. It stays on the field; it is not Operation feedback. Validation never uses toast or `alert`.
+_Avoid_: toast for required-field misses, `alert` for reject-reason required, warning toast for missing password
+
+**Transport failure**:
+A request that never got a usable HTTP response (network down, timeout). The HTTP client may notify once; callers must not show a second Operation feedback for the same failure.
+_Avoid_: page-level toast/`alert` stacked on top of the client's network/timeout toast
+
+**Feedback severity**:
+`success` = mutation or intentional load path completed; `error` = the attempt failed (including HTTP 4xx/5xx business rejection); `warning` = non-failure caution the user can continue past; `info` is not part of the default admin CRUD vocabulary.
+_Avoid_: mapping HTTP 4xx to `warning`, toast `warning` for Form field errors, using `info` toasts for CRUD or shared feedback helpers
+
+**Feedback copy**:
+Operation feedback title is always host i18n (verb outcome). Failure description prefers a mapped `error_code` → i18n string; if there is no mapping, use a generic i18n fallback. Do not show raw backend `detail` / `ApiError.message` to the user. Expanding stable `error_code` coverage is a parallel backend track (separate issue), not a reason to delay the toast channel unification.
+_Avoid_: English `detail` in the toast, generic-only copy when an `error_code` mapper exists (e.g. booking), blocking frontend feedback unification on a full error-code catalog
+
+**Feedback chrome**:
+Operation feedback toasts use `top-right`; success auto-hides at 3s; error (and warning if ever used) at 5s.
+_Avoid_: `top-center` / `bottom-right` drift per feature, per-page hideDuration
+
+**Auth form error**:
+Login / sign-in failure copy shown inline on the auth form only. It is not Operation feedback and must not also fire a toast for the same failure (Transport failure still follows its own once-only rule). Login success has no toast (redirect only).
+_Avoid_: authService toast + SignIn inline double channel, success toast on login redirect
+
 **Table row hover**:
 Transient visual emphasis on a DataTable data row while the pointer is over that row. It is affordance only and does not mean the row is selected.
 _Avoid_: row highlight as selection, hover action / hover callback as the default meaning of hover

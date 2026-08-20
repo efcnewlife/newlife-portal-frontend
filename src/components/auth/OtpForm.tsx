@@ -69,7 +69,7 @@ export default function OtpForm() {
   };
 
   const handleSubmit = () => {
-    alert(`Submitted OTP: ${otp.join("")}`);
+    // OTP submit stub — no Operation feedback toast
   };
   return (
     <div className="flex flex-col flex-1 w-full lg:w-1/2">

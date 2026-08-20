@@ -63,12 +63,12 @@ describe("resolveBookingSaveErrorMessage", () => {
     expect(resolveBookingSaveErrorMessage(error, rooms, t)).toBe("booking.errors.roomBlackoutGeneric");
   });
 
-  it("returns the generic save failed toast for other 400s", () => {
+  it("returns undefined for other errors so notifyApiError can use the shared mapper", () => {
     const error = apiError({
       message: "end_at must be after start_at",
       details: { detail: "end_at must be after start_at" },
     });
-    expect(resolveBookingSaveErrorMessage(error, rooms, t)).toBe("shared.saveFailed");
+    expect(resolveBookingSaveErrorMessage(error, rooms, t)).toBeUndefined();
   });
 
   it("does not parse the English detail string for a room name", () => {

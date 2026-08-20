@@ -2,9 +2,9 @@
 import { API_ENDPOINTS, HTTP_STATUS } from "@/api/config";
 import i18n from "@/i18n";
 import type { ApiError, ApiResponse, TokenResponse } from "@/types/api";
-import { IS_DEV, IS_SKIP_AUTH } from "@/config/env";
+import { IS_SKIP_AUTH } from "@/config/env";
 import type { AuthError, LoginCredentials, LoginResponse, User } from "@/types/auth";
-import { notificationManager } from "@/utils/notificationManager";
+import { notifyApiError } from "@/utils/operationFeedback";
 import { getScopesFromToken, getRolesFromToken, parseJWT, hasPermissionInScopes } from "@/utils/jwt";
 import { httpClient } from "./httpClient";
 
@@ -128,11 +128,7 @@ class AuthService {
         message: response.message,
       };
     } catch (error) {
-      // Handle ApiError and show notification
-      if (error && typeof error === "object" && "code" in error && typeof (error as ApiError).code === "number") {
-        const apiError = error as ApiError;
-        this.showAuthErrorNotification(apiError, "login");
-      }
+      // Login failures surface as inline errors on the sign-in form (AuthContext); do not toast.
       throw this.handleAuthError(error);
     }
   }
@@ -194,10 +190,7 @@ class AuthService {
         message: response.message,
       };
     } catch (error) {
-      if (error && typeof error === "object" && "code" in error && typeof (error as ApiError).code === "number") {
-        const apiError = error as ApiError;
-        this.showAuthErrorNotification(apiError, "login");
-      }
+      // Microsoft login failures surface as inline errors on the sign-in form; do not toast.
       throw this.handleAuthError(error);
     }
   }
@@ -294,10 +287,12 @@ class AuthService {
         message: response.message,
       };
     } catch (error) {
-      // Refresh failed: clear auth state and show notification
+      // Non-login context: surface a generic session error toast, then clear auth.
       if (error && typeof error === "object" && "code" in error && typeof (error as ApiError).code === "number") {
-        const apiError = error as ApiError;
-        this.showAuthErrorNotification(apiError, "refresh");
+        notifyApiError(error, {
+          title: i18n.t("errors:unauthorized"),
+          fallbackDescription: i18n.t("errors:unauthorized"),
+        });
       }
       this.clearAuth();
       throw this.handleAuthError(error);
@@ -453,93 +448,6 @@ class AuthService {
     sessionStorage.removeItem(this.USER_KEY);
   }
 
-  // Show auth error notification
-  private showAuthErrorNotification(error: ApiError, context: "login" | "profile" | "refresh" | "password" | "general" = "general"): void {
-    const { code, message, details } = error;
-
-    // Development mode: show debug_detail in console (if available)
-    if (IS_DEV && details?.debug_detail) {
-      console.error("[AuthService] Debug Detail:", details.debug_detail);
-      if (details.url) {
-        console.error("[AuthService] Request URL:", details.url);
-      }
-    }
-
-    let variant: "error" | "warning" = "error";
-    let title = i18n.t("errors:unknown");
-    let description = message;
-    let hideDuration = 4000;
-
-    switch (code) {
-      case HTTP_STATUS.UNAUTHORIZED:
-        title = context === "login" ? i18n.t("auth:signIn") : i18n.t("errors:unauthorized");
-        description = context === "login" ? message : i18n.t("errors:unauthorized");
-        variant = "warning";
-        hideDuration = 5000;
-
-        // For 401 errors, redirect to sign-in page when not in login context
-        if (context !== "login") {
-          // Delay redirect so notification appears first
-          setTimeout(() => {
-            if (window.location.pathname !== "/signin") {
-              window.location.href = "/signin";
-            }
-          }, 1500);
-        }
-        break;
-
-      case HTTP_STATUS.FORBIDDEN:
-        title = i18n.t("errors:forbidden");
-        description = i18n.t("errors:forbidden");
-        variant = "warning";
-        break;
-
-      case HTTP_STATUS.UNPROCESSABLE_ENTITY:
-        // 422 is typically a validation error (e.g. invalid login credentials)
-        title = context === "login" ? i18n.t("auth:signIn") : i18n.t("errors:validation");
-        description = message;
-        variant = "error";
-        break;
-
-      case HTTP_STATUS.BAD_REQUEST:
-        title = i18n.t("errors:validation");
-        description = message;
-        variant = "error";
-        break;
-
-      case HTTP_STATUS.NOT_FOUND:
-        title = i18n.t("errors:notFound");
-        description = message;
-        variant = "warning";
-        break;
-
-      case HTTP_STATUS.INTERNAL_SERVER_ERROR:
-      case HTTP_STATUS.BAD_GATEWAY:
-      case HTTP_STATUS.SERVICE_UNAVAILABLE:
-        title = i18n.t("errors:server");
-        description = i18n.t("errors:server");
-        variant = "error";
-        break;
-
-      default:
-        if (code === 0) {
-          // Network errors are already notified in httpClient
-          return;
-        }
-        title = i18n.t("errors:unknown");
-        description = message || i18n.t("errors:unknown");
-        variant = "error";
-    }
-
-    notificationManager.show({
-      variant,
-      title,
-      description,
-      position: "top-center",
-      hideDuration,
-    });
-  }
-
   // Handle auth errors (convert ApiError to AuthError for backward compatibility)
   private handleAuthError(error: unknown): AuthError {
     // Check whether error is an ApiError (thrown by httpClient)
@@ -614,11 +522,7 @@ class AuthService {
       const response = await httpClient.post<{ message: string }>(API_ENDPOINTS.AUTH.REQUEST_PASSWORD_RESET, { email });
       return response;
     } catch (error) {
-      // Handle error and show notification
-      if (error && typeof error === "object" && "code" in error && typeof (error as ApiError).code === "number") {
-        const apiError = error as ApiError;
-        this.showAuthErrorNotification(apiError, "password");
-      }
+      // Password reset failures surface as inline errors on the form; do not toast.
       throw this.handleAuthError(error);
     }
   }
@@ -633,11 +537,7 @@ class AuthService {
       });
       return response;
     } catch (error) {
-      // Handle error and show notification
-      if (error && typeof error === "object" && "code" in error && typeof (error as ApiError).code === "number") {
-        const apiError = error as ApiError;
-        this.showAuthErrorNotification(apiError, "password");
-      }
+      // Password reset failures surface as inline errors on the form; do not toast.
       throw this.handleAuthError(error);
     }
   }

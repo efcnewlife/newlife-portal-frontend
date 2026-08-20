@@ -5,6 +5,7 @@ import { Button, Input, Modal, TextArea, Tooltip } from "@efcnewlife/newlife-ui"
 import { Resource } from "@/const/enums";
 import { useModal } from "@/hooks/useModal";
 import { DateUtil } from "@/utils/dateUtil";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -21,6 +22,7 @@ const MinistryApprovalDataPage = () => {
   const [actionRow, setActionRow] = useState<ApprovalRow | null>(null);
   const [approveComment, setApproveComment] = useState("");
   const [rejectReason, setRejectReason] = useState("");
+  const [rejectReasonError, setRejectReasonError] = useState("");
   const [rejectComment, setRejectComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -40,8 +42,11 @@ const MinistryApprovalDataPage = () => {
         setTotal(res.data.total);
         setCurrentPage((res.data.page ?? 0) + 1);
       }
-    } catch {
-      alert(t("shared.loadFailed"));
+    } catch (error) {
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -113,6 +118,7 @@ const MinistryApprovalDataPage = () => {
         onClick: (row) => {
           setActionRow(row);
           setRejectReason("");
+          setRejectReasonError("");
           setRejectComment("");
           openRejectModal();
         },
@@ -187,10 +193,14 @@ const MinistryApprovalDataPage = () => {
               setSubmitting(true);
               try {
                 await ministryService.approveMinistry(actionRow.id, { comment: approveComment || undefined });
+                notifySuccess({ title: t("common:feedback.saved") });
                 closeApproveModal();
                 await fetchPages();
-              } catch {
-                alert(t("shared.actionFailed"));
+              } catch (error) {
+                notifyApiError(error, {
+                  title: t("common:feedback.actionFailed"),
+                  fallbackDescription: t("common:feedback.actionFailedDesc"),
+                });
               } finally {
                 setSubmitting(false);
               }
@@ -206,7 +216,11 @@ const MinistryApprovalDataPage = () => {
           id="approval-reject-reason"
           label={t("ministry.reject.reason")}
           value={rejectReason}
-          onChange={(e) => setRejectReason(e.target.value)}
+          error={rejectReasonError}
+          onChange={(e) => {
+            setRejectReason(e.target.value);
+            if (rejectReasonError) setRejectReasonError("");
+          }}
         />
         <div className="mt-3">
           <TextArea
@@ -228,7 +242,7 @@ const MinistryApprovalDataPage = () => {
             onClick={async () => {
               if (!actionRow?.id) return;
               if (!rejectReason.trim()) {
-                alert(t("ministry.reject.reasonRequired"));
+                setRejectReasonError(t("ministry.reject.reasonRequired"));
                 return;
               }
               setSubmitting(true);
@@ -237,10 +251,14 @@ const MinistryApprovalDataPage = () => {
                   rejectionReason: rejectReason.trim(),
                   comment: rejectComment || undefined,
                 });
+                notifySuccess({ title: t("common:feedback.saved") });
                 closeRejectModal();
                 await fetchPages();
-              } catch {
-                alert(t("shared.actionFailed"));
+              } catch (error) {
+                notifyApiError(error, {
+                  title: t("common:feedback.actionFailed"),
+                  fallbackDescription: t("common:feedback.actionFailedDesc"),
+                });
               } finally {
                 setSubmitting(false);
               }

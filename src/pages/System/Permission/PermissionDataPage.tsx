@@ -6,10 +6,10 @@ import { getRecycleButtonClassName } from "@/components/DataPage/PageButtonTypes
 import RestoreForm from "@/components/DataPage/RestoreForm";
 import { Modal } from "@efcnewlife/newlife-ui";
 import { PopoverPosition, Resource } from "@/const/enums";
-import { useNotification } from "@/context/NotificationContext";
 import { useModal } from "@/hooks/useModal";
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import { MdCheck, MdClose } from "react-icons/md";
 import PermissionDataForm, { type PermissionFormValues } from "./PermissionDataForm";
 import PermissionDeleteForm from "./PermissionDeleteForm";
@@ -43,9 +43,6 @@ export default function PermissionDataPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-
-  // Notification
-  const { showNotification } = useNotification();
 
   // Modal state
   const { isOpen, openModal, closeModal } = useModal(false);
@@ -109,27 +106,23 @@ export default function PermissionDataPage() {
         setCurrentPage(data.page + 1);
       } else {
         console.error("Failed to fetch permissions:", response.message);
-        showNotification({
-          variant: "error",
-          title: t("system:permission.feedback.load.title"),
-          description: `${t("system:permission.feedback.load.desc")} ${t("system:permission.feedback.load.retryDesc")}`,
-          position: "top-right",
+        notifyApiError({ code: 400, message: "" }, {
+          title: t("common:feedback.loadFailed"),
+          fallbackDescription: t("common:feedback.loadFailedDesc"),
         });
         setItems([]);
         setTotal(0);
       }
-    } catch (e) {
-      console.error("Error fetching permission pages:", e);
-      showNotification({
-        variant: "error",
-        title: t("system:permission.feedback.load.title"),
-        description: `${t("system:permission.feedback.load.desc")} ${t("system:permission.feedback.load.retryDesc")}`,
-        position: "top-right",
+    } catch (error) {
+      console.error("Error fetching permission pages:", error);
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
       });
     } finally {
       setLoading(false);
     }
-  }, [showNotification, t]); // showNotification is intentionally included
+  }, [t]);
 
   // Columns definition
   const columns: DataTableColumn<PermissionPageItem>[] = useMemo(
@@ -239,21 +232,15 @@ export default function PermissionDataPage() {
     try {
       setSubmitting(true);
       await permissionService.restore(ids);
-      showNotification({
-        variant: "success",
-        title: t("system:permission.feedback.restoreSuccess.title"),
-        description: t("system:permission.feedback.restoreSuccess.desc", { count: ids.length }),
-      });
+      notifySuccess({ title: t("common:feedback.restored") });
       await fetchPages();
       closeRestoreModal();
       setSelectedKeys([]);
-    } catch (e) {
-      console.error(e);
-      showNotification({
-        variant: "error",
-        title: t("system:permission.feedback.restoreFailed.title"),
-        description: t("system:permission.feedback.restoreFailed.desc"),
-        position: "top-right",
+    } catch (error) {
+      console.error(error);
+      notifyApiError(error, {
+        title: t("common:feedback.actionFailed"),
+        fallbackDescription: t("common:feedback.actionFailedDesc"),
       });
     } finally {
       setSubmitting(false);
@@ -360,20 +347,16 @@ export default function PermissionDataPage() {
               });
               openModal();
             } else {
-              showNotification({
-                variant: "error",
-                title: t("system:permission.feedback.detailLoad.title"),
-                description: t("system:permission.feedback.detailLoad.failure"),
-                position: "top-right",
+              notifyApiError({ code: 400, message: "" }, {
+                title: t("common:feedback.loadFailed"),
+                fallbackDescription: t("common:feedback.loadFailedDesc"),
               });
             }
-          } catch (e) {
-            console.error("Error fetching permission detail:", e);
-            showNotification({
-              variant: "error",
-              title: t("system:permission.feedback.detailLoad.title"),
-              description: t("system:permission.feedback.detailLoad.failure"),
-              position: "top-right",
+          } catch (error) {
+            console.error("Error fetching permission detail:", error);
+            notifyApiError(error, {
+              title: t("common:feedback.loadFailed"),
+              fallbackDescription: t("common:feedback.loadFailedDesc"),
             });
           } finally {
             setSubmitting(false);
@@ -401,7 +384,7 @@ export default function PermissionDataPage() {
         }
       ),
     ],
-    [openModal, openDeleteModal, openViewModal, showDeleted, fetchPages, showNotification, t]
+    [openModal, openDeleteModal, openViewModal, showDeleted, fetchPages, t]
   );
 
   // Submit handlers
@@ -411,29 +394,18 @@ export default function PermissionDataPage() {
       const payload: PermissionCreate | PermissionUpdate = mapPermissionFormValuesToPayload(values);
       if (formMode === "create") {
         await permissionService.create(payload);
-        showNotification({
-          variant: "success",
-          title: t("system:permission.feedback.createSuccess.title"),
-          description: t("system:permission.feedback.createSuccess.desc", { name: values.name }),
-        });
+        notifySuccess({ title: t("common:feedback.created") });
       } else if (formMode === "edit" && editing?.id) {
         await permissionService.update(editing.id, payload);
-        showNotification({
-          variant: "success",
-          title: t("system:permission.feedback.updateSuccess.title"),
-          description: t("system:permission.feedback.updateSuccess.desc", { name: values.name }),
-        });
+        notifySuccess({ title: t("common:feedback.updated") });
       }
       closeModal();
-      // Refresh list by calling fetchPages directly
       await fetchPages();
-    } catch (e) {
-      console.error(e);
-      showNotification({
-        variant: "error",
-        title: t("system:permission.feedback.saveFailed.title"),
-        description: t("system:permission.feedback.saveFailed.desc"),
-        position: "top-right",
+    } catch (error) {
+      console.error(error);
+      notifyApiError(error, {
+        title: t("common:feedback.saveFailed"),
+        fallbackDescription: t("common:feedback.saveFailedDesc"),
       });
     } finally {
       setSubmitting(false);
@@ -444,25 +416,15 @@ export default function PermissionDataPage() {
     try {
       setSubmitting(true);
       if (!editing?.id) return;
-      const deletedPermission = editing;
       await permissionService.remove(editing.id, { reason, permanent: !!permanent });
-      showNotification({
-        variant: "success",
-        title: permanent ? t("system:permission.feedback.deleteSuccessPermanent.title") : t("system:permission.feedback.deleteSuccessSoft.title"),
-        description: permanent
-          ? t("system:permission.feedback.deletePermanentSuccess.desc", { name: deletedPermission.name })
-          : t("system:permission.feedback.deleteSoftSuccess.desc", { name: deletedPermission.name }),
-      });
+      notifySuccess({ title: t("common:feedback.deleted") });
       closeDeleteModal();
-      // Refresh list by calling fetchPages directly
       await fetchPages();
-    } catch (e) {
-      console.error(e);
-      showNotification({
-        variant: "error",
-        title: t("system:permission.feedback.deleteFailed.title"),
-        description: t("system:permission.feedback.deleteFailed.desc"),
-        position: "top-right",
+    } catch (error) {
+      console.error(error);
+      notifyApiError(error, {
+        title: t("common:feedback.deleteFailed"),
+        fallbackDescription: t("common:feedback.deleteFailedDesc"),
       });
     } finally {
       setSubmitting(false);

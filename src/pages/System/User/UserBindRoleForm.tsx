@@ -3,6 +3,7 @@ import { userService } from "@/api/services/userService";
 import { Button, Checkbox } from "@efcnewlife/newlife-ui";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { notifyApiError } from "@/utils/operationFeedback";
 
 interface UserBindRoleFormProps {
   userId: string;
@@ -35,7 +36,7 @@ const UserBindRoleForm: React.FC<UserBindRoleFormProps> = ({ userId, initialRole
         setSelectedRoleIds(roleIdsToUse);
       } catch (error) {
         console.error("Failed to fetch data:", error);
-        alert(t("system:user.bindRoles.loadAlert"));
+        notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
       } finally {
         setLoading(false);
       }

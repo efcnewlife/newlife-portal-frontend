@@ -15,6 +15,7 @@ import SettingDataForm, {
   type SettingDataFormHandle,
 } from "./SettingDataForm";
 import SettingSearchPopover, { type SettingSearchFilters } from "./SettingSearchPopover";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 
 type SettingRow = SettingItem & Record<string, unknown>;
 
@@ -24,7 +25,7 @@ const formatValuePreview = (value: unknown): string => {
   if (typeof value === "number" || typeof value === "boolean") return String(value);
   try {
     return JSON.stringify(value);
-  } catch {
+  } catch (error) {
     return String(value);
   }
 };
@@ -65,9 +66,9 @@ const SettingDataPage = () => {
       } else {
         setAllItems([]);
       }
-    } catch {
+    } catch (error) {
       setAllItems([]);
-      alert(t("system:setting.feedback.loadFailed"));
+      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
     } finally {
       setLoading(false);
     }
@@ -204,10 +205,10 @@ const SettingDataPage = () => {
               setEditing(res.data as SettingRow);
               openFormModal();
             } else {
-              alert(t("system:setting.feedback.detailLoadFailed"));
+              notifyApiError({ code: 400, message: "" }, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
             }
-          } catch {
-            alert(t("system:setting.feedback.detailLoadFailed"));
+          } catch (error) {
+            notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
           }
         },
         { visible: () => !showDeleted },
@@ -217,10 +218,11 @@ const SettingDataPage = () => {
           try {
             setSubmitting(true);
             await settingService.restore([row.id]);
+            notifySuccess({ title: t("common:feedback.restored") });
             await fetchList();
           } catch (error) {
             const apiError = error as ApiError;
-            alert(apiError?.message || t("system:setting.feedback.restoreFailed"));
+            notifyApiError(apiError ?? error, { title: t("common:feedback.actionFailed"), fallbackDescription: t("common:feedback.actionFailedDesc") });
           } finally {
             setSubmitting(false);
           }
@@ -310,16 +312,18 @@ const SettingDataPage = () => {
           try {
             if (formMode === "create") {
               await settingService.create(toSettingCreate(values));
+              notifySuccess({ title: t("common:feedback.created") });
             } else {
               if (!editing?.id) return;
               await settingService.update(editing.id, toSettingUpdate(values));
+              notifySuccess({ title: t("common:feedback.updated") });
             }
             closeFormModal();
             setEditing(null);
             await fetchList();
           } catch (error) {
             const apiError = error as ApiError;
-            alert(apiError?.message || t("system:setting.feedback.saveFailed"));
+            notifyApiError(apiError ?? error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
           } finally {
             setSubmitting(false);
           }
@@ -349,12 +353,13 @@ const SettingDataPage = () => {
                 reason: payload.reason,
                 permanent: payload.permanent ?? showDeleted,
               });
+              notifySuccess({ title: t("common:feedback.deleted") });
               closeDeleteModal();
               setEditing(null);
               await fetchList();
             } catch (error) {
               const apiError = error as ApiError;
-              alert(apiError?.message || t("system:setting.feedback.deleteFailed"));
+              notifyApiError(apiError ?? error, { title: t("common:feedback.deleteFailed"), fallbackDescription: t("common:feedback.deleteFailedDesc") });
             } finally {
               setSubmitting(false);
             }

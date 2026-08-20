@@ -12,6 +12,7 @@ import RoleDataForm, { type RoleDataFormHandle, type RoleFormValues } from "./Ro
 import RoleDeleteForm from "./RoleDeleteForm";
 import RoleDetailView from "./RoleDetailView";
 import RoleSearchPopover, { type RoleSearchFilters } from "./RoleSearchPopover";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 
 export default function RoleDataPage() {
   const { t } = useTranslation();
@@ -202,11 +203,11 @@ export default function RoleDataPage() {
             setViewing(response.data);
             openViewModal();
           } else {
-            alert(t("system:role.feedback.detailLoadAlert"));
+            notifyApiError({ code: 400, message: "" }, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
           }
         } catch (e) {
           console.error("Error fetching role detail:", e);
-          alert(t("system:role.feedback.detailLoadAlert"));
+          notifyApiError(e, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
         } finally {
           setSubmitting(false);
         }
@@ -233,11 +234,11 @@ export default function RoleDataPage() {
               });
               openModal();
             } else {
-              alert(t("system:role.feedback.detailLoadAlert"));
+              notifyApiError({ code: 400, message: "" }, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
             }
           } catch (e) {
             console.error("Error fetching role detail:", e);
-            alert(t("system:role.feedback.detailLoadAlert"));
+            notifyApiError(e, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
           } finally {
             setSubmitting(false);
           }
@@ -251,7 +252,13 @@ export default function RoleDataPage() {
           try {
             setSubmitting(true);
             await roleService.restore(row.id);
+            notifySuccess({ title: t("common:feedback.restored") });
             await fetchPages();
+          } catch (error) {
+            notifyApiError(error, {
+              title: t("common:feedback.actionFailed"),
+              fallbackDescription: t("common:feedback.actionFailedDesc"),
+            });
           } finally {
             setSubmitting(false);
           }
@@ -346,11 +353,18 @@ export default function RoleDataPage() {
             setSubmitting(true);
             if (formMode === "create") {
               await roleService.create(values as RoleCreate);
+              notifySuccess({ title: t("common:feedback.created") });
             } else if (formMode === "edit" && editing?.id) {
               await roleService.update(editing.id, values as RoleUpdate);
+              notifySuccess({ title: t("common:feedback.updated") });
             }
             closeModal();
             await fetchPages();
+          } catch (error) {
+            notifyApiError(error, {
+              title: t("common:feedback.saveFailed"),
+              fallbackDescription: t("common:feedback.saveFailedDesc"),
+            });
           } finally {
             setSubmitting(false);
           }
@@ -371,11 +385,12 @@ export default function RoleDataPage() {
               setSubmitting(true);
               if (!editing?.id) return;
               await roleService.remove(editing.id, { reason, permanent });
+              notifySuccess({ title: t("common:feedback.deleted") });
               closeDeleteModal();
               await fetchPages();
             } catch (e) {
               console.error(e);
-              alert(t("system:role.feedback.deleteFailedAlert"));
+              notifyApiError(e, { title: t("common:feedback.deleteFailed"), fallbackDescription: t("common:feedback.deleteFailedDesc") });
             } finally {
               setSubmitting(false);
             }

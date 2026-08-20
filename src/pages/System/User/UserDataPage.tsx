@@ -5,7 +5,6 @@ import { getRecycleButtonClassName } from "@/components/DataPage/PageButtonTypes
 import RestoreForm from "@/components/DataPage/RestoreForm";
 import { Modal, Tooltip } from "@efcnewlife/newlife-ui";
 import { Gender, PopoverPosition, Resource } from "@/const/enums";
-import { useNotification } from "@/context/NotificationContext";
 import { useModal } from "@/hooks/useModal";
 import { format_admin_user_label } from "@/utils/userDisplayName";
 import { DateUtil } from "@/utils/dateUtil";
@@ -13,6 +12,7 @@ import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "re
 import { MdCheck, MdClose, MdGroup } from "react-icons/md";
 import { TbCircleLetterSFilled } from "react-icons/tb";
 import { useTranslation } from "react-i18next";
+import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import UserBindRoleForm from "./UserBindRoleForm";
 import UserDataForm, { type UserFormValues } from "./UserDataForm";
 import UserDeleteForm from "./UserDeleteForm";
@@ -35,9 +35,6 @@ export default function UserDataPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-
-  // Notification
-  const { showNotification } = useNotification();
 
   // Modal state
   const { isOpen, openModal, closeModal } = useModal(false);
@@ -103,18 +100,16 @@ export default function UserDataPage() {
       setTotal(data.total);
       // Backend page is 0-based; map back to 1-based UI if changed externally
       setCurrentPage(data.page + 1);
-    } catch (e) {
-      console.error("Error fetching user pages:", e);
-      showNotification({
-        variant: "error",
-        title: t("system:user.feedback.loadFailed.title"),
-        description: t("system:user.feedback.loadFailed.desc"),
-        position: "top-right",
+    } catch (error) {
+      console.error("Error fetching user pages:", error);
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
       });
     } finally {
       setLoading(false);
     }
-  }, [showNotification, t]); // include t for localized error copy
+  }, [t]);
 
   // Columns definition
   const columns: DataTableColumn<UserDetail>[] = useMemo(
@@ -303,21 +298,15 @@ export default function UserDataPage() {
     try {
       setSubmitting(true);
       await userService.restore(ids);
-      showNotification({
-        variant: "success",
-        title: t("system:user.feedback.restoreSuccess.title"),
-        description: t("system:user.feedback.restoreSuccess.desc", { count: ids.length }),
-      });
+      notifySuccess({ title: t("common:feedback.restored") });
       await fetchPages();
       closeRestoreModal();
       setSelectedKeys([]);
-    } catch (e) {
-      console.error(e);
-      showNotification({
-        variant: "error",
-        title: t("system:user.feedback.restoreFailed.title"),
-        description: t("system:user.feedback.restoreFailed.desc"),
-        position: "top-right",
+    } catch (error) {
+      console.error(error);
+      notifyApiError(error, {
+        title: t("common:feedback.actionFailed"),
+        fallbackDescription: t("common:feedback.actionFailedDesc"),
       });
     } finally {
       setSubmitting(false);
@@ -458,32 +447,15 @@ export default function UserDataPage() {
     try {
       setSubmitting(true);
       if (formMode === "create") {
-        // Create flow requires password (validated before submit)
         const { password, password_confirm, ...restValues } = values;
-        if (!password || !password_confirm) {
-          showNotification({
-            variant: "warning",
-            title: t("system:user.feedback.validationNeeded.title"),
-            description: t("system:user.feedback.validationNeeded.password"),
-            position: "top-center",
-          });
-          return;
-        }
         await userService.create({
           ...restValues,
           display_name: build_display_name(values),
           password,
           password_confirm,
         } as Parameters<typeof userService.create>[0]);
-        showNotification({
-          variant: "success",
-          title: t("system:user.feedback.createSuccess.title"),
-          description: t("system:user.feedback.createSuccess.desc", {
-            name: format_admin_user_label(values) || values.email || "",
-          }),
-        });
+        notifySuccess({ title: t("common:feedback.created") });
       } else if (formMode === "edit" && editing?.id) {
-        // Edit flow omits password (UserDataForm strips it)
         await userService.update(editing.id, {
           email: values.email,
           verified: values.verified,
@@ -494,24 +466,15 @@ export default function UserDataPage() {
           gender: values.gender,
           remark: values.remark,
         });
-        showNotification({
-          variant: "success",
-          title: t("system:user.feedback.updateSuccess.title"),
-          description: t("system:user.feedback.updateSuccess.desc", {
-            name: format_admin_user_label(values) || values.email || "",
-          }),
-        });
+        notifySuccess({ title: t("common:feedback.updated") });
       }
       closeModal();
-      // Refresh list by calling fetchPages directly
       await fetchPages();
-    } catch (e) {
-      console.error(e);
-      showNotification({
-        variant: "error",
-        title: t("system:user.feedback.saveFailed.title"),
-        description: t("system:user.feedback.saveFailed.desc"),
-        position: "top-right",
+    } catch (error) {
+      console.error(error);
+      notifyApiError(error, {
+        title: t("common:feedback.saveFailed"),
+        fallbackDescription: t("common:feedback.saveFailedDesc"),
       });
     } finally {
       setSubmitting(false);
@@ -522,29 +485,15 @@ export default function UserDataPage() {
     try {
       setSubmitting(true);
       if (!editing?.id) return;
-      const deletedUser = editing;
       await userService.remove(editing.id, { reason, permanent: !!permanent });
-      showNotification({
-        variant: "success",
-        title: permanent ? t("system:user.feedback.deleteSuccessPermanent.title") : t("system:user.feedback.deleteSuccessSoft.title"),
-        description: permanent
-          ? t("system:user.feedback.deleteSuccessPermanent.desc", {
-              name: format_admin_user_label(deletedUser) || deletedUser.email || "",
-            })
-          : t("system:user.feedback.deleteSuccessSoft.desc", {
-              name: format_admin_user_label(deletedUser) || deletedUser.email || "",
-            }),
-      });
+      notifySuccess({ title: t("common:feedback.deleted") });
       closeDeleteModal();
-      // Refresh list by calling fetchPages directly
       await fetchPages();
-    } catch (e) {
-      console.error(e);
-      showNotification({
-        variant: "error",
-        title: t("system:user.feedback.deleteFailed.title"),
-        description: t("system:user.feedback.deleteFailed.desc"),
-        position: "top-right",
+    } catch (error) {
+      console.error(error);
+      notifyApiError(error, {
+        title: t("common:feedback.deleteFailed"),
+        fallbackDescription: t("common:feedback.deleteFailedDesc"),
       });
     } finally {
       setSubmitting(false);
@@ -556,21 +505,14 @@ export default function UserDataPage() {
       setSubmitting(true);
       if (!bindingUser?.id) return;
       await userService.bindRoles(bindingUser.id, roleIds);
-      showNotification({
-        variant: "success",
-        title: t("system:user.feedback.bindSuccess.title"),
-        description: t("system:user.feedback.bindSuccess.desc"),
-      });
+      notifySuccess({ title: t("common:feedback.saved") });
       closeBindRoleModal();
-      // Refresh list by calling fetchPages directly
       await fetchPages();
-    } catch (e) {
-      console.error(e);
-      showNotification({
-        variant: "error",
-        title: t("system:user.feedback.bindFailed.title"),
-        description: t("system:user.feedback.bindFailed.desc"),
-        position: "top-right",
+    } catch (error) {
+      console.error(error);
+      notifyApiError(error, {
+        title: t("common:feedback.saveFailed"),
+        fallbackDescription: t("common:feedback.saveFailedDesc"),
       });
     } finally {
       setSubmitting(false);
