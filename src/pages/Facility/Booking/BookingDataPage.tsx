@@ -293,7 +293,7 @@ const BookingDataPage = () => {
   const showScheduleCreate = (viewMode === "calendar" || viewMode === "grid") && canCreate;
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-3">
+    <div className="flex h-full min-h-0 min-w-0 w-full flex-col gap-3 overflow-hidden">
       <PageToolbar
         left={
           showScheduleCreate ? (
@@ -362,7 +362,7 @@ const BookingDataPage = () => {
       )}
 
       {viewMode === "grid" && (
-        <div className="min-h-0 flex-1">
+        <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
           <BookingGrid
             anchorDate={anchorDate}
             rooms={rooms}
