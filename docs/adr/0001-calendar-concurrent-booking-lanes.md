@@ -22,7 +22,7 @@ Lay out overlapping Calendar booking events as a right-aligned card stack: the e
 - Visible lanes are the first K from greedy packing. Events assigned column index `>= K` are omitted. Overflow layout still uses each visible event's real `col` for indent (not `col / n`).
 - Calendar density overflow is a control on that overflowing group. Its label includes N (undrawn count). Activating it switches Booking view mode to `grid` and sets `date` to that day column's ISO date. It does not open detail, a context menu, or a remainder list.
 - One Calendar booking event per booking id; title is the Booker. Cancelled bookings stay off Calendar. Midnight-spanning bookings continue across day columns, with packing computed per day.
-- Month view is unused by booking Calendar and stays as-is. List and Grid views are unchanged.
+- Month view is unused by booking Calendar and stays as-is. List view is unchanged. Booking Grid layout is governed by ADR 0002 (this ADR’s former “Grid unchanged” clause is superseded for Grid only).
 
 ## Consequences
 

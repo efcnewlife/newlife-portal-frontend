@@ -2,15 +2,22 @@ import type { BookingListItem } from "@/api/services/facilityService";
 import NavigationButtons from "@/components/calendar/NavigationButtons";
 import { formatDate, formatWeekday } from "@/components/calendar/utils";
 import { cn } from "@/utils";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  GRID_CELL_COUNT,
+  clickIntervalForCell,
+  defaultViewportScrollRatio,
+  formatGridCellStartLabel,
+  formatGridHourLabel,
+  gridHourLabels,
+  layoutGridOccupancyBlocks,
+  toLocalDatetimeValue,
+} from "./bookingGridLayout";
 
-const GRID_START_HOUR = 8;
-const GRID_END_HOUR = 22;
-const HOUR_COLUMNS = Array.from({ length: GRID_END_HOUR - GRID_START_HOUR }, (_, i) => GRID_START_HOUR + i);
-const WINDOW_START_MINUTES = GRID_START_HOUR * 60;
-const WINDOW_END_MINUTES = GRID_END_HOUR * 60;
-const WINDOW_SPAN_MINUTES = WINDOW_END_MINUTES - WINDOW_START_MINUTES;
+const CELL_MIN_WIDTH_REM = 2.75;
+const ROOM_COLUMN_WIDTH_CLASS = "w-40";
+const ROOM_COLUMN_WIDTH_PX = 160;
 
 interface BookingGridProps {
   anchorDate: Date;
@@ -25,9 +32,6 @@ interface BookingGridProps {
 
 const pad = (n: number): string => String(n).padStart(2, "0");
 
-const toLocalDatetimeValue = (date: Date): string =>
-  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-
 const startOfDay = (date: Date): Date => {
   const next = new Date(date);
   next.setHours(0, 0, 0, 0);
@@ -40,105 +44,7 @@ const endOfDay = (date: Date): Date => {
   return next;
 };
 
-const minutesFromMidnight = (date: Date): number => date.getHours() * 60 + date.getMinutes();
-
-const formatHourLabel = (hour: number, locale: string): string => {
-  const date = new Date();
-  date.setHours(hour, 0, 0, 0);
-  return date.toLocaleTimeString(locale, {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: locale.startsWith("en"),
-  });
-};
-
 const roomLabel = (room: { code: string; name?: string }): string => room.name || room.code;
-
-interface GridBlockLayout {
-  booking: BookingListItem;
-  leftPercent: number;
-  widthPercent: number;
-  startMinutes: number;
-  endMinutes: number;
-  lane: number;
-  laneCount: number;
-}
-
-const assignOverlapLanes = (blocks: Omit<GridBlockLayout, "lane" | "laneCount">[]): GridBlockLayout[] => {
-  const sorted = [...blocks].sort((a, b) => a.startMinutes - b.startMinutes || a.endMinutes - b.endMinutes);
-  const laneEnds: number[] = [];
-  const withLanes = sorted.map((block) => {
-    let lane = laneEnds.findIndex((end) => end <= block.startMinutes);
-    if (lane === -1) {
-      lane = laneEnds.length;
-      laneEnds.push(block.endMinutes);
-    } else {
-      laneEnds[lane] = block.endMinutes;
-    }
-    return { ...block, lane, laneCount: 1 };
-  });
-
-  // Cluster overlapping groups so laneCount reflects local stack depth.
-  for (let i = 0; i < withLanes.length; i++) {
-    let clusterEnd = withLanes[i].endMinutes;
-    let maxLane = withLanes[i].lane;
-    let j = i + 1;
-    while (j < withLanes.length && withLanes[j].startMinutes < clusterEnd) {
-      clusterEnd = Math.max(clusterEnd, withLanes[j].endMinutes);
-      maxLane = Math.max(maxLane, withLanes[j].lane);
-      j++;
-    }
-    const laneCount = maxLane + 1;
-    for (let k = i; k < j; k++) {
-      withLanes[k].laneCount = laneCount;
-    }
-    i = j - 1;
-  }
-
-  return withLanes;
-};
-
-const layoutBlocksForRoom = (
-  bookings: BookingListItem[],
-  roomId: string,
-  day: Date
-): GridBlockLayout[] => {
-  const dayStart = startOfDay(day);
-  const dayEnd = endOfDay(day);
-  const windowStart = new Date(day);
-  windowStart.setHours(GRID_START_HOUR, 0, 0, 0);
-  const windowEnd = new Date(day);
-  windowEnd.setHours(GRID_END_HOUR, 0, 0, 0);
-
-  const placed = bookings
-    .filter((booking) => booking.status !== "cancelled")
-    .filter((booking) => booking.facilityId === roomId)
-    .map((booking) => {
-      const start = new Date(booking.startAt);
-      const end = new Date(booking.endAt);
-      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return null;
-      if (end <= dayStart || start > dayEnd) return null;
-
-      const clampedStart = start < windowStart ? windowStart : start;
-      const clampedEnd = end > windowEnd ? windowEnd : end;
-      if (clampedEnd <= clampedStart) return null;
-
-      const startMinutes = Math.max(minutesFromMidnight(clampedStart), WINDOW_START_MINUTES);
-      const endMinutes = Math.min(minutesFromMidnight(clampedEnd), WINDOW_END_MINUTES);
-      if (endMinutes <= startMinutes) return null;
-
-      return {
-        booking,
-        leftPercent: ((startMinutes - WINDOW_START_MINUTES) / WINDOW_SPAN_MINUTES) * 100,
-        widthPercent: ((endMinutes - startMinutes) / WINDOW_SPAN_MINUTES) * 100,
-        startMinutes,
-        endMinutes,
-      };
-    })
-    .filter((item): item is Omit<GridBlockLayout, "lane" | "laneCount"> => item !== null);
-
-  return assignOverlapLanes(placed);
-};
 
 const BookingGrid = ({
   anchorDate,
@@ -150,20 +56,31 @@ const BookingGrid = ({
   onBookingClick,
   onAddCell,
 }: BookingGridProps) => {
-  const { t, i18n } = useTranslation("facility");
-  const locale = i18n.language || "en";
+  const { t } = useTranslation("facility");
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const hourLabels = useMemo(() => gridHourLabels(), []);
+  const cellIndexes = useMemo(() => Array.from({ length: GRID_CELL_COUNT }, (_, index) => index), []);
 
   useEffect(() => {
     onVisibleRangeChange({ start: startOfDay(anchorDate), end: endOfDay(anchorDate) });
   }, [anchorDate, onVisibleRangeChange]);
 
-  const blocksByRoom = useMemo(() => {
-    const map = new Map<string, GridBlockLayout[]>();
-    for (const room of rooms) {
-      map.set(room.id, layoutBlocksForRoom(bookings, room.id, anchorDate));
-    }
-    return map;
-  }, [anchorDate, bookings, rooms]);
+  useEffect(() => {
+    const node = scrollRef.current;
+    if (!node) return;
+    const applyDefaultScroll = () => {
+      const timeWidth = Math.max(0, node.scrollWidth - ROOM_COLUMN_WIDTH_PX);
+      if (timeWidth <= 0) return;
+      node.scrollLeft = defaultViewportScrollRatio() * timeWidth;
+    };
+    applyDefaultScroll();
+    requestAnimationFrame(applyDefaultScroll);
+  }, [anchorDate, rooms.length]);
+
+  const blocksByRoom = useMemo(
+    () => layoutGridOccupancyBlocks(bookings, rooms, anchorDate),
+    [anchorDate, bookings, rooms]
+  );
 
   const shiftDay = (delta: number) => {
     const next = new Date(anchorDate);
@@ -171,13 +88,14 @@ const BookingGrid = ({
     onAnchorDateChange(next);
   };
 
-  const handleCellClick = (facilityId: string, hour: number) => {
+  const handleCellClick = (facilityId: string, cellIndex: number) => {
     if (!canCreate) return;
-    const start = new Date(anchorDate);
-    start.setHours(hour, 0, 0, 0);
-    const end = new Date(anchorDate);
-    end.setHours(hour + 1, 0, 0, 0);
+    const { start, end } = clickIntervalForCell(anchorDate, cellIndex);
     onAddCell(facilityId, toLocalDatetimeValue(start), toLocalDatetimeValue(end));
+  };
+
+  const timeColumnsStyle = {
+    gridTemplateColumns: `repeat(${GRID_CELL_COUNT}, minmax(${CELL_MIN_WIDTH_REM}rem, ${CELL_MIN_WIDTH_REM}rem))`,
   };
 
   return (
@@ -202,24 +120,39 @@ const BookingGrid = ({
         />
       </div>
 
-      <div className="min-h-0 flex-1 overflow-auto bg-white dark:bg-gray-900">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-auto bg-white dark:bg-gray-900">
         {rooms.length === 0 ? (
           <p className="px-6 py-8 text-sm text-gray-500 dark:text-gray-400">{t("booking.grid.noRooms")}</p>
         ) : (
-          <div className="min-w-[720px]">
+          <div className="relative inline-block min-w-full">
             <div className="sticky top-0 z-20 flex border-b border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-gray-800/80">
-              <div className="sticky left-0 z-30 flex w-40 shrink-0 items-center border-r border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium text-gray-500 dark:border-white/10 dark:bg-gray-800/80 dark:text-gray-400">
+              <div
+                className={cn(
+                  "sticky left-0 z-30 flex shrink-0 items-center border-r border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium text-gray-500 dark:border-white/10 dark:bg-gray-800/80 dark:text-gray-400",
+                  ROOM_COLUMN_WIDTH_CLASS
+                )}
+              >
                 {t("booking.grid.room")}
               </div>
-              <div className="grid min-w-0 flex-1" style={{ gridTemplateColumns: `repeat(${HOUR_COLUMNS.length}, minmax(3.5rem, 1fr))` }}>
-                {HOUR_COLUMNS.map((hour) => (
-                  <div
-                    key={hour}
-                    className="border-r border-gray-200 px-1 py-2 text-center text-xs font-medium text-gray-500 last:border-r-0 dark:border-white/10 dark:text-gray-400"
-                  >
-                    {formatHourLabel(hour, locale)}
-                  </div>
-                ))}
+              <div className="relative grid" style={timeColumnsStyle}>
+                {cellIndexes.map((cellIndex) => {
+                  const isHourStart = cellIndex % 2 === 0;
+                  const hour = cellIndex / 2;
+                  return (
+                    <div
+                      key={cellIndex}
+                      className={cn(
+                        "border-r border-gray-200 px-0.5 py-2 text-center text-[10px] font-medium text-gray-500 dark:border-white/10 dark:text-gray-400",
+                        cellIndex === GRID_CELL_COUNT - 1 && "border-r-0"
+                      )}
+                    >
+                      {isHourStart ? hourLabels[hour] : null}
+                    </div>
+                  );
+                })}
+                <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-gray-500 dark:text-gray-400">
+                  {formatGridHourLabel(24)}
+                </span>
               </div>
             </div>
 
@@ -227,42 +160,49 @@ const BookingGrid = ({
               const blocks = blocksByRoom.get(room.id) || [];
               return (
                 <div key={room.id} className="flex border-b border-gray-100 dark:border-white/5">
-                  <div className="sticky left-0 z-10 flex w-40 shrink-0 items-center border-r border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-800 dark:border-white/10 dark:bg-gray-900 dark:text-gray-100">
+                  <div
+                    className={cn(
+                      "sticky left-0 z-10 flex shrink-0 items-center border-r border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-800 dark:border-white/10 dark:bg-gray-900 dark:text-gray-100",
+                      ROOM_COLUMN_WIDTH_CLASS
+                    )}
+                  >
                     <span className="truncate" title={roomLabel(room)}>
                       {roomLabel(room)}
                     </span>
                   </div>
-                  <div className="relative min-w-0 flex-1">
-                    <div className="grid h-14" style={{ gridTemplateColumns: `repeat(${HOUR_COLUMNS.length}, minmax(3.5rem, 1fr))` }}>
-                      {HOUR_COLUMNS.map((hour) => (
-                        <button
-                          key={hour}
-                          type="button"
-                          disabled={!canCreate}
-                          aria-label={t("booking.grid.addSlot", {
-                            room: roomLabel(room),
-                            hour: formatHourLabel(hour, locale),
-                          })}
-                          className={cn(
-                            "border-r border-gray-100 last:border-r-0 dark:border-white/5",
-                            canCreate && "hover:bg-brand-50/60 dark:hover:bg-brand-500/10",
-                            !canCreate && "cursor-default"
-                          )}
-                          onClick={() => handleCellClick(room.id, hour)}
-                        />
-                      ))}
+                  <div className="relative">
+                    <div className="grid h-14" style={timeColumnsStyle}>
+                      {cellIndexes.map((cellIndex) => (
+                          <button
+                            key={cellIndex}
+                            type="button"
+                            disabled={!canCreate}
+                            aria-label={t("booking.grid.addSlot", {
+                              room: roomLabel(room),
+                              hour: formatGridCellStartLabel(cellIndex),
+                            })}
+                            className={cn(
+                              "border-r border-gray-100 dark:border-white/5",
+                              cellIndex % 2 === 1 && "border-r-gray-200/80 dark:border-r-white/10",
+                              cellIndex === GRID_CELL_COUNT - 1 && "border-r-0",
+                              canCreate && "hover:bg-brand-50/60 dark:hover:bg-brand-500/10",
+                              !canCreate && "cursor-default"
+                            )}
+                            onClick={() => handleCellClick(room.id, cellIndex)}
+                          />
+                        ))}
                     </div>
                     {blocks.map(({ booking, leftPercent, widthPercent, lane, laneCount }) => {
                       const topPercent = (lane / laneCount) * 100;
                       const heightPercent = 100 / laneCount;
                       return (
                         <button
-                          key={booking.id}
+                          key={`${booking.id}-${room.id}`}
                           type="button"
                           className="absolute z-[1] overflow-hidden rounded-md border border-brand-200 bg-brand-50 px-1.5 py-0.5 text-left hover:bg-brand-100 dark:border-brand-500/40 dark:bg-brand-500/20 dark:hover:bg-brand-500/30"
                           style={{
                             left: `${leftPercent}%`,
-                            width: `${Math.max(widthPercent, 2)}%`,
+                            width: `${Math.max(widthPercent, 0.4)}%`,
                             top: `calc(${topPercent}% + 2px)`,
                             height: `calc(${heightPercent}% - 4px)`,
                           }}
