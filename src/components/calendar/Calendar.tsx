@@ -21,6 +21,10 @@ const Calendar = ({
 }: CalendarProps) => {
   const [selectedDate, setSelectedDate] = useState<Date>(currentDate);
 
+  useEffect(() => {
+    setSelectedDate(currentDate);
+  }, [currentDate]);
+
   // Validate and set initial view
   const getInitialView = (): CalendarView => {
     if (availableViews.includes(defaultView)) {
@@ -33,27 +37,27 @@ const Calendar = ({
   const [currentView, setCurrentView] = useState<CalendarView>(getInitialView());
 
   // Get showNavigationButtons value based on current view
-  const getShowNavigationButtons = (): { nav: boolean; today: boolean } => {
+  const getShowNavigationButtons = (): { nav: boolean; dateControl: boolean } => {
     if (typeof showNavigationButtons === "boolean") {
-      return { nav: showNavigationButtons, today: showNavigationButtons };
+      return { nav: showNavigationButtons, dateControl: showNavigationButtons };
     }
 
     // If it's an object, get the value for current view
     const viewConfig = showNavigationButtons[currentView];
 
     if (viewConfig === undefined) {
-      return { nav: false, today: false };
+      return { nav: false, dateControl: false };
     }
 
-    // If it's a boolean, use it for both nav and today
+    // If it's a boolean, use it for both nav and date control
     if (typeof viewConfig === "boolean") {
-      return { nav: viewConfig, today: viewConfig };
+      return { nav: viewConfig, dateControl: viewConfig };
     }
 
-    // If it's an object with nav and today properties
+    // If it's an object with nav and dateControl properties
     return {
       nav: viewConfig.nav ?? false,
-      today: viewConfig.today ?? false,
+      dateControl: viewConfig.dateControl ?? false,
     };
   };
 
@@ -109,10 +113,6 @@ const Calendar = ({
     handleDateChange(newDate);
   };
 
-  const handleToday = () => {
-    handleDateChange(new Date());
-  };
-
   const renderView = () => {
     const viewProps = {
       currentDate: selectedDate,
@@ -144,7 +144,7 @@ const Calendar = ({
         validRange={validRange}
         onPrevious={handlePrevious}
         onNext={handleNext}
-        onToday={handleToday}
+        onDateChange={handleDateChange}
         onViewChange={handleViewChange}
         onAddEvent={onAddEvent ? () => onAddEvent() : undefined}
         showNavigationButtons={getShowNavigationButtons()}

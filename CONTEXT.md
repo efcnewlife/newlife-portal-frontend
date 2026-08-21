@@ -64,6 +64,22 @@ _Avoid_: treating Primary as the only occupied room on Grid
 Which admin booking surface is active: `list`, `calendar`, or `grid` (URL/`view` state).
 _Avoid_: conflating Calendar packing with Grid occupancy
 
+**Calendar layout**:
+Which Calendar chrome is active inside Booking view mode `calendar`: `week`, `day`, or `month`. It is stored in the URL with the booking `date` (alongside `view=calendar`), not only in ephemeral component state.
+_Avoid_: treating Calendar layout as Booking view mode, conflating Month with Booking Grid, relying on refresh-loss local state as the source of truth for layout
+
+**Calendar month layout**:
+The month Calendar layout: left is a month grid of Calendar booking events; each visible line in a cell is a compact summary (single fixed-color dot, Booking start time, Booker). How many lines fit is measured from the cell's height (at least one line when the day has events); when more events exist than fit, a clickable "+ N more" selects that day as the Calendar anchor date without opening a remainder popover. Clicking a summary line opens that booking and sets the anchor to that day. Days from adjacent months in the visible grid are selectable and show summaries; choosing one sets the anchor (and the shown month follows). Selecting a day keeps Calendar layout `month` and sets the Calendar anchor date. Right is the same day time-axis of Calendar booking events as Day for that anchor date, including the same Calendar density overflow rule (`K = 10` → Booking view mode `grid` for that date). Toolbar prev/next steps by one month and preserves the day-of-month when possible.
+_Avoid_: month grid as date-only navigation with no in-cell summaries, a list panel instead of the day time-axis, treating in-cell lines as the full Day time-axis, lunar / non-booking decorations, status- or room-colored dots as the v1 rule, remainder popover for overflow, stepping Month prev/next by day or week, a divergent overflow K on the month right pane
+
+**Calendar date control**:
+The Calendar toolbar control that sets the Calendar anchor date via a date picker and includes a Today action to jump to the current calendar day. It replaces a Today-only button and applies to every Calendar layout (`week`, `day`, `month`).
+_Avoid_: a separate Today button beside an independent date picker, treating this control as a Booking view mode switch, Calendar-only Today while Month uses a different jump control
+
+**Booking range query**:
+The non-paginated read used by Calendar and Booking Grid: given a required visible time window (`dateFrom` / `dateTo`), return every booking whose interval overlaps that window (`start < windowEnd` and `end > windowStart`). Cancelled bookings are excluded by default and may be included via an explicit query flag. The window length is capped (admin UI ranges fit within about two months). It is not the List DataTable `pages` query.
+_Avoid_: `getBookingPages` with a large `page_size` as the Calendar/Grid contract, filtering only by `start_at` inside the window, treating List pagination as occupancy completeness, requiring cancelled rows for the default occupancy surfaces
+
 **DataTable**:
 The Portal admin list shell built on `@efcnewlife/newlife-ui` Table primitives, plus pagination, sorting, row selection, and context menu. It is a host composite, not the library Table itself.
 _Avoid_: Table (when meaning the Portal list page), DataGrid, Grid
