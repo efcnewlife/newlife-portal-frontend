@@ -147,9 +147,9 @@ const DayView = ({
   };
 
   return (
-    <div className="flex flex-auto overflow-hidden border border-gray-300 dark:border-white/10 rounded-b-2xl">
-      <div className="flex flex-1 flex-col overflow-auto">
-        <div className="relative flex flex-1 overflow-y-auto">
+    <div className="flex min-h-0 flex-1 overflow-hidden border border-gray-300 dark:border-white/10 rounded-b-2xl">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div className="relative flex min-h-0 flex-1 overflow-y-auto">
           {/* Left time axis */}
           <div className="flex h-max w-18 flex-col border-r border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-gray-800/50">
             {hours.map((hour) => (

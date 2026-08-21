@@ -350,7 +350,7 @@ const BookingDataPage = () => {
       )}
 
       {viewMode === "calendar" && (
-        <div className="min-h-0 flex-1 space-y-3">
+        <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
           <BookingCalendar
             anchorDate={anchorDate}
             bookings={calendarItems}

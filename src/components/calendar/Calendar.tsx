@@ -136,7 +136,7 @@ const Calendar = ({
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       <CalendarToolBar
         currentDate={selectedDate}
         currentView={currentView}
