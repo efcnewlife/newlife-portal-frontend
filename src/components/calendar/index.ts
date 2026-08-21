@@ -1,6 +1,7 @@
 export { default as Calendar } from "./Calendar";
 export { default as CalendarToolBar } from "./CalendarToolbar";
 export { default as DayView } from "./DayView";
+export * from "./monthLayout";
 export { default as MonthView } from "./MonthView";
 export type {
   CalendarDay,
@@ -11,6 +12,5 @@ export type {
   CalendarViewProps,
   EventHorizontalLayout,
 } from "./types";
-export * from "./monthLayout";
 export * from "./utils";
 export { default as WeekView } from "./WeekView";

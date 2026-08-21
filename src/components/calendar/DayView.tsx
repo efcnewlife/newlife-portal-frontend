@@ -1,7 +1,7 @@
+import { cn } from "@/utils";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MdAdd } from "react-icons/md";
-import { cn } from "@/utils";
 import DensityOverflowControl from "./DensityOverflowControl";
 import EventBlock from "./EventBlock";
 import { packDayEventLanes } from "./packDayEventLanes";

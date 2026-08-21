@@ -1,6 +1,6 @@
 import { getMonthDays } from "./utils";
 
-export const DEFAULT_MONTH_SUMMARY_LINE_HEIGHT_PX = 18;
+export const DEFAULT_MONTH_SUMMARY_LINE_HEIGHT_PX = 16;
 
 /**
  * Visible month grid window (Sunday-start 6x7) for the Calendar month layout.

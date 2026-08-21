@@ -1,6 +1,6 @@
+import { cn } from "@/utils";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { cn } from "@/utils";
 import DayView from "./DayView";
 import { formatEventTimeClock } from "./formatEventTime";
 import { DEFAULT_MONTH_SUMMARY_LINE_HEIGHT_PX, monthCellSummaryCapacity } from "./monthLayout";
@@ -128,7 +128,7 @@ const MonthView = ({
                   data-is-current-month={day.isCurrentMonth ? "" : undefined}
                   data-is-disabled={isDisabled ? "" : undefined}
                   className={cn(
-                    "group relative cursor-pointer bg-gray-50 px-2 py-2 text-gray-500 transition-colors data-is-current-month:bg-white data-is-current-month:hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-400 dark:not-data-is-current-month:before:pointer-events-none dark:not-data-is-current-month:before:absolute dark:not-data-is-current-month:before:inset-0 dark:not-data-is-current-month:before:bg-gray-800/50 dark:data-is-current-month:bg-gray-900 dark:data-is-current-month:hover:bg-gray-800/50",
+                    "relative cursor-pointer bg-gray-50 px-1 py-1 text-gray-500 data-is-current-month:bg-white dark:bg-gray-900 dark:text-gray-400 dark:not-data-is-current-month:before:pointer-events-none dark:not-data-is-current-month:before:absolute dark:not-data-is-current-month:before:inset-0 dark:not-data-is-current-month:before:bg-gray-800/50 dark:data-is-current-month:bg-gray-900",
                     isDisabled && "cursor-not-allowed opacity-50",
                     !day.isCurrentMonth && "opacity-75"
                   )}
@@ -141,17 +141,16 @@ const MonthView = ({
                   <time
                     dateTime={day.date}
                     className={cn(
-                      "relative inline-flex size-6 items-center justify-center",
-                      isToday && "rounded-full bg-brand-500 font-semibold text-white dark:bg-brand-500",
-                      !isToday &&
-                        isSelected &&
-                        "rounded-full bg-gray-900 font-semibold text-white dark:bg-white dark:text-gray-900"
+                      "relative inline-flex size-6 items-center justify-center rounded-full transition-colors",
+                      isToday && "bg-brand-500 font-semibold text-white dark:bg-brand-500",
+                      !isToday && isSelected && "bg-gray-900 font-semibold text-white dark:bg-white dark:text-gray-900",
+                      !isToday && !isSelected && !isDisabled && "hover:bg-gray-200 dark:hover:bg-white/15"
                     )}
                   >
                     {day.date.split("-").pop()?.replace(/^0/, "") || ""}
                   </time>
                   {hasEvents ? (
-                    <ol className="mt-1 space-y-0.5">
+                    <ol className="mt-0.5 space-y-0 leading-none">
                       {visibleEvents.map((event) => {
                         const eventStart = event.start instanceof Date ? event.start : new Date(event.start);
                         const timeString = formatEventTimeClock(eventStart, locale);
@@ -168,19 +167,19 @@ const MonthView = ({
                                 e.stopPropagation();
                                 onEventContextMenu?.(event, e);
                               }}
-                              className="group/summary flex w-full min-w-0 items-center gap-1 text-left"
+                              className="-mx-0.5 flex w-[calc(100%+0.25rem)] min-w-0 items-center gap-0.5 rounded px-0.5 py-px text-left text-[12px] leading-tight transition-colors hover:bg-gray-100 dark:hover:bg-white/10"
                             >
                               <span
                                 aria-hidden
-                                className="size-1.5 flex-none rounded-full bg-brand-500 dark:bg-brand-400"
+                                className="size-1 flex-none rounded-full bg-brand-500 dark:bg-brand-400"
                               />
                               <time
                                 dateTime={eventStart.toISOString()}
-                                className="flex-none text-[11px] text-gray-500 group-hover/summary:text-brand-600 dark:text-gray-400 dark:group-hover/summary:text-brand-400"
+                                className="flex-none text-gray-500 dark:text-gray-400"
                               >
                                 {timeString}
                               </time>
-                              <span className="min-w-0 flex-auto truncate text-[11px] font-medium text-gray-900 group-hover/summary:text-brand-600 dark:text-white dark:group-hover/summary:text-brand-400">
+                              <span className="ml-0.5 min-w-0 flex-auto truncate font-medium text-gray-900 dark:text-white">
                                 {event.title}
                               </span>
                             </button>
@@ -195,7 +194,7 @@ const MonthView = ({
                               e.stopPropagation();
                               handleDaySelect(day.date);
                             }}
-                            className="text-[11px] text-gray-500 hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400"
+                            className="px-0.5 py-px text-[12px] leading-tight text-gray-500 hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400"
                           >
                             {t("month.moreSummaries", { count: hiddenCount })}
                           </button>
