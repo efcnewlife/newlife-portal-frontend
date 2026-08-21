@@ -135,7 +135,7 @@ const BookingGrid = ({
           currentView="day"
           onPrevious={() => shiftDay(-1)}
           onNext={() => shiftDay(1)}
-          onToday={() => onAnchorDateChange(new Date())}
+          onDateChange={onAnchorDateChange}
         />
       </div>
 

@@ -53,10 +53,10 @@ export interface CalendarProps {
   showNavigationButtons?:
     | boolean
     | {
-        month?: boolean | { nav?: boolean; today?: boolean };
-        week?: boolean | { nav?: boolean; today?: boolean };
-        day?: boolean | { nav?: boolean; today?: boolean };
-      }; // Whether to display switching period and Today button, which can be a boolean or an object configured according to the view
+        month?: boolean | { nav?: boolean; dateControl?: boolean };
+        week?: boolean | { nav?: boolean; dateControl?: boolean };
+        day?: boolean | { nav?: boolean; dateControl?: boolean };
+      }; // Whether to display prev/next and the Calendar date control, by view
 }
 
 export interface CalendarViewProps {

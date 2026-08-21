@@ -5,6 +5,9 @@
     "month": "Month"
   },
   "today": "Today",
+  "dateControl": {
+    "open": "Go to date"
+  },
   "weekOfMonth": "Week {{week}}",
   "addBooking": "Add booking",
   "densityOverflow": "{{count}} more — view in Grid",

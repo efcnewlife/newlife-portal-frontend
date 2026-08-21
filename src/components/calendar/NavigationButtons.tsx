@@ -1,6 +1,7 @@
-import { Button } from "@efcnewlife/newlife-ui";
-import { MdChevronLeft, MdChevronRight } from "react-icons/md";
+import { cn } from "@/utils";
 import { useTranslation } from "react-i18next";
+import { MdChevronLeft, MdChevronRight } from "react-icons/md";
+import CalendarDateControl from "./CalendarDateControl";
 import { CalendarView, DateRange } from "./types";
 import { canNavigateNext, canNavigatePrevious } from "./utils";
 
@@ -10,9 +11,10 @@ interface NavigationButtonsProps {
   validRange?: DateRange;
   onPrevious: () => void;
   onNext: () => void;
-  onToday: () => void;
+  onDateChange: (date: Date) => void;
   showNav?: boolean;
-  showToday?: boolean;
+  /** When true, show the Calendar date control (date picker + Today). */
+  showDateControl?: boolean;
 }
 
 const NavigationButtons = ({
@@ -21,13 +23,12 @@ const NavigationButtons = ({
   validRange,
   onPrevious,
   onNext,
-  onToday,
+  onDateChange,
   showNav = true,
-  showToday = true,
+  showDateControl = true,
 }: NavigationButtonsProps) => {
   const { t } = useTranslation("calendar");
   const showPreviousNext = showNav;
-  const showTodayButton = showToday;
 
   const getPreviousLabel = (view: CalendarView): string => {
     switch (view) {
@@ -51,44 +52,17 @@ const NavigationButtons = ({
     }
   };
 
-  // If neither nav nor today should be shown, return null
-  if (!showPreviousNext && !showTodayButton) {
+  if (!showPreviousNext && !showDateControl) {
     return null;
   }
 
-  // Determine rounded corners based on which buttons are shown
-  const getPreviousClasses = () => {
-    const baseClasses =
-      "flex h-9 w-9 items-center justify-center text-gray-400 hover:text-gray-500 focus:relative hover:bg-gray-50 dark:hover:text-white dark:hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-gray-400 disabled:hover:bg-transparent";
-    if (!showTodayButton) {
-      // Only nav buttons: Previous has left rounded, Next has right rounded
-      return `${baseClasses} rounded-l-md`;
-    }
-    // Both nav and today: Previous has left rounded only
-    return `${baseClasses} rounded-l-md`;
-  };
+  const navButtonClasses =
+    "flex h-9 w-9 items-center justify-center text-gray-400 hover:text-gray-500 focus:relative hover:bg-gray-50 dark:hover:text-white dark:hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-gray-400 disabled:hover:bg-transparent";
 
-  const getTodayClasses = () => {
-    const baseClasses =
-      "h-9 px-3.5 py-2 text-sm font-semibold border-0 shadow-none bg-transparent hover:bg-gray-50 dark:hover:bg-white/10";
-    if (!showPreviousNext) {
-      // Only today button: has both rounded corners
-      return `${baseClasses} rounded-md`;
-    }
-    // Both nav and today: no rounded corners
-    return `${baseClasses} rounded-none`;
-  };
-
-  const getNextClasses = () => {
-    const baseClasses =
-      "flex h-9 w-9 items-center justify-center text-gray-400 hover:text-gray-500 focus:relative hover:bg-gray-50 dark:hover:text-white dark:hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-gray-400 disabled:hover:bg-transparent";
-    if (!showTodayButton) {
-      // Only nav buttons: Next has right rounded
-      return `${baseClasses} rounded-r-md`;
-    }
-    // Both nav and today: Next has right rounded only
-    return `${baseClasses} rounded-r-md`;
-  };
+  const dateControlTriggerClassName = cn(
+    !showPreviousNext && "rounded-md",
+    showPreviousNext && "rounded-none border-x border-gray-200 dark:border-white/10"
+  );
 
   return (
     <div className="relative flex items-stretch rounded-md bg-white shadow-xs outline -outline-offset-1 outline-gray-300 dark:bg-white/10 dark:shadow-none dark:outline-white/5">
@@ -97,23 +71,26 @@ const NavigationButtons = ({
           type="button"
           onClick={onPrevious}
           disabled={!canNavigatePrevious(currentDate, currentView, validRange)}
-          className={getPreviousClasses()}
+          className={cn(navButtonClasses, "rounded-l-md")}
         >
           <span className="sr-only">{getPreviousLabel(currentView)}</span>
           <MdChevronLeft className="size-5" />
         </button>
       )}
-      {showTodayButton && (
-        <Button onClick={onToday} variant="outline" size="sm" className={getTodayClasses()}>
-          {t("today")}
-        </Button>
+      {showDateControl && (
+        <CalendarDateControl
+          value={currentDate}
+          onChange={onDateChange}
+          validRange={validRange}
+          triggerClassName={dateControlTriggerClassName}
+        />
       )}
       {showPreviousNext && (
         <button
           type="button"
           onClick={onNext}
           disabled={!canNavigateNext(currentDate, currentView, validRange)}
-          className={getNextClasses()}
+          className={cn(navButtonClasses, "rounded-r-md")}
         >
           <span className="sr-only">{getNextLabel(currentView)}</span>
           <MdChevronRight className="size-5" />

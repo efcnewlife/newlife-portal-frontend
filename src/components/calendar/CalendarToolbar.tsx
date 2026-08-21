@@ -1,5 +1,6 @@
 import { Badge, Button, ButtonGroup } from "@efcnewlife/newlife-ui";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/utils";
 import NavigationButtons from "./NavigationButtons";
 import { CalendarView, DateRange } from "./types";
 import { formatDate, formatWeekday, getEndOfWeek, getStartOfWeek } from "./utils";
@@ -11,10 +12,10 @@ interface CalendarToolBarProps {
   validRange?: DateRange;
   onPrevious: () => void;
   onNext: () => void;
-  onToday: () => void;
+  onDateChange: (date: Date) => void;
   onViewChange: (view: CalendarView) => void;
   onAddEvent?: () => void;
-  showNavigationButtons?: { nav: boolean; today: boolean };
+  showNavigationButtons?: { nav: boolean; dateControl: boolean };
 }
 
 const CalendarToolBar = ({
@@ -24,10 +25,10 @@ const CalendarToolBar = ({
   validRange,
   onPrevious,
   onNext,
-  onToday,
+  onDateChange,
   onViewChange,
   onAddEvent,
-  showNavigationButtons = { nav: true, today: true },
+  showNavigationButtons = { nav: true, dateControl: true },
 }: CalendarToolBarProps) => {
   const { t, i18n } = useTranslation("calendar");
   const locale = i18n.language || "en";
@@ -211,19 +212,24 @@ const CalendarToolBar = ({
         </div>
       </div>
       <div className="flex items-center">
-        {(showNavigationButtons.nav || showNavigationButtons.today) && (
+        {(showNavigationButtons.nav || showNavigationButtons.dateControl) && (
           <NavigationButtons
             currentDate={currentDate}
             currentView={currentView}
             validRange={validRange}
             onPrevious={onPrevious}
             onNext={onNext}
-            onToday={onToday}
+            onDateChange={onDateChange}
             showNav={showNavigationButtons.nav}
-            showToday={showNavigationButtons.today}
+            showDateControl={showNavigationButtons.dateControl}
           />
         )}
-        <div className={`flex items-center ${showNavigationButtons.nav || showNavigationButtons.today ? "ml-4" : ""}`}>
+        <div
+          className={cn(
+            "flex items-center",
+            (showNavigationButtons.nav || showNavigationButtons.dateControl) && "ml-4"
+          )}
+        >
           {availableViews.length > 1 && (
             <div className="mr-4">
               <ButtonGroup

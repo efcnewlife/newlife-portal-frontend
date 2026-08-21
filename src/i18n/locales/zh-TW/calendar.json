@@ -5,6 +5,9 @@
     "month": "月"
   },
   "today": "今天",
+  "dateControl": {
+    "open": "前往日期"
+  },
   "weekOfMonth": "第 {{week}} 週",
   "addBooking": "新增預約",
   "densityOverflow": "另有 {{count}} 筆，改以 Grid 檢視",
