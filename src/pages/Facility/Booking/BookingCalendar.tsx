@@ -100,7 +100,7 @@ const BookingCalendar = ({
   );
 
   return (
-    <div className="relative">
+    <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
       <Calendar
         currentDate={anchorDate}
         defaultView="week"

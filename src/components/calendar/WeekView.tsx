@@ -117,9 +117,9 @@ const WeekView = ({
   };
 
   return (
-    <div className="flex flex-1 flex-col overflow-auto max-md:hidden border border-gray-300 dark:border-white/10 rounded-b-2xl">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden max-md:hidden border border-gray-300 dark:border-white/10 rounded-b-2xl">
       {/* Header with weekday labels */}
-      <div className="sticky top-0 grid grid-cols-7 bg-white dark:bg-gray-900 pl-18 shadow-sm border-b border-gray-300 dark:border-white/10">
+      <div className="grid shrink-0 grid-cols-7 bg-white dark:bg-gray-900 pl-18 shadow-sm border-b border-gray-300 dark:border-white/10">
         {weekDates.map((date, index) => {
           const today = new Date();
           today.setHours(0, 0, 0, 0);
@@ -164,7 +164,7 @@ const WeekView = ({
         })}
       </div>
 
-      <div className="relative flex flex-1 overflow-y-auto">
+      <div className="relative flex min-h-0 flex-1 overflow-y-auto">
         {/* Left time axis */}
         <div className="flex h-max w-18 flex-col border-r border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-gray-800/50">
           {hours.map((hour) => (
