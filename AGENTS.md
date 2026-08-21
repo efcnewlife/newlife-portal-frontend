@@ -41,18 +41,25 @@ pnpm run dev              # http://localhost:5173 (strictPort — fails if taken
 pnpm run type-check       # tsc -b --noEmit (required in CI)
 pnpm run test             # vitest run
 pnpm run test:watch       # vitest
-pnpm run lint             # eslint . (not required for agent checks)
+pnpm run lint             # eslint . (not required for agent checks; commit hook runs eslint --fix on staged files)
+pnpm run format           # prettier --write .
+pnpm run format:check     # prettier --check .
 pnpm run build            # tsc -b && vite build
 pnpm run build:stg        # --mode staging
 pnpm run build:prod       # --mode production
 ./scripts/check-branch-name.test.sh
+./scripts/format-staged.test.sh
 ```
 
-CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile` and **`pnpm run type-check` only** on PRs/pushes to `main` and `develop`. It does not run `test` or `lint`. PRs also run `.github/workflows/branch-name.yml` (`Branch name` check).
+CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile` and **`pnpm run type-check`** on PRs/pushes to `main` and `develop`. Add `format:check` in the follow-up full-tree Prettier apply PR. It does not run `test` or `lint`. PRs also run `.github/workflows/branch-name.yml` (`Branch name` check).
 
 ### Branch names
 
 Topic branches: `{type}/{issue-number}-{short-description}` (types: `feat` `fix` `hotfix` `refactor` `perf` `test` `docs` `chore` `build` `ci`). Exceptions: `release/x.y.z`, `spike/{short-description}`, plus `main` / `develop`. Local: `.githooks/pre-push` after install. Emergency: `git push --no-verify`. Consider marking `Branch name` required in GitHub branch protection.
+
+### Commit format hook
+
+After `./scripts/install-git-hooks.sh`, `.githooks/pre-commit` formats **staged** files via Prettier, runs `eslint --fix` on staged TS/JS (remaining **errors** fail the commit; warnings do not), and re-stages. Emergency: `git commit --no-verify`. See ADR 0005.
 
 Copy `.env.example` → `.env.local` before running locally. Copy `.envrc.example` → `.envrc` (or export `NODE_AUTH_TOKEN`) so pnpm can install `@efcnewlife/newlife-ui`.
 
