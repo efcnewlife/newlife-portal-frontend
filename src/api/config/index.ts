@@ -187,6 +187,7 @@ export const API_ENDPOINTS = {
     },
     BOOKINGS: {
       PAGES: `${ADMIN_API_PREFIX}/facility/bookings/pages`,
+      RANGE: `${ADMIN_API_PREFIX}/facility/bookings/range`,
       CREATE: `${ADMIN_API_PREFIX}/facility/bookings`,
       DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/bookings/${id}`,
       UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/bookings/${id}`,

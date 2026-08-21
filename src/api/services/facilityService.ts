@@ -313,6 +313,12 @@ export interface BookingPagesParams extends PagesParams {
   dateTo?: string;
 }
 
+export interface BookingRangeParams {
+  dateFrom: string;
+  dateTo: string;
+  includeCancelled?: boolean;
+}
+
 export interface BookingListItem {
   id: string;
   userId: string;
@@ -729,6 +735,18 @@ class FacilityService {
   async getBookingPages(params: BookingPagesParams): Promise<ApiResponse<PagesResponse<BookingListItem>>> {
     if (IS_MOCK_API) return emptyPages();
     return httpClient.get(API_ENDPOINTS.FACILITY.BOOKINGS.PAGES, params as Record<string, unknown>);
+  }
+
+  async getBookingRange(params: BookingRangeParams): Promise<ApiResponse<{ items: BookingListItem[] }>> {
+    if (IS_MOCK_API) return emptyList();
+    const query: Record<string, unknown> = {
+      dateFrom: params.dateFrom,
+      dateTo: params.dateTo,
+    };
+    if (params.includeCancelled !== undefined) {
+      query.includeCancelled = params.includeCancelled;
+    }
+    return httpClient.get(API_ENDPOINTS.FACILITY.BOOKINGS.RANGE, query);
   }
 
   async getBookingById(id: string): Promise<ApiResponse<BookingDetail>> {

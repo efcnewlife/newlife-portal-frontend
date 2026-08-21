@@ -25,6 +25,7 @@ import BookingCancelForm from "./BookingCancelForm";
 import BookingDataForm, { type BookingDataFormHandle, type BookingFormValues } from "./BookingDataForm";
 import BookingDetailDrawer from "./BookingDetailDrawer";
 import BookingGrid from "./BookingGrid";
+import { loadBookingsForVisibleRange } from "./bookingOccupancyLoad";
 import { resolveBookingSaveErrorMessage } from "./bookingSaveError";
 
 type BookingRow = BookingListItem & Record<string, unknown>;
@@ -137,14 +138,9 @@ const BookingDataPage = () => {
     if (!visibleRange) return;
     setLoading(true);
     try {
-      const res = await facilityService.getBookingPages({
-        page: 0,
-        page_size: 200,
-        dateFrom: visibleRange.start.toISOString(),
-        dateTo: visibleRange.end.toISOString(),
-      });
-      if (res.success) {
-        setCalendarItems((res.data.items || []) as BookingRow[]);
+      const items = await loadBookingsForVisibleRange(facilityService, visibleRange);
+      if (items !== null) {
+        setCalendarItems(items as BookingRow[]);
       }
     } catch (error) {
       notifyApiError(error, {
