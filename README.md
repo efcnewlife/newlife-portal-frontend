@@ -42,6 +42,7 @@ Important flags:
 
 ```bash
 pnpm install
+./scripts/install-git-hooks.sh   # once per clone; see AGENTS.md Branch names
 pnpm run dev
 ```
 
