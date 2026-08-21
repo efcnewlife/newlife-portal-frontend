@@ -1,6 +1,6 @@
-import { MdChevronLeft, MdChevronRight } from "react-icons/md";
-import { useTranslation } from "react-i18next";
 import { cn } from "@/utils";
+import { useTranslation } from "react-i18next";
+import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import CalendarDateControl from "./CalendarDateControl";
 import { CalendarView, DateRange } from "./types";
 import { canNavigateNext, canNavigatePrevious } from "./utils";
@@ -59,32 +59,42 @@ const NavigationButtons = ({
   const navButtonClasses =
     "flex h-9 w-9 items-center justify-center text-gray-400 hover:text-gray-500 focus:relative hover:bg-gray-50 dark:hover:text-white dark:hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-gray-400 disabled:hover:bg-transparent";
 
+  const dateControlTriggerClassName = cn(
+    !showPreviousNext && "rounded-md",
+    showPreviousNext && "rounded-none border-x border-gray-200 dark:border-white/10"
+  );
+
   return (
-    <div className="flex items-center gap-2">
+    <div className="relative flex items-stretch rounded-md bg-white shadow-xs outline -outline-offset-1 outline-gray-300 dark:bg-white/10 dark:shadow-none dark:outline-white/5">
       {showPreviousNext && (
-        <div className="relative flex items-stretch rounded-md bg-white shadow-xs outline -outline-offset-1 outline-gray-300 dark:bg-white/10 dark:shadow-none dark:outline-white/5">
-          <button
-            type="button"
-            onClick={onPrevious}
-            disabled={!canNavigatePrevious(currentDate, currentView, validRange)}
-            className={cn(navButtonClasses, "rounded-l-md")}
-          >
-            <span className="sr-only">{getPreviousLabel(currentView)}</span>
-            <MdChevronLeft className="size-5" />
-          </button>
-          <button
-            type="button"
-            onClick={onNext}
-            disabled={!canNavigateNext(currentDate, currentView, validRange)}
-            className={cn(navButtonClasses, "rounded-r-md")}
-          >
-            <span className="sr-only">{getNextLabel(currentView)}</span>
-            <MdChevronRight className="size-5" />
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={onPrevious}
+          disabled={!canNavigatePrevious(currentDate, currentView, validRange)}
+          className={cn(navButtonClasses, "rounded-l-md")}
+        >
+          <span className="sr-only">{getPreviousLabel(currentView)}</span>
+          <MdChevronLeft className="size-5" />
+        </button>
       )}
       {showDateControl && (
-        <CalendarDateControl value={currentDate} onChange={onDateChange} validRange={validRange} />
+        <CalendarDateControl
+          value={currentDate}
+          onChange={onDateChange}
+          validRange={validRange}
+          triggerClassName={dateControlTriggerClassName}
+        />
+      )}
+      {showPreviousNext && (
+        <button
+          type="button"
+          onClick={onNext}
+          disabled={!canNavigateNext(currentDate, currentView, validRange)}
+          className={cn(navButtonClasses, "rounded-r-md")}
+        >
+          <span className="sr-only">{getNextLabel(currentView)}</span>
+          <MdChevronRight className="size-5" />
+        </button>
       )}
     </div>
   );
