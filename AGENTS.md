@@ -51,7 +51,7 @@ pnpm run build:prod       # --mode production
 ./scripts/format-staged.test.sh
 ```
 
-CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile` and **`pnpm run type-check`** on PRs/pushes to `main` and `develop`. Add `format:check` in the follow-up full-tree Prettier apply PR. It does not run `test` or `lint`. PRs also run `.github/workflows/branch-name.yml` (`Branch name` check).
+CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile`, **`pnpm run format:check`**, and **`pnpm run type-check`** on PRs/pushes to `main` and `develop`. It does not run `test` or `lint`. PRs also run `.github/workflows/branch-name.yml` (`Branch name` check).
 
 ### Branch names
 
