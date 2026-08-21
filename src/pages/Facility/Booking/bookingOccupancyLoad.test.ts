@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
-import type { ApiResponse } from "@/types/api";
 import type { BookingListItem, BookingRangeParams } from "@/api/services/facilityService";
+import type { ApiResponse } from "@/types/api";
+import { describe, expect, it, vi } from "vitest";
 import { loadBookingsForVisibleRange } from "./bookingOccupancyLoad";
 
 describe("loadBookingsForVisibleRange", () => {
