@@ -79,9 +79,13 @@ class RouteFilterManager {
         if (options.menus && Array.isArray(options.menus)) {
           const dynamicRoutes = this.buildRoutesFromMenus(options.menus);
           // Merge static protected routes (if still needed) with dynamic routes
-          const staticProtected = filterRoutesByAuth(allRoutes, true, options.user, options.permissions, options.roles).filter(
-            (r) => r.meta?.requiresAuth !== false,
-          );
+          const staticProtected = filterRoutesByAuth(
+            allRoutes,
+            true,
+            options.user,
+            options.permissions,
+            options.roles
+          ).filter((r) => r.meta?.requiresAuth !== false);
           const merged = [...staticProtected, ...dynamicRoutes];
           // Deduplicate by path (prefer dynamic routes)
           const seen = new Set<string>();
@@ -151,7 +155,10 @@ class RouteFilterManager {
               <div className="text-center">
                 <h1 className="text-2xl font-bold text-red-600 mb-4">Route Initialization Failed</h1>
                 <p className="text-gray-600 mb-4">{error}</p>
-                <button onClick={() => window.location.reload()} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
                   Reload
                 </button>
               </div>
@@ -180,7 +187,7 @@ class RouteFilterManager {
         ...publicRoutes.map((route) => ({
           path: route.path,
           element: route.element,
-        })),
+        }))
       );
 
       // Add redirect rules - redirect all other paths to /signin
@@ -219,13 +226,15 @@ class RouteFilterManager {
       ...standaloneRoutes.map((route) => ({
         path: route.path,
         element: route.element,
-      })),
+      }))
     );
 
     // Ensure root path has dashboard route when authenticated
     if (isAuthenticated && layoutRoutes.length > 0) {
       // Check whether root path is already configured
-      const hasRootRoute = config.some((route) => route.children && route.children.some((child) => child.index === true));
+      const hasRootRoute = config.some(
+        (route) => route.children && route.children.some((child) => child.index === true)
+      );
       if (!hasRootRoute) {
         // Add default dashboard if root path is missing
         const dashboardRoute = layoutRoutes.find((route) => route.path === "/");

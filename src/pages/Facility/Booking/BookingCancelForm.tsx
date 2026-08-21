@@ -20,7 +20,13 @@ const BookingCancelForm = ({ onSubmit, onCancel, submitting }: BookingCancelForm
         await onSubmit({ cancelReason: cancelReason.trim() || undefined, scope: "single" });
       }}
     >
-      <TextArea id="cancel-reason" label={t("booking.cancel.reason")} value={cancelReason} onChange={setCancelReason} rows={3} />
+      <TextArea
+        id="cancel-reason"
+        label={t("booking.cancel.reason")}
+        value={cancelReason}
+        onChange={setCancelReason}
+        rows={3}
+      />
       <div className="flex justify-end gap-2">
         <Button btnType="button" variant="outline" size="sm" onClick={onCancel} disabled={submitting}>
           {t("common:cancel", { ns: "common" })}

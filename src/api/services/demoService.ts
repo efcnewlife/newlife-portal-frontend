@@ -1,5 +1,11 @@
 import { API_ENDPOINTS, httpClient } from "@/api";
-import { createMockDemo, getMockDemoPages, removeMockDemo, restoreMockDemo, updateMockDemo } from "@/api/mock/demo-mock";
+import {
+  createMockDemo,
+  getMockDemoPages,
+  removeMockDemo,
+  restoreMockDemo,
+  updateMockDemo,
+} from "@/api/mock/demo-mock";
 import { IS_MOCK_DEMO } from "@/config/env";
 
 export interface DemoDetail {

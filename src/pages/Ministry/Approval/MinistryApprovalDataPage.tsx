@@ -56,10 +56,7 @@ const MinistryApprovalDataPage = () => {
     void fetchPages();
   }, [fetchPages]);
 
-  const memberRoleLabel = useCallback(
-    (role: string) => t(`ministry.members.${role}`, { defaultValue: role }),
-    [t],
-  );
+  const memberRoleLabel = useCallback((role: string) => t(`ministry.members.${role}`, { defaultValue: role }), [t]);
 
   const columns: DataTableColumn<ApprovalRow>[] = useMemo(
     () => [
@@ -84,12 +81,12 @@ const MinistryApprovalDataPage = () => {
         render: (v) => t(`ministry.status.${String(v)}`, { defaultValue: String(v) }),
       },
     ],
-    [t],
+    [t]
   );
 
   const toolbarButtons: PageButtonType[] = useMemo(
     () => [CommonPageButton.REFRESH(() => void fetchPages())],
-    [fetchPages],
+    [fetchPages]
   );
 
   const rowActions: MenuButtonType<ApprovalRow>[] = useMemo(
@@ -125,7 +122,7 @@ const MinistryApprovalDataPage = () => {
         permission: "modify",
       },
     ],
-    [openApproveModal, openRejectModal, openViewModal, t],
+    [openApproveModal, openRejectModal, openViewModal, t]
   );
 
   return (
@@ -144,7 +141,12 @@ const MinistryApprovalDataPage = () => {
         }}
       />
 
-      <Modal isOpen={isViewOpen} onClose={closeViewModal} title={t("approval.modal.detailTitle")} className="max-w-2xl mx-4 p-6">
+      <Modal
+        isOpen={isViewOpen}
+        onClose={closeViewModal}
+        title={t("approval.modal.detailTitle")}
+        className="max-w-2xl mx-4 p-6"
+      >
         {viewing && (
           <dl className="grid grid-cols-2 gap-3 text-sm">
             <dt className="text-gray-500">{t("approval.table.name")}</dt>
@@ -173,7 +175,12 @@ const MinistryApprovalDataPage = () => {
         )}
       </Modal>
 
-      <Modal isOpen={isApproveOpen} onClose={closeApproveModal} title={t("approval.modal.approveTitle")} className="max-w-lg mx-4 p-6">
+      <Modal
+        isOpen={isApproveOpen}
+        onClose={closeApproveModal}
+        title={t("approval.modal.approveTitle")}
+        className="max-w-lg mx-4 p-6"
+      >
         <TextArea
           id="approval-approve-comment"
           label={t("ministry.approve.comment")}
@@ -211,7 +218,12 @@ const MinistryApprovalDataPage = () => {
         </div>
       </Modal>
 
-      <Modal isOpen={isRejectOpen} onClose={closeRejectModal} title={t("approval.modal.rejectTitle")} className="max-w-lg mx-4 p-6">
+      <Modal
+        isOpen={isRejectOpen}
+        onClose={closeRejectModal}
+        title={t("approval.modal.rejectTitle")}
+        className="max-w-lg mx-4 p-6"
+      >
         <Input
           id="approval-reject-reason"
           label={t("ministry.reject.reason")}

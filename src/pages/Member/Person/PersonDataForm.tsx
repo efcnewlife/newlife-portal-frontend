@@ -36,7 +36,7 @@ const PersonDataForm = forwardRef<
           items.map((u) => ({
             id: u.id,
             label: u.displayName ? `${u.displayName} (${u.email || u.id})` : u.email || u.id,
-          })),
+          }))
         );
       }
     });
@@ -44,7 +44,7 @@ const PersonDataForm = forwardRef<
 
   const userOptions = useMemo(
     () => [{ value: "", label: t("person.form.noUser") }, ...users.map((u) => ({ value: u.id, label: u.label }))],
-    [users, t],
+    [users, t]
   );
 
   useImperativeHandle(ref, () => ({

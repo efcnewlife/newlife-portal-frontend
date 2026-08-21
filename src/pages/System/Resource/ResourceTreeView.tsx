@@ -56,7 +56,9 @@ export const ResourceTreeView: React.FC<ResourceTreeViewProps> = ({
         <div className="p-4 space-y-6">
           {groupedData.menuItems.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wide">{t("system:resource.tree.sectionMenuLabel")}</h4>
+              <h4 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wide">
+                {t("system:resource.tree.sectionMenuLabel")}
+              </h4>
               {tableHeader}
               <div className="space-y-1">
                 {groupedData.menuItems.map((node) => (
@@ -77,7 +79,9 @@ export const ResourceTreeView: React.FC<ResourceTreeViewProps> = ({
 
           {groupedData.systemItems.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wide">{t("system:resource.tree.sectionSystemLabel")}</h4>
+              <h4 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wide">
+                {t("system:resource.tree.sectionSystemLabel")}
+              </h4>
               {tableHeader}
               <div className="space-y-1">
                 {groupedData.systemItems.map((node) => (

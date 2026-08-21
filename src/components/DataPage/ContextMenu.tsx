@@ -18,7 +18,15 @@ interface ContextMenuProps<T = unknown> {
   className?: string;
 }
 
-export default function ContextMenu<T = unknown>({ buttons, row, index, visible, position, onClose, className }: ContextMenuProps<T>) {
+export default function ContextMenu<T = unknown>({
+  buttons,
+  row,
+  index,
+  visible,
+  position,
+  onClose,
+  className,
+}: ContextMenuProps<T>) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [adjustedPosition, setAdjustedPosition] = useState(position);
 
@@ -127,12 +135,12 @@ export default function ContextMenu<T = unknown>({ buttons, row, index, visible,
       <ul className="flex flex-col">
         {buttons.map((button) => {
           // deal with visible
-          const isVisible = typeof button.visible === "function" ? button.visible(row) : button.visible ?? true;
+          const isVisible = typeof button.visible === "function" ? button.visible(row) : (button.visible ?? true);
 
           if (!isVisible) return null;
 
           // deal with disabled
-          const isDisabled = typeof button.disabled === "function" ? button.disabled(row) : button.disabled ?? false;
+          const isDisabled = typeof button.disabled === "function" ? button.disabled(row) : (button.disabled ?? false);
 
           // Decide on style based on color variations
           const getButtonStyles = () => {
@@ -143,12 +151,12 @@ export default function ContextMenu<T = unknown>({ buttons, row, index, visible,
               button.variant === "primary"
                 ? "primary"
                 : button.variant === "danger"
-                ? "danger"
-                : button.variant === "warning"
-                ? "warning"
-                : button.variant === "success"
-                ? "success"
-                : undefined;
+                  ? "danger"
+                  : button.variant === "warning"
+                    ? "warning"
+                    : button.variant === "success"
+                      ? "success"
+                      : undefined;
 
             switch (color) {
               case "primary":

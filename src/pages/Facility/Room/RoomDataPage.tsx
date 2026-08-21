@@ -1,9 +1,4 @@
-import {
-  facilityService,
-  type RoomCreate,
-  type RoomDetail,
-  type RoomUpdate,
-} from "@/api/services/facilityService";
+import { facilityService, type RoomCreate, type RoomDetail, type RoomUpdate } from "@/api/services/facilityService";
 import type { DataTableColumn, MenuButtonType, PageButtonType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
 import { getRecycleButtonClassName } from "@/components/DataPage/PageButtonTypes";
@@ -103,7 +98,9 @@ const RoomDataPage = () => {
           if (!value) return null;
           return (
             <Tooltip content={DateUtil.format(value as string)}>
-              <span className="text-sm text-gray-600 dark:text-gray-400 cursor-help">{DateUtil.friendlyDate(value as string)}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400 cursor-help">
+                {DateUtil.friendlyDate(value as string)}
+              </span>
             </Tooltip>
           );
         },
@@ -310,7 +307,12 @@ const RoomDataPage = () => {
         />
       </Modal>
 
-      <Modal title={t("room.modal.detailTitle")} isOpen={isViewOpen} onClose={closeViewModal} className="max-w-2xl w-full mx-4 p-6">
+      <Modal
+        title={t("room.modal.detailTitle")}
+        isOpen={isViewOpen}
+        onClose={closeViewModal}
+        className="max-w-2xl w-full mx-4 p-6"
+      >
         {viewing && (
           <dl className="grid grid-cols-2 gap-3 text-sm">
             <dt className="text-gray-500">{t("room.table.code")}</dt>

@@ -1,7 +1,16 @@
 import type { ResourceMenuItem } from "@/types/resource";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MdAdd, MdArrowDownward, MdArrowUpward, MdDelete, MdEdit, MdRestore, MdVisibility, MdSwapHoriz } from "react-icons/md";
+import {
+  MdAdd,
+  MdArrowDownward,
+  MdArrowUpward,
+  MdDelete,
+  MdEdit,
+  MdRestore,
+  MdVisibility,
+  MdSwapHoriz,
+} from "react-icons/md";
 
 interface ResourceContextMenuProps {
   visible: boolean;
@@ -173,7 +182,9 @@ export const ResourceContextMenu: React.FC<ResourceContextMenuProps> = ({
             className="w-full px-3 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
           >
             <MdDelete className="h-4 w-4" />
-            {canRestore && resource.is_deleted ? t("system:resource.menu.deletePermanent") : t("system:resource.menu.deleteResource")}
+            {canRestore && resource.is_deleted
+              ? t("system:resource.menu.deletePermanent")
+              : t("system:resource.menu.deleteResource")}
           </button>
         </>
       )}

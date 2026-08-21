@@ -479,7 +479,9 @@ class FacilityService {
   }
 
   // Room slot templates
-  async getRoomSlotTemplatePages(params: PagesParams & { facilityId?: string }): Promise<ApiResponse<PagesResponse<RoomSlotTemplateItem>>> {
+  async getRoomSlotTemplatePages(
+    params: PagesParams & { facilityId?: string }
+  ): Promise<ApiResponse<PagesResponse<RoomSlotTemplateItem>>> {
     if (IS_MOCK_API) return emptyPages();
     return httpClient.get(API_ENDPOINTS.FACILITY.ROOM_SLOT_TEMPLATES.PAGES, params as Record<string, unknown>);
   }
@@ -519,7 +521,9 @@ class FacilityService {
   }
 
   // Room blackouts
-  async getRoomBlackoutPages(params: PagesParams & { facilityId?: string }): Promise<ApiResponse<PagesResponse<RoomBlackoutItem>>> {
+  async getRoomBlackoutPages(
+    params: PagesParams & { facilityId?: string }
+  ): Promise<ApiResponse<PagesResponse<RoomBlackoutItem>>> {
     if (IS_MOCK_API) return emptyPages();
     return httpClient.get(API_ENDPOINTS.FACILITY.ROOM_BLACKOUTS.PAGES, params as Record<string, unknown>);
   }
@@ -559,9 +563,7 @@ class FacilityService {
   }
 
   // Rental rate templates
-  async getRentalRateTemplatePages(
-    params: PagesParams
-  ): Promise<ApiResponse<PagesResponse<RentalRateTemplateItem>>> {
+  async getRentalRateTemplatePages(params: PagesParams): Promise<ApiResponse<PagesResponse<RentalRateTemplateItem>>> {
     if (IS_MOCK_API) return emptyPages();
     return httpClient.get(API_ENDPOINTS.FACILITY.RENTAL_RATE_TEMPLATES.PAGES, params as Record<string, unknown>);
   }
@@ -608,9 +610,7 @@ class FacilityService {
     return httpClient.get(API_ENDPOINTS.FACILITY.RENTAL_RATES.PAGES, params as Record<string, unknown>);
   }
 
-  async getRentalRateList(params?: {
-    facilityId?: string;
-  }): Promise<ApiResponse<{ items: RentalRateItem[] }>> {
+  async getRentalRateList(params?: { facilityId?: string }): Promise<ApiResponse<{ items: RentalRateItem[] }>> {
     if (IS_MOCK_API) return emptyList();
     return httpClient.get(API_ENDPOINTS.FACILITY.RENTAL_RATES.LIST, params as Record<string, unknown>);
   }

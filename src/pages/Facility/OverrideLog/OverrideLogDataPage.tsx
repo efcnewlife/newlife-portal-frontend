@@ -30,7 +30,10 @@ const OverrideLogDataPage = () => {
         setCurrentPage((res.data.page ?? 0) + 1);
       }
     } catch (error) {
-      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -56,7 +59,10 @@ const OverrideLogDataPage = () => {
     [t]
   );
 
-  const toolbarButtons: PageButtonType[] = useMemo(() => [CommonPageButton.REFRESH(() => void fetchPages())], [fetchPages]);
+  const toolbarButtons: PageButtonType[] = useMemo(
+    () => [CommonPageButton.REFRESH(() => void fetchPages())],
+    [fetchPages]
+  );
 
   return (
     <DataPage<LogRow>

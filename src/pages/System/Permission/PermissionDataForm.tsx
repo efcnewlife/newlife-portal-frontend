@@ -35,7 +35,13 @@ interface PermissionDataFormProps {
   submitting?: boolean;
 }
 
-const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultValues, onSubmit, onCancel, submitting }) => {
+const PermissionDataForm: React.FC<PermissionDataFormProps> = ({
+  mode,
+  defaultValues,
+  onSubmit,
+  onCancel,
+  submitting,
+}) => {
   const { t } = useTranslation();
   const { locales, defaultLocaleId, loading: localesLoading, error: localesError } = useActiveLocales();
 
@@ -81,7 +87,7 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
           name: defaultValues.name,
           description: defaultValues.description,
           remark: defaultValues.remark,
-        }),
+        })
       );
     } else {
       setCode("");
@@ -199,7 +205,11 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
             }
             value={resourceId || null}
             onChange={(value) => setResourceId(value || "")}
-            placeholder={loading ? t("system:permission.form.comboResourcePlaceholder.loading") : t("system:permission.form.comboResourcePlaceholder.idle")}
+            placeholder={
+              loading
+                ? t("system:permission.form.comboResourcePlaceholder.loading")
+                : t("system:permission.form.comboResourcePlaceholder.idle")
+            }
             disabled={loading}
             error={errors.resourceId}
             required
@@ -235,9 +245,15 @@ const PermissionDataForm: React.FC<PermissionDataFormProps> = ({ mode, defaultVa
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-3">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t("system:permission.form.sectionStatus")}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            {t("system:permission.form.sectionStatus")}
+          </label>
           <div className="space-y-2">
-            <Checkbox checked={isActive} onChange={(checked) => setIsActive(checked)} label={t("system:permission.form.checkboxActive")} />
+            <Checkbox
+              checked={isActive}
+              onChange={(checked) => setIsActive(checked)}
+              label={t("system:permission.form.checkboxActive")}
+            />
           </div>
         </div>
       </div>

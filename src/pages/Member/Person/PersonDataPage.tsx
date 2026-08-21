@@ -47,7 +47,10 @@ const PersonDataPage = () => {
         setCurrentPage((res.data.page ?? 0) + 1);
       }
     } catch (error) {
-      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -69,7 +72,7 @@ const PersonDataPage = () => {
         render: (v) => (v ? String(v) : "-"),
       },
     ],
-    [t],
+    [t]
   );
 
   const toolbarButtons: PageButtonType[] = useMemo(
@@ -82,7 +85,7 @@ const PersonDataPage = () => {
       }),
       CommonPageButton.REFRESH(() => void fetchPages()),
     ],
-    [fetchPages, openModal],
+    [fetchPages, openModal]
   );
 
   const rowActions: MenuButtonType<PersonRow>[] = useMemo(
@@ -108,7 +111,7 @@ const PersonDataPage = () => {
         }
       }),
     ],
-    [openModal, openViewModal],
+    [openModal, openViewModal]
   );
 
   return (
@@ -164,7 +167,10 @@ const PersonDataPage = () => {
             closeModal();
             await fetchPages();
           } catch (error) {
-            notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
+            notifyApiError(error, {
+              title: t("common:feedback.saveFailed"),
+              fallbackDescription: t("common:feedback.saveFailedDesc"),
+            });
           } finally {
             setSubmitting(false);
           }

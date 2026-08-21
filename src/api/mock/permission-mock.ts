@@ -1,4 +1,12 @@
-import type { ApiResponse, PermissionCreate, PermissionDelete, PermissionDetail, PermissionListItem, PermissionPage, PermissionUpdate } from "@/types/api";
+import type {
+  ApiResponse,
+  PermissionCreate,
+  PermissionDelete,
+  PermissionDetail,
+  PermissionListItem,
+  PermissionPage,
+  PermissionUpdate,
+} from "@/types/api";
 
 type MockPermission = PermissionDetail & { isDeleted?: boolean };
 
@@ -23,10 +31,17 @@ let mockPermissions: MockPermission[] = [
   },
 ];
 
-export const getMockPermissionPages = (params: { page?: number; page_size?: number; keyword?: string; deleted?: boolean }): ApiResponse<PermissionPage> => {
+export const getMockPermissionPages = (params: {
+  page?: number;
+  page_size?: number;
+  keyword?: string;
+  deleted?: boolean;
+}): ApiResponse<PermissionPage> => {
   const page = Number(params.page ?? 0);
   const pageSize = Number(params.page_size ?? 10);
-  const keyword = String(params.keyword ?? "").toLowerCase().trim();
+  const keyword = String(params.keyword ?? "")
+    .toLowerCase()
+    .trim();
   const deleted = params.deleted === true;
   const filtered = mockPermissions.filter((item) => {
     if ((item.isDeleted || false) !== deleted) return false;
@@ -75,7 +90,13 @@ export const listMockPermissions = (): ApiResponse<{ items: PermissionListItem[]
 
 export const getMockPermissionById = (id: string): ApiResponse<PermissionDetail> => {
   const found = mockPermissions.find((item) => item.id === id && !item.isDeleted);
-  if (!found) return { success: false, code: 404, message: "Permission not found", data: undefined as unknown as PermissionDetail };
+  if (!found)
+    return {
+      success: false,
+      code: 404,
+      message: "Permission not found",
+      data: undefined as unknown as PermissionDetail,
+    };
   return { success: true, code: 200, data: found };
 };
 
@@ -98,7 +119,7 @@ export const createMockPermission = (data: PermissionCreate): ApiResponse<{ id: 
 export const updateMockPermission = (id: string, data: PermissionUpdate): ApiResponse<void> => {
   mockPermissions = mockPermissions.map((item) =>
     item.id === id
-        ? {
+      ? {
           ...item,
           name: data.translations?.[0]?.name || item.name,
           code: data.code,

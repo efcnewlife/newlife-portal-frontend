@@ -91,4 +91,5 @@ export const IS_MOCK_API = IS_DEV && ENV_CONFIG.USE_MOCK_API;
 export const IS_MOCK_DEMO = IS_DEV && (ENV_CONFIG.USE_MOCK_DEMO || ENV_CONFIG.USE_MOCK_API);
 
 /** True when VITE_AZURE_CLIENT_ID and VITE_AZURE_TENANT_ID are set (production/staging may enable without dev-only flags). */
-export const IS_MICROSOFT_LOGIN_ENABLED = Boolean(ENV_CONFIG.AZURE_CLIENT_ID?.trim()) && Boolean(ENV_CONFIG.AZURE_TENANT_ID?.trim());
+export const IS_MICROSOFT_LOGIN_ENABLED =
+  Boolean(ENV_CONFIG.AZURE_CLIENT_ID?.trim()) && Boolean(ENV_CONFIG.AZURE_TENANT_ID?.trim());

@@ -69,7 +69,8 @@ const NavigationButtons = ({
   };
 
   const getTodayClasses = () => {
-    const baseClasses = "h-9 px-3.5 py-2 text-sm font-semibold border-0 shadow-none bg-transparent hover:bg-gray-50 dark:hover:bg-white/10";
+    const baseClasses =
+      "h-9 px-3.5 py-2 text-sm font-semibold border-0 shadow-none bg-transparent hover:bg-gray-50 dark:hover:bg-white/10";
     if (!showPreviousNext) {
       // Only today button: has both rounded corners
       return `${baseClasses} rounded-md`;

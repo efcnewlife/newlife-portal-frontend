@@ -8,7 +8,15 @@ interface DemoDeleteFormProps {
 }
 
 const DemoDeleteForm: React.FC<DemoDeleteFormProps> = ({ onSubmit, onCancel, submitting, isPermanent = false }) => {
-  return <DeleteForm onSubmit={onSubmit} onCancel={onCancel} submitting={submitting} entityName="demo item" isPermanent={isPermanent} />;
+  return (
+    <DeleteForm
+      onSubmit={onSubmit}
+      onCancel={onCancel}
+      submitting={submitting}
+      entityName="demo item"
+      isPermanent={isPermanent}
+    />
+  );
 };
 
 export default DemoDeleteForm;

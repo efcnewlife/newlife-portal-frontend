@@ -104,7 +104,9 @@ export default function PageButtonGroup({
           return (
             <div key={button.key}>
               {button.render()}
-              {showDivider && index < visibleButtons.length - 1 && <div className="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-1" />}
+              {showDivider && index < visibleButtons.length - 1 && (
+                <div className="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-1" />
+              )}
             </div>
           );
         }
@@ -113,7 +115,9 @@ export default function PageButtonGroup({
         return (
           <div key={button.key}>
             <PageButton button={button} mode={mode} />
-            {showDivider && index < visibleButtons.length - 1 && <div className="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-1" />}
+            {showDivider && index < visibleButtons.length - 1 && (
+              <div className="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-1" />
+            )}
           </div>
         );
       })}

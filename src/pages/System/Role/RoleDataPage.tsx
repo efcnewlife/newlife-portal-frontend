@@ -1,4 +1,10 @@
-import { roleService, type RoleCreate, type RolePageItem, type RolePagesResponse, type RoleUpdate } from "@/api/services/roleService";
+import {
+  roleService,
+  type RoleCreate,
+  type RolePageItem,
+  type RolePagesResponse,
+  type RoleUpdate,
+} from "@/api/services/roleService";
 import type { DataTableColumn, MenuButtonType, PopoverType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
 import { getRecycleButtonClassName } from "@/components/DataPage/PageButtonTypes";
@@ -190,7 +196,17 @@ export default function RoleDataPage() {
         { className: getRecycleButtonClassName(showDeleted) }
       ),
     ];
-  }, [fetchPages, searchFilters, showDeleted, openModal, setFormMode, setEditing, setEditingFormValues, clearSelectionRef, t]);
+  }, [
+    fetchPages,
+    searchFilters,
+    showDeleted,
+    openModal,
+    setFormMode,
+    setEditing,
+    setEditingFormValues,
+    clearSelectionRef,
+    t,
+  ]);
 
   const rowActions: MenuButtonType<RolePageItem>[] = useMemo(
     () => [
@@ -203,11 +219,17 @@ export default function RoleDataPage() {
             setViewing(response.data);
             openViewModal();
           } else {
-            notifyApiError({ code: 400, message: "" }, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+            notifyApiError(
+              { code: 400, message: "" },
+              { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") }
+            );
           }
         } catch (e) {
           console.error("Error fetching role detail:", e);
-          notifyApiError(e, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+          notifyApiError(e, {
+            title: t("common:feedback.loadFailed"),
+            fallbackDescription: t("common:feedback.loadFailedDesc"),
+          });
         } finally {
           setSubmitting(false);
         }
@@ -234,11 +256,17 @@ export default function RoleDataPage() {
               });
               openModal();
             } else {
-              notifyApiError({ code: 400, message: "" }, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+              notifyApiError(
+                { code: 400, message: "" },
+                { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") }
+              );
             }
           } catch (e) {
             console.error("Error fetching role detail:", e);
-            notifyApiError(e, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+            notifyApiError(e, {
+              title: t("common:feedback.loadFailed"),
+              fallbackDescription: t("common:feedback.loadFailedDesc"),
+            });
           } finally {
             setSubmitting(false);
           }
@@ -340,8 +368,15 @@ export default function RoleDataPage() {
             <Button variant="outline" size="sm" onClick={closeModal} disabled={submitting}>
               {t("common:cancel")}
             </Button>
-            <Button variant="primary" size="sm" onClick={() => roleModalFormRef.current?.submit()} disabled={submitting}>
-              {formMode === "create" ? t("system:role.form.footer.submitCreate") : t("system:role.form.footer.submitSave")}
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => roleModalFormRef.current?.submit()}
+              disabled={submitting}
+            >
+              {formMode === "create"
+                ? t("system:role.form.footer.submitCreate")
+                : t("system:role.form.footer.submitSave")}
             </Button>
           </>
         }
@@ -374,7 +409,11 @@ export default function RoleDataPage() {
       </ModalForm>
 
       <Modal
-        title={showDeleted ? t("system:role.modal.deleteConfirmPermanent.title") : t("system:role.modal.deleteConfirmSoft.title")}
+        title={
+          showDeleted
+            ? t("system:role.modal.deleteConfirmPermanent.title")
+            : t("system:role.modal.deleteConfirmSoft.title")
+        }
         isOpen={isDeleteOpen}
         onClose={closeDeleteModal}
         className="max-w-[560px] w-full mx-4 p-6"
@@ -390,7 +429,10 @@ export default function RoleDataPage() {
               await fetchPages();
             } catch (e) {
               console.error(e);
-              notifyApiError(e, { title: t("common:feedback.deleteFailed"), fallbackDescription: t("common:feedback.deleteFailedDesc") });
+              notifyApiError(e, {
+                title: t("common:feedback.deleteFailed"),
+                fallbackDescription: t("common:feedback.deleteFailedDesc"),
+              });
             } finally {
               setSubmitting(false);
             }

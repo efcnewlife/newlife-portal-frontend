@@ -37,7 +37,9 @@ export type ResolveStewardDirectorySelectionResult =
   | { action: "clear" }
   | { action: "block" };
 
-export const resolveStewardDirectorySelection = (input: ResolveStewardDirectorySelectionInput): ResolveStewardDirectorySelectionResult => {
+export const resolveStewardDirectorySelection = (
+  input: ResolveStewardDirectorySelectionInput
+): ResolveStewardDirectorySelectionResult => {
   const { reason, urlMinistryId, railIds, currentSelectedId, isDirty, requestedId } = input;
 
   if (reason === "rail-click") {

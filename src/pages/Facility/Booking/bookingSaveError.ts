@@ -26,7 +26,7 @@ const roomNameForFacilityId = (rooms: BookingRoomOption[], facilityId: string | 
 export const resolveBookingSaveErrorMessage = (
   error: unknown,
   rooms: BookingRoomOption[],
-  t: Translate,
+  t: Translate
 ): string | undefined => {
   if (!isApiError(error)) {
     return undefined;
@@ -43,9 +43,7 @@ export const resolveBookingSaveErrorMessage = (
   }
 
   if (errorCode === BOOKING_ERROR_CODE.ROOM_BLACKOUT) {
-    return roomName
-      ? t("booking.errors.roomBlackout", { room: roomName })
-      : t("booking.errors.roomBlackoutGeneric");
+    return roomName ? t("booking.errors.roomBlackout", { room: roomName }) : t("booking.errors.roomBlackoutGeneric");
   }
 
   return undefined;

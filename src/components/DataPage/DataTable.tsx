@@ -44,7 +44,9 @@ export default function DataTable<T extends Record<string, unknown>>({
   const contextMenu = useContextMenu<T>();
 
   // Normalize data format: supports paged data or plain arrays
-  const pagedData: DataTablePagedData<T> = Array.isArray(data) ? { page: 1, pageSize: data.length, total: data.length, items: data } : data;
+  const pagedData: DataTablePagedData<T> = Array.isArray(data)
+    ? { page: 1, pageSize: data.length, total: data.length, items: data }
+    : data;
 
   const { items, total, page, pageSize } = pagedData;
 
@@ -53,7 +55,7 @@ export default function DataTable<T extends Record<string, unknown>>({
     (row: T): string => {
       return typeof rowKey === "function" ? rowKey(row) : String(row[rowKey]);
     },
-    [rowKey],
+    [rowKey]
   );
 
   // Track previous defaultSelectedKeys with ref; sync only when actually changed
@@ -266,8 +268,8 @@ export default function DataTable<T extends Record<string, unknown>>({
             },
             {
               className: "",
-            },
-          ),
+            }
+          )
         );
       }
 
@@ -282,8 +284,8 @@ export default function DataTable<T extends Record<string, unknown>>({
             },
             {
               className: "",
-            },
-          ),
+            }
+          )
         );
       }
 
@@ -305,7 +307,7 @@ export default function DataTable<T extends Record<string, unknown>>({
             }
             // Then check permission
             return checkRowActionPermission(action);
-          }),
+          })
         );
       } else {
         contextMenuButtons.push(
@@ -317,7 +319,7 @@ export default function DataTable<T extends Record<string, unknown>>({
             }
             // Then check permission
             return checkRowActionPermission(action);
-          }),
+          })
         );
       }
     }

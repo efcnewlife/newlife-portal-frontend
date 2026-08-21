@@ -87,7 +87,8 @@ export function useNavigationItems(): {
 
           // from the first one there parent Information's children get parent data
           // Prioritize search parent.id match parentId , if not then use any parent children of
-          const childWithParent = childDataList.find((it) => it.parent?.id === parentId) || childDataList.find((it) => it.parent);
+          const childWithParent =
+            childDataList.find((it) => it.parent?.id === parentId) || childDataList.find((it) => it.parent);
           const parentData = childWithParent?.parent;
 
           if (parentData) {

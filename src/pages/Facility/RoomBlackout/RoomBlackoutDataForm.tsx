@@ -54,14 +54,10 @@ const RoomBlackoutDataForm = forwardRef<RoomBlackoutDataFormHandle, Props>(funct
   const [kind, setKind] = useState<RoomBlackoutKind>(defaultValues?.kind || "one_off");
   const [blackoutDate, setBlackoutDate] = useState<Dayjs | null>(() => apiDateToDayjs(defaultValues?.blackoutDate));
   const [daysOfWeek, setDaysOfWeek] = useState<number[]>(defaultValues?.daysOfWeek ?? WEEKDAYS_PRESET);
-  const [startTime, setStartTime] = useState<Dayjs | null>(() =>
-    apiTimeToDayjs(defaultValues?.startTime || "09:00")
-  );
+  const [startTime, setStartTime] = useState<Dayjs | null>(() => apiTimeToDayjs(defaultValues?.startTime || "09:00"));
   const [endTime, setEndTime] = useState<Dayjs | null>(() => apiTimeToDayjs(defaultValues?.endTime || "17:00"));
   const [isActive, setIsActive] = useState(defaultValues?.isActive ?? true);
-  const [effectiveFrom, setEffectiveFrom] = useState<Dayjs | null>(() =>
-    apiDateToDayjs(defaultValues?.effectiveFrom)
-  );
+  const [effectiveFrom, setEffectiveFrom] = useState<Dayjs | null>(() => apiDateToDayjs(defaultValues?.effectiveFrom));
   const [effectiveTo, setEffectiveTo] = useState<Dayjs | null>(() => apiDateToDayjs(defaultValues?.effectiveTo));
   const [errors, setErrors] = useState<{
     name?: string;

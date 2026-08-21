@@ -1,9 +1,4 @@
-import type {
-  SettingCreate,
-  SettingItem,
-  SettingUpdate,
-  SettingValueType,
-} from "@/api/services/settingService";
+import type { SettingCreate, SettingItem, SettingUpdate, SettingValueType } from "@/api/services/settingService";
 import { Button, Checkbox, Input, Label, Select, TextArea } from "@efcnewlife/newlife-ui";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -102,7 +97,7 @@ const arrayToRows = (value: unknown): ArrayRow[] => {
 
 const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(function SettingDataForm(
   { mode, setting },
-  ref,
+  ref
 ) {
   const { t } = useTranslation();
   const isCreate = mode === "create";
@@ -157,10 +152,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
     }
   }, [isCreate, setting]);
 
-  const valueTypeOptions = useMemo(
-    () => VALUE_TYPE_OPTIONS.map((item) => ({ value: item, label: item })),
-    [],
-  );
+  const valueTypeOptions = useMemo(() => VALUE_TYPE_OPTIONS.map((item) => ({ value: item, label: item })), []);
 
   const isTimezoneSetting =
     (isCreate ? namespace : setting?.namespace) === "facility" &&
@@ -177,9 +169,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
   };
 
   const buildArrayValue = (): unknown[] => {
-    return arrayRows
-      .filter((row) => row.value.trim() !== "")
-      .map((row) => parseCellValue(row.value));
+    return arrayRows.filter((row) => row.value.trim() !== "").map((row) => parseCellValue(row.value));
   };
 
   const resolveValue = (): unknown => {
@@ -356,7 +346,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
                     value={row.key}
                     onChange={(e) =>
                       setObjectRows((rows) =>
-                        rows.map((item) => (item.id === row.id ? { ...item, key: e.target.value } : item)),
+                        rows.map((item) => (item.id === row.id ? { ...item, key: e.target.value } : item))
                       )
                     }
                     placeholder={t("system:setting.form.value.keyPlaceholder")}
@@ -369,7 +359,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
                     value={row.value}
                     onChange={(e) =>
                       setObjectRows((rows) =>
-                        rows.map((item) => (item.id === row.id ? { ...item, value: e.target.value } : item)),
+                        rows.map((item) => (item.id === row.id ? { ...item, value: e.target.value } : item))
                       )
                     }
                     placeholder={t("system:setting.form.value.valuePlaceholder")}
@@ -382,7 +372,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
                     setObjectRows((rows) =>
                       rows.length <= 1
                         ? [{ id: newRowId(), key: "", value: "" }]
-                        : rows.filter((item) => item.id !== row.id),
+                        : rows.filter((item) => item.id !== row.id)
                     )
                   }
                   aria-label={t("system:setting.form.value.removeRow")}
@@ -424,7 +414,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
                     value={row.value}
                     onChange={(e) =>
                       setArrayRows((rows) =>
-                        rows.map((item) => (item.id === row.id ? { ...item, value: e.target.value } : item)),
+                        rows.map((item) => (item.id === row.id ? { ...item, value: e.target.value } : item))
                       )
                     }
                     placeholder={t("system:setting.form.value.valuePlaceholder")}
@@ -435,9 +425,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
                   className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-500/10"
                   onClick={() =>
                     setArrayRows((rows) =>
-                      rows.length <= 1
-                        ? [{ id: newRowId(), value: "" }]
-                        : rows.filter((item) => item.id !== row.id),
+                      rows.length <= 1 ? [{ id: newRowId(), value: "" }] : rows.filter((item) => item.id !== row.id)
                     )
                   }
                   aria-label={t("system:setting.form.value.removeRow")}

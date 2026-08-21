@@ -40,19 +40,28 @@ export const getMockRolePages = (params: {
   return {
     success: true,
     code: 200,
-    data: { page, page_size: pageSize, total: filtered.length, items: filtered.slice(page * pageSize, page * pageSize + pageSize) },
+    data: {
+      page,
+      page_size: pageSize,
+      total: filtered.length,
+      items: filtered.slice(page * pageSize, page * pageSize + pageSize),
+    },
   };
 };
 
 export const getMockRoleById = (id: string): ApiResponse<RolePageItem> => {
   const role = mockRoles.find((item) => item.id === id && !item.isDeleted);
-  if (!role) return { success: false, code: 404, message: "Role not found", data: undefined as unknown as RolePageItem };
+  if (!role)
+    return { success: false, code: 404, message: "Role not found", data: undefined as unknown as RolePageItem };
   return { success: true, code: 200, data: role };
 };
 
 export const createMockRole = (payload: RoleCreate): ApiResponse<{ id: string }> => {
   const id = `role-${Date.now()}`;
-  mockRoles = [{ id, code: payload.code, name: payload.name, isActive: payload.isActive ?? true, permissions: [] }, ...mockRoles];
+  mockRoles = [
+    { id, code: payload.code, name: payload.name, isActive: payload.isActive ?? true, permissions: [] },
+    ...mockRoles,
+  ];
   return { success: true, code: 201, data: { id } };
 };
 
@@ -74,7 +83,10 @@ export const updateMockRole = (id: string, payload: RoleUpdate): ApiResponse<voi
 
 export const removeMockRole = (id: string, payload: RoleDelete): ApiResponse<void> => {
   if (payload.permanent) mockRoles = mockRoles.filter((item) => item.id !== id);
-  else mockRoles = mockRoles.map((item) => (item.id === id ? { ...item, isDeleted: true, deleteReason: payload.reason } : item));
+  else
+    mockRoles = mockRoles.map((item) =>
+      item.id === id ? { ...item, isDeleted: true, deleteReason: payload.reason } : item
+    );
   return { success: true, code: 200, data: undefined };
 };
 
@@ -103,5 +115,9 @@ export const assignMockRolePermissions = (id: string, payload: RolePermissionAss
 export const listMockRoles = (): ApiResponse<RoleListResponse> => ({
   success: true,
   code: 200,
-  data: { items: mockRoles.filter((item) => !item.isDeleted).map((item) => ({ id: item.id, code: item.code, name: item.name })) },
+  data: {
+    items: mockRoles
+      .filter((item) => !item.isDeleted)
+      .map((item) => ({ id: item.id, code: item.code, name: item.name })),
+  },
 });

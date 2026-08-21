@@ -19,7 +19,12 @@ interface DemoDataFormProps {
 }
 
 const DemoDataForm: React.FC<DemoDataFormProps> = ({ mode, defaultValues, onSubmit, onCancel, submitting }) => {
-  const [values, setValues] = useState<DemoFormValues>({ name: "", remark: "", age: undefined, gender: Gender.Unknown });
+  const [values, setValues] = useState<DemoFormValues>({
+    name: "",
+    remark: "",
+    age: undefined,
+    gender: Gender.Unknown,
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -70,7 +75,9 @@ const DemoDataForm: React.FC<DemoDataFormProps> = ({ mode, defaultValues, onSubm
             type="number"
             value={values.age ?? ""}
             label="Age"
-            onChange={(e) => setValues((v) => ({ ...v, age: e.target.value === "" ? undefined : Number(e.target.value) }))}
+            onChange={(e) =>
+              setValues((v) => ({ ...v, age: e.target.value === "" ? undefined : Number(e.target.value) }))
+            }
             error={errors.age}
           />
         </div>
@@ -91,7 +98,13 @@ const DemoDataForm: React.FC<DemoDataFormProps> = ({ mode, defaultValues, onSubm
       </div>
 
       <div>
-        <TextArea id="demo-remark" rows={3} label="Remark" value={values.remark || ""} onChange={(value) => setValues((v) => ({ ...v, remark: value }))} />
+        <TextArea
+          id="demo-remark"
+          rows={3}
+          label="Remark"
+          value={values.remark || ""}
+          onChange={(value) => setValues((v) => ({ ...v, remark: value }))}
+        />
       </div>
 
       <div className="flex justify-end gap-3 pt-2">

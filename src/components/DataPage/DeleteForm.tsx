@@ -10,7 +10,13 @@ interface DeleteFormProps {
   isPermanent?: boolean;
 }
 
-const DeleteForm: React.FC<DeleteFormProps> = ({ onSubmit, onCancel, submitting, entityName = "material", isPermanent = false }) => {
+const DeleteForm: React.FC<DeleteFormProps> = ({
+  onSubmit,
+  onCancel,
+  submitting,
+  entityName = "material",
+  isPermanent = false,
+}) => {
   const { t } = useTranslation();
   const [reason, setReason] = useState("");
   const [error, setError] = useState<string | null>(null);

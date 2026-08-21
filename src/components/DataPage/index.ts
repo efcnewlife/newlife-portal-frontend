@@ -14,7 +14,13 @@ export { default as ContextMenu } from "./ContextMenu";
 export { useContextMenu } from "./useContextMenu";
 
 // PageButton Utility function
-export { CommonPageButton, PAGE_BUTTON_TYPES, createPageButton, getPageButtonIcon, getPageButtonText } from "./PageButtonTypes";
+export {
+  CommonPageButton,
+  PAGE_BUTTON_TYPES,
+  createPageButton,
+  getPageButtonIcon,
+  getPageButtonText,
+} from "./PageButtonTypes";
 
 // MenuButton Utility function
 export {

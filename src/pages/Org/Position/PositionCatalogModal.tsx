@@ -1,9 +1,4 @@
-import {
-  orgService,
-  type PositionCreate,
-  type PositionDetail,
-  type PositionUpdate,
-} from "@/api/services/orgService";
+import { orgService, type PositionCreate, type PositionDetail, type PositionUpdate } from "@/api/services/orgService";
 import type { DataTableColumn, MenuButtonType, PageButtonType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataTable, DataTableToolbar } from "@/components/DataPage";
 import DeleteForm from "@/components/DataPage/DeleteForm";
@@ -65,7 +60,10 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
         setTotal(0);
       }
     } catch (error) {
-      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -81,15 +79,9 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
     onCatalogChanged();
   }, [fetchPages, onCatalogChanged]);
 
-  const positionTeamLabel = useCallback(
-    (value?: string) => (value ? t(`position.enums.team.${value}`) : ""),
-    [t],
-  );
+  const positionTeamLabel = useCallback((value?: string) => (value ? t(`position.enums.team.${value}`) : ""), [t]);
 
-  const positionOfficeLabel = useCallback(
-    (value?: string) => (value ? t(`position.enums.office.${value}`) : ""),
-    [t],
-  );
+  const positionOfficeLabel = useCallback((value?: string) => (value ? t(`position.enums.office.${value}`) : ""), [t]);
 
   const columns: DataTableColumn<PositionRow>[] = useMemo(
     () => [
@@ -122,7 +114,7 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
         render: (v) => (v ? t("shared.yes") : t("shared.no")),
       },
     ],
-    [t, positionTeamLabel, positionOfficeLabel],
+    [t, positionTeamLabel, positionOfficeLabel]
   );
 
   const toolbarButtons: PageButtonType[] = useMemo(
@@ -134,7 +126,7 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
           setFormValues(null);
           openFormModal();
         },
-        { visible: !showDeleted },
+        { visible: !showDeleted }
       ),
       CommonPageButton.REFRESH(() => {
         clearSelectionRef.current?.();
@@ -145,10 +137,10 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
           setShowDeleted((v) => !v);
           setCurrentPage(1);
         },
-        { className: getRecycleButtonClassName(showDeleted) },
+        { className: getRecycleButtonClassName(showDeleted) }
       ),
     ],
-    [fetchPages, showDeleted, openFormModal],
+    [fetchPages, showDeleted, openFormModal]
   );
 
   const rowActions: MenuButtonType<PositionRow>[] = useMemo(
@@ -171,7 +163,7 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
             openFormModal();
           }
         },
-        { visible: !showDeleted },
+        { visible: !showDeleted }
       ),
       CommonRowAction.RESTORE(
         async (row) => {
@@ -186,14 +178,14 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
             });
           }
         },
-        { visible: showDeleted },
+        { visible: showDeleted }
       ),
       CommonRowAction.DELETE((row) => {
         setEditing(row);
         openDeleteModal();
       }),
     ],
-    [openFormModal, openDeleteModal, refreshAfterMutation, showDeleted, t],
+    [openFormModal, openDeleteModal, refreshAfterMutation, showDeleted, t]
   );
 
   return (
@@ -267,7 +259,10 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
             closeFormModal();
             await refreshAfterMutation();
           } catch (error) {
-            notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
+            notifyApiError(error, {
+              title: t("common:feedback.saveFailed"),
+              fallbackDescription: t("common:feedback.saveFailedDesc"),
+            });
           } finally {
             setSubmitting(false);
           }
@@ -296,7 +291,10 @@ const PositionCatalogModal = ({ isOpen, onClose, onCatalogChanged }: PositionCat
               closeDeleteModal();
               await refreshAfterMutation();
             } catch (error) {
-              notifyApiError(error, { title: t("common:feedback.deleteFailed"), fallbackDescription: t("common:feedback.deleteFailedDesc") });
+              notifyApiError(error, {
+                title: t("common:feedback.deleteFailed"),
+                fallbackDescription: t("common:feedback.deleteFailedDesc"),
+              });
             } finally {
               setSubmitting(false);
             }

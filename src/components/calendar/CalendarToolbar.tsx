@@ -196,7 +196,9 @@ const CalendarToolBar = ({
           <div className="flex items-center justify-center bg-gray-50 px-2 py-1 border-b border-gray-200 dark:border-white/10 text-[9px] font-semibold uppercase tracking-wide text-gray-700 dark:bg-gray-700 dark:text-gray-300">
             {monthAbbr}
           </div>
-          <div className="flex items-center justify-center px-4 py-0.5 text-xl font-bold text-brand-500 dark:text-brand-400">{day}</div>
+          <div className="flex items-center justify-center px-4 py-0.5 text-xl font-bold text-brand-500 dark:text-brand-400">
+            {day}
+          </div>
         </div>
         <div>
           <h1 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -224,7 +226,12 @@ const CalendarToolBar = ({
         <div className={`flex items-center ${showNavigationButtons.nav || showNavigationButtons.today ? "ml-4" : ""}`}>
           {availableViews.length > 1 && (
             <div className="mr-4">
-              <ButtonGroup variant="primary" buttons={getViewButtons()} className="!pb-0 [&>div>div]:!shadow-none" minWidth="auto" />
+              <ButtonGroup
+                variant="primary"
+                buttons={getViewButtons()}
+                className="!pb-0 [&>div>div]:!shadow-none"
+                minWidth="auto"
+              />
             </div>
           )}
           {onAddEvent && <div className="mr-6 h-6 w-px bg-gray-300 dark:bg-white/10" />}

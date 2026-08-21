@@ -1,4 +1,9 @@
-import { facilityService, type BookingCreate, type BookingDetail, type BookingListItem } from "@/api/services/facilityService";
+import {
+  facilityService,
+  type BookingCreate,
+  type BookingDetail,
+  type BookingListItem,
+} from "@/api/services/facilityService";
 import type { DataTableColumn, MenuButtonType, PageButtonType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
 import PageToolbar from "@/components/common/PageToolbar";
@@ -88,7 +93,7 @@ const BookingDataPage = () => {
       }
       setSearchParams(params, { replace: true });
     },
-    [anchorDate, searchParams, setSearchParams],
+    [anchorDate, searchParams, setSearchParams]
   );
 
   const setAnchorDate = useCallback(
@@ -103,7 +108,7 @@ const BookingDataPage = () => {
       }
       setSearchParams(params, { replace: true });
     },
-    [searchParams, setSearchParams, viewMode],
+    [searchParams, setSearchParams, viewMode]
   );
 
   const fetchPages = useCallback(async () => {
@@ -153,7 +158,8 @@ const BookingDataPage = () => {
 
   const handleVisibleRangeChange = useCallback((range: { start: Date; end: Date }) => {
     setVisibleRange((prev) => {
-      const sameMs = !!prev && prev.start.getTime() === range.start.getTime() && prev.end.getTime() === range.end.getTime();
+      const sameMs =
+        !!prev && prev.start.getTime() === range.start.getTime() && prev.end.getTime() === range.end.getTime();
       return sameMs ? prev : range;
     });
   }, []);
@@ -183,7 +189,7 @@ const BookingDataPage = () => {
       setFormDefaults(defaults || null);
       openCreate();
     },
-    [openCreate],
+    [openCreate]
   );
 
   const openBookingDetail = useCallback(
@@ -194,7 +200,7 @@ const BookingDataPage = () => {
         openDetail();
       }
     },
-    [openDetail],
+    [openDetail]
   );
 
   const columns: DataTableColumn<BookingRow>[] = useMemo(
@@ -232,7 +238,7 @@ const BookingDataPage = () => {
       },
       { key: "quotedAmount", label: t("booking.table.quotedAmount"), width: "w-24" },
     ],
-    [t],
+    [t]
   );
 
   const toolbarButtons: PageButtonType[] = useMemo(
@@ -242,7 +248,7 @@ const BookingDataPage = () => {
         void refreshCurrentView();
       }),
     ],
-    [openCreateModal, refreshCurrentView],
+    [openCreateModal, refreshCurrentView]
   );
 
   const rowActions: MenuButtonType<BookingRow>[] = useMemo(
@@ -263,7 +269,7 @@ const BookingDataPage = () => {
         visible: (row) => row.status !== "cancelled",
       },
     ],
-    [t, openCancel, openBookingDetail],
+    [t, openCancel, openBookingDetail]
   );
 
   const viewModeButtons = useMemo(
@@ -293,7 +299,7 @@ const BookingDataPage = () => {
         className: "h-9 w-9 justify-center px-0 py-0",
       },
     ],
-    [setViewMode, t, viewMode],
+    [setViewMode, t, viewMode]
   );
 
   const showScheduleCreate = (viewMode === "calendar" || viewMode === "grid") && canCreate;
@@ -321,7 +327,7 @@ const BookingDataPage = () => {
             className={cn(
               "!pb-0 [&>div>div]:!shadow-none",
               "[&>div>div]:!rounded-full",
-              "[&_button]:first:!rounded-l-full [&_button]:last:!rounded-r-full",
+              "[&_button]:first:!rounded-l-full [&_button]:last:!rounded-r-full"
             )}
           />
         }
@@ -401,7 +407,12 @@ const BookingDataPage = () => {
         {detail && <BookingDetailDrawer booking={detail} />}
       </Modal>
 
-      <Modal isOpen={isCancelOpen} onClose={closeCancel} title={t("booking.modal.cancelTitle")} className="max-w-lg mx-4 p-6">
+      <Modal
+        isOpen={isCancelOpen}
+        onClose={closeCancel}
+        title={t("booking.modal.cancelTitle")}
+        className="max-w-lg mx-4 p-6"
+      >
         <BookingCancelForm
           submitting={submitting}
           onCancel={closeCancel}

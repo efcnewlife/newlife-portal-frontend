@@ -67,7 +67,7 @@ export const normalize_locale_code = (value: string | null): AppLocale | null =>
 export const build_locale_code = (
   language_code: string,
   script_code?: string | null,
-  region_code?: string | null,
+  region_code?: string | null
 ): string => {
   return [language_code, script_code, region_code].filter(Boolean).join("-");
 };
@@ -145,7 +145,19 @@ void i18n.use(initReactI18next).init({
     },
   },
   defaultNS: "common",
-  ns: ["common", "auth", "errors", "system", "language", "facility", "org", "member", "ministry", "content", "calendar"],
+  ns: [
+    "common",
+    "auth",
+    "errors",
+    "system",
+    "language",
+    "facility",
+    "org",
+    "member",
+    "ministry",
+    "content",
+    "calendar",
+  ],
   lng: initial_lng,
   fallbackLng: "en",
   interpolation: {

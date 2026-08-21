@@ -17,7 +17,12 @@ import FileUploadForm, { type FileUploadFormHandle } from "./FileUploadForm";
 import MediaCategoryCards from "./MediaCategoryCards";
 import StorageDetailsCard from "./StorageDetailsCard";
 import type { FileItem, FileSummaryResponse, MediaCategory, SortOrder } from "./types";
-import { convertFileGridItemToFileItem, convertSortOrderToApiParams, mediaCategoryLabelKey, resolveMediaCategoryFromFile } from "./utils";
+import {
+  convertFileGridItemToFileItem,
+  convertSortOrderToApiParams,
+  mediaCategoryLabelKey,
+  resolveMediaCategoryFromFile,
+} from "./utils";
 import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 
 const PAGE_SIZE_OPTIONS = [25, 50, 75, 100];
@@ -80,7 +85,10 @@ const FileDataPage = () => {
         setTotalEntries(0);
       }
     } catch (error) {
-      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -168,7 +176,10 @@ const FileDataPage = () => {
         await refreshAll();
       }
     } catch (error) {
-      notifyApiError(error, { title: t("common:feedback.deleteFailed"), fallbackDescription: t("common:feedback.deleteFailedDesc") });
+      notifyApiError(error, {
+        title: t("common:feedback.deleteFailed"),
+        fallbackDescription: t("common:feedback.deleteFailedDesc"),
+      });
     } finally {
       setDeleting(false);
     }
@@ -179,7 +190,7 @@ const FileDataPage = () => {
       setSelectedKeys([fileId]);
       openDeleteModal();
     },
-    [openDeleteModal],
+    [openDeleteModal]
   );
 
   const handleCloseUploadModal = useCallback(async () => {
@@ -252,7 +263,7 @@ const FileDataPage = () => {
       { value: "size_desc", label: t("file.sort.sizeDesc") },
       { value: "size_asc", label: t("file.sort.sizeAsc") },
     ],
-    [t],
+    [t]
   );
 
   const toolbarButtons: PageButtonType[] = useMemo(
@@ -295,7 +306,9 @@ const FileDataPage = () => {
         onClick: () => {},
         render: () => (
           <div className="flex items-center gap-2">
-            <label className="whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{t("file.toolbar.sort")}</label>
+            <label className="whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+              {t("file.toolbar.sort")}
+            </label>
             <Select
               id="file-sort-select"
               options={sortOptions}
@@ -325,7 +338,7 @@ const FileDataPage = () => {
       sortOptions,
       sortOrder,
       t,
-    ],
+    ]
   );
 
   return (
@@ -358,7 +371,12 @@ const FileDataPage = () => {
           ) : mediaCategory === "images" ? (
             <FileGrid files={files} selectedKeys={selectedKeys} onSelect={handleFileSelect} />
           ) : (
-            <FileTableList files={files} selectedKeys={selectedKeys} onSelect={handleFileSelect} onDeleteOne={handleDeleteOne} />
+            <FileTableList
+              files={files}
+              selectedKeys={selectedKeys}
+              onSelect={handleFileSelect}
+              onDeleteOne={handleDeleteOne}
+            />
           )}
         </div>
 
@@ -384,7 +402,12 @@ const FileDataPage = () => {
             <Button variant="outline" size="sm" onClick={handleCloseUploadModal} disabled={uploading}>
               {t("file.upload.close")}
             </Button>
-            <Button variant="primary" size="sm" onClick={() => fileUploadModalFormRef.current?.submit()} disabled={uploading}>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => fileUploadModalFormRef.current?.submit()}
+              disabled={uploading}
+            >
               {uploading ? t("file.upload.submitting") : t("file.upload.submit")}
             </Button>
           </>
@@ -398,8 +421,18 @@ const FileDataPage = () => {
         <FileUploadForm ref={fileUploadFormRef} mediaCategory={mediaCategory} allowMixed={allowMixedUpload} />
       </ModalForm>
 
-      <Modal title={t("file.delete.title")} isOpen={isDeleteModalOpen} onClose={closeDeleteModal} className="mx-4 w-full max-w-[560px] p-6">
-        <FileDeleteForm fileCount={selectedKeys.length} onSubmit={handleDeleteConfirm} onCancel={closeDeleteModal} submitting={deleting} />
+      <Modal
+        title={t("file.delete.title")}
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        className="mx-4 w-full max-w-[560px] p-6"
+      >
+        <FileDeleteForm
+          fileCount={selectedKeys.length}
+          onSubmit={handleDeleteConfirm}
+          onCancel={closeDeleteModal}
+          submitting={deleting}
+        />
       </Modal>
     </div>
   );

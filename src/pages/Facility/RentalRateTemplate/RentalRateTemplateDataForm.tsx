@@ -1,7 +1,4 @@
-import type {
-  RateApplicabilityRule,
-  RentalRateTemplateWrite,
-} from "@/api/services/facilityService";
+import type { RateApplicabilityRule, RentalRateTemplateWrite } from "@/api/services/facilityService";
 import { Checkbox, Input, Select } from "@efcnewlife/newlife-ui";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -52,10 +49,10 @@ const RentalRateTemplateDataForm = forwardRef<
       ? hydrateApplicabilityDraft(defaultValues.applicability)
       : isCreate
         ? prefillDraftForBillingUnit(defaultValues?.billingUnit || "hourly")
-        : { ...DEFAULT_APPLICABILITY_DRAFT },
+        : { ...DEFAULT_APPLICABILITY_DRAFT }
   );
   const [applicabilityTouched, setApplicabilityTouched] = useState(
-    defaultValues?.applicability !== undefined && defaultValues.applicability !== null,
+    defaultValues?.applicability !== undefined && defaultValues.applicability !== null
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const skipBillingPrefill = useRef(false);
@@ -150,9 +147,7 @@ const RentalRateTemplateDataForm = forwardRef<
             onChange={(e) => setUnitAmount(e.target.value)}
             error={errors.unitAmount}
           />
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            {t("rentalRateTemplate.form.unitAmountHint")}
-          </p>
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t("rentalRateTemplate.form.unitAmountHint")}</p>
         </div>
         <div>
           <Input
@@ -176,12 +171,7 @@ const RentalRateTemplateDataForm = forwardRef<
             checked={isDefault}
             onChange={setIsDefault}
           />
-          <Checkbox
-            id="rate-template-active"
-            label={t("shared.active")}
-            checked={isActive}
-            onChange={setIsActive}
-          />
+          <Checkbox id="rate-template-active" label={t("shared.active")} checked={isActive} onChange={setIsActive} />
         </div>
       </div>
     </div>

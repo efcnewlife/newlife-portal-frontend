@@ -42,7 +42,14 @@ export default function UserAddressCard() {
             onClick={openModal}
             className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
           >
-            <svg className="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              className="fill-current"
+              width="18"
+              height="18"
+              viewBox="0 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -58,7 +65,9 @@ export default function UserAddressCard() {
         <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">Edit Address</h4>
-            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">Update your details to keep your profile up-to-date.</p>
+            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+              Update your details to keep your profile up-to-date.
+            </p>
           </div>
           <form className="flex flex-col">
             <div className="px-2 overflow-y-auto custom-scrollbar">
@@ -68,11 +77,23 @@ export default function UserAddressCard() {
                 </div>
 
                 <div>
-                  <Input id="address-city-state" type="text" label="City/State" value="Arizona, United States." onChange={() => {}} />
+                  <Input
+                    id="address-city-state"
+                    type="text"
+                    label="City/State"
+                    value="Arizona, United States."
+                    onChange={() => {}}
+                  />
                 </div>
 
                 <div>
-                  <Input id="address-postal-code" type="text" label="Postal Code" value="ERT 2489" onChange={() => {}} />
+                  <Input
+                    id="address-postal-code"
+                    type="text"
+                    label="Postal Code"
+                    value="ERT 2489"
+                    onChange={() => {}}
+                  />
                 </div>
 
                 <div>

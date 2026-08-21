@@ -38,7 +38,14 @@ interface ResourceDataFormProps {
   submitting?: boolean;
 }
 
-const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues, parentResource, onSubmit, onCancel, submitting }) => {
+const ResourceDataForm: React.FC<ResourceDataFormProps> = ({
+  mode,
+  defaultValues,
+  parentResource,
+  onSubmit,
+  onCancel,
+  submitting,
+}) => {
   const { t } = useTranslation();
   const { locales, defaultLocaleId, loading: localesLoading, error: localesError } = useActiveLocales();
 
@@ -67,7 +74,7 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
           name: defaultValues.name,
           description: defaultValues.description,
           remark: defaultValues.remark,
-        }),
+        })
       );
     } else if (parentResource) {
       setPid(parentResource.id);
@@ -175,13 +182,17 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
               </svg>
             </div>
             <div className="ml-3">
-              <p className="text-sm text-blue-700 dark:text-blue-300">{t("system:resource.form.parentBanner", { name: parentResource.name })}</p>
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                {t("system:resource.form.parentBanner", { name: parentResource.name })}
+              </p>
             </div>
           </div>
         </div>
       )}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">{t("system:resource.form.sectionInfo")}</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+          {t("system:resource.form.sectionInfo")}
+        </h3>
 
         <TranslationTabsForm
           locales={locales}
@@ -201,7 +212,9 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 mt-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.key.label")}</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t("system:resource.form.key.label")}
+            </label>
             <Input
               id="key"
               type="text"
@@ -214,7 +227,9 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.code.label")}</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t("system:resource.form.code.label")}
+            </label>
             <Input
               id="code"
               type="text"
@@ -227,7 +242,9 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.path.label")}</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t("system:resource.form.path.label")}
+            </label>
             <Input
               id="path"
               type="text"
@@ -240,7 +257,9 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.type.label")}</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t("system:resource.form.type.label")}
+            </label>
             <Select
               id="type"
               options={[
@@ -254,7 +273,9 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:resource.form.icon.label")}</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t("system:resource.form.icon.label")}
+            </label>
             <Input
               id="icon"
               type="text"
@@ -271,7 +292,9 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
         </div>
 
         <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-          <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">{t("system:resource.form.sectionVisibility")}</div>
+          <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+            {t("system:resource.form.sectionVisibility")}
+          </div>
           <div className="flex items-center">
             <Checkbox
               id="is_visible"
@@ -288,7 +311,11 @@ const ResourceDataForm: React.FC<ResourceDataFormProps> = ({ mode, defaultValues
           {t("common:cancel")}
         </Button>
         <Button btnType="submit" variant="primary" disabled={submitting}>
-          {submitting ? t("system:resource.form.submittingSaving") : mode === "create" ? t("common:create") : t("common:save")}
+          {submitting
+            ? t("system:resource.form.submittingSaving")
+            : mode === "create"
+              ? t("common:create")
+              : t("common:save")}
         </Button>
       </div>
     </form>

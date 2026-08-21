@@ -101,10 +101,14 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">{t("system:user.search.sectionStatus")}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            {t("system:user.search.sectionStatus")}
+          </label>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t("system:user.search.labelVerifiedFilter")}</label>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                {t("system:user.search.labelVerifiedFilter")}
+              </label>
               <Button
                 variant="outline"
                 size="sm"
@@ -113,16 +117,22 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
                   filters.verified === true
                     ? "bg-green-100 text-green-700 border-green-300 dark:bg-green-900 dark:text-green-300"
                     : filters.verified === false
-                    ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-900 dark:text-red-300"
-                    : ""
+                      ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-900 dark:text-red-300"
+                      : ""
                 }`}
               >
-                {getBooleanLabel(filters.verified, t("system:user.search.toggleVerified.true"), t("system:user.search.toggleVerified.false"))}
+                {getBooleanLabel(
+                  filters.verified,
+                  t("system:user.search.toggleVerified.true"),
+                  t("system:user.search.toggleVerified.false")
+                )}
               </Button>
             </div>
 
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t("system:user.search.labelActiveFilter")}</label>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                {t("system:user.search.labelActiveFilter")}
+              </label>
               <Button
                 variant="outline"
                 size="sm"
@@ -131,16 +141,22 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
                   filters.is_active === true
                     ? "bg-green-100 text-green-700 border-green-300 dark:bg-green-900 dark:text-green-300"
                     : filters.is_active === false
-                    ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-900 dark:text-red-300"
-                    : ""
+                      ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-900 dark:text-red-300"
+                      : ""
                 }`}
               >
-                {getBooleanLabel(filters.is_active, t("system:user.search.toggleActive.true"), t("system:user.search.toggleActive.false"))}
+                {getBooleanLabel(
+                  filters.is_active,
+                  t("system:user.search.toggleActive.true"),
+                  t("system:user.search.toggleActive.false")
+                )}
               </Button>
             </div>
 
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t("system:user.search.labelAdminFilter")}</label>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                {t("system:user.search.labelAdminFilter")}
+              </label>
               <Button
                 variant="outline"
                 size="sm"
@@ -149,16 +165,22 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
                   filters.is_admin === true
                     ? "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900 dark:text-blue-300"
                     : filters.is_admin === false
-                    ? "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300"
-                    : ""
+                      ? "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300"
+                      : ""
                 }`}
               >
-                {getBooleanLabel(filters.is_admin, t("system:user.search.toggleAdmin.true"), t("system:user.search.toggleAdmin.false"))}
+                {getBooleanLabel(
+                  filters.is_admin,
+                  t("system:user.search.toggleAdmin.true"),
+                  t("system:user.search.toggleAdmin.false")
+                )}
               </Button>
             </div>
 
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t("system:user.search.labelSuperFilter")}</label>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                {t("system:user.search.labelSuperFilter")}
+              </label>
               <Button
                 variant="outline"
                 size="sm"
@@ -167,11 +189,15 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
                   filters.is_superuser === true
                     ? "bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900 dark:text-purple-300"
                     : filters.is_superuser === false
-                    ? "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300"
-                    : ""
+                      ? "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300"
+                      : ""
                 }`}
               >
-                {getBooleanLabel(filters.is_superuser, t("system:user.search.toggleSuper.true"), t("system:user.search.toggleSuper.false"))}
+                {getBooleanLabel(
+                  filters.is_superuser,
+                  t("system:user.search.toggleSuper.true"),
+                  t("system:user.search.toggleSuper.false")
+                )}
               </Button>
             </div>
           </div>
@@ -210,22 +236,26 @@ const UserSearchPopover: React.FC<UserSearchPopoverProps> = ({
               )}
               {filters.verified !== undefined && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                  {t("system:user.search.chipVerifiedPrefix")} {getBooleanLabel(filters.verified, t("common:yes"), t("common:no"))}
+                  {t("system:user.search.chipVerifiedPrefix")}{" "}
+                  {getBooleanLabel(filters.verified, t("common:yes"), t("common:no"))}
                 </span>
               )}
               {filters.is_active !== undefined && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                  {t("system:user.search.chipActivePrefix")} {getBooleanLabel(filters.is_active, t("common:yes"), t("common:no"))}
+                  {t("system:user.search.chipActivePrefix")}{" "}
+                  {getBooleanLabel(filters.is_active, t("common:yes"), t("common:no"))}
                 </span>
               )}
               {filters.is_admin !== undefined && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                  {t("system:user.search.chipAdminPrefix")} {getBooleanLabel(filters.is_admin, t("common:yes"), t("common:no"))}
+                  {t("system:user.search.chipAdminPrefix")}{" "}
+                  {getBooleanLabel(filters.is_admin, t("common:yes"), t("common:no"))}
                 </span>
               )}
               {filters.is_superuser !== undefined && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
-                  {t("system:user.search.chipSuperPrefix")} {getBooleanLabel(filters.is_superuser, t("common:yes"), t("common:no"))}
+                  {t("system:user.search.chipSuperPrefix")}{" "}
+                  {getBooleanLabel(filters.is_superuser, t("common:yes"), t("common:no"))}
                 </span>
               )}
               {filters.gender !== undefined && (

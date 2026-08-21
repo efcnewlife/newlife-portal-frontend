@@ -32,7 +32,12 @@ const ResourceChangeParentForm: React.FC<ResourceChangeParentFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="text-center">
         <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/20 mb-4">
-          <svg className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg
+            className="h-6 w-6 text-blue-600 dark:text-blue-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -41,13 +46,19 @@ const ResourceChangeParentForm: React.FC<ResourceChangeParentFormProps> = ({
             />
           </svg>
         </div>
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{t("system:resource.changeParentForm.titleHeading")}</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{t("system:resource.changeParentForm.instruction", { name: currentResource.name })}</p>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+          {t("system:resource.changeParentForm.titleHeading")}
+        </h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {t("system:resource.changeParentForm.instruction", { name: currentResource.name })}
+        </p>
       </div>
 
       <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar">
         {rootResources.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">{t("system:resource.changeParentForm.noRoots")}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+            {t("system:resource.changeParentForm.noRoots")}
+          </p>
         ) : (
           rootResources.map((resource) => (
             <Radio
@@ -68,8 +79,14 @@ const ResourceChangeParentForm: React.FC<ResourceChangeParentFormProps> = ({
         <Button btnType="button" variant="outline" onClick={onCancel} disabled={submitting}>
           {t("common:cancel")}
         </Button>
-        <Button btnType="submit" variant="primary" disabled={submitting || !selectedParentId || selectedParentId === currentResource.pid}>
-          {submitting ? t("system:resource.changeParentForm.processingButton") : t("system:resource.changeParentForm.confirmButton")}
+        <Button
+          btnType="submit"
+          variant="primary"
+          disabled={submitting || !selectedParentId || selectedParentId === currentResource.pid}
+        >
+          {submitting
+            ? t("system:resource.changeParentForm.processingButton")
+            : t("system:resource.changeParentForm.confirmButton")}
         </Button>
       </div>
     </form>

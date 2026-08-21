@@ -6,7 +6,10 @@ import AuthLayout from "./AuthPageLayout";
 export default function ResetPassword() {
   return (
     <>
-      <PageMeta title={`Reset Password | ${ENV_CONFIG.APP_NAME}`} description={`This is Reset Password page for ${ENV_CONFIG.APP_NAME}`} />
+      <PageMeta
+        title={`Reset Password | ${ENV_CONFIG.APP_NAME}`}
+        description={`This is Reset Password page for ${ENV_CONFIG.APP_NAME}`}
+      />
       <AuthLayout>
         <ResetPasswordForm />
       </AuthLayout>

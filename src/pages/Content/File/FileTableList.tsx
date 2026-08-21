@@ -57,13 +57,19 @@ const FileTableList = ({ files, selectedKeys, onSelect, onDeleteOne }: FileTable
                       <p className="truncate font-medium text-gray-900 dark:text-white/90" title={file.name}>
                         {file.name}
                       </p>
-                      {file.extension && <p className="text-xs uppercase text-gray-500 dark:text-gray-400">{file.extension}</p>}
+                      {file.extension && (
+                        <p className="text-xs uppercase text-gray-500 dark:text-gray-400">{file.extension}</p>
+                      )}
                     </div>
                   </div>
                 </td>
                 <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{t("file.category.files")}</td>
-                <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{file.size !== undefined ? formatBytes(file.size) : "-"}</td>
-                <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{file.createdAt ? DateUtil.format(file.createdAt) : "-"}</td>
+                <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                  {file.size !== undefined ? formatBytes(file.size) : "-"}
+                </td>
+                <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                  {file.createdAt ? DateUtil.format(file.createdAt) : "-"}
+                </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">
                     {file.url && (

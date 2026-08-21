@@ -36,7 +36,7 @@ export interface FileUploadFormHandle {
     fileIndex: number,
     status: "pending" | "uploading" | "success" | "error",
     error?: string,
-    message?: string,
+    message?: string
   ) => void;
 }
 
@@ -59,7 +59,7 @@ const isImageFile = (file: File): boolean => {
 
 const FileUploadForm = forwardRef<FileUploadFormHandle, FileUploadFormProps>(function FileUploadForm(
   { mediaCategory, allowMixed = false, defaultFiles = [] },
-  ref,
+  ref
 ) {
   const { t } = useTranslation("content");
   const maxSizeLabel = formatBytes(MAX_UPLOAD_SIZE_BYTES);
@@ -68,31 +68,39 @@ const FileUploadForm = forwardRef<FileUploadFormHandle, FileUploadFormProps>(fun
       file,
       preview: isImageFile(file) ? URL.createObjectURL(file) : "",
       oversized: file.size > MAX_UPLOAD_SIZE_BYTES,
-    })),
+    }))
   );
   const [rejectedFiles, setRejectedFiles] = useState<Array<{ name: string; message: string }>>([]);
   const [previewImageUrl, setPreviewImageUrl] = useState<string>("");
   const [previewImageName, setPreviewImageName] = useState<string>("");
-  const { isOpen: isImagePreviewOpen, openModal: openImagePreviewModal, closeModal: closeImagePreviewModal } = useModal(false);
+  const {
+    isOpen: isImagePreviewOpen,
+    openModal: openImagePreviewModal,
+    closeModal: closeImagePreviewModal,
+  } = useModal(false);
   const calculatingRef = useRef<Set<File>>(new Set());
   const processedFilesRef = useRef<string>("");
 
   const fileKeys = useMemo(() => {
-    return previewFiles.map((previewFile) => `${previewFile.file.name}-${previewFile.file.size}-${previewFile.file.lastModified}`).join("|");
+    return previewFiles
+      .map((previewFile) => `${previewFile.file.name}-${previewFile.file.size}-${previewFile.file.lastModified}`)
+      .join("|");
   }, [previewFiles]);
 
   const accept = allowMixed ? MIXED_ACCEPT : mediaCategory === "images" ? IMAGE_ACCEPT : FILE_ACCEPT;
   const isImages = !allowMixed && mediaCategory === "images";
   const oversizedCount = useMemo(
-    () => previewFiles.filter((previewFile) => previewFile.oversized || previewFile.file.size > MAX_UPLOAD_SIZE_BYTES).length,
-    [previewFiles],
+    () =>
+      previewFiles.filter((previewFile) => previewFile.oversized || previewFile.file.size > MAX_UPLOAD_SIZE_BYTES)
+        .length,
+    [previewFiles]
   );
 
   const setUploadProgress = (fileIndex: number, progress: number) => {
     setPreviewFiles((prev) =>
       prev.map((previewFile, index) =>
-        index === fileIndex ? { ...previewFile, uploadProgress: progress, uploadStatus: "uploading" } : previewFile,
-      ),
+        index === fileIndex ? { ...previewFile, uploadProgress: progress, uploadStatus: "uploading" } : previewFile
+      )
     );
   };
 
@@ -100,14 +108,14 @@ const FileUploadForm = forwardRef<FileUploadFormHandle, FileUploadFormProps>(fun
     fileIndex: number,
     status: "pending" | "uploading" | "success" | "error",
     error?: string,
-    message?: string,
+    message?: string
   ) => {
     setPreviewFiles((prev) =>
       prev.map((previewFile, index) =>
         index === fileIndex
           ? { ...previewFile, uploadStatus: status, uploadError: error, uploadMessage: message }
-          : previewFile,
-      ),
+          : previewFile
+      )
     );
   };
 
@@ -118,7 +126,7 @@ const FileUploadForm = forwardRef<FileUploadFormHandle, FileUploadFormProps>(fun
       }
 
       const filesToCalculate = previewFiles.filter(
-        (previewFile) => !previewFile.hash && !calculatingRef.current.has(previewFile.file),
+        (previewFile) => !previewFile.hash && !calculatingRef.current.has(previewFile.file)
       );
       if (filesToCalculate.length === 0) {
         processedFilesRef.current = fileKeys;
@@ -133,7 +141,7 @@ const FileUploadForm = forwardRef<FileUploadFormHandle, FileUploadFormProps>(fun
             return { ...previewFile, hashCalculating: true };
           }
           return previewFile;
-        }),
+        })
       );
 
       const results = await Promise.all(
@@ -146,7 +154,7 @@ const FileUploadForm = forwardRef<FileUploadFormHandle, FileUploadFormProps>(fun
           } finally {
             calculatingRef.current.delete(previewFile.file);
           }
-        }),
+        })
       );
 
       setPreviewFiles((prev) => {
@@ -394,7 +402,9 @@ const FileUploadForm = forwardRef<FileUploadFormHandle, FileUploadFormProps>(fun
                           name: previewFile.file.name,
                           size: previewFile.file.size,
                           type: previewFile.file.type || t("file.upload.unknownType"),
-                          nameClassName: isInvalid ? "text-red-700 dark:text-red-400" : "text-gray-700 dark:text-gray-300",
+                          nameClassName: isInvalid
+                            ? "text-red-700 dark:text-red-400"
+                            : "text-gray-700 dark:text-gray-300",
                         }}
                         showUploadProgress
                         uploadProgress={previewFile.uploadProgress}
@@ -454,13 +464,15 @@ const FileUploadForm = forwardRef<FileUploadFormHandle, FileUploadFormProps>(fun
                               {previewFile.file.name}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {formatBytes(previewFile.file.size)} · {previewFile.file.type || t("file.upload.unknownType")}
+                              {formatBytes(previewFile.file.size)} ·{" "}
+                              {previewFile.file.type || t("file.upload.unknownType")}
                             </p>
-                            {previewFile.uploadStatus === "uploading" && typeof previewFile.uploadProgress === "number" && (
-                              <div className="mt-2">
-                                <ProgressBar progress={previewFile.uploadProgress} size="sm" label="inside" />
-                              </div>
-                            )}
+                            {previewFile.uploadStatus === "uploading" &&
+                              typeof previewFile.uploadProgress === "number" && (
+                                <div className="mt-2">
+                                  <ProgressBar progress={previewFile.uploadProgress} size="sm" label="inside" />
+                                </div>
+                              )}
                             {previewFile.uploadStatus === "error" && (
                               <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                                 {previewFile.uploadError || t("file.upload.error")}
@@ -477,7 +489,9 @@ const FileUploadForm = forwardRef<FileUploadFormHandle, FileUploadFormProps>(fun
                               </p>
                             )}
                             {isDuplicate && (
-                              <p className="mt-1 text-xs text-red-600 dark:text-red-400">{t("file.upload.duplicateBadge")}</p>
+                              <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+                                {t("file.upload.duplicateBadge")}
+                              </p>
                             )}
                           </div>
                         </div>

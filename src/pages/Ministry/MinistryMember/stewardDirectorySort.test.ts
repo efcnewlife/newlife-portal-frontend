@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_STEWARD_DIRECTORY_SORT, convertStewardDirectorySortToApiParams, toggleStewardDirectorySort } from "./stewardDirectorySort";
+import {
+  DEFAULT_STEWARD_DIRECTORY_SORT,
+  convertStewardDirectorySortToApiParams,
+  toggleStewardDirectorySort,
+} from "./stewardDirectorySort";
 
 describe("stewardDirectorySort", () => {
   it("defaults to updated newest first", () => {

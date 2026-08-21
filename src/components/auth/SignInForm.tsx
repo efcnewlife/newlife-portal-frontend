@@ -64,7 +64,9 @@ export default function SignInForm() {
               <img src="/images/logo/logo.png" alt="Logo" className="mb-4 w-50 h-50 rounded-2xl" />
               <h1 className="text-gray-600 dark:text-gray-300 font-semibold text-2xl">{ENV_CONFIG.APP_NAME}</h1>
             </div>
-            <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">{t("auth:signIn")}</h1>
+            <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
+              {t("auth:signIn")}
+            </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">{t("auth:signInPromptMicrosoft")}</p>
           </div>
           <div>
@@ -133,7 +135,10 @@ export default function SignInForm() {
                         />
                       </div>
                       <div className="flex items-center justify-end">
-                        <Link to="/forgot-password" className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400">
+                        <Link
+                          to="/forgot-password"
+                          className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
+                        >
                           {t("auth:forgotPassword")}
                         </Link>
                       </div>

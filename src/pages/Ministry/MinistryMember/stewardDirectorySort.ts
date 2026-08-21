@@ -14,7 +14,7 @@ export const STEWARD_DIRECTORY_SORT_FIELDS: StewardDirectorySortField[] = ["name
 
 export const toggleStewardDirectorySort = (
   current: StewardDirectorySortState,
-  field: StewardDirectorySortField,
+  field: StewardDirectorySortField
 ): StewardDirectorySortState => {
   if (current.field === field) {
     return { field, descending: !current.descending };
@@ -25,7 +25,9 @@ export const toggleStewardDirectorySort = (
   };
 };
 
-export const convertStewardDirectorySortToApiParams = (sort: StewardDirectorySortState): { order_by: string; descending: boolean } => ({
+export const convertStewardDirectorySortToApiParams = (
+  sort: StewardDirectorySortState
+): { order_by: string; descending: boolean } => ({
   order_by: sort.field,
   descending: sort.descending,
 });

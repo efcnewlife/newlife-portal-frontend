@@ -11,7 +11,13 @@ interface UserDeleteFormProps {
 const UserDeleteForm: React.FC<UserDeleteFormProps> = ({ onSubmit, onCancel, submitting, isPermanent = false }) => {
   const { t } = useTranslation();
   return (
-    <DeleteForm onSubmit={onSubmit} onCancel={onCancel} submitting={submitting} entityName={t("system:user.deleteForm.entityLabel")} isPermanent={isPermanent} />
+    <DeleteForm
+      onSubmit={onSubmit}
+      onCancel={onCancel}
+      submitting={submitting}
+      entityName={t("system:user.deleteForm.entityLabel")}
+      isPermanent={isPermanent}
+    />
   );
 };
 

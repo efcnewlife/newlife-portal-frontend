@@ -20,7 +20,7 @@ export const userSelectOptionsForMember = (
   member: MinistryMemberDraft,
   users: Array<{ id: string; label: string }>,
   selectedUserIds: Set<string>,
-  selectUserLabel: string,
+  selectUserLabel: string
 ): Array<{ value: string; label: string }> => {
   const current = member.userId
     ? [

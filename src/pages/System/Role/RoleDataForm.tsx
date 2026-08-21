@@ -54,7 +54,7 @@ const RoleDataForm = forwardRef<
         name: defaultValues?.name,
         description: defaultValues?.description,
         remark: defaultValues?.remark,
-      }),
+      })
     );
   }, [defaultValues, locales]);
 
@@ -69,7 +69,8 @@ const RoleDataForm = forwardRef<
     if (!code || code.trim() === "") nextErrors.code = t("system:role.form.validation.codeRequired");
     const name_error_key = validateDefaultLocaleName(translationMap, defaultLocaleId);
     if (name_error_key) nextErrors.name = t(name_error_key);
-    if (!permissions || permissions.length === 0) nextErrors.permissions = t("system:role.form.validation.permissionsRequired");
+    if (!permissions || permissions.length === 0)
+      nextErrors.permissions = t("system:role.form.validation.permissionsRequired");
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -129,7 +130,9 @@ const RoleDataForm = forwardRef<
 
       <div>
         <Label>{t("system:role.form.permissionsLabelRequired")}</Label>
-        {errors.permissions && <p className="mt-1.5 text-xs text-error-500 dark:text-error-400">{errors.permissions}</p>}
+        {errors.permissions && (
+          <p className="mt-1.5 text-xs text-error-500 dark:text-error-400">{errors.permissions}</p>
+        )}
         <RolePermissionMatrix
           value={permissions}
           onChange={setPermissions}

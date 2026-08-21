@@ -46,7 +46,14 @@ export default function UserInfoCard() {
           onClick={openModal}
           className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
         >
-          <svg className="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            className="fill-current"
+            width="18"
+            height="18"
+            viewBox="0 0 18 18"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
               fillRule="evenodd"
               clipRule="evenodd"
@@ -62,7 +69,9 @@ export default function UserInfoCard() {
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">Edit Personal Information</h4>
-            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">Update your details to keep your profile up-to-date.</p>
+            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+              Update your details to keep your profile up-to-date.
+            </p>
           </div>
           <form className="flex flex-col">
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
@@ -71,7 +80,13 @@ export default function UserInfoCard() {
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div>
-                    <Input id="info-facebook" type="text" label="Facebook" value="https://www.facebook.com/PimjoHQ" onChange={() => {}} />
+                    <Input
+                      id="info-facebook"
+                      type="text"
+                      label="Facebook"
+                      value="https://www.facebook.com/PimjoHQ"
+                      onChange={() => {}}
+                    />
                   </div>
 
                   <div>
@@ -79,16 +94,30 @@ export default function UserInfoCard() {
                   </div>
 
                   <div>
-                    <Input id="info-linkedin" type="text" label="Linkedin" value="https://www.linkedin.com/company/pimjo" onChange={() => {}} />
+                    <Input
+                      id="info-linkedin"
+                      type="text"
+                      label="Linkedin"
+                      value="https://www.linkedin.com/company/pimjo"
+                      onChange={() => {}}
+                    />
                   </div>
 
                   <div>
-                    <Input id="info-instagram" type="text" label="Instagram" value="https://instagram.com/PimjoHQ" onChange={() => {}} />
+                    <Input
+                      id="info-instagram"
+                      type="text"
+                      label="Instagram"
+                      value="https://instagram.com/PimjoHQ"
+                      onChange={() => {}}
+                    />
                   </div>
                 </div>
               </div>
               <div className="mt-7">
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">Personal Information</h5>
+                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
+                  Personal Information
+                </h5>
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
@@ -100,7 +129,13 @@ export default function UserInfoCard() {
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Input id="info-email" type="text" label="Email Address" value="randomuser@pimjo.com" onChange={() => {}} />
+                    <Input
+                      id="info-email"
+                      type="text"
+                      label="Email Address"
+                      value="randomuser@pimjo.com"
+                      onChange={() => {}}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">

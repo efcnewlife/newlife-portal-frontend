@@ -61,7 +61,7 @@ const ImagePreviewCard = ({
         <div
           className={cn(
             "group relative aspect-square cursor-pointer overflow-hidden rounded-t-lg border-gray-200 transition-all dark:border-gray-700",
-            className,
+            className
           )}
           onClick={handleImageClick}
         >
@@ -97,7 +97,7 @@ const ImagePreviewCard = ({
               <p
                 className={cn(
                   "truncate text-xs font-medium",
-                  fileInfo.nameClassName || "text-gray-700 dark:text-gray-300",
+                  fileInfo.nameClassName || "text-gray-700 dark:text-gray-300"
                 )}
                 title={fileInfo.name}
               >

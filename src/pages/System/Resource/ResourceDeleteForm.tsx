@@ -9,7 +9,12 @@ interface ResourceDeleteFormProps {
   isPermanent?: boolean;
 }
 
-const ResourceDeleteForm: React.FC<ResourceDeleteFormProps> = ({ onSubmit, onCancel, submitting, isPermanent = false }) => {
+const ResourceDeleteForm: React.FC<ResourceDeleteFormProps> = ({
+  onSubmit,
+  onCancel,
+  submitting,
+  isPermanent = false,
+}) => {
   const { t } = useTranslation();
   const [reason, setReason] = useState("");
 
@@ -63,8 +68,8 @@ const ResourceDeleteForm: React.FC<ResourceDeleteFormProps> = ({ onSubmit, onCan
           {submitting
             ? t("system:resource.deleteForm.submittingDeleting")
             : isPermanent
-            ? t("system:resource.deleteForm.confirmPermanentButton")
-            : t("common:delete")}
+              ? t("system:resource.deleteForm.confirmPermanentButton")
+              : t("common:delete")}
         </Button>
       </div>
     </form>

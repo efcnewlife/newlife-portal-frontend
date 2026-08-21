@@ -116,16 +116,33 @@ export default function ResetPasswordForm() {
             to="/signin"
             className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
           >
-            <svg className="stroke-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M12.7083 5L7.5 10.2083L12.7083 15.4167" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <svg
+              className="stroke-current"
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+            >
+              <path
+                d="M12.7083 5L7.5 10.2083L12.7083 15.4167"
+                stroke=""
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
             Back to sign in
           </Link>
         </div>
         <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
           <div className="mb-5 sm:mb-8">
-            <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">Password reset successful</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Your password has been successfully reset. It will automatically jump to the login page in 3 seconds.</p>
+            <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
+              Password reset successful
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Your password has been successfully reset. It will automatically jump to the login page in 3 seconds.
+            </p>
           </div>
           <div>
             <Button variant="primary" size="md" className="w-full" onClick={() => navigate("/signin")}>
@@ -144,16 +161,33 @@ export default function ResetPasswordForm() {
           to="/signin"
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
         >
-          <svg className="stroke-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M12.7083 5L7.5 10.2083L12.7083 15.4167" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <svg
+            className="stroke-current"
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+          >
+            <path
+              d="M12.7083 5L7.5 10.2083L12.7083 15.4167"
+              stroke=""
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
           Back to sign in
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div className="mb-5 sm:mb-8">
-          <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">reset password</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{email ? `please for ${email} Enter your new password` : "Please enter your new password"}</p>
+          <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
+            reset password
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {email ? `please for ${email} Enter your new password` : "Please enter your new password"}
+          </p>
         </div>
         <div>
           <form onSubmit={handleSubmit}>
@@ -181,50 +215,70 @@ export default function ResetPasswordForm() {
                   <div className="mt-2 space-y-1">
                     <div
                       className={`text-xs flex items-center ${
-                        passwordValidationStatus.hasMinLength ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                        passwordValidationStatus.hasMinLength
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
                       }`}
                     >
-                      <span className={`mr-2 ${passwordValidationStatus.hasMinLength ? "text-green-600 dark:text-green-400" : ""}`}>
+                      <span
+                        className={`mr-2 ${passwordValidationStatus.hasMinLength ? "text-green-600 dark:text-green-400" : ""}`}
+                      >
                         {passwordValidationStatus.hasMinLength ? "✓" : "✗"}
                       </span>
                       Longer than 8 characters
                     </div>
                     <div
                       className={`text-xs flex items-center ${
-                        passwordValidationStatus.hasLowerCase ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                        passwordValidationStatus.hasLowerCase
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
                       }`}
                     >
-                      <span className={`mr-2 ${passwordValidationStatus.hasLowerCase ? "text-green-600 dark:text-green-400" : ""}`}>
+                      <span
+                        className={`mr-2 ${passwordValidationStatus.hasLowerCase ? "text-green-600 dark:text-green-400" : ""}`}
+                      >
                         {passwordValidationStatus.hasLowerCase ? "✓" : "✗"}
                       </span>
                       at least one lowercase letter
                     </div>
                     <div
                       className={`text-xs flex items-center ${
-                        passwordValidationStatus.hasUpperCase ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                        passwordValidationStatus.hasUpperCase
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
                       }`}
                     >
-                      <span className={`mr-2 ${passwordValidationStatus.hasUpperCase ? "text-green-600 dark:text-green-400" : ""}`}>
+                      <span
+                        className={`mr-2 ${passwordValidationStatus.hasUpperCase ? "text-green-600 dark:text-green-400" : ""}`}
+                      >
                         {passwordValidationStatus.hasUpperCase ? "✓" : "✗"}
                       </span>
                       at least one capital letter
                     </div>
                     <div
                       className={`text-xs flex items-center ${
-                        passwordValidationStatus.hasNumber ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                        passwordValidationStatus.hasNumber
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
                       }`}
                     >
-                      <span className={`mr-2 ${passwordValidationStatus.hasNumber ? "text-green-600 dark:text-green-400" : ""}`}>
+                      <span
+                        className={`mr-2 ${passwordValidationStatus.hasNumber ? "text-green-600 dark:text-green-400" : ""}`}
+                      >
                         {passwordValidationStatus.hasNumber ? "✓" : "✗"}
                       </span>
                       at least one number
                     </div>
                     <div
                       className={`text-xs flex items-center ${
-                        passwordValidationStatus.hasSpecialChar ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                        passwordValidationStatus.hasSpecialChar
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
                       }`}
                     >
-                      <span className={`mr-2 ${passwordValidationStatus.hasSpecialChar ? "text-green-600 dark:text-green-400" : ""}`}>
+                      <span
+                        className={`mr-2 ${passwordValidationStatus.hasSpecialChar ? "text-green-600 dark:text-green-400" : ""}`}
+                      >
                         {passwordValidationStatus.hasSpecialChar ? "✓" : "✗"}
                       </span>
                       At least one special character (!@#$%^&* wait)
@@ -255,7 +309,11 @@ export default function ResetPasswordForm() {
                 />
               </div>
 
-              {error && <div className="p-3 text-sm text-red-800 bg-red-50 rounded-md dark:bg-red-900/20 dark:text-red-400">{error}</div>}
+              {error && (
+                <div className="p-3 text-sm text-red-800 bg-red-50 rounded-md dark:bg-red-900/20 dark:text-red-400">
+                  {error}
+                </div>
+              )}
 
               <div>
                 <Button variant="primary" size="md" className="w-full" btnType="submit" disabled={isLoading || !token}>

@@ -13,12 +13,7 @@ interface MediaCategoryCardsProps {
   onUploadClick: () => void;
 }
 
-const MediaCategoryCards = ({
-  summary,
-  activeCategory,
-  onCategoryChange,
-  onUploadClick,
-}: MediaCategoryCardsProps) => {
+const MediaCategoryCards = ({ summary, activeCategory, onCategoryChange, onUploadClick }: MediaCategoryCardsProps) => {
   const { t } = useTranslation("content");
   const totalBytes = summary?.total.sizeBytes ?? 0;
   const imagesCount = summary?.images.count ?? 0;
@@ -46,7 +41,8 @@ const MediaCategoryCards = ({
       sizeBytes: imagesBytes,
       share: imagesShare,
       barClassName: "bg-success-400",
-      activeRingClassName: "border-blue-200 bg-blue-50/40 ring-2 ring-blue-500 dark:border-blue-500/40 dark:bg-blue-500/10",
+      activeRingClassName:
+        "border-blue-200 bg-blue-50/40 ring-2 ring-blue-500 dark:border-blue-500/40 dark:bg-blue-500/10",
     },
     {
       category: "files",
@@ -56,7 +52,8 @@ const MediaCategoryCards = ({
       sizeBytes: filesBytes,
       share: filesShare,
       barClassName: "bg-warning-400",
-      activeRingClassName: "border-blue-200 bg-blue-50/40 ring-2 ring-blue-500 dark:border-blue-500/40 dark:bg-blue-500/10",
+      activeRingClassName:
+        "border-blue-200 bg-blue-50/40 ring-2 ring-blue-500 dark:border-blue-500/40 dark:bg-blue-500/10",
     },
   ];
 
@@ -82,22 +79,17 @@ const MediaCategoryCards = ({
                 "rounded-xl border p-4 text-left transition-colors",
                 isActive
                   ? card.activeRingClassName
-                  : "border-gray-100 bg-gray-50/80 hover:border-gray-200 dark:border-white/10 dark:bg-white/[0.02] dark:hover:border-white/20",
+                  : "border-gray-100 bg-gray-50/80 hover:border-gray-200 dark:border-white/10 dark:bg-white/[0.02] dark:hover:border-white/20"
               )}
             >
               <div className="mb-3 flex items-start gap-3">
                 <div
-                  className={cn(
-                    "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg",
-                    card.iconClassName,
-                  )}
+                  className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-lg", card.iconClassName)}
                 >
                   {card.icon}
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white/90">
-                    {t(`file.category.${card.category}`)}
-                  </p>
+                  <p className="font-medium text-gray-900 dark:text-white/90">{t(`file.category.${card.category}`)}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     {t("file.overview.categorySummary", {
                       count: card.count,

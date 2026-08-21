@@ -47,7 +47,7 @@ const TranslationTabsForm = ({
         value: locale.id,
         label: localeTabLabel(locale, locale.id === defaultLocaleId),
       })),
-    [locales, defaultLocaleId],
+    [locales, defaultLocaleId]
   );
 
   const updateField = (localeId: string, field: TranslationFieldKey, fieldValue: string) => {

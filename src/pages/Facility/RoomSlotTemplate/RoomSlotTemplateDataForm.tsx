@@ -43,17 +43,11 @@ const RoomSlotTemplateDataForm = forwardRef<RoomSlotTemplateDataFormHandle, Prop
   const [facilityId, setFacilityId] = useState(defaultValues?.facilityId || "");
   const [name, setName] = useState(defaultValues?.name || "");
   const [daysOfWeek, setDaysOfWeek] = useState<number[]>(defaultValues?.daysOfWeek ?? WEEKDAYS_PRESET);
-  const [startTime, setStartTime] = useState<Dayjs | null>(() =>
-    apiTimeToDayjs(defaultValues?.startTime || "09:00")
-  );
+  const [startTime, setStartTime] = useState<Dayjs | null>(() => apiTimeToDayjs(defaultValues?.startTime || "09:00"));
   const [endTime, setEndTime] = useState<Dayjs | null>(() => apiTimeToDayjs(defaultValues?.endTime || "17:00"));
-  const [slotDurationMinutes, setSlotDurationMinutes] = useState(
-    String(defaultValues?.slotDurationMinutes ?? 60)
-  );
+  const [slotDurationMinutes, setSlotDurationMinutes] = useState(String(defaultValues?.slotDurationMinutes ?? 60));
   const [isActive, setIsActive] = useState(defaultValues?.isActive ?? true);
-  const [effectiveFrom, setEffectiveFrom] = useState<Dayjs | null>(() =>
-    apiDateToDayjs(defaultValues?.effectiveFrom)
-  );
+  const [effectiveFrom, setEffectiveFrom] = useState<Dayjs | null>(() => apiDateToDayjs(defaultValues?.effectiveFrom));
   const [effectiveTo, setEffectiveTo] = useState<Dayjs | null>(() => apiDateToDayjs(defaultValues?.effectiveTo));
   const [errors, setErrors] = useState<{ name?: string; facilityId?: string; daysOfWeek?: string }>({});
 
@@ -119,7 +113,13 @@ const RoomSlotTemplateDataForm = forwardRef<RoomSlotTemplateDataFormHandle, Prop
         />
       </div>
       <div>
-        <Input id="slot-name" label={t("roomSlotTemplate.form.name")} value={name} onChange={(e) => setName(e.target.value)} error={errors.name} />
+        <Input
+          id="slot-name"
+          label={t("roomSlotTemplate.form.name")}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          error={errors.name}
+        />
       </div>
       <div className="md:col-span-2">
         <p className="text-sm font-medium text-gray-700 mb-2">{t("roomSlotTemplate.form.daysOfWeek")}</p>

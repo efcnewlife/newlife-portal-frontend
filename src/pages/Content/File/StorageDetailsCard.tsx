@@ -16,7 +16,9 @@ const StorageDetailsCard = ({ summary }: StorageDetailsCardProps) => {
 
   return (
     <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm md:p-6 dark:border-white/10 dark:bg-white/[0.03]">
-      <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white/90">{t("file.overview.storageDetails")}</h2>
+      <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white/90">
+        {t("file.overview.storageDetails")}
+      </h2>
 
       <div
         className="mx-auto mb-5 flex h-44 w-44 items-center justify-center rounded-full"

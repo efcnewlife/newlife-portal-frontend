@@ -64,10 +64,7 @@ class SettingService {
     const query: Record<string, string | boolean> = {};
     if (params?.namespace) query.namespace = params.namespace;
     if (params?.deleted) query.deleted = true;
-    return httpClient.get<SettingList>(
-      API_ENDPOINTS.SETTING.LIST,
-      Object.keys(query).length > 0 ? query : undefined,
-    );
+    return httpClient.get<SettingList>(API_ENDPOINTS.SETTING.LIST, Object.keys(query).length > 0 ? query : undefined);
   }
 
   async getById(id: string): Promise<ApiResponse<SettingItem>> {

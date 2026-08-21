@@ -20,7 +20,7 @@ export default function AuthLocaleSelect() {
         value: app_locale,
         label: tLanguage(APP_LOCALE_LABEL_KEYS[app_locale]),
       })),
-    [tLanguage],
+    [tLanguage]
   );
 
   const selected_locale = normalize_locale_code(i18n.language) ?? "en";

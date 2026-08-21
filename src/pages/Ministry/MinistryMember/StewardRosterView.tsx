@@ -1,4 +1,7 @@
-import { groupMinistryMembersByRole, type MinistryMemberDraft } from "@/pages/Ministry/components/MinistryMembersEditor";
+import {
+  groupMinistryMembersByRole,
+  type MinistryMemberDraft,
+} from "@/pages/Ministry/components/MinistryMembersEditor";
 import { useTranslation } from "react-i18next";
 
 interface StewardRosterViewProps {

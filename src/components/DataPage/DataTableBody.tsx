@@ -199,7 +199,8 @@ export default function DataTableBody<T extends Record<string, unknown>>({
                 const shouldShowExpandButton = hasExpandColumn && isLastColumn;
 
                 // Build alignment-related Tailwind CSS class names
-                const alignClass = column.align === "center" ? "text-center" : column.align === "end" ? "text-right" : "text-left";
+                const alignClass =
+                  column.align === "center" ? "text-center" : column.align === "end" ? "text-right" : "text-left";
 
                 // Build cursor-related Tailwind CSS class names
                 const cursorClass = column.onClick ? "cursor-pointer" : "cursor-default";

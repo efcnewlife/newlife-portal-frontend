@@ -145,7 +145,9 @@ const WeekView = ({
                 isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
               }`}
             >
-              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{formatWeekday(date, "short", locale)}</span>
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                {formatWeekday(date, "short", locale)}
+              </span>
               <span
                 className={`flex h-6 items-center justify-center text-xs font-semibold ${
                   isToday
@@ -166,7 +168,10 @@ const WeekView = ({
         {/* Left time axis */}
         <div className="flex h-max w-18 flex-col border-r border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-gray-800/50">
           {hours.map((hour) => (
-            <div key={hour} className="group relative flex h-24 items-start justify-end bg-gray-50 dark:bg-gray-800/50 pr-2">
+            <div
+              key={hour}
+              className="group relative flex h-24 items-start justify-end bg-gray-50 dark:bg-gray-800/50 pr-2"
+            >
               <span className="text-right text-xs font-medium whitespace-nowrap text-gray-500 dark:text-gray-400 group-first:translate-y-1">
                 {hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
               </span>

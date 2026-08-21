@@ -11,7 +11,13 @@ interface RoleDeleteFormProps {
 const RoleDeleteForm: React.FC<RoleDeleteFormProps> = ({ onSubmit, onCancel, submitting, isPermanent = false }) => {
   const { t } = useTranslation();
   return (
-    <DeleteForm onSubmit={onSubmit} onCancel={onCancel} submitting={submitting} entityName={t("system:role.deleteForm.entityLabel")} isPermanent={isPermanent} />
+    <DeleteForm
+      onSubmit={onSubmit}
+      onCancel={onCancel}
+      submitting={submitting}
+      entityName={t("system:role.deleteForm.entityLabel")}
+      isPermanent={isPermanent}
+    />
   );
 };
 

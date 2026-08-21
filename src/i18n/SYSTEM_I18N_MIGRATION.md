@@ -9,13 +9,13 @@ The app registers **`common`**, **`auth`**, **`errors`**, **`system`**, and **`l
 
 Each namespace is loaded from a separate JSON file per locale (`common.json` maps to the `common` namespace, etc.). Values are **nested objects** inside that file (**no extra wrapper key**).
 
-| File (`locales/<lng>/`) | Namespace |
-|-------------------------|-----------|
-| `common.json` | `common` |
-| `auth.json` | `auth` |
-| `errors.json` | `errors` |
-| `system.json` | `system` |
-| `language.json` | `language` |
+| File (`locales/<lng>/`) | Namespace  |
+| ----------------------- | ---------- |
+| `common.json`           | `common`   |
+| `auth.json`             | `auth`     |
+| `errors.json`           | `errors`   |
+| `system.json`           | `system`   |
+| `language.json`         | `language` |
 
 ## Maintaining locales
 
@@ -27,7 +27,7 @@ Inside each namespace JSON, mirror the logical prefix without repeating the name
 
 ### Do not translate
 
-- API field keys, paths, codes, IDs, debugging class names  
+- API field keys, paths, codes, IDs, debugging class names
 - Backend-returned data (except formatting)
 
 ## Validation

@@ -125,7 +125,14 @@ export default function DataTableFooter({
                 ))}
               </select>
               <span className="pointer-events-none absolute z-30 text-gray-500 -translate-y-1/2 right-2 top-1/2 dark:text-gray-400">
-                <svg className="stroke-current" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg
+                  className="stroke-current"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
                     d="M3.8335 5.9165L8.00016 10.0832L12.1668 5.9165"
                     stroke=""

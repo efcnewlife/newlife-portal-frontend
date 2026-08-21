@@ -73,7 +73,9 @@ export const createRowAction = <T extends Record<string, unknown>>(
 };
 
 export class CommonMenuButton {
-  static SEPARATOR = <T extends Record<string, unknown>>(options: Partial<MenuButtonType<T>> = {}): MenuButtonType<T> => {
+  static SEPARATOR = <T extends Record<string, unknown>>(
+    options: Partial<MenuButtonType<T>> = {}
+  ): MenuButtonType<T> => {
     return {
       key: "separator",
       text: "",

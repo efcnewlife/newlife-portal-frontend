@@ -23,7 +23,7 @@ describe("userSelectOptionsForMember", () => {
       member,
       [{ id: "other", label: "Other (other@example.com)" }],
       new Set(["user-1", "other"]),
-      "Select user",
+      "Select user"
     );
     expect(options.map((option) => option.value)).toEqual(["", "user-1"]);
     expect(options[1]?.label).toBe("Jane Doe (jane@example.com)");

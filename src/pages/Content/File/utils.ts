@@ -26,7 +26,7 @@ export const FILE_ACCEPT: Record<string, string[]> = {
 export const IMAGE_EXTENSIONS = new Set(
   Object.values(IMAGE_ACCEPT)
     .flat()
-    .map((extension) => extension.replace(/^\./, "").toLowerCase()),
+    .map((extension) => extension.replace(/^\./, "").toLowerCase())
 );
 
 export const MIXED_ACCEPT: Record<string, string[]> = {
@@ -61,9 +61,7 @@ export const resolveMediaCategoryFromFile = (file: File): MediaCategory => {
   return "files";
 };
 
-export const convertSortOrderToApiParams = (
-  sortOrder: SortOrder,
-): { order_by: string; descending: boolean } => {
+export const convertSortOrderToApiParams = (sortOrder: SortOrder): { order_by: string; descending: boolean } => {
   switch (sortOrder) {
     case "name_asc":
       return { order_by: "original_name", descending: false };

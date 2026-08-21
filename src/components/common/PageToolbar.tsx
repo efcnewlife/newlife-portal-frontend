@@ -21,7 +21,13 @@ const PageToolbar = ({ left, right, center, className }: PageToolbarProps) => {
   }
 
   return (
-    <div className={cn("rounded-full border border-gray-200 bg-white px-2 py-1.5", "dark:border-white/10 dark:bg-white/[0.03]", className)}>
+    <div
+      className={cn(
+        "rounded-full border border-gray-200 bg-white px-2 py-1.5",
+        "dark:border-white/10 dark:bg-white/[0.03]",
+        className
+      )}
+    >
       <div className="flex flex-wrap items-center justify-between gap-3">
         {(left || center) && (
           <div className="flex min-w-0 flex-wrap items-center gap-3">

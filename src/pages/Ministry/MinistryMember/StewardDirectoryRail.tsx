@@ -5,7 +5,11 @@ import { Badge } from "@efcnewlife/newlife-ui";
 import { useTranslation } from "react-i18next";
 import { MdArrowDownward, MdArrowUpward } from "react-icons/md";
 import { ministryStatusBadgeColor } from "./ministryStatusBadge";
-import { STEWARD_DIRECTORY_SORT_FIELDS, type StewardDirectorySortField, type StewardDirectorySortState } from "./stewardDirectorySort";
+import {
+  STEWARD_DIRECTORY_SORT_FIELDS,
+  type StewardDirectorySortField,
+  type StewardDirectorySortState,
+} from "./stewardDirectorySort";
 
 interface StewardDirectoryRailProps {
   items: MinistryListItem[];
@@ -29,7 +33,15 @@ const sortFieldLabelKey = (field: StewardDirectorySortField): string => {
   }
 };
 
-const StewardDirectoryRail = ({ items, selectedId, loading, width, sort, onSortFieldClick, onSelect }: StewardDirectoryRailProps) => {
+const StewardDirectoryRail = ({
+  items,
+  selectedId,
+  loading,
+  width,
+  sort,
+  onSortFieldClick,
+  onSelect,
+}: StewardDirectoryRailProps) => {
   const { t } = useTranslation("ministry");
 
   return (
@@ -45,7 +57,7 @@ const StewardDirectoryRail = ({ items, selectedId, loading, width, sort, onSortF
                 "inline-flex items-center gap-0.5 rounded-md px-2 py-1 text-xs font-medium transition-colors",
                 isActive
                   ? "bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400"
-                  : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/[0.06]",
+                  : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/[0.06]"
               )}
               aria-pressed={isActive}
               aria-label={t("ministryMember.sort.toggleAria", {
@@ -72,7 +84,9 @@ const StewardDirectoryRail = ({ items, selectedId, loading, width, sort, onSortF
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto">
         {loading ? (
-          <p className="px-3 py-2 text-sm text-gray-500">{t("common:loading", { ns: "common", defaultValue: "Loading..." })}</p>
+          <p className="px-3 py-2 text-sm text-gray-500">
+            {t("common:loading", { ns: "common", defaultValue: "Loading..." })}
+          </p>
         ) : items.length === 0 ? (
           <p className="px-3 py-2 text-sm text-gray-500">{t("ministryMember.emptyRail")}</p>
         ) : (
@@ -88,7 +102,7 @@ const StewardDirectoryRail = ({ items, selectedId, loading, width, sort, onSortF
                       "w-full text-left px-3 py-2 text-sm border-b border-gray-50 dark:border-white/[0.04]",
                       selectedId === item.id
                         ? "bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400"
-                        : "text-gray-800 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-white/[0.04]",
+                        : "text-gray-800 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-white/[0.04]"
                     )}
                     onClick={() => onSelect(item.id)}
                   >
@@ -104,7 +118,9 @@ const StewardDirectoryRail = ({ items, selectedId, loading, width, sort, onSortF
                       <span
                         className={cn(
                           "mt-1 block text-xs",
-                          selectedId === item.id ? "text-brand-500/80 dark:text-brand-400/80" : "text-gray-500 dark:text-gray-400",
+                          selectedId === item.id
+                            ? "text-brand-500/80 dark:text-brand-400/80"
+                            : "text-gray-500 dark:text-gray-400"
                         )}
                         title={updatedTitle}
                       >

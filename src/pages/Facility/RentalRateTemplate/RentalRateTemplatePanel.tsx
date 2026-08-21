@@ -1,7 +1,4 @@
-import {
-  facilityService,
-  type RentalRateTemplateItem,
-} from "@/api/services/facilityService";
+import { facilityService, type RentalRateTemplateItem } from "@/api/services/facilityService";
 import DeleteForm from "@/components/DataPage/DeleteForm";
 import { Button, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
 import { Resource, Verb } from "@/const/enums";
@@ -49,7 +46,10 @@ const RentalRateTemplatePanel = ({ onChanged }: RentalRateTemplatePanelProps) =>
         setItems(res.data.items || []);
       }
     } catch (error) {
-      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -190,9 +190,7 @@ const RentalRateTemplatePanel = ({ onChanged }: RentalRateTemplatePanelProps) =>
         isOpen={isOpen}
         onClose={closeModal}
         title={
-          formMode === "create"
-            ? t("rentalRateTemplate.modal.createTitle")
-            : t("rentalRateTemplate.modal.editTitle")
+          formMode === "create" ? t("rentalRateTemplate.modal.createTitle") : t("rentalRateTemplate.modal.editTitle")
         }
         className="max-w-3xl w-full mx-4 p-6"
         footer={
@@ -221,7 +219,10 @@ const RentalRateTemplatePanel = ({ onChanged }: RentalRateTemplatePanelProps) =>
             await fetchList();
             notifyChanged();
           } catch (error) {
-            notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
+            notifyApiError(error, {
+              title: t("common:feedback.saveFailed"),
+              fallbackDescription: t("common:feedback.saveFailedDesc"),
+            });
           } finally {
             setSubmitting(false);
           }
@@ -254,7 +255,10 @@ const RentalRateTemplatePanel = ({ onChanged }: RentalRateTemplatePanelProps) =>
               await fetchList();
               notifyChanged();
             } catch (error) {
-              notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
+              notifyApiError(error, {
+                title: t("common:feedback.saveFailed"),
+                fallbackDescription: t("common:feedback.saveFailedDesc"),
+              });
             } finally {
               setSubmitting(false);
             }

@@ -82,10 +82,14 @@ const PermissionSearchPopover: React.FC<PermissionSearchPopoverProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">{t("system:permission.search.sectionStatus")}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            {t("system:permission.search.sectionStatus")}
+          </label>
           <div className="grid grid-cols-1 gap-3">
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t("system:permission.search.labelActiveStatus")}</label>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                {t("system:permission.search.labelActiveStatus")}
+              </label>
               <Button
                 variant="outline"
                 size="sm"
@@ -94,11 +98,15 @@ const PermissionSearchPopover: React.FC<PermissionSearchPopoverProps> = ({
                   filters.isActive === true
                     ? "bg-green-100 text-green-700 border-green-300 dark:bg-green-900 dark:text-green-300"
                     : filters.isActive === false
-                    ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-900 dark:text-red-300"
-                    : ""
+                      ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-900 dark:text-red-300"
+                      : ""
                 }`}
               >
-                {getBooleanLabel(filters.isActive, t("system:permission.search.toggleActive.true"), t("system:permission.search.toggleActive.false"))}
+                {getBooleanLabel(
+                  filters.isActive,
+                  t("system:permission.search.toggleActive.true"),
+                  t("system:permission.search.toggleActive.false")
+                )}
               </Button>
             </div>
           </div>
@@ -106,7 +114,9 @@ const PermissionSearchPopover: React.FC<PermissionSearchPopoverProps> = ({
 
         {(filters.keyword || filters.isActive !== undefined) && (
           <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t("system:permission.search.chipsTitle")}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+              {t("system:permission.search.chipsTitle")}
+            </div>
             <div className="flex flex-wrap gap-1">
               {filters.keyword && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
@@ -115,7 +125,8 @@ const PermissionSearchPopover: React.FC<PermissionSearchPopoverProps> = ({
               )}
               {filters.isActive !== undefined && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                  {t("system:permission.search.chipActivePrefix")} {getBooleanLabel(filters.isActive, t("common:yes"), t("common:no"))}
+                  {t("system:permission.search.chipActivePrefix")}{" "}
+                  {getBooleanLabel(filters.isActive, t("common:yes"), t("common:no"))}
                 </span>
               )}
             </div>

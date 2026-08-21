@@ -61,7 +61,9 @@ export const ResourceTreeNode: React.FC<ResourceTreeNodeProps> = ({
         </div>
 
         {/* Icon */}
-        <div className={`flex-shrink-0 flex w-20 ${level === 0 ? "pl-6" : "pl-10"}`}>{resolveIcon(node.icon || "").icon}</div>
+        <div className={`flex-shrink-0 flex w-20 ${level === 0 ? "pl-6" : "pl-10"}`}>
+          {resolveIcon(node.icon || "").icon}
+        </div>
 
         {/* Resource name */}
         <div className="flex-shrink-0 w-80 min-w-0">

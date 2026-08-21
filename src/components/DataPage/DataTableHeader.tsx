@@ -105,7 +105,8 @@ export default function DataTableHeader<T>({
           const shouldShowExpandHeader = hasExpandColumn && isLastColumn;
 
           // Build alignment-related Tailwind CSS class names
-          const alignClass = column.align === "center" ? "text-center" : column.align === "end" ? "text-right" : "text-left";
+          const alignClass =
+            column.align === "center" ? "text-center" : column.align === "end" ? "text-right" : "text-left";
 
           return (
             <TableCell

@@ -22,21 +22,27 @@ const BookingDetailDrawer = ({ booking }: BookingDetailDrawerProps) => {
     <div className="space-y-4 text-sm max-h-[70vh] overflow-y-auto pr-2">
       {row(t("booking.table.user"), booking.userDisplayName || booking.userEmail)}
       {row(t("booking.detail.userEmail"), booking.userEmail)}
-      {row(
-        t("booking.detail.createdBy"),
-        booking.createdBy || booking.createdById || "-"
-      )}
+      {row(t("booking.detail.createdBy"), booking.createdBy || booking.createdById || "-")}
       {row(t("booking.table.facility"), booking.facilityName)}
       {row(t("booking.detail.status"), t(`booking.status.${booking.status}`, { defaultValue: booking.status }))}
-      {row(t("booking.detail.bookingType"), t(`booking.bookingType.${booking.bookingType}`, { defaultValue: booking.bookingType }))}
+      {row(
+        t("booking.detail.bookingType"),
+        t(`booking.bookingType.${booking.bookingType}`, { defaultValue: booking.bookingType })
+      )}
       {row(t("booking.table.startAt"), DateUtil.format(booking.startAt))}
       {row(t("booking.table.endAt"), DateUtil.format(booking.endAt))}
       {row(t("booking.detail.missionAligned"), booking.isMissionAligned ? t("shared.yes") : t("shared.no"))}
-      {row(t("booking.detail.subtotal"), booking.subtotalAmount != null ? `${booking.subtotalAmount} ${booking.currency || ""}` : "-")}
+      {row(
+        t("booking.detail.subtotal"),
+        booking.subtotalAmount != null ? `${booking.subtotalAmount} ${booking.currency || ""}` : "-"
+      )}
       {row(t("booking.detail.discount"), booking.discountAmount)}
       {row(t("booking.detail.surcharge"), booking.surchargeAmount)}
       {row(t("booking.detail.deposit"), booking.depositAmount)}
-      {row(t("booking.detail.quoted"), booking.quotedAmount != null ? `${booking.quotedAmount} ${booking.currency || ""}` : "-")}
+      {row(
+        t("booking.detail.quoted"),
+        booking.quotedAmount != null ? `${booking.quotedAmount} ${booking.currency || ""}` : "-"
+      )}
       {booking.cancelReason && row(t("booking.detail.cancelReason"), booking.cancelReason)}
 
       {booking.rooms?.length > 0 && (
@@ -49,10 +55,7 @@ const BookingDetailDrawer = ({ booking }: BookingDetailDrawerProps) => {
                   {line.facilityName || line.facilityCode} · {DateUtil.format(line.startAt)} –{" "}
                   {DateUtil.format(line.endAt)}
                 </div>
-                {row(
-                  t("booking.detail.rateName"),
-                  line.rentalRateName || "-"
-                )}
+                {row(t("booking.detail.rateName"), line.rentalRateName || "-")}
                 {row(
                   t("booking.detail.billingUnit"),
                   line.billingUnit
@@ -63,9 +66,7 @@ const BookingDetailDrawer = ({ booking }: BookingDetailDrawerProps) => {
                 )}
                 {row(
                   t("booking.detail.unitAmount"),
-                  line.unitAmount != null
-                    ? `${line.unitAmount} ${line.currency || booking.currency || ""}`
-                    : "-"
+                  line.unitAmount != null ? `${line.unitAmount} ${line.currency || booking.currency || ""}` : "-"
                 )}
                 {row(
                   t("booking.detail.applicability"),
@@ -80,9 +81,7 @@ const BookingDetailDrawer = ({ booking }: BookingDetailDrawerProps) => {
                 )}
                 {row(
                   t("booking.detail.lineSubtotal"),
-                  line.lineSubtotal != null
-                    ? `${line.lineSubtotal} ${line.currency || booking.currency || ""}`
-                    : "-"
+                  line.lineSubtotal != null ? `${line.lineSubtotal} ${line.currency || booking.currency || ""}` : "-"
                 )}
               </li>
             ))}

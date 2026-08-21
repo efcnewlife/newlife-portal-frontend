@@ -25,7 +25,8 @@ export default function NotFound() {
 
           {/* Description */}
           <p className="mb-8 text-base text-gray-700 dark:text-gray-400 sm:text-lg max-w-md mx-auto">
-            We can't seem to find the page you are looking for! The page might have been moved, deleted, or the URL might be incorrect.
+            We can't seem to find the page you are looking for! The page might have been moved, deleted, or the URL
+            might be incorrect.
           </p>
 
           {/* Back-to-home button */}
