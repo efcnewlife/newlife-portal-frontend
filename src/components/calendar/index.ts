@@ -11,5 +11,6 @@ export type {
   CalendarViewProps,
   EventHorizontalLayout,
 } from "./types";
+export * from "./monthLayout";
 export * from "./utils";
 export { default as WeekView } from "./WeekView";

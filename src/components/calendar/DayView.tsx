@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MdAdd } from "react-icons/md";
+import { cn } from "@/utils";
 import DensityOverflowControl from "./DensityOverflowControl";
 import EventBlock from "./EventBlock";
 import { packDayEventLanes } from "./packDayEventLanes";
@@ -18,6 +19,8 @@ const DayView = ({
   onEventContextMenu,
   onAddEvent,
   onDensityOverflow,
+  showMiniMonth = true,
+  embedded = false,
 }: CalendarViewProps) => {
   const { t, i18n } = useTranslation("calendar");
   const locale = i18n.language || "en";
@@ -147,7 +150,12 @@ const DayView = ({
   };
 
   return (
-    <div className="flex min-h-0 flex-1 overflow-hidden border border-gray-300 dark:border-white/10 rounded-b-2xl">
+    <div
+      className={cn(
+        "flex min-h-0 flex-1 overflow-hidden",
+        !embedded && "rounded-b-2xl border border-gray-300 dark:border-white/10"
+      )}
+    >
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="relative flex min-h-0 flex-1 overflow-y-auto">
           {/* Left time axis */}
@@ -264,89 +272,91 @@ const DayView = ({
           </div>
         </div>
       </div>
-      <div className="w-1/2 max-w-md flex-none border-l border-gray-100 px-8 py-10 dark:border-white/10">
-        <div className="flex items-center text-center text-gray-900 dark:text-white">
-          <button
-            type="button"
-            onClick={handleMiniCalendarPrevious}
-            className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500 dark:text-gray-400 dark:hover:text-white"
-          >
-            <span className="sr-only">{t("nav.previousMonth")}</span>
-            <svg className="size-5" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-          <div className="flex-auto text-sm font-semibold">{formatDate(miniCalendarMonth, "month-year", locale)}</div>
-          <button
-            type="button"
-            onClick={handleMiniCalendarNext}
-            className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500 dark:text-gray-400 dark:hover:text-white"
-          >
-            <span className="sr-only">{t("nav.nextMonth")}</span>
-            <svg className="size-5" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-        </div>
-        <div className="mt-6 grid grid-cols-7 text-center text-xs/6 text-gray-500 dark:text-gray-400">
-          {Array.from({ length: 7 }, (_, index) => {
-            const date = new Date(2024, 0, 7 + index); // Sunday-start
-            const label = date.toLocaleDateString(locale, { weekday: "narrow" });
-            return <div key={`mini-weekday-${index}`}>{label}</div>;
-          })}
-        </div>
-        <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow-sm ring-1 ring-gray-200 dark:bg-white/10 dark:shadow-none dark:ring-white/10">
-          {miniCalendarDays.map((day) => {
-            // Parse date string (YYYY-MM-DD) as local time
-            const [year, month, dayNum] = day.date.split("-").map(Number);
-            const dayDate = new Date(year, month - 1, dayNum);
+      {showMiniMonth && (
+        <div className="w-1/2 max-w-md flex-none border-l border-gray-100 px-8 py-10 dark:border-white/10">
+          <div className="flex items-center text-center text-gray-900 dark:text-white">
+            <button
+              type="button"
+              onClick={handleMiniCalendarPrevious}
+              className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500 dark:text-gray-400 dark:hover:text-white"
+            >
+              <span className="sr-only">{t("nav.previousMonth")}</span>
+              <svg className="size-5" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+            <div className="flex-auto text-sm font-semibold">{formatDate(miniCalendarMonth, "month-year", locale)}</div>
+            <button
+              type="button"
+              onClick={handleMiniCalendarNext}
+              className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500 dark:text-gray-400 dark:hover:text-white"
+            >
+              <span className="sr-only">{t("nav.nextMonth")}</span>
+              <svg className="size-5" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div className="mt-6 grid grid-cols-7 text-center text-xs/6 text-gray-500 dark:text-gray-400">
+            {Array.from({ length: 7 }, (_, index) => {
+              const date = new Date(2024, 0, 7 + index); // Sunday-start
+              const label = date.toLocaleDateString(locale, { weekday: "narrow" });
+              return <div key={`mini-weekday-${index}`}>{label}</div>;
+            })}
+          </div>
+          <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow-sm ring-1 ring-gray-200 dark:bg-white/10 dark:shadow-none dark:ring-white/10">
+            {miniCalendarDays.map((day) => {
+              // Parse date string (YYYY-MM-DD) as local time
+              const [year, month, dayNum] = day.date.split("-").map(Number);
+              const dayDate = new Date(year, month - 1, dayNum);
 
-            // Normalize currentDate to local timezone for comparison
-            const normalizedCurrentDate = new Date(
-              currentDate.getFullYear(),
-              currentDate.getMonth(),
-              currentDate.getDate()
-            );
-            const normalizedDayDate = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate());
-            const isSelected = normalizedDayDate.getTime() === normalizedCurrentDate.getTime();
-            const isToday = day.isToday;
+              // Normalize currentDate to local timezone for comparison
+              const normalizedCurrentDate = new Date(
+                currentDate.getFullYear(),
+                currentDate.getMonth(),
+                currentDate.getDate()
+              );
+              const normalizedDayDate = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate());
+              const isSelected = normalizedDayDate.getTime() === normalizedCurrentDate.getTime();
+              const isToday = day.isToday;
 
-            const isInRange = isDateInRange(dayDate, validRange);
-            const isDisabled = !isInRange;
+              const isInRange = isDateInRange(dayDate, validRange);
+              const isDisabled = !isInRange;
 
-            return (
-              <button
-                key={day.date}
-                type="button"
-                onClick={() => handleDayClick(day.date)}
-                disabled={isDisabled}
-                data-is-today={isToday ? "" : undefined}
-                data-is-selected={isSelected ? "" : undefined}
-                data-is-current-month={day.isCurrentMonth ? "" : undefined}
-                data-is-disabled={isDisabled ? "" : undefined}
-                className={`py-1.5 not-data-is-current-month:bg-gray-50 not-data-is-selected:not-data-is-current-month:not-data-is-today:text-gray-400 first:rounded-tl-lg last:rounded-br-lg hover:bg-gray-100 focus:z-10 data-is-current-month:bg-white not-data-is-selected:data-is-current-month:not-data-is-today:text-gray-900 data-is-current-month:hover:bg-gray-100 data-is-selected:font-semibold data-is-selected:text-white data-is-today:font-semibold data-is-today:not-data-is-selected:text-indigo-600 nth-36:rounded-bl-lg nth-7:rounded-tr-lg dark:not-data-is-current-month:bg-gray-900/75 dark:not-data-is-selected:not-data-is-current-month:not-data-is-today:text-gray-500 dark:hover:bg-gray-900/25 dark:data-is-current-month:bg-gray-900/90 dark:not-data-is-selected:data-is-current-month:not-data-is-today:text-white dark:data-is-current-month:hover:bg-gray-900/50 dark:data-is-selected:text-gray-900 dark:data-is-today:not-data-is-selected:text-indigo-400 ${
-                  isDisabled ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-              >
-                <time
-                  dateTime={day.date}
-                  className="mx-auto flex size-7 items-center justify-center rounded-full in-data-is-selected:not-in-data-is-today:bg-gray-900 in-data-is-selected:in-data-is-today:bg-indigo-600 dark:in-data-is-selected:not-in-data-is-today:bg-white dark:in-data-is-selected:in-data-is-today:bg-indigo-500"
+              return (
+                <button
+                  key={day.date}
+                  type="button"
+                  onClick={() => handleDayClick(day.date)}
+                  disabled={isDisabled}
+                  data-is-today={isToday ? "" : undefined}
+                  data-is-selected={isSelected ? "" : undefined}
+                  data-is-current-month={day.isCurrentMonth ? "" : undefined}
+                  data-is-disabled={isDisabled ? "" : undefined}
+                  className={`py-1.5 not-data-is-current-month:bg-gray-50 not-data-is-selected:not-data-is-current-month:not-data-is-today:text-gray-400 first:rounded-tl-lg last:rounded-br-lg hover:bg-gray-100 focus:z-10 data-is-current-month:bg-white not-data-is-selected:data-is-current-month:not-data-is-today:text-gray-900 data-is-current-month:hover:bg-gray-100 data-is-selected:font-semibold data-is-selected:text-white data-is-today:font-semibold data-is-today:not-data-is-selected:text-indigo-600 nth-36:rounded-bl-lg nth-7:rounded-tr-lg dark:not-data-is-current-month:bg-gray-900/75 dark:not-data-is-selected:not-data-is-current-month:not-data-is-today:text-gray-500 dark:hover:bg-gray-900/25 dark:data-is-current-month:bg-gray-900/90 dark:not-data-is-selected:data-is-current-month:not-data-is-today:text-white dark:data-is-current-month:hover:bg-gray-900/50 dark:data-is-selected:text-gray-900 dark:data-is-today:not-data-is-selected:text-indigo-400 ${
+                    isDisabled ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 >
-                  {day.date.split("-").pop()?.replace(/^0/, "") || ""}
-                </time>
-              </button>
-            );
-          })}
+                  <time
+                    dateTime={day.date}
+                    className="mx-auto flex size-7 items-center justify-center rounded-full in-data-is-selected:not-in-data-is-today:bg-gray-900 in-data-is-selected:in-data-is-today:bg-indigo-600 dark:in-data-is-selected:not-in-data-is-today:bg-white dark:in-data-is-selected:in-data-is-today:bg-indigo-500"
+                  >
+                    {day.date.split("-").pop()?.replace(/^0/, "") || ""}
+                  </time>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

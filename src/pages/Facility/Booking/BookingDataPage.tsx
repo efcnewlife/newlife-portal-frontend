@@ -4,6 +4,7 @@ import {
   type BookingDetail,
   type BookingListItem,
 } from "@/api/services/facilityService";
+import type { CalendarView } from "@/components/calendar";
 import type { DataTableColumn, MenuButtonType, PageButtonType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
 import PageToolbar from "@/components/common/PageToolbar";
@@ -37,6 +38,13 @@ const parseViewMode = (value: string | null): BookingViewMode => {
   return "list";
 };
 
+const parseCalendarLayout = (value: string | null): CalendarView => {
+  if (value === "day" || value === "month" || value === "week") {
+    return value;
+  }
+  return "week";
+};
+
 const parseIsoDate = (value: string | null): Date => {
   if (!value) return new Date();
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
@@ -57,6 +65,7 @@ const BookingDataPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const viewMode = parseViewMode(searchParams.get("view"));
   const dateParam = searchParams.get("date");
+  const calendarLayout = parseCalendarLayout(searchParams.get("layout"));
   const anchorDate = useMemo(() => parseIsoDate(dateParam), [dateParam]);
 
   const [items, setItems] = useState<BookingRow[]>([]);
@@ -84,8 +93,14 @@ const BookingDataPage = () => {
       const params = new URLSearchParams(searchParams);
       if (next === "list") {
         params.delete("view");
+        params.delete("layout");
       } else {
         params.set("view", next);
+        if (next !== "calendar") {
+          params.delete("layout");
+        } else if (!params.get("layout")) {
+          params.set("layout", calendarLayout);
+        }
       }
       if (date) {
         params.set("date", toIsoDate(date));
@@ -94,7 +109,7 @@ const BookingDataPage = () => {
       }
       setSearchParams(params, { replace: true });
     },
-    [anchorDate, searchParams, setSearchParams]
+    [anchorDate, calendarLayout, searchParams, setSearchParams]
   );
 
   const setAnchorDate = useCallback(
@@ -104,12 +119,31 @@ const BookingDataPage = () => {
       params.set("date", nextDate);
       if (viewMode === "list") {
         params.set("view", "calendar");
+        if (!params.get("layout")) {
+          params.set("layout", "week");
+        }
       } else {
         params.set("view", viewMode);
+        if (viewMode === "calendar" && !params.get("layout")) {
+          params.set("layout", calendarLayout);
+        }
       }
       setSearchParams(params, { replace: true });
     },
-    [searchParams, setSearchParams, viewMode]
+    [calendarLayout, searchParams, setSearchParams, viewMode]
+  );
+
+  const setCalendarLayout = useCallback(
+    (layout: CalendarView) => {
+      const params = new URLSearchParams(searchParams);
+      params.set("view", "calendar");
+      params.set("layout", layout);
+      if (!params.get("date")) {
+        params.set("date", toIsoDate(anchorDate));
+      }
+      setSearchParams(params, { replace: true });
+    },
+    [anchorDate, searchParams, setSearchParams]
   );
 
   const fetchPages = useCallback(async () => {
@@ -349,8 +383,10 @@ const BookingDataPage = () => {
         <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
           <BookingCalendar
             anchorDate={anchorDate}
+            calendarLayout={calendarLayout}
             bookings={calendarItems}
             onAnchorDateChange={setAnchorDate}
+            onCalendarLayoutChange={setCalendarLayout}
             onVisibleRangeChange={handleVisibleRangeChange}
             onEventClick={(booking) => void openBookingDetail(booking)}
             onCancelClick={(booking) => {
