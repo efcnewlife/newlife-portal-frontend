@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
 import CalendarToolBar from "./CalendarToolbar";
 import DayView from "./DayView";
+import { shiftMonthPreservingDay } from "./monthLayout";
 import MonthView from "./MonthView";
 import { CalendarProps, CalendarView } from "./types";
 import WeekView from "./WeekView";
 
+const resolveInitialView = (availableViews: CalendarView[], preferred: CalendarView): CalendarView => {
+  if (availableViews.includes(preferred)) {
+    return preferred;
+  }
+  return availableViews[0] || "month";
+};
+
 const Calendar = ({
   currentDate = new Date(),
+  view,
   defaultView = "month",
   availableViews = ["day", "week", "month"],
   events = [],
@@ -25,16 +34,10 @@ const Calendar = ({
     setSelectedDate(currentDate);
   }, [currentDate]);
 
-  // Validate and set initial view
-  const getInitialView = (): CalendarView => {
-    if (availableViews.includes(defaultView)) {
-      return defaultView;
-    }
-    // If defaultView is not in availableViews, use the first available view
-    return availableViews[0] || "month";
-  };
-
-  const [currentView, setCurrentView] = useState<CalendarView>(getInitialView());
+  const [uncontrolledView, setUncontrolledView] = useState<CalendarView>(() =>
+    resolveInitialView(availableViews, defaultView)
+  );
+  const currentView = view !== undefined ? resolveInitialView(availableViews, view) : uncontrolledView;
 
   // Get showNavigationButtons value based on current view
   const getShowNavigationButtons = (): { nav: boolean; dateControl: boolean } => {
@@ -65,7 +68,9 @@ const Calendar = ({
   useEffect(() => {
     if (!availableViews.includes(currentView)) {
       const fallbackView = availableViews[0] || "month";
-      setCurrentView(fallbackView);
+      if (view === undefined) {
+        setUncontrolledView(fallbackView);
+      }
       onViewChange?.(fallbackView);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -77,40 +82,50 @@ const Calendar = ({
   };
 
   const handleViewChange = (newView: CalendarView) => {
-    setCurrentView(newView);
+    if (view === undefined) {
+      setUncontrolledView(newView);
+    }
     onViewChange?.(newView);
   };
 
   const handlePrevious = () => {
-    const newDate = new Date(selectedDate);
     switch (currentView) {
-      case "day":
+      case "day": {
+        const newDate = new Date(selectedDate);
         newDate.setDate(newDate.getDate() - 1);
+        handleDateChange(newDate);
         break;
-      case "week":
+      }
+      case "week": {
+        const newDate = new Date(selectedDate);
         newDate.setDate(newDate.getDate() - 7);
+        handleDateChange(newDate);
         break;
+      }
       case "month":
-        newDate.setMonth(newDate.getMonth() - 1);
+        handleDateChange(shiftMonthPreservingDay(selectedDate, -1));
         break;
     }
-    handleDateChange(newDate);
   };
 
   const handleNext = () => {
-    const newDate = new Date(selectedDate);
     switch (currentView) {
-      case "day":
+      case "day": {
+        const newDate = new Date(selectedDate);
         newDate.setDate(newDate.getDate() + 1);
+        handleDateChange(newDate);
         break;
-      case "week":
+      }
+      case "week": {
+        const newDate = new Date(selectedDate);
         newDate.setDate(newDate.getDate() + 7);
+        handleDateChange(newDate);
         break;
+      }
       case "month":
-        newDate.setMonth(newDate.getMonth() + 1);
+        handleDateChange(shiftMonthPreservingDay(selectedDate, 1));
         break;
     }
-    handleDateChange(newDate);
   };
 
   const renderView = () => {

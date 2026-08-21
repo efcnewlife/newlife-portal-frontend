@@ -40,6 +40,8 @@ export interface DateRange {
 
 export interface CalendarProps {
   currentDate?: Date;
+  /** Controlled Calendar layout. When set, overrides internal view state. */
+  view?: CalendarView;
   defaultView?: CalendarView;
   availableViews?: CalendarView[];
   events?: CalendarEvent[];
@@ -68,4 +70,8 @@ export interface CalendarViewProps {
   onEventContextMenu?: (event: CalendarEvent, mouseEvent: React.MouseEvent) => void;
   onAddEvent?: (date?: Date, startTime?: string, endTime?: string) => void;
   onDensityOverflow?: (date: Date) => void;
+  /** Day view only: when false, hide the right-hand mini month (used by Month split pane). */
+  showMiniMonth?: boolean;
+  /** When true, omit the standalone outer border chrome (embedded panes). */
+  embedded?: boolean;
 }

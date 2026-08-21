@@ -1,12 +1,14 @@
 import type { BookingListItem } from "@/api/services/facilityService";
-import { Calendar, type CalendarEvent, type CalendarView } from "@/components/calendar";
+import { Calendar, getVisibleMonthWindow, type CalendarEvent, type CalendarView } from "@/components/calendar";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface BookingCalendarProps {
   anchorDate: Date;
+  calendarLayout: CalendarView;
   bookings: BookingListItem[];
   onAnchorDateChange: (date: Date) => void;
+  onCalendarLayoutChange: (layout: CalendarView) => void;
   onVisibleRangeChange: (range: { start: Date; end: Date }) => void;
   onEventClick: (booking: BookingListItem) => void;
   onCancelClick: (booking: BookingListItem) => void;
@@ -46,8 +48,10 @@ const endOfWeek = (date: Date): Date => {
 
 const BookingCalendar = ({
   anchorDate,
+  calendarLayout,
   bookings,
   onAnchorDateChange,
+  onCalendarLayoutChange,
   onVisibleRangeChange,
   onEventClick,
   onCancelClick,
@@ -55,7 +59,6 @@ const BookingCalendar = ({
   onDensityOverflow,
 }: BookingCalendarProps) => {
   const { t } = useTranslation("facility");
-  const [calendarLayout, setCalendarLayout] = useState<CalendarView>("week");
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
@@ -66,7 +69,9 @@ const BookingCalendar = ({
     const range =
       calendarLayout === "day"
         ? { start: startOfDay(anchorDate), end: endOfDay(anchorDate) }
-        : { start: startOfWeek(anchorDate), end: endOfWeek(anchorDate) };
+        : calendarLayout === "month"
+          ? getVisibleMonthWindow(anchorDate)
+          : { start: startOfWeek(anchorDate), end: endOfWeek(anchorDate) };
     onVisibleRangeChange(range);
   }, [anchorDate, calendarLayout, onVisibleRangeChange]);
 
@@ -103,11 +108,12 @@ const BookingCalendar = ({
     <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
       <Calendar
         currentDate={anchorDate}
-        defaultView="week"
-        availableViews={["week", "day"]}
+        view={calendarLayout}
+        defaultView={calendarLayout}
+        availableViews={["week", "day", "month"]}
         events={events}
         onDateChange={onAnchorDateChange}
-        onViewChange={setCalendarLayout}
+        onViewChange={onCalendarLayoutChange}
         onEventClick={(event) => {
           const booking = event.item as BookingListItem | undefined;
           if (booking) onEventClick(booking);
