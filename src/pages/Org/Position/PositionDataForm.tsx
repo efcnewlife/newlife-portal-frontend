@@ -1,11 +1,6 @@
 import type { LocaleItem } from "@/api/services/localeService";
 import type { PositionTranslationInput, PositionTranslationItem } from "@/api/services/orgService";
-import {
-  POSITION_OFFICES,
-  POSITION_TEAMS,
-  type PositionOffice,
-  type PositionTeam,
-} from "@/const/positionEnums";
+import { POSITION_OFFICES, POSITION_TEAMS, type PositionOffice, type PositionTeam } from "@/const/positionEnums";
 import { useActiveLocales } from "@/hooks/useActiveLocales";
 import { get_default_locale_id } from "@/utils/localeResolve";
 import { localeTabLabel } from "@/utils/translationForm";
@@ -45,7 +40,7 @@ const createEmptyPositionTranslationMap = (locales: LocaleItem[]): PositionTrans
 const hydratePositionTranslationMap = (
   locales: LocaleItem[],
   existingTranslations?: PositionTranslationItem[],
-  legacyFallback?: { name?: string },
+  legacyFallback?: { name?: string }
 ): PositionTranslationMap => {
   const map = createEmptyPositionTranslationMap(locales);
   const default_locale_id = get_default_locale_id(locales);
@@ -109,7 +104,7 @@ const PositionDataForm = forwardRef<
         label: t(`position.enums.team.${value}`),
       })),
     ],
-    [t],
+    [t]
   );
 
   const officeOptions = useMemo(
@@ -120,7 +115,7 @@ const PositionDataForm = forwardRef<
         label: t(`position.enums.office.${value}`),
       })),
     ],
-    [t],
+    [t]
   );
 
   useEffect(() => {
@@ -131,7 +126,7 @@ const PositionDataForm = forwardRef<
     setCanOwnMinistry(defaultValues?.canOwnMinistry ?? false);
     setIsActive(defaultValues?.isActive ?? true);
     setTranslationMap(
-      hydratePositionTranslationMap(locales, defaultValues?.translations, { name: defaultValues?.name }),
+      hydratePositionTranslationMap(locales, defaultValues?.translations, { name: defaultValues?.name })
     );
     setActiveTab(defaultLocaleId || locales[0]?.id || "");
   }, [defaultValues, defaultLocaleId, locales]);
@@ -148,7 +143,7 @@ const PositionDataForm = forwardRef<
         value: locale.id,
         label: localeTabLabel(locale, locale.id === defaultLocaleId),
       })),
-    [locales, defaultLocaleId],
+    [locales, defaultLocaleId]
   );
 
   const updateField = (localeId: string, field: keyof PositionTranslationFields, value: string) => {
@@ -234,7 +229,13 @@ const PositionDataForm = forwardRef<
         <p className="text-sm text-error-500">{tCommon(error || "translation.loadLocalesFailed")}</p>
       ) : (
         <div className="space-y-3">
-          <Tabs tabs={tabs} value={activeTab} onChange={setActiveTab} label={tCommon("translation.tabsLabel")} required />
+          <Tabs
+            tabs={tabs}
+            value={activeTab}
+            onChange={setActiveTab}
+            label={tCommon("translation.tabsLabel")}
+            required
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               id={`position-name-${activeTab}`}

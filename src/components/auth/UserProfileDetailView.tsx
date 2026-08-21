@@ -147,23 +147,11 @@ const UserProfileDetailView: React.FC<UserProfileDetailViewProps> = ({ isEditing
         </div>
 
         <div>
-          <Input
-            id="first_name"
-            label="First Name"
-            type="text"
-            value={userData.first_name || "Not set"}
-            disabled
-          />
+          <Input id="first_name" label="First Name" type="text" value={userData.first_name || "Not set"} disabled />
         </div>
 
         <div>
-          <Input
-            id="last_name"
-            label="Last Name"
-            type="text"
-            value={userData.last_name || "Not set"}
-            disabled
-          />
+          <Input id="last_name" label="Last Name" type="text" value={userData.last_name || "Not set"} disabled />
         </div>
 
         <div>
@@ -219,7 +207,11 @@ const UserProfileDetailView: React.FC<UserProfileDetailViewProps> = ({ isEditing
       </div>
 
       {/* Error message */}
-      {error && <div className="p-3 text-sm text-red-800 bg-red-50 rounded-md dark:bg-red-900/20 dark:text-red-400">{error}</div>}
+      {error && (
+        <div className="p-3 text-sm text-red-800 bg-red-50 rounded-md dark:bg-red-900/20 dark:text-red-400">
+          {error}
+        </div>
+      )}
 
       {/* Save and cancel buttons */}
       {isEditing && (

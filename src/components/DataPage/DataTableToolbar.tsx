@@ -28,12 +28,16 @@ export default function DataTableToolbar({ buttons = [], resource, className }: 
     >
       {/* Left: action buttons (align: left or unspecified) */}
       <div className="flex gap-3 sm:flex-row sm:items-center">
-        {leftButtons.length > 0 && <ToolbarButtonGroup buttons={leftButtons} resource={resource} align="left" gap="md" />}
+        {leftButtons.length > 0 && (
+          <ToolbarButtonGroup buttons={leftButtons} resource={resource} align="left" gap="md" />
+        )}
       </div>
 
       <div className="flex items-center gap-2">
         {/* Right: action buttons (align: right) */}
-        {rightButtons.length > 0 && <ToolbarButtonGroup buttons={rightButtons} resource={resource} align="right" gap="md" />}
+        {rightButtons.length > 0 && (
+          <ToolbarButtonGroup buttons={rightButtons} resource={resource} align="right" gap="md" />
+        )}
       </div>
     </div>
   );

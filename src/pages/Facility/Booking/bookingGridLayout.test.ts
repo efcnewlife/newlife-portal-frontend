@@ -16,7 +16,9 @@ import {
 const at = (year: number, month: number, day: number, hour: number, minute = 0): Date =>
   new Date(year, month, day, hour, minute, 0, 0);
 
-const booking = (overrides: Partial<BookingListItem> & Pick<BookingListItem, "id" | "startAt" | "endAt">): BookingListItem => ({
+const booking = (
+  overrides: Partial<BookingListItem> & Pick<BookingListItem, "id" | "startAt" | "endAt">
+): BookingListItem => ({
   userId: "user-1",
   bookingType: "one_time",
   status: "confirmed",
@@ -79,8 +81,8 @@ describe("bookingGridLayout", () => {
     );
     const [block] = blocks.get(roomId) || [];
     expect(block).toBeDefined();
-    expect(block.leftPercent).toBeCloseTo((10 * 60 + 15) / GRID_DAY_MINUTES * 100);
-    expect(block.widthPercent).toBeCloseTo(90 / GRID_DAY_MINUTES * 100);
+    expect(block.leftPercent).toBeCloseTo(((10 * 60 + 15) / GRID_DAY_MINUTES) * 100);
+    expect(block.widthPercent).toBeCloseTo((90 / GRID_DAY_MINUTES) * 100);
   });
 
   it("clips occupancy at both midnights", () => {
@@ -100,7 +102,7 @@ describe("bookingGridLayout", () => {
     );
     const [block] = blocks.get(roomId) || [];
     expect(block.leftPercent).toBe(0);
-    expect(block.widthPercent).toBeCloseTo((2 * 60) / GRID_DAY_MINUTES * 100);
+    expect(block.widthPercent).toBeCloseTo(((2 * 60) / GRID_DAY_MINUTES) * 100);
   });
 
   it("duplicates the same interval onto every facilityIds row", () => {

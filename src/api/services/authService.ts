@@ -30,11 +30,11 @@ interface AdminLoginResponse {
 // Map AdminInfo to local User type
 function mapAdminToUser(admin: AdminInfoResponse, token?: string | null): User {
   const nowIso = new Date().toISOString();
-  
+
   // Parse permissions and roles from token (if provided)
   const scopes = token ? getScopesFromToken(token) : [];
-  const roles = token ? getRolesFromToken(token) : (admin.roles || []);
-  
+  const roles = token ? getRolesFromToken(token) : admin.roles || [];
+
   return {
     id: admin.id,
     username: admin.email,
@@ -265,7 +265,9 @@ class AuthService {
         throw new Error("No refresh token available");
       }
 
-      const response = await httpClient.post<TokenResponse>(API_ENDPOINTS.AUTH.REFRESH, { refresh_token: refreshToken });
+      const response = await httpClient.post<TokenResponse>(API_ENDPOINTS.AUTH.REFRESH, {
+        refresh_token: refreshToken,
+      });
 
       if (response.success && response.data) {
         const newAccessToken = response.data.accessToken;
@@ -528,7 +530,11 @@ class AuthService {
   }
 
   // Reset password with token
-  async resetPasswordWithToken(token: string, newPassword: string, newPasswordConfirm: string): Promise<ApiResponse<{ message: string }>> {
+  async resetPasswordWithToken(
+    token: string,
+    newPassword: string,
+    newPasswordConfirm: string
+  ): Promise<ApiResponse<{ message: string }>> {
     try {
       const response = await httpClient.post<{ message: string }>(API_ENDPOINTS.AUTH.RESET_PASSWORD_CONFIRM, {
         token,

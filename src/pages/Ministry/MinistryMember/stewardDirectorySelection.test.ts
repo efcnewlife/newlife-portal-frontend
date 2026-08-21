@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { parseMinistryQueryId, resolveStewardDirectorySelection, withMinistryQueryId } from "./stewardDirectorySelection";
+import {
+  parseMinistryQueryId,
+  resolveStewardDirectorySelection,
+  withMinistryQueryId,
+} from "./stewardDirectorySelection";
 
 describe("ministry query param", () => {
   it("parses ministry id from search", () => {
@@ -27,7 +31,7 @@ describe("resolveStewardDirectorySelection", () => {
         railIds: rail,
         currentSelectedId: null,
         isDirty: false,
-      }),
+      })
     ).toEqual({ action: "select", ministryId: "a", syncUrl: true });
   });
 
@@ -39,7 +43,7 @@ describe("resolveStewardDirectorySelection", () => {
         railIds: rail,
         currentSelectedId: null,
         isDirty: false,
-      }),
+      })
     ).toEqual({ action: "select", ministryId: "missing", syncUrl: false });
   });
 
@@ -52,7 +56,7 @@ describe("resolveStewardDirectorySelection", () => {
         currentSelectedId: "a",
         isDirty: true,
         requestedId: "b",
-      }),
+      })
     ).toEqual({ action: "block" });
     expect(
       resolveStewardDirectorySelection({
@@ -62,7 +66,7 @@ describe("resolveStewardDirectorySelection", () => {
         currentSelectedId: "a",
         isDirty: false,
         requestedId: "b",
-      }),
+      })
     ).toEqual({ action: "select", ministryId: "b", syncUrl: true });
   });
 
@@ -75,7 +79,7 @@ describe("resolveStewardDirectorySelection", () => {
         currentSelectedId: "a",
         isDirty: false,
         requestedId: "a",
-      }),
+      })
     ).toEqual({ action: "reload", ministryId: "a" });
   });
 
@@ -88,7 +92,7 @@ describe("resolveStewardDirectorySelection", () => {
         currentSelectedId: "a",
         isDirty: true,
         requestedId: "a",
-      }),
+      })
     ).toEqual({ action: "keep" });
   });
 
@@ -100,7 +104,7 @@ describe("resolveStewardDirectorySelection", () => {
         railIds: ["b"],
         currentSelectedId: "a",
         isDirty: true,
-      }),
+      })
     ).toEqual({ action: "keep" });
   });
 
@@ -112,7 +116,7 @@ describe("resolveStewardDirectorySelection", () => {
         railIds: ["b"],
         currentSelectedId: "a",
         isDirty: false,
-      }),
+      })
     ).toEqual({ action: "select", ministryId: "b", syncUrl: true });
   });
 
@@ -124,7 +128,7 @@ describe("resolveStewardDirectorySelection", () => {
         railIds: rail,
         currentSelectedId: "a",
         isDirty: true,
-      }),
+      })
     ).toEqual({ action: "block" });
     expect(
       resolveStewardDirectorySelection({
@@ -133,7 +137,7 @@ describe("resolveStewardDirectorySelection", () => {
         railIds: rail,
         currentSelectedId: "a",
         isDirty: false,
-      }),
+      })
     ).toEqual({ action: "select", ministryId: "b", syncUrl: false });
   });
 
@@ -145,7 +149,7 @@ describe("resolveStewardDirectorySelection", () => {
         railIds: [],
         currentSelectedId: "a",
         isDirty: false,
-      }),
+      })
     ).toEqual({ action: "clear" });
   });
 });

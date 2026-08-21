@@ -48,7 +48,9 @@ export default function RoleSearchPopover({
           </div>
           <div className="space-y-3">
             <div>
-              <label className="block text-sm text-gray-600 dark:text-gray-300">{t("system:role.search.keywordLabel")}</label>
+              <label className="block text-sm text-gray-600 dark:text-gray-300">
+                {t("system:role.search.keywordLabel")}
+              </label>
               <input
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white/90"
                 placeholder={t("system:role.search.keywordPlaceholder")}

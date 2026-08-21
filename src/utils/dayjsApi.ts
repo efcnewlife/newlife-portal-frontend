@@ -6,11 +6,9 @@ export const TIME_OF_DAY_ANCHOR = "1970-01-01";
 const CALENDAR_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_WITH_SECONDS_PATTERN = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
 const TIME_MINUTES_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
-const LOCAL_DATETIME_INPUT_PATTERN =
-  /^(\d{4})-(\d{2})-(\d{2})T([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/;
+const LOCAL_DATETIME_INPUT_PATTERN = /^(\d{4})-(\d{2})-(\d{2})T([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/;
 
-export const getLocalTimezone = (): string =>
-  Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+export const getLocalTimezone = (): string => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
 
 export const dayjsToApiDate = (value: Dayjs | null | undefined): string | undefined => {
   if (value == null || !value.isValid()) {

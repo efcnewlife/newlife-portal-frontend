@@ -33,7 +33,7 @@ export const useRoomListOptions = () => {
         label: room.name || room.code,
       })),
     ],
-    [rooms, t],
+    [rooms, t]
   );
 
   const roomLabelById = useMemo(() => {

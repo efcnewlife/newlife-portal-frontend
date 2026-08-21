@@ -101,7 +101,9 @@ export const changeMockResourceSequence = (data: ResourceChangeSequenceData): Ap
   return { success: true, code: 200, data: undefined };
 };
 
-export const createMockResource = (data: ResourceCreateData): ApiResponse<{ id: string; created_at: string; updated_at: string }> => {
+export const createMockResource = (
+  data: ResourceCreateData
+): ApiResponse<{ id: string; created_at: string; updated_at: string }> => {
   const now = new Date().toISOString();
   const id = `res-${Date.now()}`;
   mockResources = [
@@ -127,7 +129,9 @@ export const createMockResource = (data: ResourceCreateData): ApiResponse<{ id: 
 };
 
 export const updateMockResource = (id: string, data: ResourceUpdateData): ApiResponse<void> => {
-  mockResources = mockResources.map((item) => (item.id === id ? { ...item, ...data, updated_at: new Date().toISOString() } : item));
+  mockResources = mockResources.map((item) =>
+    item.id === id ? { ...item, ...data, updated_at: new Date().toISOString() } : item
+  );
   return { success: true, code: 200, data: undefined };
 };
 

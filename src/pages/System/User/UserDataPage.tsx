@@ -441,7 +441,9 @@ export default function UserDataPage() {
 
   // Submit handlers
   const build_display_name = (values: UserFormValues) =>
-    values.preferred_name?.trim() || [values.first_name, values.last_name].filter(Boolean).join(" ").trim() || undefined;
+    values.preferred_name?.trim() ||
+    [values.first_name, values.last_name].filter(Boolean).join(" ").trim() ||
+    undefined;
 
   const handleSubmit = async (values: UserFormValues) => {
     try {
@@ -581,15 +583,29 @@ export default function UserDataPage() {
       </Modal>
 
       <Modal
-        title={showDeleted ? t("system:user.modal.deleteConfirmPermanent.title") : t("system:user.modal.deleteConfirmSoft.title")}
+        title={
+          showDeleted
+            ? t("system:user.modal.deleteConfirmPermanent.title")
+            : t("system:user.modal.deleteConfirmSoft.title")
+        }
         isOpen={isDeleteOpen}
         onClose={closeDeleteModal}
         className="max-w-[560px] w-full mx-4 p-6"
       >
-        <UserDeleteForm onSubmit={handleDelete} onCancel={closeDeleteModal} submitting={submitting} isPermanent={showDeleted} />
+        <UserDeleteForm
+          onSubmit={handleDelete}
+          onCancel={closeDeleteModal}
+          submitting={submitting}
+          isPermanent={showDeleted}
+        />
       </Modal>
 
-      <Modal title={t("system:user.modal.restoreTitle")} isOpen={isRestoreOpen} onClose={closeRestoreModal} className="max-w-[500px] w-full mx-4 p-6">
+      <Modal
+        title={t("system:user.modal.restoreTitle")}
+        isOpen={isRestoreOpen}
+        onClose={closeRestoreModal}
+        className="max-w-[500px] w-full mx-4 p-6"
+      >
         <RestoreForm
           ids={restoreIds}
           entityName={t("system:user.restoreForm.entityLabel")}
@@ -599,7 +615,12 @@ export default function UserDataPage() {
         />
       </Modal>
 
-      <Modal title={t("system:user.modal.detailTitle")} isOpen={isViewOpen} onClose={closeViewModal} className="max-w-[900px] w-full mx-4 p-6">
+      <Modal
+        title={t("system:user.modal.detailTitle")}
+        isOpen={isViewOpen}
+        onClose={closeViewModal}
+        className="max-w-[900px] w-full mx-4 p-6"
+      >
         {viewing && <UserDetailView userId={viewing.id} />}
       </Modal>
 

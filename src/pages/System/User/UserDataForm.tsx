@@ -237,15 +237,27 @@ const UserDataForm: React.FC<UserDataFormProps> = ({ mode, defaultValues, onSubm
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-3">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t("system:user.form.sectionStatus")}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            {t("system:user.form.sectionStatus")}
+          </label>
           <div className="space-y-2">
-            <Checkbox checked={values.verified} onChange={(checked) => setValues((v) => ({ ...v, verified: checked }))} label={t("system:user.form.checkboxVerified")} />
-            <Checkbox checked={values.is_active} onChange={(checked) => setValues((v) => ({ ...v, is_active: checked }))} label={t("system:user.form.checkboxActive")} />
+            <Checkbox
+              checked={values.verified}
+              onChange={(checked) => setValues((v) => ({ ...v, verified: checked }))}
+              label={t("system:user.form.checkboxVerified")}
+            />
+            <Checkbox
+              checked={values.is_active}
+              onChange={(checked) => setValues((v) => ({ ...v, is_active: checked }))}
+              label={t("system:user.form.checkboxActive")}
+            />
           </div>
         </div>
 
         <div className="space-y-3">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t("system:user.form.sectionPermissions")}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            {t("system:user.form.sectionPermissions")}
+          </label>
           <div className="space-y-2">
             <Checkbox
               checked={values.is_superuser}
@@ -253,7 +265,11 @@ const UserDataForm: React.FC<UserDataFormProps> = ({ mode, defaultValues, onSubm
               label={t("system:user.form.checkboxSuperUser")}
               disabled={!isSuperAdmin}
             />
-            <Checkbox checked={values.is_admin} onChange={(checked) => setValues((v) => ({ ...v, is_admin: checked }))} label={t("system:user.form.checkboxAdmin")} />
+            <Checkbox
+              checked={values.is_admin}
+              onChange={(checked) => setValues((v) => ({ ...v, is_admin: checked }))}
+              label={t("system:user.form.checkboxAdmin")}
+            />
           </div>
         </div>
       </div>

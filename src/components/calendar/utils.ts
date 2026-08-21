@@ -7,7 +7,10 @@ import { CalendarDay, CalendarEvent, CalendarMonth, DateRange } from "./types";
  * @param time Optional time string (HH:mm:ss) or hours, minutes, seconds
  * @returns Date object in local timezone
  */
-export const createLocalDate = (dateInput: string | Date, time?: { hours?: number; minutes?: number; seconds?: number }): Date => {
+export const createLocalDate = (
+  dateInput: string | Date,
+  time?: { hours?: number; minutes?: number; seconds?: number }
+): Date => {
   if (dateInput instanceof Date) {
     // If it's already a Date, extract date parts and create a new local date
     const hours = time?.hours ?? dateInput.getHours();
@@ -262,7 +265,11 @@ export const isDateInRange = (date: Date, validRange?: DateRange): boolean => {
 
 // Check if a date can navigate to previous period
 // Compare dates by their date parts (year, month, day) to avoid timezone issues
-export const canNavigatePrevious = (currentDate: Date, view: "day" | "week" | "month", validRange?: DateRange): boolean => {
+export const canNavigatePrevious = (
+  currentDate: Date,
+  view: "day" | "week" | "month",
+  validRange?: DateRange
+): boolean => {
   if (!validRange) return true;
 
   // Normalize range start to local timezone by extracting date parts
@@ -276,7 +283,11 @@ export const canNavigatePrevious = (currentDate: Date, view: "day" | "week" | "m
     }
     case "week": {
       const startOfCurrentWeek = getStartOfWeek(currentDate);
-      const endOfPreviousWeek = new Date(startOfCurrentWeek.getFullYear(), startOfCurrentWeek.getMonth(), startOfCurrentWeek.getDate() - 1);
+      const endOfPreviousWeek = new Date(
+        startOfCurrentWeek.getFullYear(),
+        startOfCurrentWeek.getMonth(),
+        startOfCurrentWeek.getDate() - 1
+      );
       // For week view, allow navigation if the previous week overlaps with validRange
       // (i.e., if the previous week's end date is >= rangeStart)
       return endOfPreviousWeek >= rangeStart;
@@ -311,7 +322,11 @@ export const canNavigateNext = (currentDate: Date, view: "day" | "week" | "month
       const endOfCurrentWeek = getEndOfWeek(currentDate);
 
       // Calculate next week start (the day after current week ends)
-      nextViewStart = new Date(endOfCurrentWeek.getFullYear(), endOfCurrentWeek.getMonth(), endOfCurrentWeek.getDate() + 1);
+      nextViewStart = new Date(
+        endOfCurrentWeek.getFullYear(),
+        endOfCurrentWeek.getMonth(),
+        endOfCurrentWeek.getDate() + 1
+      );
 
       // For week view, allow navigation if the next week overlaps with validRange
       // Next week overlaps if its start date is <= rangeEnd

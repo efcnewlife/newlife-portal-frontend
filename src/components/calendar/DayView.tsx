@@ -153,7 +153,10 @@ const DayView = ({
           {/* Left time axis */}
           <div className="flex h-max w-18 flex-col border-r border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-gray-800/50">
             {hours.map((hour) => (
-              <div key={hour} className="group relative flex h-24 items-start justify-end bg-gray-50 dark:bg-gray-800/50 pr-2">
+              <div
+                key={hour}
+                className="group relative flex h-24 items-start justify-end bg-gray-50 dark:bg-gray-800/50 pr-2"
+              >
                 <span className="text-right text-xs font-medium whitespace-nowrap text-gray-500 dark:text-gray-400 group-first:translate-y-1">
                   {hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
                 </span>
@@ -307,7 +310,11 @@ const DayView = ({
             const dayDate = new Date(year, month - 1, dayNum);
 
             // Normalize currentDate to local timezone for comparison
-            const normalizedCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+            const normalizedCurrentDate = new Date(
+              currentDate.getFullYear(),
+              currentDate.getMonth(),
+              currentDate.getDate()
+            );
             const normalizedDayDate = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate());
             const isSelected = normalizedDayDate.getTime() === normalizedCurrentDate.getTime();
             const isToday = day.isToday;

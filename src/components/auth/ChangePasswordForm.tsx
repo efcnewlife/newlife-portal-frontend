@@ -158,7 +158,11 @@ export default function ChangePasswordForm() {
               />
             </div>
 
-            {error && <div className="p-3 text-sm text-red-800 bg-red-50 rounded-md dark:bg-red-900/20 dark:text-red-400">{error}</div>}
+            {error && (
+              <div className="p-3 text-sm text-red-800 bg-red-50 rounded-md dark:bg-red-900/20 dark:text-red-400">
+                {error}
+              </div>
+            )}
 
             {isSuccess && (
               <div className="p-3 text-sm text-green-800 bg-green-50 rounded-md dark:bg-green-900/20 dark:text-green-400">

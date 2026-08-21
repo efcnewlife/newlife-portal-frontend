@@ -68,7 +68,8 @@ export const listMockUsers = (keyword?: string): ApiResponse<UserListResponse> =
       id: item.id,
       email: item.email,
       phoneNumber: item.phone_number || undefined,
-      displayName: item.preferred_name || [item.first_name, item.last_name].filter(Boolean).join(" ").trim() || undefined,
+      displayName:
+        item.preferred_name || [item.first_name, item.last_name].filter(Boolean).join(" ").trim() || undefined,
     }));
   return { success: true, code: 200, data: { items } };
 };
@@ -112,7 +113,7 @@ export const updateMockCurrentUser = (payload: UserUpdate): ApiResponse<void> =>
           preferred_name: payload.display_name || item.preferred_name,
           updated_at: new Date().toISOString(),
         }
-      : item,
+      : item
   );
   return { success: true, code: 200, data: undefined };
 };
@@ -128,7 +129,7 @@ export const updateMockUser = (id: string, payload: UserUpdate): ApiResponse<voi
           preferred_name: payload.display_name || item.preferred_name,
           updated_at: new Date().toISOString(),
         }
-      : item,
+      : item
   );
   return { success: true, code: 200, data: undefined };
 };
@@ -157,6 +158,7 @@ export const getMockUserRoles = (userId: string): ApiResponse<{ role_ids: string
 
 export const getMockCurrentUser = (): ApiResponse<UserDetail> => {
   const current = mockUsers.find((item) => !item.is_deleted) || mockUsers[0];
-  if (!current) return { success: false, code: 404, message: "Current user not found", data: undefined as unknown as UserDetail };
+  if (!current)
+    return { success: false, code: 404, message: "Current user not found", data: undefined as unknown as UserDetail };
   return { success: true, code: 200, data: current };
 };

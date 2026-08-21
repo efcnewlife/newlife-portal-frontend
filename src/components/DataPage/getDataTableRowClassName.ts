@@ -6,8 +6,7 @@ export interface GetDataTableRowClassNameOptions {
   rowClassName?: string;
 }
 
-const DATA_ROW_BASE_CLASS =
-  "border-l border-b border-gray-100 dark:border-white/[0.05] transition-colors";
+const DATA_ROW_BASE_CLASS = "border-l border-b border-gray-100 dark:border-white/[0.05] transition-colors";
 
 export function getDataTableRowClassName({
   isSelected,
@@ -18,6 +17,6 @@ export function getDataTableRowClassName({
     DATA_ROW_BASE_CLASS,
     isSelected && "bg-primary-container/40",
     rowHover && (isSelected ? "hover:bg-primary-container/60" : "hover:bg-surface-variant"),
-    rowClassName,
+    rowClassName
   );
 }

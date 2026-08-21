@@ -1,8 +1,4 @@
-import type {
-  RentalRateTemplateItem,
-  RentalRateWrite,
-  RoomListItem,
-} from "@/api/services/facilityService";
+import type { RentalRateTemplateItem, RentalRateWrite, RoomListItem } from "@/api/services/facilityService";
 import { Checkbox, Select } from "@efcnewlife/newlife-ui";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -84,9 +80,7 @@ const RentalRateDataForm = forwardRef<
           onChange={(v) => setFacilityId(String(v))}
           error={errors.facilityId}
         />
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          {t("rentalRate.form.facilityBindingHint")}
-        </p>
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t("rentalRate.form.facilityBindingHint")}</p>
       </div>
       <div>
         <Select

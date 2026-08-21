@@ -114,7 +114,7 @@ export interface DataTableProps<T> {
   /** Function to get reorder info */
   getReorderInfo?: (
     row: T,
-    index: number,
+    index: number
   ) => {
     canMoveUp: boolean;
     canMoveDown: boolean;
@@ -215,7 +215,10 @@ export interface PageButtonType {
  * MenuButton interface (extends PageButtonType for ContextMenu with row data)
  * @template T - row data type
  */
-export interface MenuButtonType<T = unknown> extends Omit<PageButtonType, "onClick" | "visible" | "disabled" | "variant"> {
+export interface MenuButtonType<T = unknown> extends Omit<
+  PageButtonType,
+  "onClick" | "visible" | "disabled" | "variant"
+> {
   /** Click event - accepts row/index, or no args when row data is unnecessary */
   onClick: ((row: T, index: number) => void) | (() => void);
   /** Visibility - supports boolean or function (overrides PageButtonType visible) */

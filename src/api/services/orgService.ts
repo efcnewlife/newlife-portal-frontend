@@ -2,13 +2,7 @@
 import { API_ENDPOINTS } from "@/api";
 import { IS_MOCK_API } from "@/config/env";
 import type { ApiResponse } from "@/types/api";
-import type {
-  BulkIdsPayload,
-  DeletePayload,
-  DetailQueryParams,
-  PagesParams,
-  PagesResponse,
-} from "./facilityService";
+import type { BulkIdsPayload, DeletePayload, DetailQueryParams, PagesParams, PagesResponse } from "./facilityService";
 import { httpClient } from "./httpClient";
 import type { PositionOffice, PositionTeam } from "@/const/positionEnums";
 

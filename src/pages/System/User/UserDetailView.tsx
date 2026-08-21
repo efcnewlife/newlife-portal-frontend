@@ -86,7 +86,13 @@ const UserDetailView: React.FC<UserDetailViewProps> = ({ userId }) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <Input id="phone_number" label={t("system:user.table.phoneNumber")} type="text" value={formatOptionalText(userData.phone_number)} disabled />
+          <Input
+            id="phone_number"
+            label={t("system:user.table.phoneNumber")}
+            type="text"
+            value={formatOptionalText(userData.phone_number)}
+            disabled
+          />
         </div>
 
         <div>
@@ -94,35 +100,76 @@ const UserDetailView: React.FC<UserDetailViewProps> = ({ userId }) => {
         </div>
 
         <div>
-          <Input id="first_name" label={t("system:user.form.firstName.label")} type="text" value={formatOptionalText(userData.first_name)} disabled />
+          <Input
+            id="first_name"
+            label={t("system:user.form.firstName.label")}
+            type="text"
+            value={formatOptionalText(userData.first_name)}
+            disabled
+          />
         </div>
 
         <div>
-          <Input id="last_name" label={t("system:user.form.lastName.label")} type="text" value={formatOptionalText(userData.last_name)} disabled />
+          <Input
+            id="last_name"
+            label={t("system:user.form.lastName.label")}
+            type="text"
+            value={formatOptionalText(userData.last_name)}
+            disabled
+          />
         </div>
 
         <div>
-          <Input id="preferred_name" label={t("system:user.form.preferredName.label")} type="text" value={formatOptionalText(userData.preferred_name)} disabled />
+          <Input
+            id="preferred_name"
+            label={t("system:user.form.preferredName.label")}
+            type="text"
+            value={formatOptionalText(userData.preferred_name)}
+            disabled
+          />
         </div>
 
         <div>
-          <Input id="gender" label={t("system:user.form.gender.label")} type="text" value={getGenderText(userData.gender)} disabled />
+          <Input
+            id="gender"
+            label={t("system:user.form.gender.label")}
+            type="text"
+            value={getGenderText(userData.gender)}
+            disabled
+          />
         </div>
       </div>
 
-      <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("system:user.detail.sectionStatus")}</div>
+      <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        {t("system:user.detail.sectionStatus")}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
           <Checkbox id="verified" checked={userData.verified} disabled label={t("system:user.form.checkboxVerified")} />
         </div>
         <div>
-          <Checkbox id="is_active" checked={userData.is_active} disabled label={t("system:user.detail.labelActiveStatus")} />
+          <Checkbox
+            id="is_active"
+            checked={userData.is_active}
+            disabled
+            label={t("system:user.detail.labelActiveStatus")}
+          />
         </div>
         <div>
-          <Checkbox id="is_admin" checked={userData.is_admin} disabled label={t("system:user.detail.labelBackendAdmin")} />
+          <Checkbox
+            id="is_admin"
+            checked={userData.is_admin}
+            disabled
+            label={t("system:user.detail.labelBackendAdmin")}
+          />
         </div>
         <div>
-          <Checkbox id="is_superuser" checked={userData.is_superuser} disabled label={t("system:user.detail.labelSuperAdministrator")} />
+          <Checkbox
+            id="is_superuser"
+            checked={userData.is_superuser}
+            disabled
+            label={t("system:user.detail.labelSuperAdministrator")}
+          />
         </div>
       </div>
 

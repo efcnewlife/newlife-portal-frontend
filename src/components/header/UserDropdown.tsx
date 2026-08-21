@@ -52,7 +52,9 @@ export default function UserDropdown() {
     if (!normalized) {
       return undefined;
     }
-    const matchedLocaleId = Object.entries(localeCodeById).find(([, code]) => normalize_locale_code(code) === normalized)?.[0];
+    const matchedLocaleId = Object.entries(localeCodeById).find(
+      ([, code]) => normalize_locale_code(code) === normalized
+    )?.[0];
     return matchedLocaleId;
   }, [i18n.language, localeCodeById, user?.preferredLocaleId]);
 
@@ -107,7 +109,10 @@ export default function UserDropdown() {
               to="/profile"
               className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
-              <MdPerson size={24} className="text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300" />
+              <MdPerson
+                size={24}
+                className="text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300"
+              />
               User Profile
             </DropdownItem>
           </li>
@@ -146,7 +151,10 @@ export default function UserDropdown() {
           onClick={handleSignOut}
           className="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
         >
-          <MdLogout size={24} className="text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300" />
+          <MdLogout
+            size={24}
+            className="text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300"
+          />
           Logout
         </button>
       </Dropdown>

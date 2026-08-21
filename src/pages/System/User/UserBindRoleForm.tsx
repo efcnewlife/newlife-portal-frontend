@@ -13,7 +13,13 @@ interface UserBindRoleFormProps {
   submitting?: boolean;
 }
 
-const UserBindRoleForm: React.FC<UserBindRoleFormProps> = ({ userId, initialRoleIds = [], onSubmit, onCancel, submitting = false }) => {
+const UserBindRoleForm: React.FC<UserBindRoleFormProps> = ({
+  userId,
+  initialRoleIds = [],
+  onSubmit,
+  onCancel,
+  submitting = false,
+}) => {
   const { t } = useTranslation();
   const [roles, setRoles] = useState<RoleBase[]>([]);
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>(initialRoleIds);
@@ -25,7 +31,10 @@ const UserBindRoleForm: React.FC<UserBindRoleFormProps> = ({ userId, initialRole
       try {
         setLoading(true);
         // Fetch role list and user roles in parallel
-        const [rolesResponse, userRolesResponse] = await Promise.all([roleService.getList(), userService.getUserRoles(userId)]);
+        const [rolesResponse, userRolesResponse] = await Promise.all([
+          roleService.getList(),
+          userService.getUserRoles(userId),
+        ]);
 
         if (rolesResponse.data?.items) {
           setRoles(rolesResponse.data.items);
@@ -36,7 +45,10 @@ const UserBindRoleForm: React.FC<UserBindRoleFormProps> = ({ userId, initialRole
         setSelectedRoleIds(roleIdsToUse);
       } catch (error) {
         console.error("Failed to fetch data:", error);
-        notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+        notifyApiError(error, {
+          title: t("common:feedback.loadFailed"),
+          fallbackDescription: t("common:feedback.loadFailedDesc"),
+        });
       } finally {
         setLoading(false);
       }

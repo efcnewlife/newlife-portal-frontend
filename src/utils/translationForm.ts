@@ -28,7 +28,7 @@ export const createEmptyTranslationMap = (locales: LocaleItem[]): TranslationMap
 export const hydrateTranslationMap = (
   locales: LocaleItem[],
   existingTranslations?: AdminTranslationItem[],
-  legacyFallback?: LegacyTranslationFallback,
+  legacyFallback?: LegacyTranslationFallback
 ): TranslationMap => {
   const map = createEmptyTranslationMap(locales);
   const default_locale_id = get_default_locale_id(locales);
@@ -73,7 +73,7 @@ export const buildTranslationPayload = (map: TranslationMap): AdminTranslationIn
 
 export const validateDefaultLocaleName = (
   map: TranslationMap,
-  defaultLocaleId: string | undefined,
+  defaultLocaleId: string | undefined
 ): string | undefined => {
   if (!defaultLocaleId) {
     return "translation.defaultLocaleRequired";

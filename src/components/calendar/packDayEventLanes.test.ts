@@ -56,7 +56,10 @@ describe("packDayEventLanes", () => {
   });
 
   it("keeps a long event full width and stacks back-to-back shorts in the same overlay column", () => {
-    const { result, byId } = placementById([event("long", 13, 16, 35, 35), event("mid", 15, 16, 0, 30), event("tail", 16, 18, 30, 0)], 4);
+    const { result, byId } = placementById(
+      [event("long", 13, 16, 35, 35), event("mid", 15, 16, 0, 30), event("tail", 16, 18, 30, 0)],
+      4
+    );
     expect(result.overflows).toEqual([]);
     expect(byId.long).toMatchObject({ laneIndex: 0, leftPercent: 0, widthPercent: 100 });
     expect(byId.mid.laneIndex).toBe(1);
@@ -110,7 +113,10 @@ describe("packDayEventLanes", () => {
   });
 
   it("keeps morning and afternoon collision groups on independent widths", () => {
-    const { result, byId } = placementById([event("morning-a", 9, 11), event("morning-b", 10, 12), event("afternoon", 15, 16)], 4);
+    const { result, byId } = placementById(
+      [event("morning-a", 9, 11), event("morning-b", 10, 12), event("afternoon", 15, 16)],
+      4
+    );
     expect(result.overflows).toEqual([]);
     expect(byId["morning-a"]).toMatchObject({ leftPercent: 0, widthPercent: 100 });
     expect(byId["morning-b"]).toMatchObject(expectedOverlay(1));

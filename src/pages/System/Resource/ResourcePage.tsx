@@ -102,7 +102,10 @@ export default function ResourcePage() {
       await fetchResources();
     } catch (err) {
       console.error("refreshResources failed:", err);
-      notifyApiError(err, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+      notifyApiError(err, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     }
   }, [fetchResources, t]);
 
@@ -124,12 +127,15 @@ export default function ResourcePage() {
   }, []);
 
   // Form helpers
-  const openModal = useCallback((mode: "create" | "edit", resource?: ResourceMenuItem, parent?: { id: string; name: string }) => {
-    setFormMode(mode);
-    setEditing(resource || null);
-    setParentResource(parent || null);
-    setIsOpen(true);
-  }, []);
+  const openModal = useCallback(
+    (mode: "create" | "edit", resource?: ResourceMenuItem, parent?: { id: string; name: string }) => {
+      setFormMode(mode);
+      setEditing(resource || null);
+      setParentResource(parent || null);
+      setIsOpen(true);
+    },
+    []
+  );
 
   const closeModal = useCallback(() => {
     setIsOpen(false);
@@ -238,7 +244,10 @@ export default function ResourcePage() {
         closeDeleteModal();
       } catch (err) {
         console.error("deleteResource failed:", err);
-        notifyApiError(err, { title: t("common:feedback.deleteFailed"), fallbackDescription: t("common:feedback.deleteFailedDesc") });
+        notifyApiError(err, {
+          title: t("common:feedback.deleteFailed"),
+          fallbackDescription: t("common:feedback.deleteFailedDesc"),
+        });
       } finally {
         setSubmitting(false);
       }
@@ -268,7 +277,10 @@ export default function ResourcePage() {
         closeRestoreModal();
       } catch (error) {
         console.error("restoreResource failed:", error);
-        notifyApiError(error, { title: t("common:feedback.actionFailed"), fallbackDescription: t("common:feedback.actionFailedDesc") });
+        notifyApiError(error, {
+          title: t("common:feedback.actionFailed"),
+          fallbackDescription: t("common:feedback.actionFailedDesc"),
+        });
       } finally {
         setSubmitting(false);
       }
@@ -284,7 +296,10 @@ export default function ResourcePage() {
         notifySuccess({ title: t("common:feedback.saved") });
       } catch (error) {
         console.error("moveUp failed:", error);
-        notifyApiError(error, { title: t("common:feedback.actionFailed"), fallbackDescription: t("common:feedback.actionFailedDesc") });
+        notifyApiError(error, {
+          title: t("common:feedback.actionFailed"),
+          fallbackDescription: t("common:feedback.actionFailedDesc"),
+        });
       }
       hideContextMenu();
     },
@@ -298,7 +313,10 @@ export default function ResourcePage() {
         notifySuccess({ title: t("common:feedback.saved") });
       } catch (error) {
         console.error("moveDown failed:", error);
-        notifyApiError(error, { title: t("common:feedback.actionFailed"), fallbackDescription: t("common:feedback.actionFailedDesc") });
+        notifyApiError(error, {
+          title: t("common:feedback.actionFailed"),
+          fallbackDescription: t("common:feedback.actionFailedDesc"),
+        });
       }
       hideContextMenu();
     },
@@ -328,7 +346,10 @@ export default function ResourcePage() {
         closeChangeParentModal();
       } catch (error) {
         console.error("changeParent failed:", error);
-        notifyApiError(error, { title: t("common:feedback.actionFailed"), fallbackDescription: t("common:feedback.actionFailedDesc") });
+        notifyApiError(error, {
+          title: t("common:feedback.actionFailed"),
+          fallbackDescription: t("common:feedback.actionFailedDesc"),
+        });
       } finally {
         setSubmitting(false);
       }
@@ -353,7 +374,10 @@ export default function ResourcePage() {
         closeModal();
       } catch (err) {
         console.error("saveResource failed:", err);
-        notifyApiError(err, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
+        notifyApiError(err, {
+          title: t("common:feedback.saveFailed"),
+          fallbackDescription: t("common:feedback.saveFailedDesc"),
+        });
       } finally {
         setSubmitting(false);
       }
@@ -422,7 +446,9 @@ export default function ResourcePage() {
           <div className="absolute inset-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm flex items-center justify-center z-10">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{t("system:resource.loading.overlayMessage")}</p>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                {t("system:resource.loading.overlayMessage")}
+              </p>
             </div>
           </div>
         )}
@@ -492,16 +518,30 @@ export default function ResourcePage() {
 
       {/* Delete modal */}
       <Modal
-        title={showDeleted ? t("system:resource.modal.deleteConfirmPermanent.title") : t("system:resource.modal.deleteConfirmSoft.title")}
+        title={
+          showDeleted
+            ? t("system:resource.modal.deleteConfirmPermanent.title")
+            : t("system:resource.modal.deleteConfirmSoft.title")
+        }
         isOpen={isDeleteOpen}
         onClose={closeDeleteModal}
         className="max-w-[560px] w-full mx-4 p-6"
       >
-        <ResourceDeleteForm onSubmit={handleDeleteConfirm} onCancel={closeDeleteModal} submitting={submitting} isPermanent={showDeleted} />
+        <ResourceDeleteForm
+          onSubmit={handleDeleteConfirm}
+          onCancel={closeDeleteModal}
+          submitting={submitting}
+          isPermanent={showDeleted}
+        />
       </Modal>
 
       {/* Restore modal */}
-      <Modal title={t("system:resource.modal.restoreTitle")} isOpen={isRestoreOpen} onClose={closeRestoreModal} className="max-w-[500px] w-full mx-4 p-6">
+      <Modal
+        title={t("system:resource.modal.restoreTitle")}
+        isOpen={isRestoreOpen}
+        onClose={closeRestoreModal}
+        className="max-w-[500px] w-full mx-4 p-6"
+      >
         <RestoreForm
           ids={restoreIds}
           entityName={t("system:resource.restoreForm.entityLabel")}
@@ -512,12 +552,22 @@ export default function ResourcePage() {
       </Modal>
 
       {/* Detail modal */}
-      <Modal title={t("system:resource.modal.detailTitle")} isOpen={isViewOpen} onClose={closeViewModal} className="max-w-[900px] w-full mx-4 p-6">
+      <Modal
+        title={t("system:resource.modal.detailTitle")}
+        isOpen={isViewOpen}
+        onClose={closeViewModal}
+        className="max-w-[900px] w-full mx-4 p-6"
+      >
         {editing && <ResourceDetailView resourceId={editing.id} />}
       </Modal>
 
       {/* Change parent modal */}
-      <Modal title={t("system:resource.modal.changeParentTitle")} isOpen={isChangeParentOpen} onClose={closeChangeParentModal} className="max-w-[500px] w-full mx-4 p-6">
+      <Modal
+        title={t("system:resource.modal.changeParentTitle")}
+        isOpen={isChangeParentOpen}
+        onClose={closeChangeParentModal}
+        className="max-w-[500px] w-full mx-4 p-6"
+      >
         {editing && (
           <ResourceChangeParentForm
             rootResources={rootResources}

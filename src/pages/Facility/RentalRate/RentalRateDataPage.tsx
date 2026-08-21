@@ -42,11 +42,7 @@ const RentalRateDataPage = () => {
 
   const { isOpen, openModal, closeModal } = useModal(false);
   const { isOpen: isDeleteOpen, openModal: openDeleteModal, closeModal: closeDeleteModal } = useModal(false);
-  const {
-    isOpen: isTemplatesOpen,
-    openModal: openTemplatesModal,
-    closeModal: closeTemplatesModal,
-  } = useModal(false);
+  const { isOpen: isTemplatesOpen, openModal: openTemplatesModal, closeModal: closeTemplatesModal } = useModal(false);
   const formRef = useRef<RentalRateDataFormHandle>(null);
   const modalRef = useRef<ModalFormHandle>(null);
 
@@ -134,9 +130,7 @@ const RentalRateDataPage = () => {
         label: t("rentalRate.table.amount"),
         width: "w-28",
         render: (_v, row) =>
-          row.template
-            ? `${row.template.unitAmount ?? ""} ${row.template.currency || ""}`.trim()
-            : "—",
+          row.template ? `${row.template.unitAmount ?? ""} ${row.template.currency || ""}`.trim() : "—",
       },
       {
         key: "isActive",
@@ -221,15 +215,7 @@ const RentalRateDataPage = () => {
         { className: getRecycleButtonClassName(showDeleted) }
       ),
     ];
-  }, [
-    appliedFilters.facilityId,
-    fetchPages,
-    openModal,
-    openTemplatesModal,
-    searchFilters,
-    showDeleted,
-    t,
-  ]);
+  }, [appliedFilters.facilityId, fetchPages, openModal, openTemplatesModal, searchFilters, showDeleted, t]);
 
   const rowActions: MenuButtonType<RateRow>[] = useMemo(
     () => [
@@ -265,12 +251,10 @@ const RentalRateDataPage = () => {
         },
         { visible: () => showDeleted }
       ),
-      CommonRowAction.DELETE(
-        (row) => {
-          setEditing(row);
-          openDeleteModal();
-        }
-      ),
+      CommonRowAction.DELETE((row) => {
+        setEditing(row);
+        openDeleteModal();
+      }),
     ],
     [fetchPages, openModal, openDeleteModal, showDeleted, t]
   );
@@ -341,7 +325,12 @@ const RentalRateDataPage = () => {
         />
       </ModalForm>
 
-      <Modal isOpen={isDeleteOpen} onClose={closeDeleteModal} title={t("rentalRate.modal.deleteSoft")} className="max-w-lg mx-4 p-6">
+      <Modal
+        isOpen={isDeleteOpen}
+        onClose={closeDeleteModal}
+        title={t("rentalRate.modal.deleteSoft")}
+        className="max-w-lg mx-4 p-6"
+      >
         <DeleteForm
           entityName={t("rentalRate.deleteForm.entityLabel")}
           isPermanent={showDeleted}

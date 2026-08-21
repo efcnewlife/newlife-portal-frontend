@@ -44,7 +44,7 @@ const MinistryMembersEditor = ({ value, onChange, disabled = false, error }: Min
           label: u.displayName ? `${u.displayName} (${u.email || u.id})` : u.email || u.id,
           email: u.email,
           displayName: u.displayName,
-        })),
+        }))
       );
     });
   }, []);
@@ -67,13 +67,13 @@ const MinistryMembersEditor = ({ value, onChange, disabled = false, error }: Min
     if (role === "primary") {
       emit(
         primary.map((member, i) => (i === index ? { ...member, ...patch } : member)),
-        secondary,
+        secondary
       );
       return;
     }
     emit(
       primary,
-      secondary.map((member, i) => (i === index ? { ...member, ...patch } : member)),
+      secondary.map((member, i) => (i === index ? { ...member, ...patch } : member))
     );
   };
 
@@ -124,7 +124,7 @@ const MinistryMembersEditor = ({ value, onChange, disabled = false, error }: Min
                 onRemove={() =>
                   emit(
                     primary.filter((_, i) => i !== index),
-                    secondary,
+                    secondary
                   )
                 }
               />
@@ -135,7 +135,12 @@ const MinistryMembersEditor = ({ value, onChange, disabled = false, error }: Min
       <section className="space-y-2">
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t("ministry.members.secondary")}</p>
-          <Button variant="outline" size="sm" onClick={() => emit(primary, [...secondary, emptyMember("secondary")])} disabled={disabled}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => emit(primary, [...secondary, emptyMember("secondary")])}
+            disabled={disabled}
+          >
             {t("ministry.members.addSecondary")}
           </Button>
         </div>
@@ -156,7 +161,7 @@ const MinistryMembersEditor = ({ value, onChange, disabled = false, error }: Min
                 onRemove={() =>
                   emit(
                     primary,
-                    secondary.filter((_, i) => i !== index),
+                    secondary.filter((_, i) => i !== index)
                   )
                 }
               />
@@ -179,7 +184,16 @@ interface MemberFieldsProps {
   onRemove: () => void;
 }
 
-const MemberFields = ({ idPrefix, member, disabled, userOptions, t, onUserChange, onContactChange, onRemove }: MemberFieldsProps) => (
+const MemberFields = ({
+  idPrefix,
+  member,
+  disabled,
+  userOptions,
+  t,
+  onUserChange,
+  onContactChange,
+  onRemove,
+}: MemberFieldsProps) => (
   <div className="space-y-2 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
     <div className="flex items-end gap-2">
       <div className="min-w-0 flex-1">
@@ -197,7 +211,7 @@ const MemberFields = ({ idPrefix, member, disabled, userOptions, t, onUserChange
         className={cn(
           "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-red-200 text-red-600 hover:bg-red-50",
           "dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-500/10",
-          disabled && "cursor-not-allowed opacity-50 hover:bg-transparent dark:hover:bg-transparent",
+          disabled && "cursor-not-allowed opacity-50 hover:bg-transparent dark:hover:bg-transparent"
         )}
         aria-label={t("ministry.members.remove")}
         disabled={disabled}

@@ -1,10 +1,6 @@
 import { Checkbox, Input, Select } from "@efcnewlife/newlife-ui";
 import { useTranslation } from "react-i18next";
-import {
-  formatApplicabilityPreview,
-  type ApplicabilityDraft,
-  type ApplicabilityMode,
-} from "./applicabilityFormat";
+import { formatApplicabilityPreview, type ApplicabilityDraft, type ApplicabilityMode } from "./applicabilityFormat";
 
 interface RateApplicabilityEditorProps {
   value: ApplicabilityDraft;
@@ -91,9 +87,7 @@ const RateApplicabilityEditor = ({ value, onChange, error }: RateApplicabilityEd
 
       <p className="text-sm text-gray-600 dark:text-gray-300">
         {t("rentalRateTemplate.form.applicabilityPreview")}:{" "}
-        <span className="font-medium text-gray-900 dark:text-gray-100">
-          {formatApplicabilityPreview(value, t)}
-        </span>
+        <span className="font-medium text-gray-900 dark:text-gray-100">{formatApplicabilityPreview(value, t)}</span>
       </p>
     </div>
   );

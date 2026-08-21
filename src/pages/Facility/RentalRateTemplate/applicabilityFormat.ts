@@ -28,9 +28,7 @@ function unwrapLeaf(rule: RateApplicabilityRule | null | undefined): Record<stri
   return null;
 }
 
-export function hydrateApplicabilityDraft(
-  rule: RateApplicabilityRule | null | undefined,
-): ApplicabilityDraft {
+export function hydrateApplicabilityDraft(rule: RateApplicabilityRule | null | undefined): ApplicabilityDraft {
   if (rule == null) return { ...DEFAULT_APPLICABILITY_DRAFT };
   const leaf = unwrapLeaf(rule);
   if (!leaf || typeof leaf.op !== "string") {
@@ -62,9 +60,7 @@ export function hydrateApplicabilityDraft(
   return { ...DEFAULT_APPLICABILITY_DRAFT };
 }
 
-export function serializeApplicabilityDraft(
-  draft: ApplicabilityDraft,
-): RateApplicabilityRule | null {
+export function serializeApplicabilityDraft(draft: ApplicabilityDraft): RateApplicabilityRule | null {
   if (draft.mode === "always") return null;
   if (draft.mode === "hours_lt") {
     return { all: [{ op: "hours_lt", value: Number(draft.hours) }] };
@@ -94,10 +90,7 @@ export function prefillDraftForBillingUnit(billingUnit: string): ApplicabilityDr
   return { ...DEFAULT_APPLICABILITY_DRAFT };
 }
 
-export function validateApplicabilityDraft(
-  draft: ApplicabilityDraft,
-  t: TFunction,
-): string | undefined {
+export function validateApplicabilityDraft(draft: ApplicabilityDraft, t: TFunction): string | undefined {
   if (draft.mode === "hours_lt" || draft.mode === "hours_gte") {
     if (draft.hours === "" || Number.isNaN(Number(draft.hours))) {
       return t("rentalRateTemplate.form.hoursRequired");
@@ -106,12 +99,7 @@ export function validateApplicabilityDraft(
   if (draft.mode === "hours_range") {
     const min = Number(draft.minHours);
     const max = Number(draft.maxHours);
-    if (
-      draft.minHours === "" ||
-      draft.maxHours === "" ||
-      Number.isNaN(min) ||
-      Number.isNaN(max)
-    ) {
+    if (draft.minHours === "" || draft.maxHours === "" || Number.isNaN(min) || Number.isNaN(max)) {
       return t("rentalRateTemplate.form.hoursRequired");
     }
     if (min >= max) return t("rentalRateTemplate.form.rangeInvalid");
@@ -119,10 +107,7 @@ export function validateApplicabilityDraft(
   return undefined;
 }
 
-export function formatApplicabilitySummary(
-  rule: RateApplicabilityRule | null | undefined,
-  t: TFunction,
-): string {
+export function formatApplicabilitySummary(rule: RateApplicabilityRule | null | undefined, t: TFunction): string {
   if (rule == null) return t("rentalRateTemplate.applicability.summary.always");
   const leaf = unwrapLeaf(rule);
   if (!leaf || typeof leaf.op !== "string") {

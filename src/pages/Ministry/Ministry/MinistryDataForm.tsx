@@ -62,8 +62,8 @@ const MinistryDataForm = forwardRef<
   const [ownerPositionId, setOwnerPositionId] = useState(defaultValues?.ownerPositionId || "");
   const [ministryTypeId, setMinistryTypeId] = useState(defaultValues?.ministryTypeId || "");
   const [targetAudienceIds, setTargetAudienceIds] = useState<string[]>(defaultValues?.targetAudienceIds || []);
-  const [schedules, setSchedules] = useState<MinistryScheduleDraft[]>(
-    () => (defaultValues?.schedules || []).map(scheduleItemToDraft)
+  const [schedules, setSchedules] = useState<MinistryScheduleDraft[]>(() =>
+    (defaultValues?.schedules || []).map(scheduleItemToDraft)
   );
   const [positions, setPositions] = useState<AssignablePositionItem[]>([]);
   const [ministryTypes, setMinistryTypes] = useState<MinistryCatalogItem[]>([]);
@@ -98,7 +98,7 @@ const MinistryDataForm = forwardRef<
     setTranslationMap(
       hydrateTranslationMap(locales, defaultValues?.translations, {
         name: defaultValues?.name,
-      }),
+      })
     );
   }, [defaultValues, locales]);
 
@@ -123,7 +123,7 @@ const MinistryDataForm = forwardRef<
         };
       }),
     ],
-    [positions, t, tOrg],
+    [positions, t, tOrg]
   );
 
   const ministryTypeOptions = useMemo(
@@ -131,12 +131,12 @@ const MinistryDataForm = forwardRef<
       { value: "", label: t("ministry.form.ministryTypePlaceholder") },
       ...ministryTypes.map((item) => ({ value: item.id, label: item.name || item.code })),
     ],
-    [ministryTypes, t],
+    [ministryTypes, t]
   );
 
   const targetAudienceOptions = useMemo(
     () => targetAudiences.map((item) => ({ value: item.id, label: item.name || item.code })),
-    [targetAudiences],
+    [targetAudiences]
   );
 
   const handleTargetAudienceChange = (value: string | number | (string | number | null)[] | null) => {
@@ -157,7 +157,10 @@ const MinistryDataForm = forwardRef<
       if (name_error_key) next.name = tCommon(name_error_key);
       if (!ministryTypeId) next.ministryTypeId = t("ministry.form.ministryTypeRequired");
       if (showMembers && validateMembers) {
-        const member_error = validateMinistryMembers(members.filter((m) => m.userId), t);
+        const member_error = validateMinistryMembers(
+          members.filter((m) => m.userId),
+          t
+        );
         if (member_error) next.members = member_error;
       }
       setErrors(next);
@@ -239,13 +242,17 @@ const MinistryDataForm = forwardRef<
             <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
               {members.map((member) => (
                 <li key={member.userId}>
-                  {member.displayName || member.email || member.userId} — {t(`ministry.members.${member.memberRole}`, { defaultValue: member.memberRole })}
+                  {member.displayName || member.email || member.userId} —{" "}
+                  {t(`ministry.members.${member.memberRole}`, { defaultValue: member.memberRole })}
                 </li>
               ))}
             </ul>
           )}
           {ministryId ? (
-            <Link className="text-sm text-brand-600 hover:underline" to={`/ministry/members${withMinistryQueryId("", ministryId)}`}>
+            <Link
+              className="text-sm text-brand-600 hover:underline"
+              to={`/ministry/members${withMinistryQueryId("", ministryId)}`}
+            >
               {t("ministry.form.editStewardsLink")}
             </Link>
           ) : null}

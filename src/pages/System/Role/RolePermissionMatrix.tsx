@@ -26,7 +26,11 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const [vr, rr, pr] = await Promise.all([verbService.list(), resourceService.getResources(false), permissionService.list()]);
+      const [vr, rr, pr] = await Promise.all([
+        verbService.list(),
+        resourceService.getResources(false),
+        permissionService.list(),
+      ]);
       if (vr.success) setVerbs(vr.data.items || []);
       if (rr.success) setResources(rr.data.items || []);
       if (pr.success) {
@@ -161,16 +165,19 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
   }, [systemTree, generalTree]);
 
   // Collect resource id and all descendant ids (recursive)
-  const getResourceAndChildrenIds = useCallback((resourceId: string, resourceMap: Record<string, TreeNode>): string[] => {
-    const ids: string[] = [resourceId];
-    const resource = resourceMap[resourceId];
-    if (resource && resource.children) {
-      resource.children.forEach((child) => {
-        ids.push(...getResourceAndChildrenIds(child.id, resourceMap));
-      });
-    }
-    return ids;
-  }, []);
+  const getResourceAndChildrenIds = useCallback(
+    (resourceId: string, resourceMap: Record<string, TreeNode>): string[] => {
+      const ids: string[] = [resourceId];
+      const resource = resourceMap[resourceId];
+      if (resource && resource.children) {
+        resource.children.forEach((child) => {
+          ids.push(...getResourceAndChildrenIds(child.id, resourceMap));
+        });
+      }
+      return ids;
+    },
+    []
+  );
 
   // Permission ids for one verb across all descendants of a root resource
   const getChildResourcePermissionsForVerb = useCallback(
@@ -265,7 +272,9 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
   // Toggle all verbs for the given resource list (first-column select-all)
   const toggleAllGlobal = (resourceList: ResourceMenuItem[]) => {
     const set = new Set(value);
-    const permIds: string[] = resourceList.flatMap((r) => verbs.map((v) => permMap[r.id]?.[v.id])).filter(Boolean) as string[];
+    const permIds: string[] = resourceList
+      .flatMap((r) => verbs.map((v) => permMap[r.id]?.[v.id]))
+      .filter(Boolean) as string[];
     if (permIds.length === 0) return;
     const allSelected = permIds.every((id) => set.has(id));
     if (allSelected) permIds.forEach((id) => set.delete(id));
@@ -310,7 +319,9 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
             <div className="shrink-0 w-20">
               <Checkbox
                 checked={(() => {
-                  const allIds = resourceList.flatMap((r) => verbs.map((v) => permMap[r.id]?.[v.id])).filter(Boolean) as string[];
+                  const allIds = resourceList
+                    .flatMap((r) => verbs.map((v) => permMap[r.id]?.[v.id]))
+                    .filter(Boolean) as string[];
                   return allIds.length > 0 && allIds.every((id) => value.includes(id));
                 })()}
                 onChange={() => toggleAllGlobal(resourceList)}
@@ -368,7 +379,9 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
                             checked={checked}
                             onChange={() => toggleVerbForRootResource(node.id, v.id)}
                             disabled={childPermIds.length === 0}
-                            label={childPermIds.length > 0 ? t("system:role.matrix.childVerbLabel", { verb: v.name }) : ""}
+                            label={
+                              childPermIds.length > 0 ? t("system:role.matrix.childVerbLabel", { verb: v.name }) : ""
+                            }
                             tooltip
                             tooltipPlacement="bottom"
                             className="max-w-50 truncate"
@@ -409,8 +422,18 @@ export default function RolePermissionMatrix({ value, onChange, className = "" }
 
   return (
     <div className={`space-y-0 ${className}`}>
-      {renderPermissionTable(t("system:role.matrix.sectionGeneralResources"), generalResources, generalTree, generalFlatRows)}
-      {renderPermissionTable(t("system:role.matrix.sectionSystemResources"), systemResources, systemTree, systemFlatRows)}
+      {renderPermissionTable(
+        t("system:role.matrix.sectionGeneralResources"),
+        generalResources,
+        generalTree,
+        generalFlatRows
+      )}
+      {renderPermissionTable(
+        t("system:role.matrix.sectionSystemResources"),
+        systemResources,
+        systemTree,
+        systemFlatRows
+      )}
     </div>
   );
 }

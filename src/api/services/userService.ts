@@ -160,13 +160,14 @@ export const userService = {
                 (item.email || "").toLowerCase().includes(keyword) ||
                 (item.preferred_name || "").toLowerCase().includes(keyword) ||
                 (item.first_name || "").toLowerCase().includes(keyword) ||
-                (item.last_name || "").toLowerCase().includes(keyword),
+                (item.last_name || "").toLowerCase().includes(keyword)
             )
             .map((item) => ({
               id: item.id,
               email: item.email,
               phoneNumber: item.phone_number,
-              displayName: item.preferred_name || [item.first_name, item.last_name].filter(Boolean).join(" ").trim() || undefined,
+              displayName:
+                item.preferred_name || [item.first_name, item.last_name].filter(Boolean).join(" ").trim() || undefined,
             })),
         },
       };
@@ -222,7 +223,9 @@ export const userService = {
     // API implementation: update current mock user profile in in-memory store.
     if (IS_MOCK_API) {
       mockUsers = mockUsers.map((item, index) =>
-        index === 0 ? { ...item, ...payload, updated_at: new Date().toISOString(), phone_number: payload.phone_number } : item,
+        index === 0
+          ? { ...item, ...payload, updated_at: new Date().toISOString(), phone_number: payload.phone_number }
+          : item
       );
       return { success: true, code: 200, data: undefined };
     }
@@ -234,7 +237,7 @@ export const userService = {
   async updateCurrentUserPreferredLocale(preferred_locale_id: string) {
     if (IS_MOCK_API) {
       mockUsers = mockUsers.map((item, index) =>
-        index === 0 ? { ...item, preferred_locale_id, updated_at: new Date().toISOString() } : item,
+        index === 0 ? { ...item, preferred_locale_id, updated_at: new Date().toISOString() } : item
       );
       return { success: true, code: 200, data: undefined };
     }
@@ -252,7 +255,7 @@ export const userService = {
               phone_number: payload.phone_number,
               updated_at: new Date().toISOString(),
             }
-          : item,
+          : item
       );
       return { success: true, code: 200, data: undefined };
     }
@@ -267,7 +270,9 @@ export const userService = {
       if (payload.permanent) {
         mockUsers = mockUsers.filter((item) => item.id !== id);
       } else {
-        mockUsers = mockUsers.map((item) => (item.id === id ? { ...item, is_deleted: true, remark: payload.reason } : item));
+        mockUsers = mockUsers.map((item) =>
+          item.id === id ? { ...item, is_deleted: true, remark: payload.reason } : item
+        );
       }
       return { success: true, code: 200, data: undefined };
     }
@@ -315,7 +320,12 @@ export const userService = {
     if (IS_MOCK_API) {
       const current = mockUsers.find((item) => !item.is_deleted) || mockUsers[0];
       if (!current) {
-        return { success: false, code: 404, message: "Current user not found", data: undefined as unknown as UserDetail };
+        return {
+          success: false,
+          code: 404,
+          message: "Current user not found",
+          data: undefined as unknown as UserDetail,
+        };
       }
       return { success: true, code: 200, data: current };
     }

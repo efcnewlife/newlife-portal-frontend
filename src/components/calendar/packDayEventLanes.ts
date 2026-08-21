@@ -136,7 +136,7 @@ const overlayPlacement = (laneIndex: number): { leftPercent: number; widthPercen
 
 const packGroup = (
   group: NormalizedEvent[],
-  maxLaneCount: number,
+  maxLaneCount: number
 ): { placements: EventLanePlacement[]; overflow: CollisionGroupOverflow | null } => {
   const columnById = assignColumns(group);
   const placements: EventLanePlacement[] = [];

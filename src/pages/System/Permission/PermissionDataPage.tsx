@@ -1,5 +1,10 @@
 import { permissionService } from "@/api";
-import type { PermissionCreate, PermissionDetail as ApiPermissionDetail, PermissionPageItem, PermissionUpdate } from "@/types/api";
+import type {
+  PermissionCreate,
+  PermissionDetail as ApiPermissionDetail,
+  PermissionPageItem,
+  PermissionUpdate,
+} from "@/types/api";
 import type { DataTableColumn, MenuButtonType, PopoverType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
 import { getRecycleButtonClassName } from "@/components/DataPage/PageButtonTypes";
@@ -106,10 +111,13 @@ export default function PermissionDataPage() {
         setCurrentPage(data.page + 1);
       } else {
         console.error("Failed to fetch permissions:", response.message);
-        notifyApiError({ code: 400, message: "" }, {
-          title: t("common:feedback.loadFailed"),
-          fallbackDescription: t("common:feedback.loadFailedDesc"),
-        });
+        notifyApiError(
+          { code: 400, message: "" },
+          {
+            title: t("common:feedback.loadFailed"),
+            fallbackDescription: t("common:feedback.loadFailedDesc"),
+          }
+        );
         setItems([]);
         setTotal(0);
       }
@@ -179,7 +187,9 @@ export default function PermissionDataPage() {
         label: t("system:permission.table.description"),
         width: "w-72",
         render: (_value: unknown, row: PermissionPageItem) => (
-          <span className="text-gray-600 dark:text-gray-400 truncate max-w-xs">{row.description || t("common:none")}</span>
+          <span className="text-gray-600 dark:text-gray-400 truncate max-w-xs">
+            {row.description || t("common:none")}
+          </span>
         ),
       },
     ],
@@ -284,7 +294,11 @@ export default function PermissionDataPage() {
 
     const buttons = [
       CommonPageButton.SEARCH(searchPopoverCallback, {
-        popover: { title: t("system:permission.search.popoverTitle"), position: PopoverPosition.BottomLeft, width: "400px" },
+        popover: {
+          title: t("system:permission.search.popoverTitle"),
+          position: PopoverPosition.BottomLeft,
+          width: "400px",
+        },
       }),
       CommonPageButton.ADD(
         () => {
@@ -347,10 +361,13 @@ export default function PermissionDataPage() {
               });
               openModal();
             } else {
-              notifyApiError({ code: 400, message: "" }, {
-                title: t("common:feedback.loadFailed"),
-                fallbackDescription: t("common:feedback.loadFailedDesc"),
-              });
+              notifyApiError(
+                { code: 400, message: "" },
+                {
+                  title: t("common:feedback.loadFailed"),
+                  fallbackDescription: t("common:feedback.loadFailedDesc"),
+                }
+              );
             }
           } catch (error) {
             console.error("Error fetching permission detail:", error);
@@ -463,7 +480,9 @@ export default function PermissionDataPage() {
       />
 
       <Modal
-        title={formMode === "create" ? t("system:permission.modal.createTitle") : t("system:permission.modal.editTitle")}
+        title={
+          formMode === "create" ? t("system:permission.modal.createTitle") : t("system:permission.modal.editTitle")
+        }
         isOpen={isOpen}
         onClose={closeModal}
         className="max-w-[800px] w-full mx-4 p-6"
@@ -478,15 +497,29 @@ export default function PermissionDataPage() {
       </Modal>
 
       <Modal
-        title={showDeleted ? t("system:permission.modal.deleteConfirmPermanent.title") : t("system:permission.modal.deleteConfirmSoft.title")}
+        title={
+          showDeleted
+            ? t("system:permission.modal.deleteConfirmPermanent.title")
+            : t("system:permission.modal.deleteConfirmSoft.title")
+        }
         isOpen={isDeleteOpen}
         onClose={closeDeleteModal}
         className="max-w-[560px] w-full mx-4 p-6"
       >
-        <PermissionDeleteForm onSubmit={handleDelete} onCancel={closeDeleteModal} submitting={submitting} isPermanent={showDeleted} />
+        <PermissionDeleteForm
+          onSubmit={handleDelete}
+          onCancel={closeDeleteModal}
+          submitting={submitting}
+          isPermanent={showDeleted}
+        />
       </Modal>
 
-      <Modal title={t("system:permission.modal.restoreTitle")} isOpen={isRestoreOpen} onClose={closeRestoreModal} className="max-w-[500px] w-full mx-4 p-6">
+      <Modal
+        title={t("system:permission.modal.restoreTitle")}
+        isOpen={isRestoreOpen}
+        onClose={closeRestoreModal}
+        className="max-w-[500px] w-full mx-4 p-6"
+      >
         <RestoreForm
           ids={restoreIds}
           entityName={t("system:permission.restoreForm.entityLabel")}
@@ -496,7 +529,12 @@ export default function PermissionDataPage() {
         />
       </Modal>
 
-      <Modal title={t("system:permission.modal.detailTitle")} isOpen={isViewOpen} onClose={closeViewModal} className="max-w-[800px] w-full mx-4 p-6">
+      <Modal
+        title={t("system:permission.modal.detailTitle")}
+        isOpen={isViewOpen}
+        onClose={closeViewModal}
+        className="max-w-[800px] w-full mx-4 p-6"
+      >
         {viewing && <PermissionDetailView permissionId={viewing.id} />}
       </Modal>
     </>

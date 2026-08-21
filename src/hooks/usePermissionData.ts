@@ -70,7 +70,8 @@ export function usePermissionData(): UsePermissionDataReturn {
 }
 
 export function usePermissionCheck() {
-  const { checkPermission, checkRole, hasAnyPermission, hasAllPermissions, hasAnyRole, hasAllRoles } = usePermissionData();
+  const { checkPermission, checkRole, hasAnyPermission, hasAllPermissions, hasAnyRole, hasAllRoles } =
+    usePermissionData();
 
   return {
     checkPermission,

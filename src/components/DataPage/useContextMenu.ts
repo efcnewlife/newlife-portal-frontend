@@ -18,18 +18,21 @@ export const useContextMenu = <T = unknown>() => {
     index: undefined,
   });
 
-  const showContextMenu = useCallback((event: React.MouseEvent, buttons: MenuButtonType<T>[], row: T, index: number) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const showContextMenu = useCallback(
+    (event: React.MouseEvent, buttons: MenuButtonType<T>[], row: T, index: number) => {
+      event.preventDefault();
+      event.stopPropagation();
 
-    setState({
-      visible: true,
-      position: { x: event.clientX, y: event.clientY },
-      buttons,
-      row,
-      index,
-    });
-  }, []);
+      setState({
+        visible: true,
+        position: { x: event.clientX, y: event.clientY },
+        buttons,
+        row,
+        index,
+      });
+    },
+    []
+  );
 
   const hideContextMenu = useCallback(() => {
     setState((prev) => ({

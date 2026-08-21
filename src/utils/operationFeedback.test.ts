@@ -69,7 +69,7 @@ describe("notifyApiError", () => {
     expect(showMock).toHaveBeenCalledWith(
       expect.objectContaining({
         description: "Room was not found",
-      }),
+      })
     );
   });
 
@@ -87,22 +87,19 @@ describe("notifyApiError", () => {
     expect(showMock).toHaveBeenCalledWith(
       expect.objectContaining({
         description: "Custom booking message",
-      }),
+      })
     );
   });
 
   it("does not show a toast for transport failures (code 0)", () => {
-    notifyApiError(
-      { code: 0, message: "Network Error" },
-      { title: "Save failed", fallbackDescription: "fallback" },
-    );
+    notifyApiError({ code: 0, message: "Network Error" }, { title: "Save failed", fallbackDescription: "fallback" });
     expect(showMock).not.toHaveBeenCalled();
   });
 
   it("does not show a toast when transportNotified is set", () => {
     notifyApiError(
       { code: 408, message: "Timeout", transportNotified: true },
-      { title: "Save failed", fallbackDescription: "fallback" },
+      { title: "Save failed", fallbackDescription: "fallback" }
     );
     expect(showMock).not.toHaveBeenCalled();
   });

@@ -69,7 +69,10 @@ const RoomSlotTemplateDataPage = () => {
         setCurrentPage((res.data.page ?? 0) + 1);
       }
     } catch (error) {
-      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -86,13 +89,20 @@ const RoomSlotTemplateDataPage = () => {
         key: "daysOfWeek",
         label: t("roomSlotTemplate.table.daysOfWeek"),
         width: "w-48",
-        render: (v) =>
-          (Array.isArray(v) ? v : [])
-            .map((day) => t(`roomSlotTemplate.days.${day}`))
-            .join(", "),
+        render: (v) => (Array.isArray(v) ? v : []).map((day) => t(`roomSlotTemplate.days.${day}`)).join(", "),
       },
-      { key: "startTime", label: t("roomSlotTemplate.table.startTime"), width: "w-24", render: (v) => String(v).slice(0, 5) },
-      { key: "endTime", label: t("roomSlotTemplate.table.endTime"), width: "w-24", render: (v) => String(v).slice(0, 5) },
+      {
+        key: "startTime",
+        label: t("roomSlotTemplate.table.startTime"),
+        width: "w-24",
+        render: (v) => String(v).slice(0, 5),
+      },
+      {
+        key: "endTime",
+        label: t("roomSlotTemplate.table.endTime"),
+        width: "w-24",
+        render: (v) => String(v).slice(0, 5),
+      },
       { key: "slotDurationMinutes", label: t("roomSlotTemplate.table.slotDuration"), width: "w-24" },
       {
         key: "isActive",
@@ -273,16 +283,29 @@ const RoomSlotTemplateDataPage = () => {
             closeModal();
             await fetchPages();
           } catch (error) {
-            notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
+            notifyApiError(error, {
+              title: t("common:feedback.saveFailed"),
+              fallbackDescription: t("common:feedback.saveFailedDesc"),
+            });
           } finally {
             setSubmitting(false);
           }
         }}
       >
-        <RoomSlotTemplateDataForm ref={formRef} defaultValues={formValues} rooms={rooms} facilityLocked={formMode === "edit"} />
+        <RoomSlotTemplateDataForm
+          ref={formRef}
+          defaultValues={formValues}
+          rooms={rooms}
+          facilityLocked={formMode === "edit"}
+        />
       </ModalForm>
 
-      <Modal isOpen={isDeleteOpen} onClose={closeDeleteModal} title={t("roomSlotTemplate.modal.deleteSoft")} className="max-w-lg mx-4 p-6">
+      <Modal
+        isOpen={isDeleteOpen}
+        onClose={closeDeleteModal}
+        title={t("roomSlotTemplate.modal.deleteSoft")}
+        className="max-w-lg mx-4 p-6"
+      >
         <DeleteForm
           entityName={t("roomSlotTemplate.deleteForm.entityLabel")}
           isPermanent={showDeleted}

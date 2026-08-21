@@ -48,7 +48,16 @@ export interface EventBlockProps {
 /**
  * Event block component for rendering calendar events
  */
-const EventBlock = ({ event, top, height, isSpanning, isContinuing, horizontalLayout, onEventClick, onContextMenu }: EventBlockProps) => {
+const EventBlock = ({
+  event,
+  top,
+  height,
+  isSpanning,
+  isContinuing,
+  horizontalLayout,
+  onEventClick,
+  onContextMenu,
+}: EventBlockProps) => {
   const { i18n } = useTranslation("calendar");
   const locale = i18n.language || "en";
   const eventStart = new Date(event.start);
@@ -139,7 +148,12 @@ const EventBlock = ({ event, top, height, isSpanning, isContinuing, horizontalLa
           : {}),
       }}
     >
-      <Tooltip content={tooltipContent} placement="top" className="!flex h-full w-full" contentClassName="pointer-events-none">
+      <Tooltip
+        content={tooltipContent}
+        placement="top"
+        className="!flex h-full w-full"
+        contentClassName="pointer-events-none"
+      >
         <div
           role="button"
           tabIndex={0}
@@ -151,7 +165,7 @@ const EventBlock = ({ event, top, height, isSpanning, isContinuing, horizontalLa
             getEventClasses(),
             colorClasses.bg,
             colorClasses.border,
-            colorClasses.hoverBg,
+            colorClasses.hoverBg
           )}
           style={inlineStyles}
         >
@@ -174,7 +188,9 @@ const EventBlock = ({ event, top, height, isSpanning, isContinuing, horizontalLa
             >
               <span className="truncate">{visibleTags.join(", ")}</span>
               {overflowTags.length > 0 && (
-                <span className={cn("shrink-0 rounded px-0.5 font-semibold", colorClasses.text)}>+{overflowTags.length}</span>
+                <span className={cn("shrink-0 rounded px-0.5 font-semibold", colorClasses.text)}>
+                  +{overflowTags.length}
+                </span>
               )}
             </div>
           )}

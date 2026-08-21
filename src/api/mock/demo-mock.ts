@@ -1,4 +1,11 @@
-import type { DemoCreate, DemoDelete, DemoDetail, DemoPagesParams, DemoPagesResponse, DemoUpdate } from "@/api/services/demoService";
+import type {
+  DemoCreate,
+  DemoDelete,
+  DemoDetail,
+  DemoPagesParams,
+  DemoPagesResponse,
+  DemoUpdate,
+} from "@/api/services/demoService";
 import type { ApiResponse } from "@/types/api";
 import { withMockDelay } from "./common-mock";
 
@@ -83,7 +90,7 @@ export const createMockDemo = async (payload: DemoCreate): Promise<ApiResponse<{
 export const updateMockDemo = async (id: string, payload: DemoUpdate): Promise<ApiResponse<void>> => {
   await withMockDelay(120);
   mockDemoItems = mockDemoItems.map((item) =>
-    item.id === id ? { ...item, ...payload, updated_at: new Date().toISOString(), updated_by: "mock-admin-user" } : item,
+    item.id === id ? { ...item, ...payload, updated_at: new Date().toISOString(), updated_by: "mock-admin-user" } : item
   );
   return { success: true, code: 200, data: undefined };
 };
@@ -92,8 +99,14 @@ export const removeMockDemo = async (id: string, payload: DemoDelete): Promise<A
   await withMockDelay(120);
   mockDemoItems = mockDemoItems.map((item) =>
     item.id === id
-      ? { ...item, is_deleted: true, delete_reason: payload.reason, updated_at: new Date().toISOString(), updated_by: "mock-admin-user" }
-      : item,
+      ? {
+          ...item,
+          is_deleted: true,
+          delete_reason: payload.reason,
+          updated_at: new Date().toISOString(),
+          updated_by: "mock-admin-user",
+        }
+      : item
   );
   return { success: true, code: 200, data: undefined };
 };
@@ -102,7 +115,9 @@ export const restoreMockDemo = async (ids: string[]): Promise<ApiResponse<void>>
   await withMockDelay(120);
   const idSet = new Set(ids);
   mockDemoItems = mockDemoItems.map((item) =>
-    idSet.has(item.id) ? { ...item, is_deleted: false, delete_reason: undefined, updated_at: new Date().toISOString() } : item,
+    idSet.has(item.id)
+      ? { ...item, is_deleted: false, delete_reason: undefined, updated_at: new Date().toISOString() }
+      : item
   );
   return { success: true, code: 200, data: undefined };
 };

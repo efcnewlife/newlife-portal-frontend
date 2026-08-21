@@ -57,7 +57,10 @@ const PositionDataPage = () => {
         setTotal(0);
       }
     } catch (error) {
-      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -75,7 +78,7 @@ const PositionDataPage = () => {
         list.map((u) => ({
           id: u.id,
           label: u.displayName ? `${u.displayName} (${u.email || u.id})` : u.email || u.id,
-        })),
+        }))
       );
     });
   }, []);
@@ -84,19 +87,16 @@ const PositionDataPage = () => {
   const pickerLabels = usePickerLabels();
 
   const userOptions = useMemo(
-    () => [{ value: "", label: t("position.assign.selectUser") }, ...users.map((u) => ({ value: u.id, label: u.label }))],
-    [users, t],
+    () => [
+      { value: "", label: t("position.assign.selectUser") },
+      ...users.map((u) => ({ value: u.id, label: u.label })),
+    ],
+    [users, t]
   );
 
-  const positionTeamLabel = useCallback(
-    (value?: string) => (value ? t(`position.enums.team.${value}`) : ""),
-    [t],
-  );
+  const positionTeamLabel = useCallback((value?: string) => (value ? t(`position.enums.team.${value}`) : ""), [t]);
 
-  const positionOfficeLabel = useCallback(
-    (value?: string) => (value ? t(`position.enums.office.${value}`) : ""),
-    [t],
-  );
+  const positionOfficeLabel = useCallback((value?: string) => (value ? t(`position.enums.office.${value}`) : ""), [t]);
 
   const columns: DataTableColumn<PositionRow>[] = useMemo(
     () => [
@@ -122,7 +122,7 @@ const PositionDataPage = () => {
         render: (value) => (value ? String(value) : t("position.detail.noIncumbent")),
       },
     ],
-    [t, positionTeamLabel, positionOfficeLabel],
+    [t, positionTeamLabel, positionOfficeLabel]
   );
 
   const toolbarButtons: PageButtonType[] = useMemo(
@@ -140,7 +140,7 @@ const PositionDataPage = () => {
         variant: "secondary",
       },
     ],
-    [fetchPages, openSettingsModal, t],
+    [fetchPages, openSettingsModal, t]
   );
 
   const rowActions: MenuButtonType<PositionRow>[] = useMemo(
@@ -164,7 +164,7 @@ const PositionDataPage = () => {
         permission: Verb.Modify,
       },
     ],
-    [openAssignModal, openViewModal, t],
+    [openAssignModal, openViewModal, t]
   );
 
   return (
@@ -242,7 +242,10 @@ const PositionDataPage = () => {
                   closeAssignModal();
                   await fetchPages();
                 } catch (error) {
-                  notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
+                  notifyApiError(error, {
+                    title: t("common:feedback.saveFailed"),
+                    fallbackDescription: t("common:feedback.saveFailedDesc"),
+                  });
                 } finally {
                   setSubmitting(false);
                 }

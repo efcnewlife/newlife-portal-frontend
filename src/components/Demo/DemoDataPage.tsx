@@ -181,7 +181,7 @@ export default function DemoDataPage() {
         width: "w-32",
       },
     ],
-    [],
+    []
   );
 
   const handleRowSelect = (_selectedRows: DemoDetail[], selectedKeys: string[]) => {
@@ -223,7 +223,7 @@ export default function DemoDataPage() {
       setRestoreIds([row.id]);
       openRestoreModal();
     },
-    [openRestoreModal],
+    [openRestoreModal]
   );
 
   // Toolbar buttons
@@ -263,7 +263,9 @@ export default function DemoDataPage() {
     );
 
     return [
-      CommonPageButton.SEARCH(searchPopoverCallback, { popover: { title: "Search", position: PopoverPosition.BottomLeft, width: "300px" } }),
+      CommonPageButton.SEARCH(searchPopoverCallback, {
+        popover: { title: "Search", position: PopoverPosition.BottomLeft, width: "300px" },
+      }),
       CommonPageButton.ADD(
         () => {
           setFormMode("create");
@@ -272,7 +274,7 @@ export default function DemoDataPage() {
         },
         {
           visible: !showDeleted,
-        },
+        }
       ),
       CommonPageButton.REFRESH(() => {
         fetchPages();
@@ -290,14 +292,14 @@ export default function DemoDataPage() {
         {
           visible: showDeleted,
           disabled: selectedKeys.length === 0,
-        },
+        }
       ),
       CommonPageButton.RECYCLE(
         () => {
           setShowDeleted(!showDeleted);
           setCurrentPage(1);
         },
-        { className: getRecycleButtonClassName(showDeleted) },
+        { className: getRecycleButtonClassName(showDeleted) }
       ),
     ];
   }, [openModal, fetchPages, showDeleted, searchDraft, showNotification, handleBulkRestore, selectedKeys]);
@@ -339,7 +341,7 @@ export default function DemoDataPage() {
         },
         {
           visible: !showDeleted, // Only shown in normal mode
-        },
+        }
       ),
       CommonRowAction.RESTORE(
         async (row: DemoDetail) => {
@@ -347,7 +349,7 @@ export default function DemoDataPage() {
         },
         {
           visible: showDeleted, // Only shown in recycle bin mode
-        },
+        }
       ),
       CommonRowAction.DELETE(
         (row: DemoDetail) => {
@@ -356,10 +358,10 @@ export default function DemoDataPage() {
         },
         {
           text: showDeleted ? "Delete Permanently" : "Delete",
-        },
+        }
       ),
     ],
-    [openModal, openDeleteModal, showDeleted, handleSingleRestore],
+    [openModal, openDeleteModal, showDeleted, handleSingleRestore]
   );
 
   // Submit handlers
@@ -437,7 +439,7 @@ export default function DemoDataPage() {
       total,
       items,
     }),
-    [currentPage, pageSize, total, items],
+    [currentPage, pageSize, total, items]
   );
 
   return (
@@ -463,7 +465,13 @@ export default function DemoDataPage() {
         onClose={closeModal}
         className="max-w-[600px] w-full mx-4 p-6"
       >
-        <DemoDataForm mode={formMode} defaultValues={editing} onSubmit={handleSubmit} onCancel={closeModal} submitting={submitting} />
+        <DemoDataForm
+          mode={formMode}
+          defaultValues={editing}
+          onSubmit={handleSubmit}
+          onCancel={closeModal}
+          submitting={submitting}
+        />
       </Modal>
 
       <Modal
@@ -472,10 +480,20 @@ export default function DemoDataPage() {
         onClose={closeDeleteModal}
         className="max-w-[560px] w-full mx-4 p-6"
       >
-        <DemoDeleteForm onSubmit={handleDelete} onCancel={closeDeleteModal} submitting={submitting} isPermanent={showDeleted} />
+        <DemoDeleteForm
+          onSubmit={handleDelete}
+          onCancel={closeDeleteModal}
+          submitting={submitting}
+          isPermanent={showDeleted}
+        />
       </Modal>
 
-      <Modal title="Restore Demo Item" isOpen={isRestoreOpen} onClose={closeRestoreModal} className="max-w-[500px] w-full mx-4 p-6">
+      <Modal
+        title="Restore Demo Item"
+        isOpen={isRestoreOpen}
+        onClose={closeRestoreModal}
+        className="max-w-[500px] w-full mx-4 p-6"
+      >
         <RestoreForm
           ids={restoreIds}
           entityName="demo item"

@@ -121,12 +121,14 @@ class HttpClient {
     // Check whether HTTP response exists (normal case)
     if (error.response) {
       const status = error.response.status;
-      const response_data = error.response.data as { detail?: string; debug_detail?: unknown; url?: string; message?: string } | undefined;
+      const response_data = error.response.data as
+        { detail?: string; debug_detail?: unknown; url?: string; message?: string } | undefined;
 
       // Prefer backend detail as message; fallback to message or default error text
       const backend_detail = response_data?.detail;
       const fallback_message = response_data?.message;
-      const message = (typeof backend_detail === "string" && backend_detail) || fallback_message || this.getErrorMessage(status);
+      const message =
+        (typeof backend_detail === "string" && backend_detail) || fallback_message || this.getErrorMessage(status);
 
       const apiError: ApiError = {
         code: status,
@@ -230,7 +232,11 @@ class HttpClient {
 
       // On 401, try refreshing access token and retry once
       // Login requests should not trigger refresh token logic
-      if (apiError.code === HttpStatusCode.Unauthorized && !this.isRefreshRequest(config) && !this.isLoginRequest(config)) {
+      if (
+        apiError.code === HttpStatusCode.Unauthorized &&
+        !this.isRefreshRequest(config) &&
+        !this.isLoginRequest(config)
+      ) {
         try {
           await this.getOrCreateRefreshPromise();
 
@@ -248,7 +254,12 @@ class HttpClient {
           // If refresh/retry still fails, throw error for service-layer handling
           // Check whether error is already an ApiError
           let finalError: ApiError;
-          if (retryError && typeof retryError === "object" && "code" in retryError && typeof (retryError as ApiError).code === "number") {
+          if (
+            retryError &&
+            typeof retryError === "object" &&
+            "code" in retryError &&
+            typeof (retryError as ApiError).code === "number"
+          ) {
             finalError = retryError as ApiError;
           } else {
             finalError = this.handleError(retryError as AxiosError);
@@ -433,11 +444,11 @@ class HttpClient {
         if (axiosError.response) {
           const status = axiosError.response.status;
           const response_data = axiosError.response.data as
-            | { detail?: string; debug_detail?: unknown; url?: string; message?: string }
-            | undefined;
+            { detail?: string; debug_detail?: unknown; url?: string; message?: string } | undefined;
           const backend_detail = response_data?.detail;
           const fallback_message = response_data?.message;
-          const message = (typeof backend_detail === "string" && backend_detail) || fallback_message || this.getErrorMessage(status);
+          const message =
+            (typeof backend_detail === "string" && backend_detail) || fallback_message || this.getErrorMessage(status);
 
           throw {
             code: status,

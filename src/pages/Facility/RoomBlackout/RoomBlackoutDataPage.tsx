@@ -339,7 +339,10 @@ const RoomBlackoutDataPage = () => {
             closeModal();
             await fetchPages();
           } catch (error) {
-            notifyApiError(error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
+            notifyApiError(error, {
+              title: t("common:feedback.saveFailed"),
+              fallbackDescription: t("common:feedback.saveFailedDesc"),
+            });
           } finally {
             setSubmitting(false);
           }
@@ -348,7 +351,12 @@ const RoomBlackoutDataPage = () => {
         <RoomBlackoutDataForm ref={formRef} defaultValues={formValues} rooms={rooms} />
       </ModalForm>
 
-      <Modal isOpen={isDeleteOpen} onClose={closeDeleteModal} title={t("roomBlackout.modal.deleteSoft")} className="max-w-lg mx-4 p-6">
+      <Modal
+        isOpen={isDeleteOpen}
+        onClose={closeDeleteModal}
+        title={t("roomBlackout.modal.deleteSoft")}
+        className="max-w-lg mx-4 p-6"
+      >
         <DeleteForm
           entityName={t("roomBlackout.deleteForm.entityLabel")}
           isPermanent={showDeleted}

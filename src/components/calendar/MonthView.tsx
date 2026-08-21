@@ -75,8 +75,8 @@ const MonthView = ({ currentDate, events = [], validRange, onEventClick, onDateC
                     isToday
                       ? "flex size-6 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white dark:bg-indigo-500"
                       : isSelected
-                      ? "flex size-6 items-center justify-center rounded-full bg-gray-900 font-semibold text-white dark:bg-white dark:text-gray-900"
-                      : ""
+                        ? "flex size-6 items-center justify-center rounded-full bg-gray-900 font-semibold text-white dark:bg-white dark:text-gray-900"
+                        : ""
                   }`}
                 >
                   {day.date.split("-").pop()?.replace(/^0/, "") || ""}
@@ -113,7 +113,9 @@ const MonthView = ({ currentDate, events = [], validRange, onEventClick, onDateC
                         </li>
                       );
                     })}
-                    {dayEvents.length > 2 ? <li className="text-gray-500 dark:text-gray-400">+ {dayEvents.length - 2} more</li> : null}
+                    {dayEvents.length > 2 ? (
+                      <li className="text-gray-500 dark:text-gray-400">+ {dayEvents.length - 2} more</li>
+                    ) : null}
                   </ol>
                 ) : null}
               </div>

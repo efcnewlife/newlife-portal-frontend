@@ -16,10 +16,7 @@ import { DateUtil } from "@/utils/dateUtil";
 import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import MinistryDataForm, {
-  type MinistryDataFormHandle,
-  type MinistryFormValues,
-} from "./MinistryDataForm";
+import MinistryDataForm, { type MinistryDataFormHandle, type MinistryFormValues } from "./MinistryDataForm";
 import { ministryMembersToDraft } from "@/pages/Ministry/components/MinistryMembersEditor";
 
 type MinistryRow = MinistryDetail & Record<string, unknown>;
@@ -87,13 +84,10 @@ const MinistryDataPage = () => {
       const key = String(status || "");
       return t(`ministry.status.${key}`, { defaultValue: key });
     },
-    [t],
+    [t]
   );
 
-  const memberRoleLabel = useCallback(
-    (role: string) => t(`ministry.members.${role}`, { defaultValue: role }),
-    [t],
-  );
+  const memberRoleLabel = useCallback((role: string) => t(`ministry.members.${role}`, { defaultValue: role }), [t]);
 
   const columns: DataTableColumn<MinistryRow>[] = useMemo(
     () => [
@@ -108,8 +102,7 @@ const MinistryDataPage = () => {
         key: "targetAudiences",
         label: t("ministry.table.targetAudiences"),
         width: "w-40",
-        render: (_, row) =>
-          (row.targetAudiences || []).map((item) => item.name || item.code).join(", ") || "—",
+        render: (_, row) => (row.targetAudiences || []).map((item) => item.name || item.code).join(", ") || "—",
       },
       {
         key: "status",
@@ -141,7 +134,7 @@ const MinistryDataPage = () => {
           ) : null,
       },
     ],
-    [statusLabel, t],
+    [statusLabel, t]
   );
 
   const toolbarButtons: PageButtonType[] = useMemo(
@@ -153,7 +146,7 @@ const MinistryDataPage = () => {
           setFormValues(null);
           openModal();
         },
-        { visible: !showDeleted },
+        { visible: !showDeleted }
       ),
       CommonPageButton.REFRESH(() => void fetchPages()),
       CommonPageButton.RECYCLE(
@@ -161,10 +154,10 @@ const MinistryDataPage = () => {
           setShowDeleted((v) => !v);
           setCurrentPage(1);
         },
-        { className: getRecycleButtonClassName(showDeleted) },
+        { className: getRecycleButtonClassName(showDeleted) }
       ),
     ],
-    [fetchPages, showDeleted, openModal],
+    [fetchPages, showDeleted, openModal]
   );
 
   const rowActions: MenuButtonType<MinistryRow>[] = useMemo(
@@ -197,7 +190,7 @@ const MinistryDataPage = () => {
             openModal();
           }
         },
-        { visible: !showDeleted },
+        { visible: !showDeleted }
       ),
       {
         key: "submit",
@@ -255,14 +248,24 @@ const MinistryDataPage = () => {
             });
           }
         },
-        { visible: showDeleted },
+        { visible: showDeleted }
       ),
       CommonRowAction.DELETE((row) => {
         setEditing(row);
         openDeleteModal();
       }),
     ],
-    [canApprove, fetchPages, openApproveModal, openDeleteModal, openModal, openRejectModal, openViewModal, showDeleted, t],
+    [
+      canApprove,
+      fetchPages,
+      openApproveModal,
+      openDeleteModal,
+      openModal,
+      openRejectModal,
+      openViewModal,
+      showDeleted,
+      t,
+    ]
   );
 
   return (
@@ -343,7 +346,12 @@ const MinistryDataPage = () => {
         />
       </ModalForm>
 
-      <Modal isOpen={isDeleteOpen} onClose={closeDeleteModal} title={t("ministry.modal.deleteSoft")} className="max-w-lg mx-4 p-6">
+      <Modal
+        isOpen={isDeleteOpen}
+        onClose={closeDeleteModal}
+        title={t("ministry.modal.deleteSoft")}
+        className="max-w-lg mx-4 p-6"
+      >
         <DeleteForm
           entityName={t("ministry.deleteForm.entityLabel")}
           isPermanent={showDeleted}
@@ -366,7 +374,12 @@ const MinistryDataPage = () => {
         />
       </Modal>
 
-      <Modal isOpen={isViewOpen} onClose={closeViewModal} title={t("ministry.modal.detailTitle")} className="max-w-lg mx-4 p-6">
+      <Modal
+        isOpen={isViewOpen}
+        onClose={closeViewModal}
+        title={t("ministry.modal.detailTitle")}
+        className="max-w-lg mx-4 p-6"
+      >
         {viewing && (
           <dl className="grid grid-cols-2 gap-2 text-sm">
             <dt className="text-gray-500">{t("ministry.table.name")}</dt>

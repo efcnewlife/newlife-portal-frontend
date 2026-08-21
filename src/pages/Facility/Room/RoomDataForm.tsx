@@ -38,7 +38,7 @@ const RoomDataForm = forwardRef<
   const [code, setCode] = useState(defaultValues?.code || "");
   const [roomNumber, setRoomNumber] = useState(defaultValues?.roomNumber || "");
   const [capacity, setCapacity] = useState<string>(
-    defaultValues?.capacity !== undefined ? String(defaultValues.capacity) : "",
+    defaultValues?.capacity !== undefined ? String(defaultValues.capacity) : ""
   );
   const [isActive, setIsActive] = useState(defaultValues?.isActive ?? true);
   const [translationMap, setTranslationMap] = useState<TranslationMap>({});
@@ -54,7 +54,7 @@ const RoomDataForm = forwardRef<
       hydrateTranslationMap(locales, defaultValues?.translations, {
         name: defaultValues?.name,
         description: defaultValues?.description,
-      }),
+      })
     );
   }, [defaultValues, locales]);
 

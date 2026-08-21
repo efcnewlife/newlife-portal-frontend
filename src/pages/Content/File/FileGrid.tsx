@@ -43,7 +43,10 @@ const FileGrid = ({ files, selectedKeys, onSelect }: FileGridProps) => {
         );
 
         return (
-          <div key={file.id} className="group flex flex-col gap-2 rounded-lg bg-white transition-colors dark:bg-gray-800">
+          <div
+            key={file.id}
+            className="group flex flex-col gap-2 rounded-lg bg-white transition-colors dark:bg-gray-800"
+          >
             <ImagePreviewCard
               imageUrl={file.url}
               alt={file.name}

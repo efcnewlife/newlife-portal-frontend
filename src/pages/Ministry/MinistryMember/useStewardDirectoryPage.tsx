@@ -12,7 +12,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useBlocker, useSearchParams } from "react-router";
 import { formatPositionLabel } from "./formatPositionLabel";
-import { parseMinistryQueryId, resolveStewardDirectorySelection, withMinistryQueryId } from "./stewardDirectorySelection";
+import {
+  parseMinistryQueryId,
+  resolveStewardDirectorySelection,
+  withMinistryQueryId,
+} from "./stewardDirectorySelection";
 import {
   convertStewardDirectorySortToApiParams,
   DEFAULT_STEWARD_DIRECTORY_SORT,
@@ -24,7 +28,8 @@ import {
 const DIRECTORY_PAGE_SIZE = 100;
 const MINISTRY_STATUSES = ["draft", "pending_approval", "active", "rejected", "inactive"] as const;
 
-const draftsEqual = (left: MinistryMemberDraft[], right: MinistryMemberDraft[]): boolean => JSON.stringify(left) === JSON.stringify(right);
+const draftsEqual = (left: MinistryMemberDraft[], right: MinistryMemberDraft[]): boolean =>
+  JSON.stringify(left) === JSON.stringify(right);
 
 export const useStewardDirectoryPage = () => {
   const { t, i18n } = useTranslation("ministry");
@@ -71,12 +76,12 @@ export const useStewardDirectoryPage = () => {
         label: t(`ministry.status.${status}`, { defaultValue: status }),
       })),
     ],
-    [t],
+    [t]
   );
 
   const ownerPosition = useMemo(
     () => (ownerPositionId ? positions.find((item) => item.id === ownerPositionId) : undefined),
-    [ownerPositionId, positions],
+    [ownerPositionId, positions]
   );
 
   const ownerPositionLabel = useMemo(() => {
@@ -97,10 +102,10 @@ export const useStewardDirectoryPage = () => {
           const next = withMinistryQueryId(`?${prev.toString()}`, ministryId);
           return new URLSearchParams(next.startsWith("?") ? next.slice(1) : next);
         },
-        { replace: true },
+        { replace: true }
       );
     },
-    [setSearchParams],
+    [setSearchParams]
   );
 
   const loadRoster = useCallback(
@@ -139,7 +144,7 @@ export const useStewardDirectoryPage = () => {
         }
       }
     },
-    [t],
+    [t]
   );
 
   const applySelect = useCallback(
@@ -155,7 +160,7 @@ export const useStewardDirectoryPage = () => {
       if (shouldSyncUrl) syncUrl(ministryId);
       void loadRoster(ministryId);
     },
-    [loadRoster, syncUrl],
+    [loadRoster, syncUrl]
   );
   applySelectRef.current = applySelect;
 
@@ -305,7 +310,7 @@ export const useStewardDirectoryPage = () => {
     if (!selectedId || !canModify) return false;
     const validationError = validateMinistryMembers(
       members.filter((member) => member.userId),
-      t,
+      t
     );
     if (validationError) {
       setMemberError(validationError);

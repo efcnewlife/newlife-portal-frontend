@@ -100,7 +100,11 @@ const getDefaultPermission = (type: PageButtonTypeKey): string | undefined => {
 };
 
 // Create a factory function for built-in buttons
-export const createPageButton = (type: PageButtonTypeKey, onClick: () => void, options: Partial<PageButtonType> = {}): PageButtonType => {
+export const createPageButton = (
+  type: PageButtonTypeKey,
+  onClick: () => void,
+  options: Partial<PageButtonType> = {}
+): PageButtonType => {
   const defaultPermission = getDefaultPermission(type);
   const { permission, ...restOptions } = options;
 

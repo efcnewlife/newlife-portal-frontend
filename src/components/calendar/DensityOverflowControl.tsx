@@ -17,7 +17,7 @@ const DensityOverflowControl = ({ count, date, top, onActivate }: DensityOverflo
       className={cn(
         "absolute z-30 max-w-[calc(100%-0.5rem)] truncate rounded border px-1.5 py-0.5 text-[10px] font-medium shadow-sm",
         "border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
-        "dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700",
+        "dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
       )}
       style={{ top: `${top}px`, left: "4px" }}
       onClick={(event) => {

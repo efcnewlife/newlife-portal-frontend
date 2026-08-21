@@ -9,11 +9,7 @@ import type { ApiError } from "@/types/api";
 import { Button, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import SettingDataForm, {
-  toSettingCreate,
-  toSettingUpdate,
-  type SettingDataFormHandle,
-} from "./SettingDataForm";
+import SettingDataForm, { toSettingCreate, toSettingUpdate, type SettingDataFormHandle } from "./SettingDataForm";
 import SettingSearchPopover, { type SettingSearchFilters } from "./SettingSearchPopover";
 import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 
@@ -68,7 +64,10 @@ const SettingDataPage = () => {
       }
     } catch (error) {
       setAllItems([]);
-      notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+      notifyApiError(error, {
+        title: t("common:feedback.loadFailed"),
+        fallbackDescription: t("common:feedback.loadFailedDesc"),
+      });
     } finally {
       setLoading(false);
     }
@@ -126,7 +125,7 @@ const SettingDataPage = () => {
         render: (v) => (v == null || v === "" ? t("system:shared.notSet") : String(v)),
       },
     ],
-    [t],
+    [t]
   );
 
   const toolbarButtons: PageButtonType[] = useMemo(() => {
@@ -178,7 +177,7 @@ const SettingDataPage = () => {
           setEditing(null);
           openFormModal();
         },
-        { visible: !showDeleted },
+        { visible: !showDeleted }
       ),
       CommonPageButton.REFRESH(() => {
         clearSelectionRef.current?.();
@@ -189,7 +188,7 @@ const SettingDataPage = () => {
           setShowDeleted((v) => !v);
           setCurrentPage(1);
         },
-        { className: getRecycleButtonClassName(showDeleted) },
+        { className: getRecycleButtonClassName(showDeleted) }
       ),
     ];
   }, [fetchList, openFormModal, searchFilters, showDeleted, t]);
@@ -205,13 +204,19 @@ const SettingDataPage = () => {
               setEditing(res.data as SettingRow);
               openFormModal();
             } else {
-              notifyApiError({ code: 400, message: "" }, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+              notifyApiError(
+                { code: 400, message: "" },
+                { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") }
+              );
             }
           } catch (error) {
-            notifyApiError(error, { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") });
+            notifyApiError(error, {
+              title: t("common:feedback.loadFailed"),
+              fallbackDescription: t("common:feedback.loadFailedDesc"),
+            });
           }
         },
-        { visible: () => !showDeleted },
+        { visible: () => !showDeleted }
       ),
       CommonRowAction.RESTORE(
         async (row) => {
@@ -222,12 +227,15 @@ const SettingDataPage = () => {
             await fetchList();
           } catch (error) {
             const apiError = error as ApiError;
-            notifyApiError(apiError ?? error, { title: t("common:feedback.actionFailed"), fallbackDescription: t("common:feedback.actionFailedDesc") });
+            notifyApiError(apiError ?? error, {
+              title: t("common:feedback.actionFailed"),
+              fallbackDescription: t("common:feedback.actionFailedDesc"),
+            });
           } finally {
             setSubmitting(false);
           }
         },
-        { visible: () => showDeleted },
+        { visible: () => showDeleted }
       ),
       CommonRowAction.DELETE(
         (row) => {
@@ -237,10 +245,10 @@ const SettingDataPage = () => {
         {
           text: showDeleted ? t("common:deletePermanently") : t("common:delete"),
           visible: (row) => !row.isBuiltIn,
-        },
+        }
       ),
     ],
-    [fetchList, openDeleteModal, openFormModal, showDeleted, t],
+    [fetchList, openDeleteModal, openFormModal, showDeleted, t]
   );
 
   return (
@@ -275,11 +283,7 @@ const SettingDataPage = () => {
 
       <ModalForm
         ref={modalRef}
-        title={
-          formMode === "create"
-            ? t("system:setting.modal.createTitle")
-            : t("system:setting.modal.editTitle")
-        }
+        title={formMode === "create" ? t("system:setting.modal.createTitle") : t("system:setting.modal.editTitle")}
         isOpen={isFormOpen}
         onClose={() => {
           closeFormModal();
@@ -323,15 +327,16 @@ const SettingDataPage = () => {
             await fetchList();
           } catch (error) {
             const apiError = error as ApiError;
-            notifyApiError(apiError ?? error, { title: t("common:feedback.saveFailed"), fallbackDescription: t("common:feedback.saveFailedDesc") });
+            notifyApiError(apiError ?? error, {
+              title: t("common:feedback.saveFailed"),
+              fallbackDescription: t("common:feedback.saveFailedDesc"),
+            });
           } finally {
             setSubmitting(false);
           }
         }}
       >
-        {(formMode === "create" || editing) && (
-          <SettingDataForm ref={formRef} mode={formMode} setting={editing} />
-        )}
+        {(formMode === "create" || editing) && <SettingDataForm ref={formRef} mode={formMode} setting={editing} />}
       </ModalForm>
 
       <Modal
@@ -359,7 +364,10 @@ const SettingDataPage = () => {
               await fetchList();
             } catch (error) {
               const apiError = error as ApiError;
-              notifyApiError(apiError ?? error, { title: t("common:feedback.deleteFailed"), fallbackDescription: t("common:feedback.deleteFailedDesc") });
+              notifyApiError(apiError ?? error, {
+                title: t("common:feedback.deleteFailed"),
+                fallbackDescription: t("common:feedback.deleteFailedDesc"),
+              });
             } finally {
               setSubmitting(false);
             }

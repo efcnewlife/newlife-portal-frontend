@@ -8,7 +8,12 @@ interface PermissionDeleteFormProps {
   isPermanent?: boolean;
 }
 
-const PermissionDeleteForm: React.FC<PermissionDeleteFormProps> = ({ onSubmit, onCancel, submitting, isPermanent = false }) => {
+const PermissionDeleteForm: React.FC<PermissionDeleteFormProps> = ({
+  onSubmit,
+  onCancel,
+  submitting,
+  isPermanent = false,
+}) => {
   const { t } = useTranslation();
   return (
     <DeleteForm

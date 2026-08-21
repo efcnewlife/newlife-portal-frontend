@@ -22,10 +22,14 @@ const StewardMinistrySummary = ({ ministry }: StewardMinistrySummaryProps) => {
       </div>
       <div>
         <dt className="text-xs font-medium text-gray-500 dark:text-gray-400">{t("ministry.table.targetAudiences")}</dt>
-        <dd className="mt-0.5 text-sm text-gray-700 dark:text-gray-300">{audienceNames.length > 0 ? audienceNames.join(", ") : "-"}</dd>
+        <dd className="mt-0.5 text-sm text-gray-700 dark:text-gray-300">
+          {audienceNames.length > 0 ? audienceNames.join(", ") : "-"}
+        </dd>
       </div>
       <div>
-        <dt className="text-xs font-medium text-gray-500 dark:text-gray-400">{t("ministry.table.hasPriorityBooking")}</dt>
+        <dt className="text-xs font-medium text-gray-500 dark:text-gray-400">
+          {t("ministry.table.hasPriorityBooking")}
+        </dt>
         <dd className="mt-0.5 text-sm text-gray-700 dark:text-gray-300">
           {ministry.hasPriorityBooking ? t("shared.yes") : t("shared.no")}
         </dd>

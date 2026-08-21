@@ -53,9 +53,7 @@ const MinistrySchedulesEditor = ({ value, onChange, error }: MinistrySchedulesEd
     const next = value.map((item, i) => {
       if (i !== index) return item;
       const days = item.daysOfWeek || [];
-      const days_of_week = checked
-        ? [...new Set([...days, day])].sort((a, b) => a - b)
-        : days.filter((d) => d !== day);
+      const days_of_week = checked ? [...new Set([...days, day])].sort((a, b) => a - b) : days.filter((d) => d !== day);
       return { ...item, daysOfWeek: days_of_week };
     });
     onChange(next);
@@ -81,7 +79,10 @@ const MinistrySchedulesEditor = ({ value, onChange, error }: MinistrySchedulesEd
         <p className="text-sm text-gray-500">{t("ministry.schedule.empty")}</p>
       ) : (
         value.map((schedule, index) => (
-          <div key={`schedule-${index}`} className="rounded-lg border border-gray-200 dark:border-gray-700 p-3 space-y-3">
+          <div
+            key={`schedule-${index}`}
+            className="rounded-lg border border-gray-200 dark:border-gray-700 p-3 space-y-3"
+          >
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-gray-600">{t("ministry.schedule.row", { index: index + 1 })}</p>
               <Button variant="outline" size="sm" onClick={() => removeSchedule(index)}>

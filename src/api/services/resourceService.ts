@@ -73,14 +73,19 @@ class ResourceService {
   }
 
   // Create resource
-  async createResource(data: ResourceCreateData): Promise<ApiResponse<{ id: string; created_at: string; updated_at: string }>> {
+  async createResource(
+    data: ResourceCreateData
+  ): Promise<ApiResponse<{ id: string; created_at: string; updated_at: string }>> {
     // API implementation: delegate mock resource creation to api/mock module.
     if (IS_MOCK_API) {
       return createMockResource(data);
     }
 
     // API implementation: call backend endpoint in non-mock mode.
-    return httpClient.post<{ id: string; created_at: string; updated_at: string }>(API_ENDPOINTS.RESOURCES.CREATE, data);
+    return httpClient.post<{ id: string; created_at: string; updated_at: string }>(
+      API_ENDPOINTS.RESOURCES.CREATE,
+      data
+    );
   }
 
   // Update resource
