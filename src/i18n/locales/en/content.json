@@ -89,7 +89,9 @@
     },
     "picker": {
       "title": "Choose images",
-      "confirm": "Confirm ({{count}})"
+      "confirm": "Confirm ({{count}})",
+      "upload": "Upload",
+      "uploadTitle": "Upload images"
     }
   }
 }

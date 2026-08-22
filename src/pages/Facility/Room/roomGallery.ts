@@ -1,4 +1,5 @@
 import type { FileItem } from "@/pages/Content/File/types";
+import { appendUploadedFiles } from "@/pages/Content/File/utils";
 
 export interface RoomGalleryFile {
   id: string;
@@ -59,6 +60,14 @@ export const applyPickerSelection = (
   const appended = uniquePicked.filter((item) => !keptIds.has(item.id));
   const items = [...kept, ...appended];
   return { items, overCap: items.length > max };
+};
+
+export const appendUploadedGalleryFiles = (
+  current: FileItem[],
+  uploaded: FileItem[],
+  max: number = ROOM_GALLERY_MAX_FILES
+): { items: FileItem[]; overCap: boolean } => {
+  return appendUploadedFiles(current, uploaded, max);
 };
 
 export const validateGallery = (items: FileItem[], max: number = ROOM_GALLERY_MAX_FILES): RoomGalleryError | null => {
