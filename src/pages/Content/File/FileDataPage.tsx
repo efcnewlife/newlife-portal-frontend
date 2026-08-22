@@ -16,7 +16,8 @@ import FileTableList from "./FileTableList";
 import FileUploadForm, { type FileUploadFormHandle } from "./FileUploadForm";
 import MediaCategoryCards from "./MediaCategoryCards";
 import StorageDetailsCard from "./StorageDetailsCard";
-import type { FileItem, FileSummaryResponse, MediaCategory, SortOrder } from "./types";
+import { groupFileAssociationPreview } from "./fileAssociationPreview";
+import type { FileDeleteAssociationGroup, FileItem, FileSummaryResponse, MediaCategory, SortOrder } from "./types";
 import {
   convertFileGridItemToFileItem,
   convertSortOrderToApiParams,
@@ -40,6 +41,9 @@ const FileDataPage = () => {
   const [totalEntries, setTotalEntries] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [loadingPreview, setLoadingPreview] = useState(false);
+  const [deleteIds, setDeleteIds] = useState<string[]>([]);
+  const [deleteGroups, setDeleteGroups] = useState<FileDeleteAssociationGroup[]>([]);
   const [allowMixedUpload, setAllowMixedUpload] = useState(false);
 
   const { isOpen: isUploadModalOpen, openModal: openUploadModal, closeModal: closeUploadModal } = useModal();
@@ -155,22 +159,57 @@ const FileDataPage = () => {
     });
   }, [files, isAllSelected]);
 
+  const fileNames = useMemo(() => {
+    const names: Record<string, string> = {};
+    files.forEach((file) => {
+      names[file.id] = file.name;
+    });
+    return names;
+  }, [files]);
+
+  const loadDeletePreview = useCallback(
+    async (ids: string[]) => {
+      if (ids.length === 0) {
+        return;
+      }
+      setDeleteIds(ids);
+      setDeleteGroups(groupFileAssociationPreview(ids, []));
+      setLoadingPreview(true);
+      openDeleteModal();
+      try {
+        const response = await fileService.previewAssociations({ ids });
+        if (!response.success) {
+          throw new Error(response.message || t("file.delete.previewFailed"));
+        }
+        setDeleteGroups(groupFileAssociationPreview(ids, response.data.items || []));
+      } catch (error) {
+        notifyApiError(error, {
+          title: t("file.delete.previewFailed"),
+          fallbackDescription: t("file.delete.previewFailed"),
+        });
+        closeDeleteModal();
+      } finally {
+        setLoadingPreview(false);
+      }
+    },
+    [closeDeleteModal, openDeleteModal, t]
+  );
+
   const handleBatchDelete = useCallback(() => {
-    if (selectedKeys.length === 0) {
-      return;
-    }
-    openDeleteModal();
-  }, [openDeleteModal, selectedKeys.length]);
+    void loadDeletePreview(selectedKeys);
+  }, [loadDeletePreview, selectedKeys]);
 
   const handleDeleteConfirm = useCallback(async () => {
-    if (selectedKeys.length === 0) {
+    if (deleteIds.length === 0 || loadingPreview) {
       return;
     }
     try {
       setDeleting(true);
-      const response = await fileService.bulkDelete({ ids: selectedKeys });
+      const response = await fileService.bulkDelete({ ids: deleteIds });
       if (response.success) {
         setSelectedKeys([]);
+        setDeleteIds([]);
+        setDeleteGroups([]);
         notifySuccess({ title: t("common:feedback.deleted") });
         closeDeleteModal();
         await refreshAll();
@@ -183,14 +222,14 @@ const FileDataPage = () => {
     } finally {
       setDeleting(false);
     }
-  }, [closeDeleteModal, refreshAll, selectedKeys, t]);
+  }, [closeDeleteModal, deleteIds, loadingPreview, refreshAll, t]);
 
   const handleDeleteOne = useCallback(
     (fileId: string) => {
       setSelectedKeys([fileId]);
-      openDeleteModal();
+      void loadDeletePreview([fileId]);
     },
-    [openDeleteModal]
+    [loadDeletePreview]
   );
 
   const handleCloseUploadModal = useCallback(async () => {
@@ -428,7 +467,10 @@ const FileDataPage = () => {
         className="mx-4 w-full max-w-[560px] p-6"
       >
         <FileDeleteForm
-          fileCount={selectedKeys.length}
+          fileCount={deleteIds.length}
+          fileNames={fileNames}
+          groups={deleteGroups}
+          loadingPreview={loadingPreview}
           onSubmit={handleDeleteConfirm}
           onCancel={closeDeleteModal}
           submitting={deleting}
