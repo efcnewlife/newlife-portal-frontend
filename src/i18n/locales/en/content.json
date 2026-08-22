@@ -80,12 +80,23 @@
     "delete": {
       "title": "Confirm Delete",
       "confirmMessage": "Delete {{count}} selected file(s)? This action cannot be undone.",
+      "associationWarning": "These files will be removed from every bound resource, including deleted rooms.",
+      "loadingAssociations": "Loading bound resources…",
+      "noAssociations": "No bound resources.",
+      "deletedResource": "(deleted)",
       "submit": "Delete",
       "submitting": "Deleting...",
-      "failed": "Failed to delete files"
+      "failed": "Failed to delete files",
+      "previewFailed": "Failed to load file associations"
     },
     "preview": {
       "title": "Image Preview"
+    },
+    "picker": {
+      "title": "Choose images",
+      "confirm": "Confirm ({{count}})",
+      "upload": "Upload",
+      "uploadTitle": "Upload images"
     }
   }
 }

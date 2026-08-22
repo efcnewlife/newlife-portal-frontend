@@ -166,6 +166,7 @@ const RoomDataPage = () => {
                 isActive: d.isActive,
                 description: d.description,
                 translations: d.translations,
+                files: d.files,
               });
               openModal();
             }
@@ -236,7 +237,7 @@ const RoomDataPage = () => {
         title={formMode === "create" ? t("room.modal.createTitle") : t("room.modal.editTitle")}
         isOpen={isOpen}
         onClose={closeModal}
-        className="max-w-2xl w-full mx-4 p-6"
+        className="max-w-3xl w-full mx-4 p-6"
         footer={
           <>
             <Button variant="outline" size="sm" onClick={closeModal} disabled={submitting}>

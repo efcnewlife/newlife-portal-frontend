@@ -80,12 +80,23 @@
     "delete": {
       "title": "确认删除",
       "confirmMessage": "确定要删除所选的 {{count}} 个文件吗？此操作无法撤销。",
+      "associationWarning": "这些文件会从所有已绑定资源移除，包含已删除的房间。",
+      "loadingAssociations": "正在加载绑定资源…",
+      "noAssociations": "没有绑定资源。",
+      "deletedResource": "（已删除）",
       "submit": "删除",
       "submitting": "删除中...",
-      "failed": "删除文件失败"
+      "failed": "删除文件失败",
+      "previewFailed": "无法加载文件关联"
     },
     "preview": {
       "title": "图片预览"
+    },
+    "picker": {
+      "title": "选择图片",
+      "confirm": "确认选择（{{count}}）",
+      "upload": "上传",
+      "uploadTitle": "上传图片"
     }
   }
 }

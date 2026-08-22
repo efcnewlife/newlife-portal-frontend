@@ -62,6 +62,12 @@ export interface RoomDetail extends RoomListItem {
   deleteReason?: string;
   description?: string;
   translations?: FacilityTranslationItem[];
+  files?: {
+    id: string;
+    originalName: string;
+    url?: string;
+    sizeBytes?: number;
+  }[];
 }
 
 export interface RoomWrite {
@@ -71,6 +77,7 @@ export interface RoomWrite {
   isActive?: boolean;
   sequence?: number;
   translations?: FacilityTranslationInput[];
+  fileIds?: string[];
 }
 
 export interface RoomCreate extends RoomWrite {

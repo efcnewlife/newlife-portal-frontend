@@ -42,7 +42,13 @@
       "capacityHint": "选填。未标明容量时可留空。",
       "description": "說明",
       "codeRequired": "請輸入代碼",
-      "nameRequired": "請輸入名稱"
+      "nameRequired": "請輸入名稱",
+      "gallery": "相册",
+      "galleryHint": "选填。最多 {{max}} 张不重复图片，可拖曳排序。",
+      "galleryPick": "选择图片",
+      "gallerySelected": "{{count}} / {{max}} 张图片",
+      "galleryMax": "场地相册最多只能有 {{max}} 张图片。",
+      "galleryDuplicate": "同一张图片在此相册中只能出现一次。"
     },
     "deleteForm": {
       "entityLabel": "場地"
