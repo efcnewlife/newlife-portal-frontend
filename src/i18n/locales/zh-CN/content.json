@@ -86,6 +86,10 @@
     },
     "preview": {
       "title": "图片预览"
+    },
+    "picker": {
+      "title": "选择图片",
+      "confirm": "确认选择（{{count}}）"
     }
   }
 }

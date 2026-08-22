@@ -86,6 +86,10 @@
     },
     "preview": {
       "title": "Image Preview"
+    },
+    "picker": {
+      "title": "Choose images",
+      "confirm": "Confirm ({{count}})"
     }
   }
 }

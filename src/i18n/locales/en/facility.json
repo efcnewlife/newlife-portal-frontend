@@ -42,7 +42,13 @@
       "capacityHint": "Optional. Leave blank if capacity is not specified.",
       "description": "Description",
       "codeRequired": "Code is required",
-      "nameRequired": "Name is required"
+      "nameRequired": "Name is required",
+      "gallery": "Gallery",
+      "galleryHint": "Optional. Up to {{max}} unique images. Drag to reorder.",
+      "galleryPick": "Choose images",
+      "gallerySelected": "{{count}} of {{max}} images",
+      "galleryMax": "A room gallery can include at most {{max}} images.",
+      "galleryDuplicate": "Each image can appear only once in this gallery."
     },
     "deleteForm": {
       "entityLabel": "room"

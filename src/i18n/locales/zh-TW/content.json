@@ -86,6 +86,10 @@
     },
     "preview": {
       "title": "圖片預覽"
+    },
+    "picker": {
+      "title": "選擇圖片",
+      "confirm": "確認選擇（{{count}}）"
     }
   }
 }
