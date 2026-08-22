@@ -2,6 +2,7 @@ import { API_ENDPOINTS, httpClient } from "@/api";
 import type {
   BulkDeleteRequest,
   BulkDeleteResponse,
+  FileAssociationPreviewResponse,
   FilePagesParams,
   FilePagesResponse,
   FileSummaryResponse,
@@ -40,6 +41,10 @@ export const fileService = {
         }
       },
     });
+  },
+
+  async previewAssociations(payload: BulkDeleteRequest) {
+    return httpClient.post<FileAssociationPreviewResponse>(API_ENDPOINTS.CONTENT.FILES.ASSOCIATION_PREVIEW, payload);
   },
 
   async bulkDelete(payload: BulkDeleteRequest) {

@@ -58,6 +58,23 @@ export interface BulkDeleteResponse {
   failedItems?: FileBase[] | null;
 }
 
+export interface FileAssociationPreviewItem {
+  fileId: string;
+  resourceKind: string;
+  resourceId: string;
+  displayName: string;
+  isDeleted: boolean;
+}
+
+export interface FileAssociationPreviewResponse {
+  items: FileAssociationPreviewItem[];
+}
+
+export interface FileDeleteAssociationGroup {
+  fileId: string;
+  bindings: FileAssociationPreviewItem[];
+}
+
 export type SortOrder = "name_asc" | "name_desc" | "date_asc" | "date_desc" | "size_asc" | "size_desc";
 
 export interface FilePagesParams extends Record<string, unknown> {

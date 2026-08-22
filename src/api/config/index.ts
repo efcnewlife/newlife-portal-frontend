@@ -115,6 +115,7 @@ export const API_ENDPOINTS = {
       SUMMARY: `${ADMIN_API_PREFIX}/content/file/summary`,
       UPLOAD: `${ADMIN_API_PREFIX}/content/file/upload`,
       BULK_DELETE: `${ADMIN_API_PREFIX}/content/file/bulk`,
+      ASSOCIATION_PREVIEW: `${ADMIN_API_PREFIX}/content/file/association-preview`,
     },
   },
 
