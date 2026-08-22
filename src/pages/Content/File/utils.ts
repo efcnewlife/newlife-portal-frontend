@@ -92,6 +92,30 @@ export const convertFileGridItemToFileItem = (item: FileGridItem): FileItem => {
   };
 };
 
+export const appendUploadedFiles = (
+  current: FileItem[],
+  uploaded: FileItem[],
+  max: number
+): { items: FileItem[]; overCap: boolean } => {
+  const currentIds = new Set(current.map((item) => item.id));
+  const seenUpload = new Set<string>();
+  const appended: FileItem[] = [];
+  let overCap = false;
+  for (const item of uploaded) {
+    if (seenUpload.has(item.id) || currentIds.has(item.id)) {
+      continue;
+    }
+    seenUpload.add(item.id);
+    if (current.length + appended.length >= max) {
+      overCap = true;
+      continue;
+    }
+    appended.push(item);
+    currentIds.add(item.id);
+  }
+  return { items: [...current, ...appended], overCap };
+};
+
 export const getCategorySharePercent = (sizeBytes: number, totalBytes: number): number => {
   if (totalBytes <= 0) return 0;
   return Math.round((sizeBytes / totalBytes) * 100);

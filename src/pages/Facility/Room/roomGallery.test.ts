@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { FileItem } from "@/pages/Content/File/types";
 import {
   ROOM_GALLERY_MAX_FILES,
+  appendUploadedGalleryFiles,
   applyPickerSelection,
   canAddGalleryPick,
   galleryFileIds,
@@ -37,6 +38,26 @@ describe("room gallery helpers", () => {
     const result = applyPickerSelection([item("b"), item("a")], [item("a"), item("c"), item("b"), item("a")]);
     expect(result.overCap).toBe(false);
     expect(result.items.map((file) => file.id)).toEqual(["b", "a", "c"]);
+  });
+
+  it("appends uploaded images that are not already in the gallery", () => {
+    const result = appendUploadedGalleryFiles([item("a")], [item("a"), item("b"), item("b")]);
+    expect(result.overCap).toBe(false);
+    expect(result.items.map((file) => file.id)).toEqual(["a", "b"]);
+  });
+
+  it("does not append uploaded images past the gallery cap", () => {
+    const current = Array.from({ length: ROOM_GALLERY_MAX_FILES }, (_, index) => item(`keep-${index}`));
+    const result = appendUploadedGalleryFiles(current, [item("extra")]);
+    expect(result.overCap).toBe(true);
+    expect(result.items).toHaveLength(ROOM_GALLERY_MAX_FILES);
+  });
+
+  it("fills remaining gallery slots then flags over-cap for the rest", () => {
+    const current = Array.from({ length: ROOM_GALLERY_MAX_FILES - 1 }, (_, index) => item(`keep-${index}`));
+    const result = appendUploadedGalleryFiles(current, [item("fits"), item("overflow")]);
+    expect(result.overCap).toBe(true);
+    expect(result.items.map((file) => file.id)).toEqual([...current.map((file) => file.id), "fits"]);
   });
 
   it("flags over-cap without dropping extras from the result set", () => {

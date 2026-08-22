@@ -9,9 +9,11 @@ import { notifyApiError } from "@/utils/operationFeedback";
 import { Button, Modal, Select } from "@efcnewlife/newlife-ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MdUpload } from "react-icons/md";
 import FileGrid from "./FileGrid";
+import FileUploadForm, { type FileUploadFormHandle } from "./FileUploadForm";
 import type { FileItem, SortOrder } from "./types";
-import { convertFileGridItemToFileItem, convertSortOrderToApiParams } from "./utils";
+import { appendUploadedFiles, convertFileGridItemToFileItem, convertSortOrderToApiParams } from "./utils";
 
 const PAGE_SIZE_OPTIONS = [25, 50, 75, 100];
 
@@ -40,12 +42,16 @@ const FileSelectionModal = ({
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<FileItem[]>([]);
   const [totalEntries, setTotalEntries] = useState(0);
+  const [uploading, setUploading] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
   const fileCacheRef = useRef<Map<string, FileItem>>(new Map());
+  const fileUploadFormRef = useRef<FileUploadFormHandle>(null);
 
   const sortParams = useMemo(() => convertSortOrderToApiParams(sortOrder), [sortOrder]);
 
   useEffect(() => {
     if (!isOpen) {
+      setIsUploadOpen(false);
       return;
     }
     const initialIds = initialSelectedItems.map((item) => item.id);
@@ -114,6 +120,76 @@ const FileSelectionModal = ({
     [maxSelected, onMaxReached]
   );
 
+  const selectedItemsFromKeys = useCallback((keys: string[]): FileItem[] => {
+    return keys.map((id) => fileCacheRef.current.get(id)).filter((item): item is FileItem => Boolean(item));
+  }, []);
+
+  const handleCloseUpload = useCallback(() => {
+    setIsUploadOpen(false);
+    fileUploadFormRef.current?.clearFiles();
+  }, []);
+
+  const handleFileUpload = useCallback(async () => {
+    if (!fileUploadFormRef.current?.validate()) {
+      return;
+    }
+    const uploadFiles = fileUploadFormRef.current.getFiles();
+    if (uploadFiles.length === 0) {
+      return;
+    }
+    try {
+      setUploading(true);
+      const uploadedItems: FileItem[] = [];
+      for (let index = 0; index < uploadFiles.length; index += 1) {
+        const file = uploadFiles[index];
+        fileUploadFormRef.current?.setUploadStatus(index, "uploading");
+        try {
+          const response = await fileService.uploadOne(file, "images", (progress) => {
+            fileUploadFormRef.current?.setUploadProgress(index, progress);
+          });
+          if (response.success && response.data?.id) {
+            const duplicate = response.data.duplicate === true;
+            const message = duplicate ? t("file.upload.duplicateExisting") : t("file.upload.success");
+            fileUploadFormRef.current?.setUploadStatus(index, "success", undefined, message);
+            uploadedItems.push({
+              id: response.data.id,
+              url: "",
+              name: file.name,
+              size: file.size,
+              contentType: file.type,
+            });
+          } else {
+            fileUploadFormRef.current?.setUploadStatus(index, "error", response.message || t("file.upload.error"));
+          }
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : t("file.upload.error");
+          fileUploadFormRef.current?.setUploadStatus(index, "error", message);
+        }
+      }
+      uploadedItems.forEach((item) => {
+        const cached = fileCacheRef.current.get(item.id);
+        if (!cached) {
+          fileCacheRef.current.set(item.id, item);
+        }
+      });
+      await fetchPages();
+      setSelectedKeys((prev) => {
+        const mergedUploads = uploadedItems.map((item) => fileCacheRef.current.get(item.id) ?? item);
+        const result = appendUploadedFiles(selectedItemsFromKeys(prev), mergedUploads, maxSelected);
+        if (result.overCap) {
+          onMaxReached?.();
+        }
+        result.items.forEach((item) => {
+          fileCacheRef.current.set(item.id, item);
+        });
+        return result.items.map((item) => item.id);
+      });
+      handleCloseUpload();
+    } finally {
+      setUploading(false);
+    }
+  }, [fetchPages, handleCloseUpload, maxSelected, onMaxReached, selectedItemsFromKeys, t]);
+
   const sortOptions = useMemo(
     () => [
       { value: "date_desc", label: t("file.sort.dateDesc") },
@@ -128,6 +204,16 @@ const FileSelectionModal = ({
 
   const toolbarButtons: PageButtonType[] = useMemo(
     () => [
+      {
+        key: "upload",
+        text: t("file.picker.upload"),
+        icon: <MdUpload className="size-4" />,
+        align: "left",
+        variant: "primary",
+        size: "md",
+        onClick: () => setIsUploadOpen(true),
+        permission: Verb.Create,
+      },
       CommonPageButton.REFRESH(() => {
         void fetchPages();
       }),
@@ -164,26 +250,30 @@ const FileSelectionModal = ({
   );
 
   const handleConfirm = useCallback(() => {
-    const selectedFiles = selectedKeys
-      .map((id) => fileCacheRef.current.get(id))
-      .filter((item): item is FileItem => Boolean(item));
+    const selectedFiles = selectedItemsFromKeys(selectedKeys);
     onConfirm(selectedFiles);
     onClose();
-  }, [onClose, onConfirm, selectedKeys]);
+  }, [onClose, onConfirm, selectedItemsFromKeys, selectedKeys]);
 
   return (
     <Modal
-      title={t("file.picker.title")}
+      title={isUploadOpen ? t("file.picker.uploadTitle") : t("file.picker.title")}
       isOpen={isOpen}
       onClose={onClose}
       className="mx-4 flex max-h-[90vh] w-full max-w-[90vw] flex-col bg-white p-6 dark:bg-gray-900"
     >
       <div className="flex min-h-0 max-h-[calc(90vh-120px)] flex-1 flex-col">
-        <div className="shrink-0">
-          <DataTableToolbar buttons={toolbarButtons} resource={Resource.ContentFile} />
-        </div>
+        {!isUploadOpen && (
+          <div className="shrink-0">
+            <DataTableToolbar buttons={toolbarButtons} resource={Resource.ContentFile} />
+          </div>
+        )}
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          {loading ? (
+          {isUploadOpen ? (
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <FileUploadForm ref={fileUploadFormRef} mediaCategory="images" />
+            </div>
+          ) : loading ? (
             <div className="flex h-[400px] items-center justify-center">
               <LoadingSpinner />
             </div>
@@ -197,25 +287,38 @@ const FileSelectionModal = ({
                   currentPage={currentPage}
                   totalPages={totalPages}
                   rowsPerPage={itemsPerPage}
-                  totalEntries={totalEntries}
-                  pageSizeOptions={PAGE_SIZE_OPTIONS}
                   onPageChange={setCurrentPage}
                   onRowsPerPageChange={(size) => {
                     setItemsPerPage(size);
                     setCurrentPage(1);
                   }}
+                  totalEntries={totalEntries}
+                  pageSizeOptions={PAGE_SIZE_OPTIONS}
                 />
               </div>
             </>
           )}
         </div>
         <div className="mt-4 flex shrink-0 justify-end gap-3 border-t border-gray-200 pt-4 dark:border-gray-700">
-          <Button variant="outline" onClick={onClose}>
-            {t("common:cancel")}
-          </Button>
-          <Button variant="primary" onClick={handleConfirm}>
-            {t("file.picker.confirm", { count: selectedKeys.length })}
-          </Button>
+          {isUploadOpen ? (
+            <>
+              <Button variant="outline" onClick={handleCloseUpload} disabled={uploading}>
+                {t("file.upload.close")}
+              </Button>
+              <Button variant="primary" onClick={() => void handleFileUpload()} disabled={uploading}>
+                {uploading ? t("file.upload.submitting") : t("file.upload.submit")}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" onClick={onClose}>
+                {t("common:cancel")}
+              </Button>
+              <Button variant="primary" onClick={handleConfirm}>
+                {t("file.picker.confirm", { count: selectedKeys.length })}
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </Modal>

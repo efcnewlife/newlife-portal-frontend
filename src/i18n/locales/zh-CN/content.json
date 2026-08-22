@@ -94,7 +94,9 @@
     },
     "picker": {
       "title": "选择图片",
-      "confirm": "确认选择（{{count}}）"
+      "confirm": "确认选择（{{count}}）",
+      "upload": "上传",
+      "uploadTitle": "上传图片"
     }
   }
 }

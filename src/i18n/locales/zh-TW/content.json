@@ -94,7 +94,9 @@
     },
     "picker": {
       "title": "選擇圖片",
-      "confirm": "確認選擇（{{count}}）"
+      "confirm": "確認選擇（{{count}}）",
+      "upload": "上傳",
+      "uploadTitle": "上傳圖片"
     }
   }
 }
