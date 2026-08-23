@@ -1,8 +1,9 @@
 import type { BookingListItem } from "@/api/services/facilityService";
+import CalendarDateBadge from "@/components/calendar/CalendarDateBadge";
 import NavigationButtons from "@/components/calendar/NavigationButtons";
 import { formatDate, formatWeekday } from "@/components/calendar/utils";
 import { cn } from "@/utils";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
   GRID_CELL_COUNT,
@@ -29,6 +30,7 @@ interface BookingGridProps {
   onVisibleRangeChange: (range: { start: Date; end: Date }) => void;
   onBookingClick: (booking: BookingListItem) => void;
   onAddCell: (facilityId: string, startLocal: string, endLocal: string) => void;
+  toolbarEnd?: ReactNode;
 }
 
 const pad = (n: number): string => String(n).padStart(2, "0");
@@ -56,8 +58,9 @@ const BookingGrid = ({
   onVisibleRangeChange,
   onBookingClick,
   onAddCell,
+  toolbarEnd,
 }: BookingGridProps) => {
-  const { t } = useTranslation("facility");
+  const { t, i18n } = useTranslation("facility");
   const roomsScrollRef = useRef<HTMLDivElement>(null);
   const timeScrollRef = useRef<HTMLDivElement>(null);
   const syncingScroll = useRef(false);
@@ -117,26 +120,32 @@ const BookingGrid = ({
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-gray-300 dark:border-white/10">
-      <div className="flex flex-none items-center justify-between border-b border-gray-300 bg-gray-200 px-4 py-3 dark:border-white/10 dark:bg-gray-800/50 sm:px-6">
-        <div>
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-            <time
-              dateTime={`${anchorDate.getFullYear()}-${pad(anchorDate.getMonth() + 1)}-${pad(anchorDate.getDate())}`}
-            >
-              {formatDate(anchorDate, "full")}
-            </time>
-          </h2>
-          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-            {formatWeekday(anchorDate, "full")} · {t("booking.view.grid")}
-          </p>
+      <div className="flex flex-none items-center justify-between border-b border-gray-300 bg-gray-200 px-6 py-4 dark:border-white/10 dark:bg-gray-800/50">
+        <div className="flex items-center gap-3">
+          <CalendarDateBadge date={anchorDate} locale={i18n.language} />
+          <div>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+              <time
+                dateTime={`${anchorDate.getFullYear()}-${pad(anchorDate.getMonth() + 1)}-${pad(anchorDate.getDate())}`}
+              >
+                {formatDate(anchorDate, "full")}
+              </time>
+            </h2>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              {formatWeekday(anchorDate, "full")} · {t("booking.view.grid")}
+            </p>
+          </div>
         </div>
-        <NavigationButtons
-          currentDate={anchorDate}
-          currentView="day"
-          onPrevious={() => shiftDay(-1)}
-          onNext={() => shiftDay(1)}
-          onDateChange={onAnchorDateChange}
-        />
+        <div className="flex items-center gap-4">
+          <NavigationButtons
+            currentDate={anchorDate}
+            currentView="day"
+            onPrevious={() => shiftDay(-1)}
+            onNext={() => shiftDay(1)}
+            onDateChange={onAnchorDateChange}
+          />
+          {toolbarEnd}
+        </div>
       </div>
 
       {rooms.length === 0 ? (

@@ -19,7 +19,7 @@ import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import { Button, ButtonGroup, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MdAdd, MdCalendarMonth, MdCancel, MdGridOn, MdViewList } from "react-icons/md";
+import { MdAdd, MdCalendarMonth, MdCancel, MdGridOn, MdRefresh, MdViewList } from "react-icons/md";
 import { useSearchParams } from "react-router";
 import BookingCalendar from "./BookingCalendar";
 import BookingCancelForm from "./BookingCancelForm";
@@ -334,6 +334,19 @@ const BookingDataPage = () => {
 
   const showScheduleCreate = (viewMode === "calendar" || viewMode === "grid") && canCreate;
 
+  const scheduleRefreshButton = (
+    <Button
+      variant="outline"
+      size="sm"
+      className="h-9 w-9 justify-center !px-0"
+      onClick={() => void refreshCurrentView()}
+      disabled={loading}
+    >
+      <MdRefresh className="size-5" aria-hidden />
+      <span className="sr-only">{t("common:refresh")}</span>
+    </Button>
+  );
+
   return (
     <div className="flex h-full min-h-0 min-w-0 w-full flex-col gap-3 overflow-hidden">
       <PageToolbar
@@ -401,6 +414,7 @@ const BookingDataPage = () => {
               });
             }}
             onDensityOverflow={(date) => setViewMode("grid", date)}
+            toolbarEnd={scheduleRefreshButton}
           />
         </div>
       )}
@@ -422,6 +436,7 @@ const BookingDataPage = () => {
                 endAt: localDatetimeInputToDayjs(endLocal),
               });
             }}
+            toolbarEnd={scheduleRefreshButton}
           />
         </div>
       )}

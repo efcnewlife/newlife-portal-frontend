@@ -1,6 +1,7 @@
 import { Badge, Button, ButtonGroup } from "@efcnewlife/newlife-ui";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { cn } from "@/utils";
+import CalendarDateBadge from "./CalendarDateBadge";
 import NavigationButtons from "./NavigationButtons";
 import { CalendarView, DateRange } from "./types";
 import { formatDate, formatWeekday, getEndOfWeek, getStartOfWeek } from "./utils";
@@ -15,6 +16,7 @@ interface CalendarToolBarProps {
   onDateChange: (date: Date) => void;
   onViewChange: (view: CalendarView) => void;
   onAddEvent?: () => void;
+  toolbarEnd?: ReactNode;
   showNavigationButtons?: { nav: boolean; dateControl: boolean };
 }
 
@@ -28,6 +30,7 @@ const CalendarToolBar = ({
   onDateChange,
   onViewChange,
   onAddEvent,
+  toolbarEnd,
   showNavigationButtons = { nav: true, dateControl: true },
 }: CalendarToolBarProps) => {
   const { t, i18n } = useTranslation("calendar");
@@ -186,21 +189,11 @@ const CalendarToolBar = ({
   };
 
   const calendarIconDate = getCalendarIconDate();
-  const monthAbbr = calendarIconDate.toLocaleDateString(locale, { month: "short" }).toUpperCase();
-  const day = calendarIconDate.getDate();
 
   return (
     <div className="flex flex-none items-center justify-between px-6 py-4 rounded-t-2xl border border-gray-300 dark:border-white/10 bg-gray-200 dark:bg-gray-800/50">
-      <div className="flex items-start gap-3">
-        {/* Calendar Icon */}
-        <div className="flex flex-col rounded-lg bg-white shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-white/10 overflow-hidden w-12">
-          <div className="flex items-center justify-center bg-gray-50 px-2 py-1 border-b border-gray-200 dark:border-white/10 text-[9px] font-semibold uppercase tracking-wide text-gray-700 dark:bg-gray-700 dark:text-gray-300">
-            {monthAbbr}
-          </div>
-          <div className="flex items-center justify-center px-4 py-0.5 text-xl font-bold text-brand-500 dark:text-brand-400">
-            {day}
-          </div>
-        </div>
+      <div className="flex items-center gap-3">
+        <CalendarDateBadge date={calendarIconDate} locale={locale} />
         <div>
           <h1 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
             <time dateTime={currentDate.toISOString().split("T")[0]}>{getTitle()}</time>
@@ -211,7 +204,15 @@ const CalendarToolBar = ({
           {getSubtitle() && <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{getSubtitle()}</p>}
         </div>
       </div>
-      <div className="flex items-center">
+      <div className="flex items-center gap-4">
+        {availableViews.length > 1 && (
+          <ButtonGroup
+            variant="primary"
+            buttons={getViewButtons()}
+            className="!pb-0 [&>div>div]:!shadow-none"
+            minWidth="auto"
+          />
+        )}
         {(showNavigationButtons.nav || showNavigationButtons.dateControl) && (
           <NavigationButtons
             currentDate={currentDate}
@@ -224,34 +225,18 @@ const CalendarToolBar = ({
             showDateControl={showNavigationButtons.dateControl}
           />
         )}
-        <div
-          className={cn(
-            "flex items-center",
-            (showNavigationButtons.nav || showNavigationButtons.dateControl) && "ml-4"
-          )}
-        >
-          {availableViews.length > 1 && (
-            <div className="mr-4">
-              <ButtonGroup
-                variant="primary"
-                buttons={getViewButtons()}
-                className="!pb-0 [&>div>div]:!shadow-none"
-                minWidth="auto"
-              />
-            </div>
-          )}
-          {onAddEvent && <div className="mr-6 h-6 w-px bg-gray-300 dark:bg-white/10" />}
-          {onAddEvent && (
-            <Button
-              onClick={onAddEvent}
-              variant="primary"
-              size="sm"
-              className="h-9 bg-brand-500 hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 dark:bg-brand-600 dark:hover:bg-brand-700 dark:focus-visible:outline-brand-700"
-            >
-              {t("addBooking")}
-            </Button>
-          )}
-        </div>
+        {toolbarEnd}
+        {onAddEvent && <div className="h-6 w-px bg-gray-300 dark:bg-white/10" />}
+        {onAddEvent && (
+          <Button
+            onClick={onAddEvent}
+            variant="primary"
+            size="sm"
+            className="h-9 bg-brand-500 hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 dark:bg-brand-600 dark:hover:bg-brand-700 dark:focus-visible:outline-brand-700"
+          >
+            {t("addBooking")}
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -52,6 +52,8 @@ export interface CalendarProps {
   onEventContextMenu?: (event: CalendarEvent, mouseEvent: React.MouseEvent) => void;
   onAddEvent?: (date?: Date, startTime?: string, endTime?: string) => void;
   onDensityOverflow?: (date: Date) => void;
+  /** Extra controls rendered after the Day/Week/Month switcher. */
+  toolbarEnd?: React.ReactNode;
   showNavigationButtons?:
     | boolean
     | {

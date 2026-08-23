@@ -26,6 +26,7 @@ const Calendar = ({
   onEventContextMenu,
   onAddEvent,
   onDensityOverflow,
+  toolbarEnd,
   showNavigationButtons = true,
 }: CalendarProps) => {
   const [selectedDate, setSelectedDate] = useState<Date>(currentDate);
@@ -161,7 +162,7 @@ const Calendar = ({
         onNext={handleNext}
         onDateChange={handleDateChange}
         onViewChange={handleViewChange}
-        onAddEvent={onAddEvent ? () => onAddEvent() : undefined}
+        toolbarEnd={toolbarEnd}
         showNavigationButtons={getShowNavigationButtons()}
       />
       {renderView()}

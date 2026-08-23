@@ -1,6 +1,6 @@
 import type { BookingListItem } from "@/api/services/facilityService";
 import { Calendar, getVisibleMonthWindow, type CalendarEvent, type CalendarView } from "@/components/calendar";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 interface BookingCalendarProps {
@@ -14,6 +14,7 @@ interface BookingCalendarProps {
   onCancelClick: (booking: BookingListItem) => void;
   onAddSlot: (startLocal: string, endLocal: string) => void;
   onDensityOverflow: (date: Date) => void;
+  toolbarEnd?: ReactNode;
 }
 
 const toLocalDatetimeValue = (date: Date): string => {
@@ -57,6 +58,7 @@ const BookingCalendar = ({
   onCancelClick,
   onAddSlot,
   onDensityOverflow,
+  toolbarEnd,
 }: BookingCalendarProps) => {
   const { t } = useTranslation("facility");
   const [contextMenu, setContextMenu] = useState<{
@@ -135,6 +137,7 @@ const BookingCalendar = ({
           onAddSlot(toLocalDatetimeValue(start), toLocalDatetimeValue(end));
         }}
         onDensityOverflow={onDensityOverflow}
+        toolbarEnd={toolbarEnd}
       />
 
       {contextMenu && (
