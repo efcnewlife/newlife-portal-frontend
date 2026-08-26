@@ -173,6 +173,7 @@ Unknown keys render `Blank`. Keep backend resource `key` strings identical to th
 | `ORG_POSITION`                  | `PositionManagement`         |
 | `MEMBER_PERSON`                 | `PersonManagement`           |
 | `CONTENT_FILE`                  | `FileManagement`             |
+| `CONTENT_LEGAL_DOCUMENT`        | `LegalDocumentManagement`    |
 
 ---
 

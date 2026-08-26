@@ -121,3 +121,25 @@ _Avoid_: row highlight as selection, hover action / hover callback as the defaul
 **Selected row**:
 A DataTable data row that is currently in the selection set (checkbox multi-select or programmed selection keys). Selection is persistent until cleared; table row hover may stack on top of it.
 _Avoid_: treating hover as selection, confusing sticky header chrome with selection
+
+### Legal content
+
+**Product**:
+A built-in product line code used on Legal Documents under Content. Create picks Product (and Kind) only from that catalog. This slice includes `facility-booking` and `portal`.
+_Avoid_: App, Operator-typed free-text Product codes
+
+**Legal Document**:
+The Portal-editable Markdown (per locale) for one Product and one Legal Document Kind, managed from one Legal Documents list under Content (for example `/content/legal-documents`). The list follows the usual DataPage soft-delete / recycle / restore pattern and may filter by Product or Kind. Save replaces the current wording. Body is Markdown only; no HTML editor and no image embed. Soft-delete is allowed under RBAC; delete confirmation must warn that public readers will not get that Product's Kind until restore. Create is only for a catalog Product × Kind with no row at all; if the pair sits in the recycle bin, create is rejected and the Operator restores instead. This slice does not add Portal Login or public legal pages in the admin SPA. Facility Booking is the Product that exposes public legal pages in this slice.
+_Avoid_: Content File, System Setting JSON, version history, acceptance tracking, WYSIWYG HTML, blocking delete in code because the row is built-in, creating while a soft-deleted twin exists
+
+**Legal Document Kind**:
+Terms of Service or Privacy Policy. Together with Product it identifies the row Operators edit. Each seeded Product ships both kinds. Member/public UI titles come from host i18n by Kind, not from an editable title on the row.
+_Avoid_: free-text type, one form that mixes both kinds into a single body, ToS-only admin UI, Operator-edited title as the Kind label
+
+**Terms of Service**:
+The Legal Document Kind for product terms of use.
+_Avoid_: using this name for Privacy Policy
+
+**Privacy Policy**:
+The Legal Document Kind for personal-information practices of that Product.
+_Avoid_: a subsection of Terms of Service

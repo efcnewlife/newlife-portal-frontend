@@ -98,5 +98,41 @@
       "upload": "Upload",
       "uploadTitle": "Upload images"
     }
+  },
+  "legalDocument": {
+    "page": {
+      "title": "Legal Documents",
+      "description": "Edit localized Markdown for Product Terms of Service and Privacy Policy"
+    },
+    "table": {
+      "product": "Product",
+      "kind": "Kind",
+      "updatedAt": "Updated"
+    },
+    "product": {
+      "facility-booking": "Facility Booking",
+      "portal": "Portal"
+    },
+    "kind": {
+      "terms_of_service": "Terms of Service",
+      "privacy_policy": "Privacy Policy"
+    },
+    "search": {
+      "popoverTitle": "Filter Legal Documents",
+      "productLabel": "Product",
+      "kindLabel": "Kind",
+      "allProducts": "All products",
+      "allKinds": "All kinds",
+      "chipsTitle": "Active filters"
+    },
+    "modal": {
+      "editTitle": "Edit Legal Document"
+    },
+    "form": {
+      "product": "Product",
+      "kind": "Kind",
+      "body": "Markdown body",
+      "bodyHint": "Markdown only. HTML and image embeds are not supported."
+    }
   }
 }
