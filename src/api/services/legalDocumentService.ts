@@ -67,7 +67,7 @@ export const legalDocumentService = {
   },
 
   async delete(id: string, payload: { reason?: string; permanent?: boolean }) {
-    return httpClient.delete<void>(API_ENDPOINTS.CONTENT.LEGAL_DOCUMENTS.DELETE(id), { data: payload });
+    return httpClient.delete<void>(API_ENDPOINTS.CONTENT.LEGAL_DOCUMENTS.DELETE(id), payload);
   },
 
   async restore(ids: string[]) {
