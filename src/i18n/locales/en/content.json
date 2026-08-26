@@ -126,13 +126,28 @@
       "chipsTitle": "Active filters"
     },
     "modal": {
+      "createTitle": "Create Legal Document",
       "editTitle": "Edit Legal Document"
     },
     "form": {
       "product": "Product",
       "kind": "Kind",
+      "productPlaceholder": "Select a product",
+      "kindPlaceholder": "Select a kind",
+      "productRequired": "Product is required",
+      "kindRequired": "Kind is required",
+      "createHint": "Choose a built-in Product and Kind. Markdown is edited after create.",
       "body": "Markdown body",
       "bodyHint": "Markdown only. HTML and image embeds are not supported."
+    },
+    "deleteForm": {
+      "entityLabel": "Legal Document",
+      "publicReadWarning": "Public readers will not receive this Product's Kind until you restore the document from recycle."
+    },
+    "errors": {
+      "exists": "A Legal Document for this Product and Kind already exists",
+      "inRecycleBin": "This Product and Kind exist in recycle; restore them instead of creating again",
+      "notFound": "Legal Document was not found"
     }
   }
 }

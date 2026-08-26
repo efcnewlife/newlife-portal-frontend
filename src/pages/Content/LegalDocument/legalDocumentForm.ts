@@ -1,5 +1,9 @@
 import type { LocaleItem } from "@/api/services/localeService";
-import type { LegalDocumentTranslationItem, LegalDocumentUpdatePayload } from "@/api/services/legalDocumentService";
+import type {
+  LegalDocumentCreatePayload,
+  LegalDocumentTranslationItem,
+  LegalDocumentUpdatePayload,
+} from "@/api/services/legalDocumentService";
 
 export const LEGAL_DOCUMENT_PRODUCTS = ["facility-booking", "portal"] as const;
 export const LEGAL_DOCUMENT_KINDS = ["terms_of_service", "privacy_policy"] as const;
@@ -7,19 +11,34 @@ export const LEGAL_DOCUMENT_KINDS = ["terms_of_service", "privacy_policy"] as co
 export type LegalDocumentProduct = (typeof LEGAL_DOCUMENT_PRODUCTS)[number];
 export type LegalDocumentKind = (typeof LEGAL_DOCUMENT_KINDS)[number];
 
+export interface LegalDocumentCatalogPair {
+  product: LegalDocumentProduct;
+  kind: LegalDocumentKind;
+}
+
 export interface LegalDocumentTranslationFields {
   body: string;
 }
 
 export type LegalDocumentTranslationMap = Record<string, LegalDocumentTranslationFields>;
 
-export type { LegalDocumentTranslationItem, LegalDocumentUpdatePayload };
+export type { LegalDocumentCreatePayload, LegalDocumentTranslationItem, LegalDocumentUpdatePayload };
 
 export const isLegalDocumentProduct = (value: string): value is LegalDocumentProduct =>
   (LEGAL_DOCUMENT_PRODUCTS as readonly string[]).includes(value);
 
 export const isLegalDocumentKind = (value: string): value is LegalDocumentKind =>
   (LEGAL_DOCUMENT_KINDS as readonly string[]).includes(value);
+
+export const listLegalDocumentCatalogPairs = (): LegalDocumentCatalogPair[] =>
+  LEGAL_DOCUMENT_PRODUCTS.flatMap((product) => LEGAL_DOCUMENT_KINDS.map((kind) => ({ product, kind })));
+
+export const buildLegalDocumentCreatePayload = (product: string, kind: string): LegalDocumentCreatePayload | null => {
+  if (!isLegalDocumentProduct(product) || !isLegalDocumentKind(kind)) {
+    return null;
+  }
+  return { product, kind };
+};
 
 export const createEmptyLegalDocumentTranslationMap = (locales: LocaleItem[]): LegalDocumentTranslationMap =>
   locales.reduce<LegalDocumentTranslationMap>((acc, locale) => {

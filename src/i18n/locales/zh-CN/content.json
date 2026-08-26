@@ -126,13 +126,28 @@
       "chipsTitle": "当前筛选"
     },
     "modal": {
+      "createTitle": "新增法律文件",
       "editTitle": "编辑法律文件"
     },
     "form": {
       "product": "产品",
       "kind": "类型",
+      "productPlaceholder": "选择产品",
+      "kindPlaceholder": "选择类型",
+      "productRequired": "请选择产品",
+      "kindRequired": "请选择类型",
+      "createHint": "仅能从内置产品与类型创建；Markdown 请在创建后编辑。",
       "body": "Markdown 内容",
       "bodyHint": "仅支持 Markdown，不支持 HTML 与图片嵌入。"
+    },
+    "deleteForm": {
+      "entityLabel": "法律文件",
+      "publicReadWarning": "公开读者在还原前将无法取得此产品的该类文件，请确认后再软删除。"
+    },
+    "errors": {
+      "exists": "此产品与类型的法律文件已存在",
+      "inRecycleBin": "此产品与类型已在回收站，请还原，勿重新创建",
+      "notFound": "找不到法律文件"
     }
   }
 }
