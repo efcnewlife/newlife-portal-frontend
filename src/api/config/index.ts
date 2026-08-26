@@ -119,8 +119,11 @@ export const API_ENDPOINTS = {
     },
     LEGAL_DOCUMENTS: {
       PAGES: `${ADMIN_API_PREFIX}/content/legal-document/pages`,
+      CREATE: `${ADMIN_API_PREFIX}/content/legal-document`,
       DETAIL: (id: string) => `${ADMIN_API_PREFIX}/content/legal-document/${id}`,
       UPDATE: (id: string) => `${ADMIN_API_PREFIX}/content/legal-document/${id}`,
+      DELETE: (id: string) => `${ADMIN_API_PREFIX}/content/legal-document/${id}`,
+      RESTORE: `${ADMIN_API_PREFIX}/content/legal-document/restore`,
     },
   },
 

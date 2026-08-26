@@ -5,6 +5,11 @@ export interface LegalDocumentTranslationItem {
   body: string;
 }
 
+export interface LegalDocumentCreatePayload {
+  product: string;
+  kind: string;
+}
+
 export interface LegalDocumentUpdatePayload {
   translations: LegalDocumentTranslationItem[];
 }
@@ -29,6 +34,7 @@ export interface LegalDocumentPagesParams {
   page_size?: number;
   order_by?: string;
   descending?: boolean;
+  deleted?: boolean;
   product?: string;
   kind?: string;
 }
@@ -52,8 +58,20 @@ export const legalDocumentService = {
     return httpClient.get<LegalDocumentDetail>(API_ENDPOINTS.CONTENT.LEGAL_DOCUMENTS.DETAIL(id));
   },
 
+  async create(payload: LegalDocumentCreatePayload) {
+    return httpClient.post<{ id: string }>(API_ENDPOINTS.CONTENT.LEGAL_DOCUMENTS.CREATE, payload);
+  },
+
   async update(id: string, payload: LegalDocumentUpdatePayload) {
     return httpClient.put<LegalDocumentDetail>(API_ENDPOINTS.CONTENT.LEGAL_DOCUMENTS.UPDATE(id), payload);
+  },
+
+  async delete(id: string, payload: { reason?: string; permanent?: boolean }) {
+    return httpClient.delete<void>(API_ENDPOINTS.CONTENT.LEGAL_DOCUMENTS.DELETE(id), payload);
+  },
+
+  async restore(ids: string[]) {
+    return httpClient.put<void>(API_ENDPOINTS.CONTENT.LEGAL_DOCUMENTS.RESTORE, { ids });
   },
 };
 

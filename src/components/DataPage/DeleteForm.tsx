@@ -8,6 +8,8 @@ interface DeleteFormProps {
   submitting?: boolean;
   entityName?: string;
   isPermanent?: boolean;
+  /** Soft-delete warning body; defaults to common soft-delete warning with entityName. */
+  softWarningBody?: string;
 }
 
 const DeleteForm: React.FC<DeleteFormProps> = ({
@@ -16,6 +18,7 @@ const DeleteForm: React.FC<DeleteFormProps> = ({
   submitting,
   entityName = "material",
   isPermanent = false,
+  softWarningBody,
 }) => {
   const { t } = useTranslation();
   const [reason, setReason] = useState("");
@@ -60,7 +63,7 @@ const DeleteForm: React.FC<DeleteFormProps> = ({
               {isPermanent ? (
                 <p>{t("common:forms.delete.warningBodyPermanent", { entityName })}</p>
               ) : (
-                <p>{t("common:forms.delete.warningBodySoft", { entityName })}</p>
+                <p>{softWarningBody ?? t("common:forms.delete.warningBodySoft", { entityName })}</p>
               )}
             </div>
           </div>
