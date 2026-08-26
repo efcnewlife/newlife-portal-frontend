@@ -43,6 +43,7 @@ export enum Resource {
 
   // [content]
   ContentFile = "content:file",
+  ContentLegalDocument = "content:legal_document",
   ContentInstructor = "content:instructor",
   ContentLocation = "content:location",
   ContentTestimony = "content:testimony",

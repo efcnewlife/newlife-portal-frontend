@@ -117,6 +117,11 @@ export const API_ENDPOINTS = {
       BULK_DELETE: `${ADMIN_API_PREFIX}/content/file/bulk`,
       ASSOCIATION_PREVIEW: `${ADMIN_API_PREFIX}/content/file/association-preview`,
     },
+    LEGAL_DOCUMENTS: {
+      PAGES: `${ADMIN_API_PREFIX}/content/legal-document/pages`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/content/legal-document/${id}`,
+      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/content/legal-document/${id}`,
+    },
   },
 
   // Facility booking (admin)

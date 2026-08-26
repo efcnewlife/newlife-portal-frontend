@@ -11,6 +11,7 @@ import MinistryMemberManagement from "@/pages/Ministry/MinistryMember/MinistryMe
 import MinistryApprovalManagement from "@/pages/Ministry/Approval/MinistryApprovalManagement";
 import PersonManagement from "@/pages/Member/Person/PersonManagement";
 import FileManagement from "@/pages/Content/File/FileManagement";
+import LegalDocumentManagement from "@/pages/Content/LegalDocument/LegalDocumentManagement";
 import PositionManagement from "@/pages/Org/Position/PositionManagement";
 import PermissionManagement from "@/pages/System/Permission/PermissionManagement";
 import ResourceManagement from "@/pages/System/Resource/ResourceManagement";
@@ -48,6 +49,7 @@ const componentRegistry: Record<string, React.ComponentType> = {
   MEMBER_PERSON: PersonManagement,
   // Content
   CONTENT_FILE: FileManagement,
+  CONTENT_LEGAL_DOCUMENT: LegalDocumentManagement,
 };
 
 function normalizeKey(key: string): string {

@@ -28,6 +28,8 @@ export * from "./services/orgService";
 export { default as orgService } from "./services/orgService";
 export * from "./services/fileService";
 export { default as fileService } from "./services/fileService";
+export * from "./services/legalDocumentService";
+export { default as legalDocumentService } from "./services/legalDocumentService";
 
 // Hooks
 export * from "./hooks/useApi";

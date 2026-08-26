@@ -98,5 +98,41 @@
       "upload": "上传",
       "uploadTitle": "上传图片"
     }
+  },
+  "legalDocument": {
+    "page": {
+      "title": "法律文件",
+      "description": "编辑各产品服务条款与隐私政策的多语言 Markdown"
+    },
+    "table": {
+      "product": "产品",
+      "kind": "类型",
+      "updatedAt": "更新时间"
+    },
+    "product": {
+      "facility-booking": "场地预约",
+      "portal": "Portal"
+    },
+    "kind": {
+      "terms_of_service": "服务条款",
+      "privacy_policy": "隐私政策"
+    },
+    "search": {
+      "popoverTitle": "筛选法律文件",
+      "productLabel": "产品",
+      "kindLabel": "类型",
+      "allProducts": "全部产品",
+      "allKinds": "全部类型",
+      "chipsTitle": "当前筛选"
+    },
+    "modal": {
+      "editTitle": "编辑法律文件"
+    },
+    "form": {
+      "product": "产品",
+      "kind": "类型",
+      "body": "Markdown 内容",
+      "bodyHint": "仅支持 Markdown，不支持 HTML 与图片嵌入。"
+    }
   }
 }
