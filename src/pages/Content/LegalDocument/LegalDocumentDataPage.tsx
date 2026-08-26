@@ -6,7 +6,6 @@ import {
 import type { DataTableColumn, MenuButtonType, PageButtonType, PopoverType } from "@/components/DataPage";
 import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPage";
 import { getRecycleButtonClassName } from "@/components/DataPage/PageButtonTypes";
-import { Button, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
 import { PopoverPosition, Resource } from "@/const/enums";
 import { useModal } from "@/hooks/useModal";
 import LegalDocumentCreateForm, {
@@ -24,6 +23,7 @@ import LegalDocumentSearchPopover, {
 import type { ApiError } from "@/types/api";
 import { DateUtil } from "@/utils/dateUtil";
 import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
+import { Button, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 

@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import type { ApiError } from "@/types/api";
+import { describe, expect, it } from "vitest";
 import { resolveLegalDocumentSaveErrorMessage } from "./legalDocumentSaveError";
 
 const t = (key: string): string => key;

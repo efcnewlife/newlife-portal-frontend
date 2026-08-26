@@ -1,9 +1,9 @@
-import type { LocaleItem } from "@/api/services/localeService";
 import type {
   LegalDocumentCreatePayload,
   LegalDocumentTranslationItem,
   LegalDocumentUpdatePayload,
 } from "@/api/services/legalDocumentService";
+import type { LocaleItem } from "@/api/services/localeService";
 
 export const LEGAL_DOCUMENT_PRODUCTS = ["facility-booking", "portal"] as const;
 export const LEGAL_DOCUMENT_KINDS = ["terms_of_service", "privacy_policy"] as const;
