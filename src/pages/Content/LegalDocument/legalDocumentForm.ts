@@ -8,6 +8,8 @@ import type { LocaleItem } from "@/api/services/localeService";
 export const LEGAL_DOCUMENT_PRODUCTS = ["facility-booking", "portal"] as const;
 export const LEGAL_DOCUMENT_KINDS = ["terms_of_service", "privacy_policy"] as const;
 
+const EFFECTIVE_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
 export type LegalDocumentProduct = (typeof LEGAL_DOCUMENT_PRODUCTS)[number];
 export type LegalDocumentKind = (typeof LEGAL_DOCUMENT_KINDS)[number];
 
@@ -30,14 +32,22 @@ export const isLegalDocumentProduct = (value: string): value is LegalDocumentPro
 export const isLegalDocumentKind = (value: string): value is LegalDocumentKind =>
   (LEGAL_DOCUMENT_KINDS as readonly string[]).includes(value);
 
+export const isLegalDocumentEffectiveDate = (value: string): boolean => EFFECTIVE_DATE_PATTERN.test(value);
+
+export const isLegalDocumentBodyEmpty = (body: string | null | undefined): boolean => !(body ?? "").trim();
+
 export const listLegalDocumentCatalogPairs = (): LegalDocumentCatalogPair[] =>
   LEGAL_DOCUMENT_PRODUCTS.flatMap((product) => LEGAL_DOCUMENT_KINDS.map((kind) => ({ product, kind })));
 
-export const buildLegalDocumentCreatePayload = (product: string, kind: string): LegalDocumentCreatePayload | null => {
-  if (!isLegalDocumentProduct(product) || !isLegalDocumentKind(kind)) {
+export const buildLegalDocumentCreatePayload = (
+  product: string,
+  kind: string,
+  effectiveDate: string
+): LegalDocumentCreatePayload | null => {
+  if (!isLegalDocumentProduct(product) || !isLegalDocumentKind(kind) || !isLegalDocumentEffectiveDate(effectiveDate)) {
     return null;
   }
-  return { product, kind };
+  return { product, kind, effectiveDate };
 };
 
 export const createEmptyLegalDocumentTranslationMap = (locales: LocaleItem[]): LegalDocumentTranslationMap =>
@@ -61,9 +71,18 @@ export const hydrateLegalDocumentTranslationMap = (
   return map;
 };
 
-export const buildLegalDocumentUpdatePayload = (map: LegalDocumentTranslationMap): LegalDocumentUpdatePayload => ({
-  translations: Object.entries(map).map(([localeId, fields]) => ({
-    localeId,
-    body: fields.body ?? "",
-  })),
-});
+export const buildLegalDocumentUpdatePayload = (
+  map: LegalDocumentTranslationMap,
+  effectiveDate: string
+): LegalDocumentUpdatePayload | null => {
+  if (!isLegalDocumentEffectiveDate(effectiveDate)) {
+    return null;
+  }
+  return {
+    effectiveDate,
+    translations: Object.entries(map).map(([localeId, fields]) => ({
+      localeId,
+      body: fields.body ?? "",
+    })),
+  };
+};

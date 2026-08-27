@@ -6,6 +6,8 @@ import {
   buildLegalDocumentUpdatePayload,
   createEmptyLegalDocumentTranslationMap,
   hydrateLegalDocumentTranslationMap,
+  isLegalDocumentBodyEmpty,
+  isLegalDocumentEffectiveDate,
   isLegalDocumentKind,
   isLegalDocumentProduct,
   listLegalDocumentCatalogPairs,
@@ -35,13 +37,34 @@ describe("legal document catalog", () => {
     ]);
   });
 
-  it("builds a create payload only for catalog Product and Kind", () => {
-    expect(buildLegalDocumentCreatePayload("portal", "privacy_policy")).toEqual({
+  it("builds a create payload only for catalog Product, Kind, and Effective Date", () => {
+    expect(buildLegalDocumentCreatePayload("portal", "privacy_policy", "2026-01-15")).toEqual({
       product: "portal",
       kind: "privacy_policy",
+      effectiveDate: "2026-01-15",
     });
-    expect(buildLegalDocumentCreatePayload("unknown", "privacy_policy")).toBeNull();
-    expect(buildLegalDocumentCreatePayload("portal", "cookie_policy")).toBeNull();
+    expect(buildLegalDocumentCreatePayload("unknown", "privacy_policy", "2026-01-15")).toBeNull();
+    expect(buildLegalDocumentCreatePayload("portal", "cookie_policy", "2026-01-15")).toBeNull();
+    expect(buildLegalDocumentCreatePayload("portal", "privacy_policy", "")).toBeNull();
+    expect(buildLegalDocumentCreatePayload("portal", "privacy_policy", "01/15/2026")).toBeNull();
+  });
+});
+
+describe("legal document Effective Date", () => {
+  it("accepts only YYYY-MM-DD calendar days", () => {
+    expect(isLegalDocumentEffectiveDate("2026-01-15")).toBe(true);
+    expect(isLegalDocumentEffectiveDate("2026-1-15")).toBe(false);
+    expect(isLegalDocumentEffectiveDate("")).toBe(false);
+    expect(isLegalDocumentEffectiveDate("not-a-date")).toBe(false);
+  });
+});
+
+describe("legal document View body", () => {
+  it("treats blank and whitespace-only Markdown as empty", () => {
+    expect(isLegalDocumentBodyEmpty("")).toBe(true);
+    expect(isLegalDocumentBodyEmpty("   \n\t")).toBe(true);
+    expect(isLegalDocumentBodyEmpty(undefined)).toBe(true);
+    expect(isLegalDocumentBodyEmpty("# Terms")).toBe(false);
   });
 });
 
@@ -83,17 +106,27 @@ describe("legal document translation map", () => {
     });
   });
 
-  it("builds an update payload for every locale, including empty Markdown bodies", () => {
-    const payload = buildLegalDocumentUpdatePayload({
-      "locale-en": { body: "  Hello  " },
-      "locale-tw": { body: "" },
-    });
+  it("builds an update payload with Effective Date and every locale body", () => {
+    const payload = buildLegalDocumentUpdatePayload(
+      {
+        "locale-en": { body: "  Hello  " },
+        "locale-tw": { body: "" },
+      },
+      "2026-03-01"
+    );
 
     expect(payload).toEqual({
+      effectiveDate: "2026-03-01",
       translations: [
         { localeId: "locale-en", body: "  Hello  " },
         { localeId: "locale-tw", body: "" },
       ],
     });
+  });
+
+  it("returns null update payload when Effective Date is missing or invalid", () => {
+    const map = { "locale-en": { body: "Hello" } };
+    expect(buildLegalDocumentUpdatePayload(map, "")).toBeNull();
+    expect(buildLegalDocumentUpdatePayload(map, "03/01/2026")).toBeNull();
   });
 });
