@@ -140,6 +140,31 @@
       "body": "Markdown 内容",
       "bodyHint": "仅支持 Markdown，不支持 HTML 与图片嵌入。"
     },
+    "markdownEditor": {
+      "modeEdit": "编辑",
+      "modeSource": "源码",
+      "modePreview": "预览",
+      "modeGroup": "Markdown 编辑模式",
+      "toolbar": "Markdown 格式工具栏",
+      "editor": "Markdown 富文本编辑器",
+      "heading": "标题",
+      "paragraph": "段落",
+      "heading1": "标题 1",
+      "heading2": "标题 2",
+      "heading3": "标题 3",
+      "heading4": "标题 4",
+      "heading5": "标题 5",
+      "heading6": "标题 6",
+      "bold": "粗体",
+      "italic": "斜体",
+      "strike": "删除线",
+      "link": "链接",
+      "orderedList": "有序列表",
+      "unorderedList": "无序列表",
+      "blockquote": "引用",
+      "code": "代码",
+      "linkPrompt": "输入链接网址"
+    },
     "deleteForm": {
       "entityLabel": "法律文件",
       "publicReadWarning": "公开读者在还原前将无法取得此产品的该类文件，请确认后再软删除。"

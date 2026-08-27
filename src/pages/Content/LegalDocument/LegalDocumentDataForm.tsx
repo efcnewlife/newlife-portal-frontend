@@ -1,13 +1,13 @@
-import type { LegalDocumentDetail } from "@/api/services/legalDocumentService";
+import type { LegalDocumentDetail, LegalDocumentUpdatePayload } from "@/api/services/legalDocumentService";
 import { useActiveLocales } from "@/hooks/useActiveLocales";
 import {
   buildLegalDocumentUpdatePayload,
   hydrateLegalDocumentTranslationMap,
   type LegalDocumentTranslationMap,
 } from "@/pages/Content/LegalDocument/legalDocumentForm";
-import type { LegalDocumentUpdatePayload } from "@/api/services/legalDocumentService";
+import { buildLegalDocumentMarkdownEditorLabels } from "@/pages/Content/LegalDocument/legalDocumentMarkdownEditorLabels";
 import { localeTabLabel } from "@/utils/translationForm";
-import { Tabs, TextArea } from "@efcnewlife/newlife-ui";
+import { MarkdownEditor, Tabs } from "@efcnewlife/newlife-ui";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -61,6 +61,7 @@ const LegalDocumentDataForm = forwardRef<LegalDocumentDataFormHandle, LegalDocum
     }));
 
     const activeBody = translationMap[activeTab]?.body ?? "";
+    const markdownEditorLabels = useMemo(() => buildLegalDocumentMarkdownEditorLabels(t), [t]);
 
     return (
       <div className="space-y-4">
@@ -85,10 +86,11 @@ const LegalDocumentDataForm = forwardRef<LegalDocumentDataFormHandle, LegalDocum
         {!loading && !error && locales.length > 0 ? (
           <div className="space-y-3">
             <Tabs tabs={tabs} value={activeTab} onChange={setActiveTab} label={tCommon("translation.tabsLabel")} />
-            <TextArea
+            <MarkdownEditor
               id={`legal-document-body-${activeTab}`}
               label={t("legalDocument.form.body")}
               hint={t("legalDocument.form.bodyHint")}
+              profile="legal"
               value={activeBody}
               onChange={(fieldValue) =>
                 setTranslationMap((prev) => ({
@@ -96,7 +98,8 @@ const LegalDocumentDataForm = forwardRef<LegalDocumentDataFormHandle, LegalDocum
                   [activeTab]: { body: fieldValue },
                 }))
               }
-              rows={16}
+              labels={markdownEditorLabels}
+              className="min-h-[50vh]"
               error={errors.body}
             />
           </div>
