@@ -282,7 +282,11 @@ const LegalDocumentDataPage = () => {
         title={formMode === "create" ? t("legalDocument.modal.createTitle") : t("legalDocument.modal.editTitle")}
         isOpen={isFormOpen}
         onClose={closeForm}
-        className="max-w-3xl w-full mx-4 p-6"
+        className={
+          formMode === "edit"
+            ? "max-w-5xl w-full mx-4 p-6 min-h-0 max-h-[90vh] overflow-hidden"
+            : "max-w-3xl w-full mx-4 p-6"
+        }
         footer={
           <>
             <Button variant="outline" size="sm" onClick={closeForm} disabled={submitting}>

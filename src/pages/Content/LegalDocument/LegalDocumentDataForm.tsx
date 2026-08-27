@@ -99,6 +99,7 @@ const LegalDocumentDataForm = forwardRef<LegalDocumentDataFormHandle, LegalDocum
                 }))
               }
               labels={markdownEditorLabels}
+              className="min-h-[50vh]"
               error={errors.body}
             />
           </div>
