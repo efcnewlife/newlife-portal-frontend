@@ -107,7 +107,8 @@
     "table": {
       "product": "Product",
       "kind": "Kind",
-      "updatedAt": "Updated"
+      "effectiveDate": "Effective Date",
+      "updatedAt": "Last Updated"
     },
     "product": {
       "facility-booking": "Facility Booking",
@@ -127,7 +128,8 @@
     },
     "modal": {
       "createTitle": "Create Legal Document",
-      "editTitle": "Edit Legal Document"
+      "editTitle": "Edit Legal Document",
+      "viewTitle": "View Legal Document"
     },
     "form": {
       "product": "Product",
@@ -136,9 +138,15 @@
       "kindPlaceholder": "Select a kind",
       "productRequired": "Product is required",
       "kindRequired": "Kind is required",
+      "effectiveDate": "Effective Date",
+      "effectiveDateRequired": "Effective Date is required",
+      "effectiveDateHint": "Calendar day when this wording takes effect. Saving the Markdown body alone does not change it.",
       "createHint": "Choose a built-in Product and Kind. Markdown is edited after create.",
       "body": "Markdown body",
       "bodyHint": "Markdown only. HTML and image embeds are not supported."
+    },
+    "view": {
+      "emptyBody": "No Markdown body for this locale yet."
     },
     "markdownEditor": {
       "modeEdit": "Edit",

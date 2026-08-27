@@ -15,6 +15,7 @@ import LegalDocumentDataForm, {
   type LegalDocumentDataFormHandle,
 } from "@/pages/Content/LegalDocument/LegalDocumentDataForm";
 import LegalDocumentDeleteForm from "@/pages/Content/LegalDocument/LegalDocumentDeleteForm";
+import LegalDocumentDetailView from "@/pages/Content/LegalDocument/LegalDocumentDetailView";
 import { isLegalDocumentKind, isLegalDocumentProduct } from "@/pages/Content/LegalDocument/legalDocumentForm";
 import { resolveLegalDocumentSaveErrorMessage } from "@/pages/Content/LegalDocument/legalDocumentSaveError";
 import LegalDocumentSearchPopover, {
@@ -43,10 +44,12 @@ const LegalDocumentDataPage = () => {
   const [appliedFilters, setAppliedFilters] = useState<LegalDocumentSearchFilters>({});
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
   const [editing, setEditing] = useState<LegalDocumentDetail | null>(null);
+  const [viewing, setViewing] = useState<LegalDocumentDetail | null>(null);
   const [deleting, setDeleting] = useState<LegalDocumentRow | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const { isOpen: isFormOpen, openModal: openFormModal, closeModal: closeFormModal } = useModal(false);
+  const { isOpen: isViewOpen, openModal: openViewModal, closeModal: closeViewModal } = useModal(false);
   const { isOpen: isDeleteOpen, openModal: openDeleteModal, closeModal: closeDeleteModal } = useModal(false);
   const editFormRef = useRef<LegalDocumentDataFormHandle>(null);
   const createFormRef = useRef<LegalDocumentCreateFormHandle>(null);
@@ -109,6 +112,13 @@ const LegalDocumentDataPage = () => {
         sortable: true,
         width: "w-48",
         render: (value) => kindLabel(String(value || "")),
+      },
+      {
+        key: "effectiveDate",
+        label: t("legalDocument.table.effectiveDate"),
+        sortable: true,
+        width: "w-40",
+        render: (value) => (value ? DateUtil.format(value as string, "YYYY-MM-DD") : "—"),
       },
       {
         key: "updateAt",
@@ -187,28 +197,43 @@ const LegalDocumentDataPage = () => {
     ];
   }, [fetchPages, openFormModal, searchFilters, showDeleted, t]);
 
+  const openDetailModal = useCallback(
+    async (row: LegalDocumentRow, mode: "view" | "edit") => {
+      try {
+        const res = await legalDocumentService.getById(row.id);
+        if (res.success) {
+          if (mode === "view") {
+            setViewing(res.data);
+            openViewModal();
+          } else {
+            setFormMode("edit");
+            setEditing(res.data);
+            openFormModal();
+          }
+        } else {
+          notifyApiError(
+            { code: 400, message: "" },
+            { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") }
+          );
+        }
+      } catch (error) {
+        notifyApiError(error, {
+          title: t("common:feedback.loadFailed"),
+          fallbackDescription: t("common:feedback.loadFailedDesc"),
+        });
+      }
+    },
+    [openFormModal, openViewModal, t]
+  );
+
   const rowActions: MenuButtonType<LegalDocumentRow>[] = useMemo(
     () => [
+      CommonRowAction.VIEW((row) => {
+        void openDetailModal(row, "view");
+      }),
       CommonRowAction.EDIT(
-        async (row) => {
-          try {
-            const res = await legalDocumentService.getById(row.id);
-            if (res.success) {
-              setFormMode("edit");
-              setEditing(res.data);
-              openFormModal();
-            } else {
-              notifyApiError(
-                { code: 400, message: "" },
-                { title: t("common:feedback.loadFailed"), fallbackDescription: t("common:feedback.loadFailedDesc") }
-              );
-            }
-          } catch (error) {
-            notifyApiError(error, {
-              title: t("common:feedback.loadFailed"),
-              fallbackDescription: t("common:feedback.loadFailedDesc"),
-            });
-          }
+        (row) => {
+          void openDetailModal(row, "edit");
         },
         { visible: () => !showDeleted }
       ),
@@ -243,13 +268,18 @@ const LegalDocumentDataPage = () => {
         }
       ),
     ],
-    [fetchPages, openDeleteModal, openFormModal, showDeleted, t]
+    [fetchPages, openDeleteModal, openDetailModal, showDeleted, t]
   );
 
   const closeForm = () => {
     closeFormModal();
     setEditing(null);
     setFormMode("create");
+  };
+
+  const closeView = () => {
+    closeViewModal();
+    setViewing(null);
   };
 
   return (
@@ -324,6 +354,7 @@ const LegalDocumentDataPage = () => {
 
           if (!editing?.id || !editFormRef.current?.validate()) return;
           const values = editFormRef.current.getValues();
+          if (!values) return;
           setSubmitting(true);
           try {
             await legalDocumentService.update(editing.id, values);
@@ -348,6 +379,15 @@ const LegalDocumentDataPage = () => {
           <LegalDocumentDataForm ref={editFormRef} document={editing} />
         ) : null}
       </ModalForm>
+
+      <Modal
+        title={t("legalDocument.modal.viewTitle")}
+        isOpen={isViewOpen}
+        onClose={closeView}
+        className="max-w-5xl w-full mx-4 p-6 min-h-0 max-h-[90vh] overflow-y-auto"
+      >
+        {viewing ? <LegalDocumentDetailView document={viewing} /> : null}
+      </Modal>
 
       <Modal
         isOpen={isDeleteOpen}

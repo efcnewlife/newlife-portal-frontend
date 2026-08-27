@@ -8,9 +8,11 @@ export interface LegalDocumentTranslationItem {
 export interface LegalDocumentCreatePayload {
   product: string;
   kind: string;
+  effectiveDate: string;
 }
 
 export interface LegalDocumentUpdatePayload {
+  effectiveDate: string;
   translations: LegalDocumentTranslationItem[];
 }
 
@@ -18,6 +20,7 @@ export interface LegalDocumentItem {
   id: string;
   product: string;
   kind: string;
+  effectiveDate: string;
   createAt?: string | null;
   createdBy?: string | null;
   updateAt?: string | null;

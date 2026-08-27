@@ -107,7 +107,8 @@
     "table": {
       "product": "產品",
       "kind": "類型",
-      "updatedAt": "更新時間"
+      "effectiveDate": "生效日",
+      "updatedAt": "最後更新"
     },
     "product": {
       "facility-booking": "場地預約",
@@ -127,7 +128,8 @@
     },
     "modal": {
       "createTitle": "新增法律文件",
-      "editTitle": "編輯法律文件"
+      "editTitle": "編輯法律文件",
+      "viewTitle": "檢視法律文件"
     },
     "form": {
       "product": "產品",
@@ -136,9 +138,15 @@
       "kindPlaceholder": "選擇類型",
       "productRequired": "請選擇產品",
       "kindRequired": "請選擇類型",
+      "effectiveDate": "生效日",
+      "effectiveDateRequired": "請選擇生效日",
+      "effectiveDateHint": "此份文案開始生效的日曆日。僅儲存 Markdown 本文時不會自動變更。",
       "createHint": "僅能從內建產品與類型建立；Markdown 請於建立後編輯。",
       "body": "Markdown 內容",
       "bodyHint": "僅支援 Markdown，不支援 HTML 與圖片嵌入。"
+    },
+    "view": {
+      "emptyBody": "此語系尚無 Markdown 內容。"
     },
     "markdownEditor": {
       "modeEdit": "編輯",

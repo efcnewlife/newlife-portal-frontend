@@ -1,3 +1,4 @@
+import { usePickerLabels } from "@/hooks/usePickerLabels";
 import {
   buildLegalDocumentCreatePayload,
   isLegalDocumentKind,
@@ -8,7 +9,9 @@ import {
   type LegalDocumentKind,
   type LegalDocumentProduct,
 } from "@/pages/Content/LegalDocument/legalDocumentForm";
-import { Select } from "@efcnewlife/newlife-ui";
+import { dayjsToApiDate } from "@/utils/dayjsApi";
+import { DatePicker, Select } from "@efcnewlife/newlife-ui";
+import type { Dayjs } from "dayjs";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -20,9 +23,11 @@ export interface LegalDocumentCreateFormHandle {
 const LegalDocumentCreateForm = forwardRef<LegalDocumentCreateFormHandle>(
   function LegalDocumentCreateForm(_props, ref) {
     const { t } = useTranslation("content");
+    const pickerLabels = usePickerLabels();
     const [product, setProduct] = useState<LegalDocumentProduct | "">("");
     const [kind, setKind] = useState<LegalDocumentKind | "">("");
-    const [errors, setErrors] = useState<{ product?: string; kind?: string }>({});
+    const [effectiveDate, setEffectiveDate] = useState<Dayjs | null>(null);
+    const [errors, setErrors] = useState<{ product?: string; kind?: string; effectiveDate?: string }>({});
 
     const productOptions = LEGAL_DOCUMENT_PRODUCTS.map((value) => ({
       value,
@@ -36,19 +41,24 @@ const LegalDocumentCreateForm = forwardRef<LegalDocumentCreateFormHandle>(
 
     useImperativeHandle(ref, () => ({
       validate: () => {
-        const nextErrors: { product?: string; kind?: string } = {};
+        const nextErrors: { product?: string; kind?: string; effectiveDate?: string } = {};
         if (!product) {
           nextErrors.product = t("legalDocument.form.productRequired");
         }
         if (!kind) {
           nextErrors.kind = t("legalDocument.form.kindRequired");
         }
+        if (!effectiveDate) {
+          nextErrors.effectiveDate = t("legalDocument.form.effectiveDateRequired");
+        }
         setErrors(nextErrors);
         return Object.keys(nextErrors).length === 0;
       },
       getValues: () => {
-        if (!product || !kind) return null;
-        return buildLegalDocumentCreatePayload(product, kind);
+        if (!product || !kind || !effectiveDate) return null;
+        const dateValue = dayjsToApiDate(effectiveDate);
+        if (!dateValue) return null;
+        return buildLegalDocumentCreatePayload(product, kind, dateValue);
       },
     }));
 
@@ -80,6 +90,19 @@ const LegalDocumentCreateForm = forwardRef<LegalDocumentCreateFormHandle>(
           options={kindOptions}
           placeholder={t("legalDocument.form.kindPlaceholder")}
           error={errors.kind}
+        />
+        <DatePicker
+          id="legal-document-create-effective-date"
+          label={t("legalDocument.form.effectiveDate")}
+          value={effectiveDate}
+          onChange={(value) => {
+            setEffectiveDate(value);
+            setErrors((prev) => ({ ...prev, effectiveDate: undefined }));
+          }}
+          required
+          showTodayButton
+          labels={pickerLabels}
+          error={errors.effectiveDate}
         />
       </div>
     );
