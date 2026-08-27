@@ -140,6 +140,31 @@
       "body": "Markdown 內容",
       "bodyHint": "僅支援 Markdown，不支援 HTML 與圖片嵌入。"
     },
+    "markdownEditor": {
+      "modeEdit": "編輯",
+      "modeSource": "原始碼",
+      "modePreview": "預覽",
+      "modeGroup": "Markdown 編輯模式",
+      "toolbar": "Markdown 格式工具列",
+      "editor": "Markdown 富文字編輯器",
+      "heading": "標題",
+      "paragraph": "段落",
+      "heading1": "標題 1",
+      "heading2": "標題 2",
+      "heading3": "標題 3",
+      "heading4": "標題 4",
+      "heading5": "標題 5",
+      "heading6": "標題 6",
+      "bold": "粗體",
+      "italic": "斜體",
+      "strike": "刪除線",
+      "link": "連結",
+      "orderedList": "編號清單",
+      "unorderedList": "項目清單",
+      "blockquote": "引用",
+      "code": "程式碼",
+      "linkPrompt": "輸入連結網址"
+    },
     "deleteForm": {
       "entityLabel": "法律文件",
       "publicReadWarning": "公開讀者在還原前將無法取得此產品的該類文件，請確認後再軟刪除。"

@@ -20,8 +20,18 @@
   },
   "dependencies": {
     "@azure/msal-browser": "^4.12.0",
-    "@efcnewlife/newlife-ui": "^0.5.0",
+    "@efcnewlife/newlife-ui": "^0.6.0",
     "@tailwindcss/forms": "^0.5.10",
+    "@tiptap/core": "^3.30.5",
+    "@tiptap/extension-link": "^3.30.5",
+    "@tiptap/extension-placeholder": "^3.30.5",
+    "@tiptap/extension-table": "^3.30.5",
+    "@tiptap/extension-table-cell": "^3.30.5",
+    "@tiptap/extension-table-header": "^3.30.5",
+    "@tiptap/extension-table-row": "^3.30.5",
+    "@tiptap/pm": "^3.30.5",
+    "@tiptap/react": "^3.30.5",
+    "@tiptap/starter-kit": "^3.30.5",
     "axios": "^1.11.0",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.21",
@@ -33,7 +43,8 @@
     "react-i18next": "^16.5.8",
     "react-icons": "^5.5.0",
     "react-router": "^7.1.5",
-    "tailwind-merge": "^3.0.1"
+    "tailwind-merge": "^3.0.1",
+    "tiptap-markdown": "^0.9.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

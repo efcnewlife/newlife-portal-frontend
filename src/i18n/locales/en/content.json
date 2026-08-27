@@ -140,6 +140,31 @@
       "body": "Markdown body",
       "bodyHint": "Markdown only. HTML and image embeds are not supported."
     },
+    "markdownEditor": {
+      "modeEdit": "Edit",
+      "modeSource": "Source",
+      "modePreview": "Preview",
+      "modeGroup": "Markdown editor mode",
+      "toolbar": "Markdown formatting",
+      "editor": "Markdown rich text editor",
+      "heading": "Heading",
+      "paragraph": "Paragraph",
+      "heading1": "Heading 1",
+      "heading2": "Heading 2",
+      "heading3": "Heading 3",
+      "heading4": "Heading 4",
+      "heading5": "Heading 5",
+      "heading6": "Heading 6",
+      "bold": "Bold",
+      "italic": "Italic",
+      "strike": "Strike",
+      "link": "Link",
+      "orderedList": "Ordered list",
+      "unorderedList": "Unordered list",
+      "blockquote": "Blockquote",
+      "code": "Code",
+      "linkPrompt": "Enter link URL"
+    },
     "deleteForm": {
       "entityLabel": "Legal Document",
       "publicReadWarning": "Public readers will not receive this Product's Kind until you restore the document from recycle."
