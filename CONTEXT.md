@@ -129,8 +129,16 @@ A built-in product line code used on Legal Documents under Content. Create picks
 _Avoid_: App, Operator-typed free-text Product codes
 
 **Legal Document**:
-The Portal-editable Markdown (per locale) for one Product and one Legal Document Kind, managed from one Legal Documents list under Content (for example `/content/legal-documents`). The list follows the usual DataPage soft-delete / recycle / restore pattern and may filter by Product or Kind. Save replaces the current wording. Body is Markdown only; no HTML editor and no image embed. Soft-delete is allowed under RBAC; delete confirmation must warn that public readers will not get that Product's Kind until restore. Create is only for a catalog Product × Kind with no row at all; if the pair sits in the recycle bin, create is rejected and the Operator restores instead. This slice does not add Portal Login or public legal pages in the admin SPA. Facility Booking is the Product that exposes public legal pages in this slice.
-_Avoid_: Content File, System Setting JSON, version history, acceptance tracking, WYSIWYG HTML, blocking delete in code because the row is built-in, creating while a soft-deleted twin exists
+The Portal-editable Markdown (per locale) for one Product and one Legal Document Kind, managed from one Legal Documents list under Content (for example `/content/legal-documents`). The list follows the usual DataPage soft-delete / recycle / restore pattern and may filter by Product or Kind; table columns include Effective Date and Last Updated. Operators author the body with the shared MarkdownEditor (`legal` Markdown profile; uncontrolled mode defaulting to Edit; chrome labels from Portal i18n). Create requires catalog Product × Kind plus Effective Date. Context menu View opens a read-only Modal (not ModalForm) showing Product, Kind, Effective Date, and Last Updated, then locale Tabs each with MarkdownPreview (`legal` profile) or an empty-body state; View is available for soft-deleted rows under Read. Soft-delete is allowed under RBAC; delete confirmation must warn that public readers will not get that Product's Kind until restore. Create is only for a catalog Product × Kind with no row at all; if the pair sits in the recycle bin, create is rejected and the Operator restores instead. This slice does not add Portal Login or public legal pages in the admin SPA. Facility Booking is the Product that exposes public legal pages in this slice.
+_Avoid_: Content File, System Setting JSON, version history, acceptance tracking, TextArea as the Legal Document body control, HTML-as-stored-contract WYSIWYG, image embed, blocking delete in code because the row is built-in, creating while a soft-deleted twin exists, treating editor Preview mode as a substitute for Context menu View, hiding View in recycle, conflating Effective Date with Last Updated or with Effective from / Effective to, create without Effective Date
+
+**Effective Date**:
+Required calendar-day field on a Legal Document: when the current wording takes effect. Edited in create/edit forms; not auto-changed when only the Markdown body is saved.
+_Avoid_: Effective from / Effective to range, optional blank on save, auto-set to today on every body save
+
+**Last Updated**:
+Display of the Legal Document's audit `updated_at`. Not the Effective Date.
+_Avoid_: labeling Last Updated as the legal in-force date
 
 **Legal Document Kind**:
 Terms of Service or Privacy Policy. Together with Product it identifies the row Operators edit. Each seeded Product ships both kinds. Member/public UI titles come from host i18n by Kind, not from an editable title on the row.
