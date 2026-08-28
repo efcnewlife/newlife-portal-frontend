@@ -18,6 +18,20 @@ _Avoid_: treating primary/secondary as auth.role or org.position, a roster with 
 A query whose result is Ministries, not membership rows. It may match a Ministry name or a Steward's display name/email. A match does not return the Steward roster; the roster loads for the selected Ministry.
 _Avoid_: one row per steward, treating this as Member Person search, stuffing the roster into the directory payload
 
+### Ministry application / approval
+
+**Ministry Application**:
+A Ministry in the pending-approval lifecycle after a member submits from booking. It is not a separate aggregate from the Ministry row.
+_Avoid_: Application as a synonym for an Active Ministry, calling the approve/reject decision itself an Application
+
+**Ministry Approval**:
+The decide outcome on a Ministry Application: approved or rejected.
+_Avoid_: treating Approval as the Application itself
+
+**Ministry Approver**:
+A person who may approve or reject a Ministry Application: the current incumbent of that Ministry's Owner position, or a user granted ministry approval authority (`ministry:approval`).
+_Avoid_: incumbent-only as the sole rule, RBAC-only as the sole rule
+
 ### Admin lists
 
 **Effective from / Effective to**:
