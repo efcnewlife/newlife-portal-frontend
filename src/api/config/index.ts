@@ -189,11 +189,6 @@ export const API_ENDPOINTS = {
       UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/surcharges/${id}`,
       DELETE: (id: string) => `${ADMIN_API_PREFIX}/facility/surcharges/${id}`,
     },
-    POLICY_SETTINGS: {
-      LIST: `${ADMIN_API_PREFIX}/facility/policy-settings`,
-      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/policy-settings/${id}`,
-      UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/policy-settings/${id}`,
-    },
     BOOKINGS: {
       PAGES: `${ADMIN_API_PREFIX}/facility/bookings/pages`,
       RANGE: `${ADMIN_API_PREFIX}/facility/bookings/range`,
