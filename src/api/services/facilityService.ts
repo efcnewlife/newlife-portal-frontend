@@ -293,23 +293,6 @@ export interface SurchargeWrite {
   remark?: string;
 }
 
-export interface PolicySettingItem {
-  id: string;
-  settingKey: string;
-  facilityId?: string;
-  amount: string | number;
-  currency: string;
-  isActive: boolean;
-  createAt?: string;
-  updateAt?: string;
-}
-
-export interface PolicySettingUpdate {
-  amount: string | number;
-  currency?: string;
-  isActive?: boolean;
-}
-
 // Booking
 export interface BookingPagesParams extends PagesParams {
   facilityId?: string;
@@ -720,22 +703,6 @@ class FacilityService {
       url: API_ENDPOINTS.FACILITY.SURCHARGES.DELETE(id),
       data: payload,
     });
-  }
-
-  // Policy settings
-  async listPolicySettings(facilityId?: string): Promise<ApiResponse<{ items: PolicySettingItem[] }>> {
-    if (IS_MOCK_API) return emptyList();
-    return httpClient.get(API_ENDPOINTS.FACILITY.POLICY_SETTINGS.LIST, facilityId ? { facilityId } : undefined);
-  }
-
-  async getPolicySetting(id: string): Promise<ApiResponse<PolicySettingItem>> {
-    if (IS_MOCK_API) return { success: true, data: {} as PolicySettingItem };
-    return httpClient.get(API_ENDPOINTS.FACILITY.POLICY_SETTINGS.DETAIL(id));
-  }
-
-  async updatePolicySetting(id: string, payload: PolicySettingUpdate): Promise<ApiResponse<void>> {
-    if (IS_MOCK_API) return { success: true, data: undefined as void };
-    return httpClient.put(API_ENDPOINTS.FACILITY.POLICY_SETTINGS.UPDATE(id), payload);
   }
 
   // Bookings
