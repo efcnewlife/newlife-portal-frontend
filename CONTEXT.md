@@ -98,6 +98,10 @@ _Avoid_: `getBookingPages` with a large `page_size` as the Calendar/Grid contrac
 The Portal admin list shell built on `@efcnewlife/newlife-ui` Table primitives, plus pagination, sorting, row selection, and context menu. It is a host composite, not the library Table itself.
 _Avoid_: Table (when meaning the Portal list page), DataGrid, Grid
 
+**Recurring Booking availability window**:
+The facility-local duration after a Recurring Booking opening date during which that Recurring Booking period accepts new Series. Operators edit it on System Settings as `facility.recurring_booking_availability_window`: a positive amount plus `days`, `weeks`, or calendar-relative `months`. The saved value is `{amount, unit}`.
+_Avoid_: raw JSON key-value editor for this setting, hours or minutes as units, a bare day count with no unit
+
 ### Operation feedback
 
 **Operation feedback**:

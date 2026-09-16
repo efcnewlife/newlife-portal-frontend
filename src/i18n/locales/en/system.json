@@ -657,6 +657,17 @@
         "objectHint": "Add key-value pairs. Numbers, true/false, and JSON are auto-detected.",
         "arrayHint": "Add items in order. Numbers, true/false, and JSON are auto-detected."
       },
+      "availabilityWindow": {
+        "amountLabel": "Amount",
+        "unitLabel": "Unit",
+        "unitPlaceholder": "Select a unit",
+        "hint": "How long after the Recurring Booking opening date new Series stay available. Months are calendar-relative.",
+        "units": {
+          "days": "Days",
+          "weeks": "Weeks",
+          "months": "Months (calendar-relative)"
+        }
+      },
       "remark": {
         "label": "Remark",
         "placeholder": "Optional remark"
@@ -672,7 +683,12 @@
         "objectEmpty": "Add at least one key-value pair",
         "objectKeyRequired": "Key is required when value is set",
         "objectDuplicateKey": "Duplicate keys are not allowed",
-        "arrayEmpty": "Add at least one array item"
+        "arrayEmpty": "Add at least one array item",
+        "amountRequired": "Enter a positive amount",
+        "amountInvalid": "Amount must be a positive integer",
+        "unitRequired": "Select days, weeks, or months",
+        "unitInvalid": "Unit must be days, weeks, or calendar-relative months",
+        "availabilityWindowRejected": "This Recurring Booking availability window is invalid. Use a positive amount and days, weeks, or calendar-relative months."
       }
     }
   }

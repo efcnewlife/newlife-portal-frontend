@@ -12,6 +12,10 @@ import { useTranslation } from "react-i18next";
 import SettingDataForm, { toSettingCreate, toSettingUpdate, type SettingDataFormHandle } from "./SettingDataForm";
 import SettingSearchPopover, { type SettingSearchFilters } from "./SettingSearchPopover";
 import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
+import {
+  isRecurringBookingAvailabilityWindowSetting,
+  resolveRecurringBookingAvailabilityWindowSaveError,
+} from "./recurringBookingAvailabilityWindow";
 
 type SettingRow = SettingItem & Record<string, unknown>;
 
@@ -330,6 +334,12 @@ const SettingDataPage = () => {
             notifyApiError(apiError ?? error, {
               title: t("common:feedback.saveFailed"),
               fallbackDescription: t("common:feedback.saveFailedDesc"),
+              resolveDescription: (err) => {
+                if (!isRecurringBookingAvailabilityWindowSetting(values.namespace, values.settingKey)) {
+                  return undefined;
+                }
+                return resolveRecurringBookingAvailabilityWindowSaveError(err, (key) => t(`system:${key}`));
+              },
             });
           } finally {
             setSubmitting(false);
