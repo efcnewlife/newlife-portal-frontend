@@ -3,6 +3,15 @@ import { Button, Checkbox, Input, Label, Select, TextArea } from "@efcnewlife/ne
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MdAdd, MdDelete } from "react-icons/md";
+import {
+  buildRecurringBookingAvailabilityWindowValue,
+  isRecurringAvailabilityUnit,
+  isRecurringBookingAvailabilityWindowSetting,
+  parseRecurringBookingAvailabilityWindow,
+  RECURRING_AVAILABILITY_UNITS,
+  type RecurringAvailabilityUnit,
+  validateRecurringBookingAvailabilityWindow,
+} from "./recurringBookingAvailabilityWindow";
 
 export interface SettingFormValues {
   namespace: string;
@@ -112,10 +121,14 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
   const [arrayRows, setArrayRows] = useState<ArrayRow[]>([{ id: newRowId(), value: "" }]);
   const [remark, setRemark] = useState("");
   const [isActive, setIsActive] = useState(true);
+  const [windowAmount, setWindowAmount] = useState("");
+  const [windowUnit, setWindowUnit] = useState<RecurringAvailabilityUnit | "">("");
   const [errors, setErrors] = useState<{
     namespace?: string;
     settingKey?: string;
     value?: string;
+    amount?: string;
+    unit?: string;
   }>({});
 
   useEffect(() => {
@@ -129,6 +142,8 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
       setBooleanValue(false);
       setObjectRows([{ id: newRowId(), key: "", value: "" }]);
       setArrayRows([{ id: newRowId(), value: "" }]);
+      setWindowAmount("");
+      setWindowUnit("");
       setRemark("");
       setIsActive(true);
       return;
@@ -139,6 +154,15 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
     setValueType(setting.valueType);
     setRemark(setting.remark ?? "");
     setIsActive(setting.isActive);
+    const parsedWindow = parseRecurringBookingAvailabilityWindow(setting.value);
+    setWindowAmount(parsedWindow ? String(parsedWindow.amount) : "");
+    setWindowUnit(parsedWindow ? parsedWindow.unit : "");
+    if (isRecurringBookingAvailabilityWindowSetting(setting.namespace, setting.settingKey) && parsedWindow === null) {
+      setErrors({
+        amount: t("system:setting.form.validation.amountInvalid"),
+        unit: t("system:setting.form.validation.unitInvalid"),
+      });
+    }
     if (setting.valueType === "string") {
       setStringValue(typeof setting.value === "string" ? setting.value : String(setting.value ?? ""));
     } else if (setting.valueType === "number") {
@@ -150,13 +174,22 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
     } else if (setting.valueType === "array") {
       setArrayRows(arrayToRows(setting.value));
     }
-  }, [isCreate, setting]);
+  }, [isCreate, setting, t]);
 
   const valueTypeOptions = useMemo(() => VALUE_TYPE_OPTIONS.map((item) => ({ value: item, label: item })), []);
 
-  const isTimezoneSetting =
-    (isCreate ? namespace : setting?.namespace) === "facility" &&
-    (isCreate ? settingKey : setting?.settingKey) === "timezone";
+  const editorNamespace = isCreate ? namespace : (setting?.namespace ?? namespace);
+  const editorSettingKey = isCreate ? settingKey : (setting?.settingKey ?? settingKey);
+  const isTimezoneSetting = editorNamespace === "facility" && editorSettingKey === "timezone";
+  const isAvailabilityWindowSetting = isRecurringBookingAvailabilityWindowSetting(editorNamespace, editorSettingKey);
+  const availabilityUnitOptions = useMemo(
+    () =>
+      RECURRING_AVAILABILITY_UNITS.map((unit) => ({
+        value: unit,
+        label: t(`system:setting.form.availabilityWindow.units.${unit}`),
+      })),
+    [t]
+  );
 
   const buildObjectValue = (): Record<string, unknown> => {
     const result: Record<string, unknown> = {};
@@ -173,6 +206,9 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
   };
 
   const resolveValue = (): unknown => {
+    if (isAvailabilityWindowSetting) {
+      return buildRecurringBookingAvailabilityWindowValue(windowAmount, windowUnit);
+    }
     if (valueType === "string") return stringValue;
     if (valueType === "number") return Number(numberValue);
     if (valueType === "boolean") return booleanValue;
@@ -181,7 +217,13 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
   };
 
   const validate = (): boolean => {
-    const nextErrors: { namespace?: string; settingKey?: string; value?: string } = {};
+    const nextErrors: {
+      namespace?: string;
+      settingKey?: string;
+      value?: string;
+      amount?: string;
+      unit?: string;
+    } = {};
     if (isCreate) {
       if (!namespace.trim()) {
         nextErrors.namespace = t("system:setting.form.validation.namespaceRequired");
@@ -190,7 +232,19 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
         nextErrors.settingKey = t("system:setting.form.validation.settingKeyRequired");
       }
     }
-    if (valueType === "string") {
+    if (isAvailabilityWindowSetting) {
+      const windowErrors = validateRecurringBookingAvailabilityWindow(windowAmount, windowUnit);
+      if (windowErrors.amount === "required") {
+        nextErrors.amount = t("system:setting.form.validation.amountRequired");
+      } else if (windowErrors.amount === "invalid") {
+        nextErrors.amount = t("system:setting.form.validation.amountInvalid");
+      }
+      if (windowErrors.unit === "required") {
+        nextErrors.unit = t("system:setting.form.validation.unitRequired");
+      } else if (windowErrors.unit === "invalid") {
+        nextErrors.unit = t("system:setting.form.validation.unitInvalid");
+      }
+    } else if (valueType === "string") {
       if (!stringValue.trim()) {
         nextErrors.value = t("system:setting.form.validation.valueRequired");
       }
@@ -219,7 +273,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
   const getValues = (): SettingFormValues => ({
     namespace: namespace.trim(),
     settingKey: settingKey.trim(),
-    valueType,
+    valueType: isAvailabilityWindowSetting ? "object" : valueType,
     value: resolveValue(),
     remark: remark.trim() ? remark.trim() : null,
     isActive,
@@ -257,7 +311,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
         />
       </div>
 
-      {isCreate ? (
+      {isCreate && !isAvailabilityWindowSetting ? (
         <Select
           id="setting-value-type"
           label={t("system:setting.form.valueType.label")}
@@ -279,12 +333,48 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
           id="setting-value-type"
           label={t("system:setting.form.valueType.label")}
           type="text"
-          value={valueType}
+          value={isAvailabilityWindowSetting ? "object" : valueType}
           disabled
         />
       )}
 
-      {valueType === "string" && (
+      {isAvailabilityWindowSetting && (
+        <div className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              id="setting-availability-window-amount"
+              label={t("system:setting.form.availabilityWindow.amountLabel")}
+              type="number"
+              min={1}
+              step={1}
+              value={windowAmount}
+              onChange={(e) => {
+                setWindowAmount(e.target.value);
+                setErrors((prev) => ({ ...prev, amount: undefined }));
+              }}
+              error={errors.amount}
+              required
+            />
+            <Select
+              id="setting-availability-window-unit"
+              label={t("system:setting.form.availabilityWindow.unitLabel")}
+              options={availabilityUnitOptions}
+              value={windowUnit || null}
+              onChange={(v) => {
+                const next = typeof v === "string" ? v : "";
+                setWindowUnit(isRecurringAvailabilityUnit(next) ? next : "");
+                setErrors((prev) => ({ ...prev, unit: undefined }));
+              }}
+              placeholder={t("system:setting.form.availabilityWindow.unitPlaceholder")}
+              error={errors.unit}
+              required
+            />
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t("system:setting.form.availabilityWindow.hint")}</p>
+        </div>
+      )}
+
+      {!isAvailabilityWindowSetting && valueType === "string" && (
         <Input
           id="setting-value-string"
           label={t("system:setting.form.value.label")}
@@ -298,7 +388,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
         />
       )}
 
-      {valueType === "number" && (
+      {!isAvailabilityWindowSetting && valueType === "number" && (
         <Input
           id="setting-value-number"
           label={t("system:setting.form.value.label")}
@@ -310,7 +400,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
         />
       )}
 
-      {valueType === "boolean" && (
+      {!isAvailabilityWindowSetting && valueType === "boolean" && (
         <div className="space-y-2">
           <Label>{t("system:setting.form.value.label")}</Label>
           <Checkbox
@@ -322,7 +412,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
         </div>
       )}
 
-      {valueType === "object" && (
+      {!isAvailabilityWindowSetting && valueType === "object" && (
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <Label>{t("system:setting.form.value.label")}</Label>
@@ -387,7 +477,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
         </div>
       )}
 
-      {valueType === "array" && (
+      {!isAvailabilityWindowSetting && valueType === "array" && (
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <Label>{t("system:setting.form.value.label")}</Label>

@@ -657,6 +657,17 @@
         "objectHint": "新增键值对。数字、true/false、JSON 会自动识别。",
         "arrayHint": "按顺序新增项目。数字、true/false、JSON 会自动识别。"
       },
+      "availabilityWindow": {
+        "amountLabel": "数量",
+        "unitLabel": "单位",
+        "unitPlaceholder": "请选择单位",
+        "hint": "Recurring Booking opening date 之后，对应时段仍接受新 Series 的期间。月份为日历相对月份。",
+        "units": {
+          "days": "天",
+          "weeks": "周",
+          "months": "月（日历相对）"
+        }
+      },
       "remark": {
         "label": "备注",
         "placeholder": "可选备注"
@@ -672,7 +683,12 @@
         "objectEmpty": "请至少新增一组键值",
         "objectKeyRequired": "有值时必须填写键",
         "objectDuplicateKey": "键不可重复",
-        "arrayEmpty": "请至少新增一个数组项目"
+        "arrayEmpty": "请至少新增一个数组项目",
+        "amountRequired": "请输入正整数数量",
+        "amountInvalid": "数量必须为正整数",
+        "unitRequired": "请选择天、周或月",
+        "unitInvalid": "单位必须为天、周或日历相对月份",
+        "availabilityWindowRejected": "此 Recurring Booking availability window 无效。请使用正整数数量，以及天、周或日历相对月份。"
       }
     }
   }
