@@ -1,5 +1,4 @@
 import { ministryCatalogService, type MinistryCatalogItem } from "@/api/services/ministryCatalogService";
-import type { MinistryScheduleItem } from "@/api/services/ministryService";
 import { orgService, type AssignablePositionItem } from "@/api/services/orgService";
 import TranslationTabsForm from "@/components/translation/TranslationTabsForm";
 import { useActiveLocales } from "@/hooks/useActiveLocales";
@@ -10,13 +9,12 @@ import MinistrySchedulesEditor, {
   scheduleItemToDraft,
   type MinistryScheduleDraft,
 } from "@/pages/Ministry/components/MinistrySchedulesEditor";
+import { createEmptyTranslationMap, hydrateTranslationMap, type TranslationMap } from "@/utils/translationForm";
 import {
-  buildTranslationPayload,
-  createEmptyTranslationMap,
-  hydrateTranslationMap,
-  type TranslationMap,
-} from "@/utils/translationForm";
-import { buildMinistryFormPayload, validateMinistryFormFields } from "./ministryFormSubmission";
+  buildMinistryFormPayload,
+  validateMinistryFormFields,
+  type MinistryFormValues,
+} from "./ministryFormSubmission";
 import { Checkbox, Select } from "@efcnewlife/newlife-ui";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -24,16 +22,7 @@ import { Link } from "react-router";
 
 const ALL_AGES_CODE = "all_ages";
 
-export interface MinistryFormValues {
-  name?: string;
-  ownerPositionId?: string;
-  targetAudienceIds?: string[];
-  schedules?: MinistryScheduleItem[];
-  hasPriorityBooking?: boolean;
-  isActive?: boolean;
-  translations?: ReturnType<typeof buildTranslationPayload>;
-  members?: MinistryMemberDraft[];
-}
+export type { MinistryFormValues };
 
 export interface MinistryDataFormHandle {
   validate: () => boolean;

@@ -2,13 +2,26 @@ import type { MinistryScheduleItem } from "@/api/services/ministryService";
 import type { MinistryMemberDraft } from "@/pages/Ministry/components/MinistryMembersEditor";
 import { validateMinistryMembers } from "@/pages/Ministry/components/ministryMemberDraft";
 import { buildTranslationPayload, validateDefaultLocaleName, type TranslationMap } from "@/utils/translationForm";
-import type { MinistryFormValues } from "./MinistryDataForm";
 
-export interface MinistryFormValidationInput {
+export interface MinistryFormValues {
+  name?: string;
+  ownerPositionId?: string;
+  targetAudienceIds?: string[];
+  schedules?: MinistryScheduleItem[];
+  hasPriorityBooking?: boolean;
+  isActive?: boolean;
+  translations?: ReturnType<typeof buildTranslationPayload>;
+  members?: MinistryMemberDraft[];
+}
+
+interface MinistryFormFields {
   translationMap: TranslationMap;
-  defaultLocaleId?: string;
   members: MinistryMemberDraft[];
   showMembers: boolean;
+}
+
+export interface MinistryFormValidationInput extends MinistryFormFields {
+  defaultLocaleId?: string;
   validateMembers: boolean;
 }
 
@@ -30,15 +43,12 @@ export const validateMinistryFormFields = (
   return errors;
 };
 
-export interface MinistryFormPayloadInput {
+export interface MinistryFormPayloadInput extends MinistryFormFields {
   ownerPositionId: string;
   targetAudienceIds: string[];
   schedules: MinistryScheduleItem[];
   hasPriorityBooking: boolean;
   isActive: boolean;
-  translationMap: TranslationMap;
-  members: MinistryMemberDraft[];
-  showMembers: boolean;
 }
 
 export const buildMinistryFormPayload = (input: MinistryFormPayloadInput): MinistryFormValues => ({
