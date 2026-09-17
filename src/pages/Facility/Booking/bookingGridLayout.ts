@@ -1,4 +1,5 @@
 import type { BookingListItem } from "@/api/services/facilityService";
+import { isOverriddenBookingStatus } from "@/pages/Facility/shared/bookingStatusBadge";
 
 export const GRID_CELL_MINUTES = 30;
 export const GRID_DAY_MINUTES = 24 * 60;
@@ -150,6 +151,15 @@ export const layoutGridOccupancyBlocks = (
 };
 
 export const defaultViewportScrollRatio = (): number => DEFAULT_VIEWPORT_MINUTE / GRID_DAY_MINUTES;
+
+/** Occupancy block name/title: an overridden booking gets its status appended, since Grid has no room to badge it. */
+export const gridBlockTitle = (
+  booking: Pick<BookingListItem, "userDisplayName" | "userEmail" | "facilityName" | "id" | "status">,
+  overriddenLabel: string
+): string => {
+  const name = booking.userDisplayName || booking.userEmail || booking.facilityName || booking.id;
+  return isOverriddenBookingStatus(booking.status) ? `${name} · ${overriddenLabel}` : name;
+};
 
 export const toLocalDatetimeValue = (date: Date): string => {
   const pad = (n: number): string => String(n).padStart(2, "0");

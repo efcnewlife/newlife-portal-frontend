@@ -285,11 +285,27 @@
     "table": {
       "user": "User",
       "facility": "Room",
+      "ministry": "Ministry",
       "bookingType": "Type",
       "startAt": "Start",
       "endAt": "End",
       "status": "Status",
-      "quotedAmount": "Quoted"
+      "quotedAmount": "Quoted",
+      "series": "Series"
+    },
+    "filter": {
+      "keywordPlaceholder": "Search Booker name or email",
+      "allStatuses": "All statuses",
+      "allMinistries": "All Ministries",
+      "dateFrom": "Start date from",
+      "dateTo": "Start date to"
+    },
+    "list": {
+      "viewSeries": "View Series",
+      "oneTime": "One-time",
+      "notInSeries": "This booking is not part of a Recurring Series.",
+      "loadingOccurrences": "Loading occurrences…",
+      "loadOccurrencesFailed": "Could not load this Series' occurrences."
     },
     "modal": {
       "detailTitle": "Booking detail",

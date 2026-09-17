@@ -1,5 +1,6 @@
 import { facilityService, type PendingPaymentSeriesItem } from "@/api/services/facilityService";
 import { usePermissions } from "@/context/AuthContext";
+import { bookingSeriesDetailPath } from "@/pages/Facility/shared/bookingSeriesRoute";
 import { DateUtil } from "@/utils/dateUtil";
 import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import { Badge, Button, Modal } from "@efcnewlife/newlife-ui";
@@ -112,7 +113,7 @@ const BookingPaymentConfirmationPanel = () => {
                   )}
                 </div>
                 <div className="flex shrink-0 gap-1">
-                  <Button variant="outline" size="sm" onClick={() => navigate(`/facility/booking-series/${item.id}`)}>
+                  <Button variant="outline" size="sm" onClick={() => navigate(bookingSeriesDetailPath(item.id))}>
                     {t("facility:bookingPayment.panel.viewSeries")}
                   </Button>
                   {canConfirm && (

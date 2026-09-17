@@ -319,6 +319,10 @@ export interface BookingListItem {
   facilityIds?: string[];
   facilityNames?: string[];
   bookingType: string;
+  /** Set when this occurrence was materialized from a Recurring Booking Series; null for one-time bookings. */
+  seriesId?: string;
+  ministryId?: string;
+  ministryName?: string;
   startAt: string;
   endAt: string;
   status: string;
@@ -354,7 +358,6 @@ export interface BookingSlot {
 }
 
 export interface BookingDetail extends BookingListItem {
-  ministryId?: string;
   /** iCal RRULE string (RFC 5545); series anchor is startAt */
   recurrenceRule?: string;
   recurrenceEndAt?: string;

@@ -2,9 +2,11 @@ import type { BookingListItem } from "@/api/services/facilityService";
 import CalendarDateBadge from "@/components/calendar/CalendarDateBadge";
 import NavigationButtons from "@/components/calendar/NavigationButtons";
 import { formatDate, formatWeekday } from "@/components/calendar/utils";
+import { isOverriddenBookingStatus } from "@/pages/Facility/shared/bookingStatusBadge";
 import { cn } from "@/utils";
 import { useEffect, useMemo, useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { MdEventRepeat } from "react-icons/md";
 import {
   GRID_CELL_COUNT,
   GRID_DAY_MINUTES,
@@ -12,6 +14,7 @@ import {
   defaultViewportScrollRatio,
   formatGridCellStartLabel,
   formatGridHourLabel,
+  gridBlockTitle,
   layoutGridOccupancyBlocks,
   toLocalDatetimeValue,
 } from "./bookingGridLayout";
@@ -29,6 +32,7 @@ interface BookingGridProps {
   onAnchorDateChange: (date: Date) => void;
   onVisibleRangeChange: (range: { start: Date; end: Date }) => void;
   onBookingClick: (booking: BookingListItem) => void;
+  onViewSeriesClick: (booking: BookingListItem) => void;
   onAddCell: (facilityId: string, startLocal: string, endLocal: string) => void;
   toolbarEnd?: ReactNode;
 }
@@ -57,6 +61,7 @@ const BookingGrid = ({
   onAnchorDateChange,
   onVisibleRangeChange,
   onBookingClick,
+  onViewSeriesClick,
   onAddCell,
   toolbarEnd,
 }: BookingGridProps) => {
@@ -232,27 +237,61 @@ const BookingGrid = ({
                     {blocks.map(({ booking, leftPercent, widthPercent, lane, laneCount }) => {
                       const topPercent = (lane / laneCount) * 100;
                       const heightPercent = 100 / laneCount;
+                      const overridden = isOverriddenBookingStatus(booking.status);
+                      const name = booking.userDisplayName || booking.userEmail || booking.facilityName || booking.id;
+                      const title = gridBlockTitle(booking, t("booking.status.overridden"));
                       return (
-                        <button
+                        <div
                           key={`${booking.id}-${room.id}`}
-                          type="button"
-                          className="absolute z-[1] overflow-hidden rounded-md border border-brand-200 bg-brand-50 px-1.5 py-0.5 text-left hover:bg-brand-100 dark:border-brand-500/40 dark:bg-brand-500/20 dark:hover:bg-brand-500/30"
+                          role="button"
+                          tabIndex={0}
+                          className={cn(
+                            "absolute z-[1] flex items-center gap-1 overflow-hidden rounded-md border px-1.5 py-0.5 text-left",
+                            overridden
+                              ? "border-error-200 bg-error-50 hover:bg-error-100 dark:border-error-500/40 dark:bg-error-500/20 dark:hover:bg-error-500/30"
+                              : "border-brand-200 bg-brand-50 hover:bg-brand-100 dark:border-brand-500/40 dark:bg-brand-500/20 dark:hover:bg-brand-500/30"
+                          )}
                           style={{
                             left: `${leftPercent}%`,
                             width: `${Math.max(widthPercent, 0.4)}%`,
                             top: `calc(${topPercent}% + 2px)`,
                             height: `calc(${heightPercent}% - 4px)`,
                           }}
-                          title={booking.userDisplayName || booking.userEmail || booking.id}
-                          onClick={(e) => {
-                            e.stopPropagation();
+                          title={title}
+                          onClick={() => onBookingClick(booking)}
+                          onKeyDown={(e) => {
+                            if (e.key !== "Enter" && e.key !== " ") return;
+                            e.preventDefault();
                             onBookingClick(booking);
                           }}
                         >
-                          <span className="block truncate text-xs font-medium text-brand-600 dark:text-brand-300">
-                            {booking.userDisplayName || booking.userEmail || booking.facilityName || booking.id}
+                          <span
+                            className={cn(
+                              "block min-w-0 flex-1 truncate text-xs font-medium",
+                              overridden ? "text-error-600 dark:text-error-300" : "text-brand-600 dark:text-brand-300"
+                            )}
+                          >
+                            {name}
                           </span>
-                        </button>
+                          {booking.seriesId && (
+                            <button
+                              type="button"
+                              aria-label={t("booking.list.viewSeries")}
+                              className={cn(
+                                "shrink-0",
+                                overridden
+                                  ? "text-error-500 hover:text-error-700"
+                                  : "text-brand-500 hover:text-brand-700"
+                              )}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onViewSeriesClick(booking);
+                              }}
+                            >
+                              <MdEventRepeat className="size-3.5" aria-hidden />
+                            </button>
+                          )}
+                        </div>
                       );
                     })}
                   </div>

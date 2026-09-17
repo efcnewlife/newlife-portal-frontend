@@ -285,11 +285,27 @@
     "table": {
       "user": "使用者",
       "facility": "場地",
+      "ministry": "事工",
       "bookingType": "類型",
       "startAt": "開始",
       "endAt": "結束",
       "status": "狀態",
-      "quotedAmount": "報價"
+      "quotedAmount": "報價",
+      "series": "系列"
+    },
+    "filter": {
+      "keywordPlaceholder": "搜尋預訂人姓名或電子郵件",
+      "allStatuses": "所有狀態",
+      "allMinistries": "所有事工",
+      "dateFrom": "開始日期(起)",
+      "dateTo": "開始日期(迄)"
+    },
+    "list": {
+      "viewSeries": "檢視系列",
+      "oneTime": "單次",
+      "notInSeries": "此預訂不屬於任何循環系列。",
+      "loadingOccurrences": "載入場次中…",
+      "loadOccurrencesFailed": "無法載入此系列的場次。"
     },
     "modal": {
       "detailTitle": "預訂詳情",
