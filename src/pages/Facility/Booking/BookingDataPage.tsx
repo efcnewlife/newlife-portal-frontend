@@ -19,7 +19,7 @@ import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import { Button, ButtonGroup, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MdAdd, MdCalendarMonth, MdCancel, MdGridOn, MdRefresh, MdViewList } from "react-icons/md";
+import { MdAdd, MdCalendarMonth, MdCancel, MdGridOn, MdPayments, MdRefresh, MdViewList } from "react-icons/md";
 import { useSearchParams } from "react-router";
 import BookingCalendar from "./BookingCalendar";
 import BookingCancelForm from "./BookingCancelForm";
@@ -28,6 +28,8 @@ import BookingDetailDrawer from "./BookingDetailDrawer";
 import BookingGrid from "./BookingGrid";
 import { loadBookingsForVisibleRange } from "./bookingOccupancyLoad";
 import { resolveBookingSaveErrorMessage } from "./bookingSaveError";
+import BookingPaymentConfirmationPanel from "../BookingPayment/BookingPaymentConfirmationPanel";
+import { PENDING_PAYMENT_READ_PERMISSION } from "../BookingPayment/pendingPaymentPermission";
 
 type BookingRow = BookingListItem & Record<string, unknown>;
 type BookingViewMode = "list" | "calendar" | "grid";
@@ -84,6 +86,7 @@ const BookingDataPage = () => {
   const { isOpen: isDetailOpen, openModal: openDetail, closeModal: closeDetail } = useModal(false);
   const { isOpen: isCancelOpen, openModal: openCancel, closeModal: closeCancel } = useModal(false);
   const { isOpen: isCreateOpen, openModal: openCreate, closeModal: closeCreate } = useModal(false);
+  const { isOpen: isPaymentOpen, openModal: openPayment, closeModal: closePayment } = useModal(false);
 
   const formRef = useRef<BookingDataFormHandle>(null);
   const modalRef = useRef<ModalFormHandle>(null);
@@ -274,11 +277,19 @@ const BookingDataPage = () => {
   const toolbarButtons: PageButtonType[] = useMemo(
     () => [
       CommonPageButton.ADD(() => openCreateModal(null)),
+      {
+        key: "paymentConfirmation",
+        text: t("booking.toolbar.paymentConfirmation"),
+        icon: <MdPayments className="size-4" />,
+        onClick: openPayment,
+        outline: true,
+        permission: PENDING_PAYMENT_READ_PERMISSION,
+      },
       CommonPageButton.REFRESH(() => {
         void refreshCurrentView();
       }),
     ],
-    [openCreateModal, refreshCurrentView]
+    [openCreateModal, openPayment, refreshCurrentView, t]
   );
 
   const rowActions: MenuButtonType<BookingRow>[] = useMemo(
@@ -538,6 +549,18 @@ const BookingDataPage = () => {
       >
         <BookingDataForm ref={formRef} defaultValues={formDefaults} rooms={rooms} />
       </ModalForm>
+
+      <Modal
+        isOpen={isPaymentOpen}
+        onClose={() => {
+          closePayment();
+          void refreshCurrentView();
+        }}
+        title={t("bookingPayment.modal.title")}
+        className="max-w-3xl w-full mx-4 p-6"
+      >
+        <BookingPaymentConfirmationPanel />
+      </Modal>
     </div>
   );
 };

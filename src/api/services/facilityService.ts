@@ -405,6 +405,33 @@ export interface BookingCancel {
   cancelReason?: string;
 }
 
+// Recurring Booking Series payment confirmation
+export interface PendingPaymentSeriesItem {
+  id: string;
+  userId: string;
+  userEmail?: string;
+  userDisplayName?: string;
+  ministryId?: string;
+  ministryName?: string;
+  quotedAmount: string | number;
+  currency: string;
+  occurrenceCount: number;
+  paymentHoldExpiresAt?: string;
+  isPriority: boolean;
+}
+
+export interface RecurringBookingSeriesDetail {
+  id: string;
+  userId: string;
+  ministryId?: string;
+  status: string;
+  quotedAmount: string | number;
+  currency: string;
+  occurrenceCount: number;
+  isPriority: boolean;
+  confirmedById?: string;
+}
+
 // Override log
 export interface OverrideLogPagesParams extends PagesParams {
   facilityId?: string;
@@ -747,6 +774,17 @@ class FacilityService {
   async getOverrideLogPages(params: OverrideLogPagesParams): Promise<ApiResponse<PagesResponse<OverrideLogItem>>> {
     if (IS_MOCK_API) return emptyPages();
     return httpClient.get(API_ENDPOINTS.FACILITY.BOOKING_OVERRIDE_LOGS.PAGES, params as Record<string, unknown>);
+  }
+
+  // Recurring Booking Series payment confirmation
+  async getPendingPaymentSeriesList(): Promise<ApiResponse<{ items: PendingPaymentSeriesItem[] }>> {
+    if (IS_MOCK_API) return emptyList();
+    return httpClient.get(API_ENDPOINTS.FACILITY.BOOKING_SERIES.PENDING_PAYMENT);
+  }
+
+  async confirmSeriesPayment(seriesId: string): Promise<ApiResponse<RecurringBookingSeriesDetail>> {
+    if (IS_MOCK_API) return { success: true, data: {} as RecurringBookingSeriesDetail };
+    return httpClient.post(API_ENDPOINTS.FACILITY.BOOKING_SERIES.CONFIRM_PAYMENT(seriesId));
   }
 }
 

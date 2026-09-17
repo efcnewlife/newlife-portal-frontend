@@ -147,6 +147,8 @@
       "facilityBookingRoomsRequired": "至少需要一個場地",
       "facilityBookingMaxRooms": "單一預約場地數量超過上限",
       "facilityBookingMinistryInactive": "事工必須為啟用狀態才能預約",
+      "facilityBookingSeriesNotFound": "找不到此定期預訂系列",
+      "facilityBookingSeriesNotPendingPayment": "此系列已不再等待付款",
       "orgPositionNotFound": "找不到職位",
       "orgPositionCodeExists": "職位代碼已存在",
       "memberPersonNotFound": "找不到成員",

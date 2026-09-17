@@ -278,6 +278,9 @@
       "title": "Bookings",
       "description": "View and manage facility bookings"
     },
+    "toolbar": {
+      "paymentConfirmation": "Payment Confirmation"
+    },
     "table": {
       "user": "User",
       "facility": "Room",
@@ -374,6 +377,40 @@
       "schedulingConflictGeneric": "This time slot conflicts with another booking",
       "roomBlackout": "{{room}} is not available in this time slot",
       "roomBlackoutGeneric": "This time slot is not available"
+    }
+  },
+  "bookingPayment": {
+    "toolbar": {
+      "button": "Payment Confirmation"
+    },
+    "modal": {
+      "title": "Booking Payment Confirmation",
+      "confirmTitle": "Confirm payment",
+      "confirmBody": "Mark this Series as paid and confirm every remaining occurrence?",
+      "confirmAction": "Confirm payment"
+    },
+    "panel": {
+      "loading": "Loading Pending-payment Series…",
+      "empty": "No Pending-payment Series right now.",
+      "refresh": "Refresh"
+    },
+    "table": {
+      "booker": "Booker",
+      "ministry": "Ministry",
+      "amount": "Total",
+      "occurrences": "Occurrences",
+      "holdExpires": "Hold expires",
+      "priority": "Priority"
+    },
+    "badge": {
+      "priority": "Church Activity"
+    },
+    "feedback": {
+      "confirmed": "Payment confirmed"
+    },
+    "errors": {
+      "notFound": "This Series was not found",
+      "notPendingPayment": "This Series is no longer awaiting payment"
     }
   },
   "overrideLog": {

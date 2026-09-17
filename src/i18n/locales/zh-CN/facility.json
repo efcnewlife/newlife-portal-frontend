@@ -278,6 +278,9 @@
       "title": "预订管理",
       "description": "檢視與管理場地预订"
     },
+    "toolbar": {
+      "paymentConfirmation": "付款确认"
+    },
     "table": {
       "user": "使用者",
       "facility": "場地",
@@ -374,6 +377,40 @@
       "schedulingConflictGeneric": "此时段与其他预订冲突",
       "roomBlackout": "{{room}} 此时段不开放",
       "roomBlackoutGeneric": "此时段不开放"
+    }
+  },
+  "bookingPayment": {
+    "toolbar": {
+      "button": "付款确认"
+    },
+    "modal": {
+      "title": "预订付款确认",
+      "confirmTitle": "确认付款",
+      "confirmBody": "将此系列标记为已付款，并确认所有剩余场次？",
+      "confirmAction": "确认付款"
+    },
+    "panel": {
+      "loading": "加载待付款系列中…",
+      "empty": "目前没有待付款的系列。",
+      "refresh": "刷新"
+    },
+    "table": {
+      "booker": "预订人",
+      "ministry": "事工",
+      "amount": "总额",
+      "occurrences": "场次数",
+      "holdExpires": "保留到期",
+      "priority": "优先"
+    },
+    "badge": {
+      "priority": "教会活动"
+    },
+    "feedback": {
+      "confirmed": "已确认付款"
+    },
+    "errors": {
+      "notFound": "找不到此系列",
+      "notPendingPayment": "此系列已不再等待付款"
     }
   },
   "overrideLog": {
