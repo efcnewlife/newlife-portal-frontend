@@ -13,7 +13,6 @@ export interface MinistryListItem {
   status: string;
   hasPriorityBooking: boolean;
   isActive: boolean;
-  ministryType?: MinistryCatalogRef;
   targetAudiences?: MinistryCatalogRef[];
   createAt?: string;
   updateAt?: string;
@@ -58,7 +57,6 @@ export interface MinistryMemberItem {
 
 export interface MinistryDetail extends MinistryListItem {
   ownerPositionId?: string;
-  ministryTypeId?: string;
   sequence?: number;
   createAt?: string;
   createdBy?: string;
@@ -73,7 +71,6 @@ export interface MinistryDetail extends MinistryListItem {
 export interface MinistryWrite {
   name?: string;
   ownerPositionId?: string;
-  ministryTypeId?: string;
   targetAudienceIds?: string[];
   schedules?: MinistryScheduleItem[];
   hasPriorityBooking?: boolean;

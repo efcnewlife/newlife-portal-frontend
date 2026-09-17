@@ -93,12 +93,6 @@ const MinistryDataPage = () => {
     () => [
       { key: "name", label: t("ministry.table.name"), sortable: true, width: "w-40" },
       {
-        key: "ministryType",
-        label: t("ministry.table.ministryType"),
-        width: "w-32",
-        render: (_, row) => row.ministryType?.name || row.ministryType?.code || "—",
-      },
-      {
         key: "targetAudiences",
         label: t("ministry.table.targetAudiences"),
         width: "w-40",
@@ -179,7 +173,6 @@ const MinistryDataPage = () => {
             setFormValues({
               name: d.name || "",
               ownerPositionId: d.ownerPositionId,
-              ministryTypeId: d.ministryTypeId,
               targetAudienceIds: (d.targetAudiences || []).map((item) => item.id),
               schedules: d.schedules || [],
               hasPriorityBooking: d.hasPriorityBooking,

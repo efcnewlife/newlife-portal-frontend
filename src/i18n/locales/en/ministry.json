@@ -16,7 +16,6 @@
     },
     "table": {
       "name": "Name",
-      "ministryType": "Type",
       "targetAudiences": "Audience",
       "status": "Status",
       "ownerPosition": "Owner position",
@@ -36,9 +35,6 @@
     },
     "form": {
       "name": "Name",
-      "ministryTypeId": "Ministry type",
-      "ministryTypePlaceholder": "Select a ministry type",
-      "ministryTypeRequired": "Ministry type is required",
       "targetAudiences": "Target audiences",
       "scheduleNote": "Schedule note",
       "schedules": "Schedules",

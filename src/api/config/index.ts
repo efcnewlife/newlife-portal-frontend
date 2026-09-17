@@ -231,7 +231,6 @@ export const API_ENDPOINTS = {
       PAGES: `${ADMIN_API_PREFIX}/ministry/approvals/pages`,
     },
     CATALOG: {
-      MINISTRY_TYPES: `${ADMIN_API_PREFIX}/ministry/catalog/ministry-types`,
       TARGET_AUDIENCES: `${ADMIN_API_PREFIX}/ministry/catalog/target-audiences`,
     },
   },

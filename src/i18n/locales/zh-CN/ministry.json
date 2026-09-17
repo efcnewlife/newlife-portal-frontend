@@ -16,7 +16,6 @@
     },
     "table": {
       "name": "名称",
-      "ministryType": "类型",
       "targetAudiences": "对象",
       "status": "状态",
       "ownerPosition": "负责职位",
@@ -36,9 +35,6 @@
     },
     "form": {
       "name": "名称",
-      "ministryTypeId": "事工类型",
-      "ministryTypePlaceholder": "请选择事工类型",
-      "ministryTypeRequired": "请选择事工类型",
       "targetAudiences": "适合对象",
       "scheduleNote": "时段备注",
       "schedules": "时段",

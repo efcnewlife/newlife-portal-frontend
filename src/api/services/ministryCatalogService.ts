@@ -10,11 +10,6 @@ export interface MinistryCatalogItem {
 }
 
 class MinistryCatalogService {
-  async getMinistryTypes(): Promise<ApiResponse<{ items: MinistryCatalogItem[] }>> {
-    if (IS_MOCK_API) return { success: true, data: { items: [] } };
-    return httpClient.get(API_ENDPOINTS.MINISTRY.CATALOG.MINISTRY_TYPES);
-  }
-
   async getTargetAudiences(): Promise<ApiResponse<{ items: MinistryCatalogItem[] }>> {
     if (IS_MOCK_API) return { success: true, data: { items: [] } };
     return httpClient.get(API_ENDPOINTS.MINISTRY.CATALOG.TARGET_AUDIENCES);
