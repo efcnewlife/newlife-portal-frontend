@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
-import type { RoomBlackoutImpactOccurrence, RoomBlackoutWrite } from "@/api/services/facilityService";
+import type {
+  RoomBlackoutImpactOccurrence,
+  RoomBlackoutImpactPreview,
+  RoomBlackoutWrite,
+} from "@/api/services/facilityService";
 import {
   buildConfirmedBlackoutPayload,
+  decideBlackoutImpact,
   groupBlackoutImpactBySeries,
   isMinistrySeriesImpact,
   resolveRoomBlackoutImpactErrorMessage,
@@ -16,6 +21,18 @@ const occurrence = (overrides: Partial<RoomBlackoutImpactOccurrence>): RoomBlack
   status: "confirmed",
   facilityIds: ["room-1"],
   ministryId: null,
+  ...overrides,
+});
+
+const blackoutWrite = (overrides: Partial<RoomBlackoutWrite> = {}): RoomBlackoutWrite => ({
+  facilityId: "room-1",
+  name: "Roof repair",
+  reason: "Contractor access",
+  kind: "one_off",
+  blackoutDate: "2026-01-04",
+  startTime: "09:00",
+  endTime: "17:00",
+  isActive: true,
   ...overrides,
 });
 
@@ -50,33 +67,30 @@ describe("isMinistrySeriesImpact", () => {
 
 describe("buildConfirmedBlackoutPayload", () => {
   it("attaches confirmOccurrenceIds matching the previewed impact items, leaving other fields untouched", () => {
-    const payload: RoomBlackoutWrite = {
-      facilityId: "room-1",
-      name: "Roof repair",
-      reason: "Contractor access",
-      kind: "one_off",
-      blackoutDate: "2026-01-04",
-      startTime: "09:00",
-      endTime: "17:00",
-      isActive: true,
-    };
+    const payload = blackoutWrite();
     const items = [occurrence({ id: "occ-1" }), occurrence({ id: "occ-2" })];
     const confirmed = buildConfirmedBlackoutPayload(payload, items);
     expect(confirmed).toEqual({ ...payload, confirmOccurrenceIds: ["occ-1", "occ-2"] });
   });
 
   it("confirms an empty set for a no-impact preview", () => {
-    const payload: RoomBlackoutWrite = {
-      facilityId: null,
-      name: "Holiday closure",
-      reason: "Campus closed",
-      kind: "one_off",
-      blackoutDate: "2026-12-25",
-      startTime: "00:00",
-      endTime: "23:59",
-      isActive: true,
-    };
+    const payload = blackoutWrite({ facilityId: null, name: "Holiday closure", blackoutDate: "2026-12-25" });
     expect(buildConfirmedBlackoutPayload(payload, [])).toEqual({ ...payload, confirmOccurrenceIds: [] });
+  });
+});
+
+describe("decideBlackoutImpact", () => {
+  it("no-impact path: decides to create immediately when the preview reports no impact", () => {
+    const payload = blackoutWrite();
+    const preview: RoomBlackoutImpactPreview = { confirmationRequired: false, items: [] };
+    expect(decideBlackoutImpact(payload, preview)).toEqual({ kind: "create", payload });
+  });
+
+  it("impacted path: holds the payload and impacted items for confirmation instead of creating", () => {
+    const payload = blackoutWrite();
+    const items = [occurrence({ id: "occ-1" }), occurrence({ id: "occ-2" })];
+    const preview: RoomBlackoutImpactPreview = { confirmationRequired: true, items };
+    expect(decideBlackoutImpact(payload, preview)).toEqual({ kind: "confirm", pending: { payload, items } });
   });
 });
 

@@ -1,6 +1,5 @@
 import {
   facilityService,
-  type RoomBlackoutImpactOccurrence,
   type RoomBlackoutItem,
   type RoomBlackoutUpdate,
   type RoomBlackoutWrite,
@@ -24,7 +23,12 @@ import RoomBlackoutDataForm, {
   type RoomBlackoutFormValues,
 } from "./RoomBlackoutDataForm";
 import RoomBlackoutImpactConfirmModal from "./RoomBlackoutImpactConfirmModal";
-import { buildConfirmedBlackoutPayload, resolveRoomBlackoutImpactErrorMessage } from "./roomBlackoutImpact";
+import {
+  buildConfirmedBlackoutPayload,
+  decideBlackoutImpact,
+  resolveRoomBlackoutImpactErrorMessage,
+  type PendingBlackoutImpact,
+} from "./roomBlackoutImpact";
 
 type BlackoutRow = RoomBlackoutItem & Record<string, unknown>;
 
@@ -70,8 +74,7 @@ const RoomBlackoutDataPage = () => {
   const [editing, setEditing] = useState<BlackoutRow | null>(null);
   const [formValues, setFormValues] = useState<RoomBlackoutFormValues | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [pendingCreatePayload, setPendingCreatePayload] = useState<RoomBlackoutWrite | null>(null);
-  const [impactItems, setImpactItems] = useState<RoomBlackoutImpactOccurrence[]>([]);
+  const [pendingImpact, setPendingImpact] = useState<PendingBlackoutImpact | null>(null);
 
   const { isOpen, openModal, closeModal } = useModal(false);
   const { isOpen: isDeleteOpen, openModal: openDeleteModal, closeModal: closeDeleteModal } = useModal(false);
@@ -294,19 +297,20 @@ const RoomBlackoutDataPage = () => {
   );
 
   const dismissBlackoutImpact = () => {
-    setPendingCreatePayload(null);
-    setImpactItems([]);
+    setPendingImpact(null);
     closeImpactModal();
   };
 
   const confirmBlackoutImpact = async () => {
-    if (!pendingCreatePayload) return;
+    if (!pendingImpact) return;
     setSubmitting(true);
     try {
-      await facilityService.createRoomBlackout(buildConfirmedBlackoutPayload(pendingCreatePayload, impactItems));
+      await facilityService.createRoomBlackout(
+        buildConfirmedBlackoutPayload(pendingImpact.payload, pendingImpact.items)
+      );
       notifySuccess({
         title: t("common:feedback.created"),
-        description: t("roomBlackout.impact.cancelledCount", { count: impactItems.length }),
+        description: t("roomBlackout.impact.cancelledCount", { count: pendingImpact.items.length }),
       });
       dismissBlackoutImpact();
       await fetchPages();
@@ -367,14 +371,14 @@ const RoomBlackoutDataPage = () => {
             if (formMode === "create") {
               const impact = await facilityService.previewRoomBlackoutImpact(payload);
               if (!impact.success) return;
-              if (impact.data.confirmationRequired) {
-                setPendingCreatePayload(payload);
-                setImpactItems(impact.data.items);
+              const decision = decideBlackoutImpact(payload, impact.data);
+              if (decision.kind === "confirm") {
+                setPendingImpact(decision.pending);
                 closeModal();
                 openImpactModal();
                 return;
               }
-              await facilityService.createRoomBlackout(payload);
+              await facilityService.createRoomBlackout(decision.payload);
               notifySuccess({ title: t("common:feedback.created") });
             } else if (editing?.id) {
               await facilityService.updateRoomBlackout(editing.id, payload as RoomBlackoutUpdate);
@@ -429,7 +433,7 @@ const RoomBlackoutDataPage = () => {
 
       <RoomBlackoutImpactConfirmModal
         isOpen={isImpactOpen}
-        items={impactItems}
+        items={pendingImpact?.items ?? []}
         rooms={rooms}
         submitting={submitting}
         onClose={dismissBlackoutImpact}

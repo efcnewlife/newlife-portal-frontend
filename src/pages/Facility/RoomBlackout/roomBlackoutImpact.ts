@@ -1,10 +1,16 @@
 import type { ApiError } from "@/types/api";
-import type { RoomBlackoutImpactOccurrence, RoomBlackoutWrite } from "@/api/services/facilityService";
+import type {
+  RoomBlackoutImpactOccurrence,
+  RoomBlackoutImpactPreview,
+  RoomBlackoutWrite,
+} from "@/api/services/facilityService";
 
 export const ROOM_BLACKOUT_IMPACT_ERROR_CODE = {
   CONFIRMATION_REQUIRED: "FACILITY_BLACKOUT_IMPACT_CONFIRMATION_REQUIRED",
   MISMATCH: "FACILITY_BLACKOUT_IMPACT_MISMATCH",
 } as const;
+
+const compareStrings = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 
 export interface BlackoutImpactSeriesGroup {
   seriesId: string;
@@ -20,10 +26,10 @@ export const groupBlackoutImpactBySeries = (items: RoomBlackoutImpactOccurrence[
     bySeries.set(item.seriesId, list);
   }
   return Array.from(bySeries.entries())
-    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .sort(([a], [b]) => compareStrings(a, b))
     .map(([seriesId, seriesItems]) => ({
       seriesId,
-      items: [...seriesItems].sort((a, b) => (a.startAt < b.startAt ? -1 : a.startAt > b.startAt ? 1 : 0)),
+      items: [...seriesItems].sort((a, b) => compareStrings(a.startAt, b.startAt)),
     }));
 };
 
@@ -37,6 +43,26 @@ export const buildConfirmedBlackoutPayload = (
   ...payload,
   confirmOccurrenceIds: items.map((item) => item.id),
 });
+
+export interface PendingBlackoutImpact {
+  payload: RoomBlackoutWrite;
+  items: RoomBlackoutImpactOccurrence[];
+}
+
+export type BlackoutImpactDecision =
+  { kind: "create"; payload: RoomBlackoutWrite } | { kind: "confirm"; pending: PendingBlackoutImpact };
+
+/**
+ * Decides how the create flow proceeds from an impact preview: straight to create when nothing
+ * is impacted, or hold the payload and impacted items for operator confirmation otherwise.
+ */
+export const decideBlackoutImpact = (
+  payload: RoomBlackoutWrite,
+  preview: RoomBlackoutImpactPreview
+): BlackoutImpactDecision =>
+  preview.confirmationRequired
+    ? { kind: "confirm", pending: { payload, items: preview.items } }
+    : { kind: "create", payload };
 
 type Translate = (key: string, options?: Record<string, unknown>) => string;
 
