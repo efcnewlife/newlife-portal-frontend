@@ -11,6 +11,7 @@ import type { ApiError } from "@/types/api";
 import { Resource, Verb } from "@/const/enums";
 import { usePermissions } from "@/context/AuthContext";
 import { useModal } from "@/hooks/useModal";
+import { bookingStatusBadgeColor } from "@/pages/Facility/shared/bookingStatusBadge";
 import { useRoomListOptions } from "@/pages/Facility/shared/useRoomListOptions";
 import { DateUtil } from "@/utils/dateUtil";
 import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
@@ -24,15 +25,6 @@ import { useNavigate, useParams } from "react-router";
 import RecurringSeriesCancelModal from "./RecurringSeriesCancelModal";
 import { filterOverrideLogsForOccurrences, uniqueOccurrenceFacilityIds } from "./recurringSeriesOverrideHistory";
 import { resolveRecurringSeriesErrorMessage } from "./recurringSeriesErrorCode";
-
-type StatusBadgeColor = "success" | "warning" | "error" | "light";
-
-const STATUS_BADGE_COLOR: Record<string, StatusBadgeColor> = {
-  pending_payment: "warning",
-  confirmed: "success",
-  cancelled: "light",
-  overridden: "error",
-};
 
 const OVERRIDE_LOG_PAGE_SIZE = 100;
 
@@ -176,7 +168,7 @@ const RecurringSeriesDetailPage = () => {
         <>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="m-0 text-2xl font-bold text-gray-900 dark:text-white">{t("bookingSeries.detail.title")}</h1>
-            <Badge color={STATUS_BADGE_COLOR[series.status] ?? "light"}>
+            <Badge color={bookingStatusBadgeColor(series.status)}>
               {t(`booking.status.${series.status}`, { defaultValue: series.status })}
             </Badge>
             {series.isPriority ? <Badge color="info">{t("bookingSeries.detail.priorityBadge")}</Badge> : null}
@@ -226,7 +218,7 @@ const RecurringSeriesDetailPage = () => {
                       {occurrence.quotedAmount} {occurrence.currency}
                     </p>
                   </div>
-                  <Badge color={STATUS_BADGE_COLOR[occurrence.status] ?? "light"} size="sm">
+                  <Badge color={bookingStatusBadgeColor(occurrence.status)} size="sm">
                     {t(`booking.status.${occurrence.status}`, { defaultValue: occurrence.status })}
                   </Badge>
                 </li>

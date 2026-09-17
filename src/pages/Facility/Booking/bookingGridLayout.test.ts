@@ -8,6 +8,7 @@ import {
   clickIntervalForCell,
   formatGridCellStartLabel,
   formatGridHourLabel,
+  gridBlockTitle,
   gridHourLabels,
   layoutGridOccupancyBlocks,
   occupiedFacilityIds,
@@ -188,6 +189,26 @@ describe("bookingGridLayout", () => {
     expect(roomBlocks.every((block) => block.laneCount === 2)).toBe(true);
   });
 
+  it("keeps overridden bookings, unlike cancelled ones", () => {
+    const day = at(2026, 7, 20, 0, 0);
+    const roomId = "room-a";
+    const blocks = layoutGridOccupancyBlocks(
+      [
+        booking({
+          id: "overridden",
+          facilityIds: [roomId],
+          status: "overridden",
+          startAt: at(2026, 7, 20, 9, 0).toISOString(),
+          endAt: at(2026, 7, 20, 10, 0).toISOString(),
+        }),
+      ],
+      [{ id: roomId }],
+      day
+    );
+    const roomBlocks = blocks.get(roomId) || [];
+    expect(roomBlocks.map((block) => block.booking.id)).toEqual(["overridden"]);
+  });
+
   it("does not place bookings by facilityNames alone", () => {
     const day = at(2026, 7, 20, 0, 0);
     const blocks = layoutGridOccupancyBlocks(
@@ -203,5 +224,23 @@ describe("bookingGridLayout", () => {
       day
     );
     expect(blocks.get("gym-id")).toEqual([]);
+  });
+
+  it("titles a block by name alone when confirmed", () => {
+    expect(gridBlockTitle({ id: "b1", userDisplayName: "Jane", status: "confirmed" }, "Overridden")).toBe("Jane");
+  });
+
+  it("appends the overridden label when the booking was overridden", () => {
+    expect(gridBlockTitle({ id: "b1", userDisplayName: "Jane", status: "overridden" }, "Overridden")).toBe(
+      "Jane · Overridden"
+    );
+  });
+
+  it("falls back through userEmail, facilityName, then id for the title", () => {
+    expect(gridBlockTitle({ id: "b1", userEmail: "jane@example.com", status: "confirmed" }, "Overridden")).toBe(
+      "jane@example.com"
+    );
+    expect(gridBlockTitle({ id: "b1", facilityName: "Gym", status: "confirmed" }, "Overridden")).toBe("Gym");
+    expect(gridBlockTitle({ id: "booking-1", status: "confirmed" }, "Overridden")).toBe("booking-1");
   });
 });

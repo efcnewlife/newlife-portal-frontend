@@ -2,6 +2,7 @@ import type { BookingListItem } from "@/api/services/facilityService";
 import { Calendar, getVisibleMonthWindow, type CalendarEvent, type CalendarView } from "@/components/calendar";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { mapBookingsToCalendarEvents } from "./bookingCalendarMapping";
 
 interface BookingCalendarProps {
   anchorDate: Date;
@@ -12,6 +13,7 @@ interface BookingCalendarProps {
   onVisibleRangeChange: (range: { start: Date; end: Date }) => void;
   onEventClick: (booking: BookingListItem) => void;
   onCancelClick: (booking: BookingListItem) => void;
+  onViewSeriesClick: (booking: BookingListItem) => void;
   onAddSlot: (startLocal: string, endLocal: string) => void;
   onDensityOverflow: (date: Date) => void;
   toolbarEnd?: ReactNode;
@@ -56,6 +58,7 @@ const BookingCalendar = ({
   onVisibleRangeChange,
   onEventClick,
   onCancelClick,
+  onViewSeriesClick,
   onAddSlot,
   onDensityOverflow,
   toolbarEnd,
@@ -84,26 +87,8 @@ const BookingCalendar = ({
   }, []);
 
   const events: CalendarEvent[] = useMemo(
-    () =>
-      bookings
-        .filter((booking) => booking.status !== "cancelled")
-        .map((booking) => {
-          const roomNames =
-            booking.facilityNames && booking.facilityNames.length > 0
-              ? booking.facilityNames
-              : booking.facilityName
-                ? [booking.facilityName]
-                : [];
-          return {
-            id: booking.id,
-            title: booking.userDisplayName || booking.userEmail || "",
-            start: booking.startAt,
-            end: booking.endAt,
-            tags: roomNames,
-            item: booking,
-          };
-        }),
-    [bookings]
+    () => mapBookingsToCalendarEvents(bookings, t("booking.status.overridden")),
+    [bookings, t]
   );
 
   return (
@@ -156,6 +141,18 @@ const BookingCalendar = ({
           >
             {t("booking.actions.view")}
           </button>
+          {contextMenu.booking.seriesId && (
+            <button
+              type="button"
+              className="block w-full px-3 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
+              onClick={() => {
+                onViewSeriesClick(contextMenu.booking);
+                setContextMenu(null);
+              }}
+            >
+              {t("booking.list.viewSeries")}
+            </button>
+          )}
           {contextMenu.booking.status !== "cancelled" && (
             <button
               type="button"

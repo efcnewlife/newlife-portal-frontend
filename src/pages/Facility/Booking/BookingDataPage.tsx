@@ -1,3 +1,4 @@
+import ministryService, { type MinistryListItem } from "@/api/services/ministryService";
 import {
   facilityService,
   type BookingCreate,
@@ -11,12 +12,15 @@ import { CommonPageButton, CommonRowAction, DataPage } from "@/components/DataPa
 import { Resource, Verb } from "@/const/enums";
 import { usePermissions } from "@/context/AuthContext";
 import { useModal } from "@/hooks/useModal";
+import { bookingSeriesDetailPath } from "@/pages/Facility/shared/bookingSeriesRoute";
+import { BOOKING_STATUS_VALUES } from "@/pages/Facility/shared/bookingStatusBadge";
 import { useRoomListOptions } from "@/pages/Facility/shared/useRoomListOptions";
 import { cn } from "@/utils";
 import { DateUtil } from "@/utils/dateUtil";
 import { dayjsToApiUtcIso, localDatetimeInputToDayjs } from "@/utils/dayjsApi";
 import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import { Button, ButtonGroup, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
+import type { Dayjs } from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -35,13 +39,19 @@ import BookingCancelForm from "./BookingCancelForm";
 import BookingDataForm, { type BookingDataFormHandle, type BookingFormValues } from "./BookingDataForm";
 import BookingDetailDrawer from "./BookingDetailDrawer";
 import BookingGrid from "./BookingGrid";
+import BookingListFilters from "./BookingListFilters";
+import BookingSeriesExpandPanel from "./BookingSeriesExpandPanel";
+import { filterBookingRowsByMinistry } from "./bookingListFilter";
 import { loadBookingsForVisibleRange } from "./bookingOccupancyLoad";
 import { resolveBookingSaveErrorMessage } from "./bookingSaveError";
+import { groupBookingsBySeries, type BookingSeriesGroupRow } from "./bookingSeriesGrouping";
 import BookingPaymentConfirmationPanel from "../BookingPayment/BookingPaymentConfirmationPanel";
 import { PENDING_PAYMENT_READ_PERMISSION } from "../BookingPayment/pendingPaymentPermission";
 import RecurringSeriesCreateModal from "../BookingSeries/RecurringSeriesCreateModal";
 
 type BookingRow = BookingListItem & Record<string, unknown>;
+/** One grouped List row: a Series (occurrenceCount > 1) or a one-time booking (occurrenceCount 1). */
+type BookingListRow = BookingSeriesGroupRow & Record<string, unknown>;
 type BookingViewMode = "list" | "calendar" | "grid";
 
 const parseViewMode = (value: string | null): BookingViewMode => {
@@ -92,6 +102,14 @@ const BookingDataPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [formDefaults, setFormDefaults] = useState<Partial<BookingFormValues> | null>(null);
   const [visibleRange, setVisibleRange] = useState<{ start: Date; end: Date } | null>(null);
+
+  const [keywordInput, setKeywordInput] = useState("");
+  const [keyword, setKeyword] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [ministryFilter, setMinistryFilter] = useState("");
+  const [dateFromFilter, setDateFromFilter] = useState<Dayjs | null>(null);
+  const [dateToFilter, setDateToFilter] = useState<Dayjs | null>(null);
+  const [ministries, setMinistries] = useState<MinistryListItem[]>([]);
 
   const { rooms } = useRoomListOptions();
   const { isOpen: isDetailOpen, openModal: openDetail, closeModal: closeDetail } = useModal(false);
@@ -161,12 +179,43 @@ const BookingDataPage = () => {
     [anchorDate, searchParams, setSearchParams]
   );
 
+  useEffect(() => {
+    const timeout = setTimeout(() => setKeyword(keywordInput.trim()), 300);
+    return () => clearTimeout(timeout);
+  }, [keywordInput]);
+
+  useEffect(() => {
+    void ministryService
+      .getMinistryList()
+      .then((res) => setMinistries(res.success ? res.data.items || [] : []))
+      .catch(() => setMinistries([]));
+  }, []);
+
+  const dateFromIso = useMemo(
+    () => (dateFromFilter ? dayjsToApiUtcIso(dateFromFilter.startOf("day")) : undefined),
+    [dateFromFilter]
+  );
+  const dateToIso = useMemo(
+    () => (dateToFilter ? dayjsToApiUtcIso(dateToFilter.endOf("day")) : undefined),
+    [dateToFilter]
+  );
+
+  // Ministry has no server-side filter (see bookingListFilter.ts); resetting to page 1 only
+  // for the server-backed filters keeps that client-side Ministry filter page-local on purpose.
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [keyword, statusFilter, dateFromIso, dateToIso]);
+
   const fetchPages = useCallback(async () => {
     setLoading(true);
     try {
       const res = await facilityService.getBookingPages({
         page: currentPage - 1,
         page_size: pageSize,
+        keyword: keyword || undefined,
+        status: statusFilter || undefined,
+        dateFrom: dateFromIso,
+        dateTo: dateToIso,
       });
       if (res.success) {
         setItems((res.data.items || []) as BookingRow[]);
@@ -181,7 +230,7 @@ const BookingDataPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize, t]);
+  }, [currentPage, dateFromIso, dateToIso, keyword, pageSize, statusFilter, t]);
 
   const fetchCalendarRange = useCallback(async () => {
     if (!visibleRange) return;
@@ -248,7 +297,32 @@ const BookingDataPage = () => {
     [openDetail]
   );
 
-  const columns: DataTableColumn<BookingRow>[] = useMemo(
+  const statusOptions = useMemo(
+    () => [
+      { value: "", label: t("booking.filter.allStatuses") },
+      ...BOOKING_STATUS_VALUES.map((status) => ({ value: status, label: t(`booking.status.${status}`) })),
+    ],
+    [t]
+  );
+
+  const ministryOptions = useMemo(
+    () => [
+      { value: "", label: t("booking.filter.allMinistries") },
+      ...ministries.map((ministry) => ({ value: ministry.id, label: ministry.name || ministry.id })),
+    ],
+    [ministries, t]
+  );
+
+  const groupedRows = useMemo(() => groupBookingsBySeries(items) as BookingListRow[], [items]);
+  const visibleRows = useMemo(
+    () => filterBookingRowsByMinistry(groupedRows, ministryFilter),
+    [groupedRows, ministryFilter]
+  );
+  // Ministry filters only the current page (see bookingListFilter.ts), so the server's
+  // cross-page `total` would otherwise imply pages beyond what the filtered rows can fill.
+  const displayTotal = ministryFilter ? visibleRows.length : total;
+
+  const columns: DataTableColumn<BookingListRow>[] = useMemo(
     () => [
       {
         key: "userDisplayName",
@@ -257,6 +331,12 @@ const BookingDataPage = () => {
         render: (_, row) => row.userDisplayName || row.userEmail || row.userId,
       },
       { key: "facilityName", label: t("booking.table.facility"), width: "w-32" },
+      {
+        key: "ministryName",
+        label: t("booking.table.ministry"),
+        width: "w-32",
+        render: (_, row) => row.ministryName || "—",
+      },
       {
         key: "bookingType",
         label: t("booking.table.bookingType"),
@@ -282,8 +362,32 @@ const BookingDataPage = () => {
         render: (v) => t(`booking.status.${v}`, { defaultValue: String(v) }),
       },
       { key: "quotedAmount", label: t("booking.table.quotedAmount"), width: "w-24" },
+      {
+        key: "seriesId",
+        label: t("booking.table.series"),
+        width: "w-32",
+        render: (_, row) =>
+          row.seriesId ? (
+            <Button
+              variant="outline"
+              size="sm"
+              startIcon={<MdEventRepeat className="size-4" />}
+              onClick={() => navigate(bookingSeriesDetailPath(row.seriesId!))}
+            >
+              {t("booking.list.viewSeries")}
+            </Button>
+          ) : (
+            <span className="text-gray-400 dark:text-gray-500">{t("booking.list.oneTime")}</span>
+          ),
+        renderExpand: (row) =>
+          row.seriesId ? (
+            <BookingSeriesExpandPanel seriesId={row.seriesId} />
+          ) : (
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t("booking.list.notInSeries")}</p>
+          ),
+      },
     ],
-    [t]
+    [navigate, t]
   );
 
   const toolbarButtons: PageButtonType[] = useMemo(
@@ -312,7 +416,7 @@ const BookingDataPage = () => {
     [openCreateModal, openPayment, openSeriesCreate, refreshCurrentView, t]
   );
 
-  const rowActions: MenuButtonType<BookingRow>[] = useMemo(
+  const rowActions: MenuButtonType<BookingListRow>[] = useMemo(
     () => [
       CommonRowAction.VIEW(async (row) => {
         await openBookingDetail(row);
@@ -408,19 +512,37 @@ const BookingDataPage = () => {
       />
 
       {viewMode === "list" && (
-        <DataPage<BookingRow>
-          data={{ page: currentPage, pageSize, total, items }}
-          columns={columns}
-          loading={loading}
-          resource={Resource.FacilityBooking}
-          buttons={toolbarButtons}
-          rowActions={rowActions}
-          onPageChange={setCurrentPage}
-          onItemsPerPageChange={(s) => {
-            setPageSize(s);
-            setCurrentPage(1);
-          }}
-        />
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-0 overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
+          <BookingListFilters
+            keyword={keywordInput}
+            onKeywordChange={setKeywordInput}
+            status={statusFilter}
+            onStatusChange={setStatusFilter}
+            statusOptions={statusOptions}
+            ministryId={ministryFilter}
+            onMinistryIdChange={setMinistryFilter}
+            ministryOptions={ministryOptions}
+            dateFrom={dateFromFilter}
+            onDateFromChange={setDateFromFilter}
+            dateTo={dateToFilter}
+            onDateToChange={setDateToFilter}
+          />
+          <div className="min-h-0 flex-1">
+            <DataPage<BookingListRow>
+              data={{ page: currentPage, pageSize, total: displayTotal, items: visibleRows }}
+              columns={columns}
+              loading={loading}
+              resource={Resource.FacilityBooking}
+              buttons={toolbarButtons}
+              rowActions={rowActions}
+              onPageChange={setCurrentPage}
+              onItemsPerPageChange={(s) => {
+                setPageSize(s);
+                setCurrentPage(1);
+              }}
+            />
+          </div>
+        </div>
       )}
 
       {viewMode === "calendar" && (
@@ -436,6 +558,9 @@ const BookingDataPage = () => {
             onCancelClick={(booking) => {
               setCancelling(booking as BookingRow);
               openCancel();
+            }}
+            onViewSeriesClick={(booking) => {
+              if (booking.seriesId) navigate(bookingSeriesDetailPath(booking.seriesId));
             }}
             onAddSlot={(startLocal, endLocal) => {
               if (!canCreate) return;
@@ -460,6 +585,9 @@ const BookingDataPage = () => {
             onAnchorDateChange={setAnchorDate}
             onVisibleRangeChange={handleVisibleRangeChange}
             onBookingClick={(booking) => void openBookingDetail(booking)}
+            onViewSeriesClick={(booking) => {
+              if (booking.seriesId) navigate(bookingSeriesDetailPath(booking.seriesId));
+            }}
             onAddCell={(facilityId, startLocal, endLocal) => {
               openCreateModal({
                 facilityIds: [facilityId],
@@ -586,7 +714,7 @@ const BookingDataPage = () => {
         isOpen={isSeriesCreateOpen}
         rooms={rooms}
         onClose={closeSeriesCreate}
-        onCreated={(series) => navigate(`/facility/booking-series/${series.id}`)}
+        onCreated={(series) => navigate(bookingSeriesDetailPath(series.id))}
       />
     </div>
   );
