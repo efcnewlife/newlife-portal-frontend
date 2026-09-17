@@ -147,8 +147,6 @@
       "facilityBookingRoomsRequired": "至少需要一个场地",
       "facilityBookingMaxRooms": "单一预约场地数量超过上限",
       "facilityBookingMinistryInactive": "事工必须为启用状态才能预约",
-      "facilityBookingSeriesNotFound": "找不到此定期预订系列",
-      "facilityBookingSeriesNotPendingPayment": "此系列已不再等待付款",
       "orgPositionNotFound": "找不到职位",
       "orgPositionCodeExists": "职位代码已存在",
       "memberPersonNotFound": "找不到成员",

@@ -147,8 +147,6 @@
       "facilityBookingRoomsRequired": "At least one room is required",
       "facilityBookingMaxRooms": "Too many rooms for one booking",
       "facilityBookingMinistryInactive": "Ministry must be active for booking",
-      "facilityBookingSeriesNotFound": "Recurring Booking Series was not found",
-      "facilityBookingSeriesNotPendingPayment": "This Series is no longer awaiting payment",
       "orgPositionNotFound": "Position was not found",
       "orgPositionCodeExists": "A position with this code already exists",
       "memberPersonNotFound": "Member person was not found",

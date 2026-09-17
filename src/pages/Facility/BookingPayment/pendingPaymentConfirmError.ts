@@ -30,5 +30,11 @@ export const resolveConfirmPaymentErrorMessage = (error: unknown, t: Translate):
     return t("facility:bookingPayment.errors.notFound");
   }
 
+  // Only an assigned user may confirm payment; the confirm API rejects everyone else
+  // with a plain 403 (no error_code). Name that reason instead of a generic retry toast.
+  if (error.code === 403) {
+    return t("facility:bookingPayment.errors.forbidden");
+  }
+
   return undefined;
 };

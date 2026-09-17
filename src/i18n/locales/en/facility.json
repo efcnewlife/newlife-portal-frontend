@@ -380,9 +380,6 @@
     }
   },
   "bookingPayment": {
-    "toolbar": {
-      "button": "Payment Confirmation"
-    },
     "modal": {
       "title": "Booking Payment Confirmation",
       "confirmTitle": "Confirm payment",
@@ -410,7 +407,8 @@
     },
     "errors": {
       "notFound": "This Series was not found",
-      "notPendingPayment": "This Series is no longer awaiting payment"
+      "notPendingPayment": "This Series is no longer awaiting payment",
+      "forbidden": "You are not authorized to confirm this payment"
     }
   },
   "overrideLog": {

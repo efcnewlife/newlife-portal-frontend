@@ -27,8 +27,13 @@ describe("resolveConfirmPaymentErrorMessage", () => {
     expect(resolveConfirmPaymentErrorMessage(error, t)).toBe("facility:bookingPayment.errors.notFound");
   });
 
-  it("returns undefined for a plain 403 so the caller falls back to the generic forbidden toast", () => {
+  it("returns a clear not-authorized message for a plain 403 (only an assigned user may confirm)", () => {
     const error = apiError({ code: 403, message: "Forbidden", details: { detail: "Forbidden" } });
+    expect(resolveConfirmPaymentErrorMessage(error, t)).toBe("facility:bookingPayment.errors.forbidden");
+  });
+
+  it("returns undefined for other errors so notifyApiError can use the shared mapper", () => {
+    const error = apiError({ code: 500, message: "Internal error" });
     expect(resolveConfirmPaymentErrorMessage(error, t)).toBeUndefined();
   });
 

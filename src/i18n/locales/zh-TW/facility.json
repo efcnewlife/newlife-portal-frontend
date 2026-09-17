@@ -380,9 +380,6 @@
     }
   },
   "bookingPayment": {
-    "toolbar": {
-      "button": "付款確認"
-    },
     "modal": {
       "title": "預訂付款確認",
       "confirmTitle": "確認付款",
@@ -410,7 +407,8 @@
     },
     "errors": {
       "notFound": "找不到此系列",
-      "notPendingPayment": "此系列已不再等待付款"
+      "notPendingPayment": "此系列已不再等待付款",
+      "forbidden": "你沒有權限確認此筆付款"
     }
   },
   "overrideLog": {

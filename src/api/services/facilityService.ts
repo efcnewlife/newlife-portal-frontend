@@ -420,18 +420,6 @@ export interface PendingPaymentSeriesItem {
   isPriority: boolean;
 }
 
-export interface RecurringBookingSeriesDetail {
-  id: string;
-  userId: string;
-  ministryId?: string;
-  status: string;
-  quotedAmount: string | number;
-  currency: string;
-  occurrenceCount: number;
-  isPriority: boolean;
-  confirmedById?: string;
-}
-
 // Override log
 export interface OverrideLogPagesParams extends PagesParams {
   facilityId?: string;
@@ -782,8 +770,8 @@ class FacilityService {
     return httpClient.get(API_ENDPOINTS.FACILITY.BOOKING_SERIES.PENDING_PAYMENT);
   }
 
-  async confirmSeriesPayment(seriesId: string): Promise<ApiResponse<RecurringBookingSeriesDetail>> {
-    if (IS_MOCK_API) return { success: true, data: {} as RecurringBookingSeriesDetail };
+  async confirmSeriesPayment(seriesId: string): Promise<ApiResponse<void>> {
+    if (IS_MOCK_API) return { success: true, data: undefined as void };
     return httpClient.post(API_ENDPOINTS.FACILITY.BOOKING_SERIES.CONFIRM_PAYMENT(seriesId));
   }
 }

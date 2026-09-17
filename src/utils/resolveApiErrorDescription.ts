@@ -21,8 +21,6 @@ const ERROR_CODE_TO_I18N_KEY: Record<string, string> = {
   FACILITY_BOOKING_ROOMS_REQUIRED: "feedback.errors.facilityBookingRoomsRequired",
   FACILITY_BOOKING_MAX_ROOMS: "feedback.errors.facilityBookingMaxRooms",
   FACILITY_BOOKING_MINISTRY_INACTIVE: "feedback.errors.facilityBookingMinistryInactive",
-  FACILITY_BOOKING_SERIES_NOT_FOUND: "feedback.errors.facilityBookingSeriesNotFound",
-  FACILITY_BOOKING_SERIES_NOT_PENDING_PAYMENT: "feedback.errors.facilityBookingSeriesNotPendingPayment",
   ORG_MINISTRY_NOT_FOUND: "feedback.errors.orgMinistryNotFound",
   ORG_MINISTRY_PRIMARY_REQUIRED: "feedback.errors.orgMinistryPrimaryRequired",
   ORG_MINISTRY_SECONDARY_REQUIRED: "feedback.errors.orgMinistrySecondaryRequired",
