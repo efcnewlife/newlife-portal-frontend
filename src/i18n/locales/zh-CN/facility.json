@@ -156,6 +156,21 @@
       "popoverTitle": "搜索不开放时段",
       "keywordLabel": "关键字",
       "keywordPlaceholder": "搜索名称或原因"
+    },
+    "impact": {
+      "title": "确认不开放时段影响",
+      "alertTitle": "将取消 {{count}} 笔场次",
+      "alertTitle_other": "将取消 {{count}} 笔场次",
+      "alertBody": "新增此不开放时段将取消以下未来的每周重复预约场次,此操作无法撤销。",
+      "series": "系列 {{id}}",
+      "ministry": "事工系列",
+      "rental": "个人租借",
+      "confirm": "确认并新增",
+      "cancelledCount": "已取消 {{count}} 笔场次",
+      "cancelledCount_other": "已取消 {{count}} 笔场次",
+      "errors": {
+        "stale": "自预览后不开放时段的影响已改变,请重新打开“新增不开放时段”再次查看"
+      }
     }
   },
   "rentalRateTemplate": {

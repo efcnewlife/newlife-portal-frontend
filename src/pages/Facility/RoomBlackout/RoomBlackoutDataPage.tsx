@@ -1,8 +1,9 @@
 import {
   facilityService,
-  type RoomBlackoutCreate,
+  type RoomBlackoutImpactOccurrence,
   type RoomBlackoutItem,
   type RoomBlackoutUpdate,
+  type RoomBlackoutWrite,
   type RoomListItem,
 } from "@/api/services/facilityService";
 import type { DataTableColumn, MenuButtonType, PageButtonType, PopoverType } from "@/components/DataPage";
@@ -22,10 +23,12 @@ import RoomBlackoutDataForm, {
   type RoomBlackoutDataFormHandle,
   type RoomBlackoutFormValues,
 } from "./RoomBlackoutDataForm";
+import RoomBlackoutImpactConfirmModal from "./RoomBlackoutImpactConfirmModal";
+import { buildConfirmedBlackoutPayload, resolveRoomBlackoutImpactErrorMessage } from "./roomBlackoutImpact";
 
 type BlackoutRow = RoomBlackoutItem & Record<string, unknown>;
 
-const toApiPayload = (values: RoomBlackoutFormValues): RoomBlackoutCreate => {
+const toApiPayload = (values: RoomBlackoutFormValues): RoomBlackoutWrite => {
   if (values.kind === "one_off") {
     return {
       facilityId: values.facilityId,
@@ -67,9 +70,12 @@ const RoomBlackoutDataPage = () => {
   const [editing, setEditing] = useState<BlackoutRow | null>(null);
   const [formValues, setFormValues] = useState<RoomBlackoutFormValues | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [pendingCreatePayload, setPendingCreatePayload] = useState<RoomBlackoutWrite | null>(null);
+  const [impactItems, setImpactItems] = useState<RoomBlackoutImpactOccurrence[]>([]);
 
   const { isOpen, openModal, closeModal } = useModal(false);
   const { isOpen: isDeleteOpen, openModal: openDeleteModal, closeModal: closeDeleteModal } = useModal(false);
+  const { isOpen: isImpactOpen, openModal: openImpactModal, closeModal: closeImpactModal } = useModal(false);
   const formRef = useRef<RoomBlackoutDataFormHandle>(null);
   const modalRef = useRef<ModalFormHandle>(null);
   const clearSelectionRef = useRef<() => void>(() => {});
@@ -287,6 +293,35 @@ const RoomBlackoutDataPage = () => {
     [fetchPages, openModal, openDeleteModal, showDeleted, t]
   );
 
+  const dismissBlackoutImpact = () => {
+    setPendingCreatePayload(null);
+    setImpactItems([]);
+    closeImpactModal();
+  };
+
+  const confirmBlackoutImpact = async () => {
+    if (!pendingCreatePayload) return;
+    setSubmitting(true);
+    try {
+      await facilityService.createRoomBlackout(buildConfirmedBlackoutPayload(pendingCreatePayload, impactItems));
+      notifySuccess({
+        title: t("common:feedback.created"),
+        description: t("roomBlackout.impact.cancelledCount", { count: impactItems.length }),
+      });
+      dismissBlackoutImpact();
+      await fetchPages();
+    } catch (error) {
+      dismissBlackoutImpact();
+      notifyApiError(error, {
+        title: t("common:feedback.saveFailed"),
+        fallbackDescription: t("common:feedback.saveFailedDesc"),
+        resolveDescription: (apiError) => resolveRoomBlackoutImpactErrorMessage(apiError, t),
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <>
       <DataPage<BlackoutRow>
@@ -330,6 +365,15 @@ const RoomBlackoutDataPage = () => {
           setSubmitting(true);
           try {
             if (formMode === "create") {
+              const impact = await facilityService.previewRoomBlackoutImpact(payload);
+              if (!impact.success) return;
+              if (impact.data.confirmationRequired) {
+                setPendingCreatePayload(payload);
+                setImpactItems(impact.data.items);
+                closeModal();
+                openImpactModal();
+                return;
+              }
               await facilityService.createRoomBlackout(payload);
               notifySuccess({ title: t("common:feedback.created") });
             } else if (editing?.id) {
@@ -342,6 +386,7 @@ const RoomBlackoutDataPage = () => {
             notifyApiError(error, {
               title: t("common:feedback.saveFailed"),
               fallbackDescription: t("common:feedback.saveFailedDesc"),
+              resolveDescription: (apiError) => resolveRoomBlackoutImpactErrorMessage(apiError, t),
             });
           } finally {
             setSubmitting(false);
@@ -381,6 +426,15 @@ const RoomBlackoutDataPage = () => {
           }}
         />
       </Modal>
+
+      <RoomBlackoutImpactConfirmModal
+        isOpen={isImpactOpen}
+        items={impactItems}
+        rooms={rooms}
+        submitting={submitting}
+        onClose={dismissBlackoutImpact}
+        onConfirm={() => void confirmBlackoutImpact()}
+      />
     </>
   );
 };

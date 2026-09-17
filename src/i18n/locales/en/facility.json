@@ -156,6 +156,21 @@
       "popoverTitle": "Search blackouts",
       "keywordLabel": "Keyword",
       "keywordPlaceholder": "Search name or reason"
+    },
+    "impact": {
+      "title": "Confirm Blackout impact",
+      "alertTitle": "{{count}} occurrence will be cancelled",
+      "alertTitle_other": "{{count}} occurrences will be cancelled",
+      "alertBody": "Creating this Blackout cancels these future Recurring Booking occurrences. This cannot be undone.",
+      "series": "Series {{id}}",
+      "ministry": "Ministry Series",
+      "rental": "Personal Rental",
+      "confirm": "Confirm and create",
+      "cancelledCount": "{{count}} occurrence cancelled",
+      "cancelledCount_other": "{{count}} occurrences cancelled",
+      "errors": {
+        "stale": "The Blackout impact changed since it was previewed; reopen Create blackout to review it again"
+      }
     }
   },
   "rentalRateTemplate": {

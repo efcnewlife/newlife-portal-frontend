@@ -134,11 +134,30 @@ export interface RoomBlackoutItem {
   deleteReason?: string;
 }
 
-export type RoomBlackoutCreate = Omit<
+export type RoomBlackoutWrite = Omit<
   RoomBlackoutItem,
   "id" | "createAt" | "createdBy" | "updateAt" | "updatedBy" | "deleteReason"
 >;
-export type RoomBlackoutUpdate = RoomBlackoutCreate;
+export type RoomBlackoutCreate = RoomBlackoutWrite & {
+  /** Occurrence ids from the current Blackout impact preview; required only when it reported impact. */
+  confirmOccurrenceIds?: string[];
+};
+export type RoomBlackoutUpdate = RoomBlackoutWrite;
+
+export interface RoomBlackoutImpactOccurrence {
+  id: string;
+  seriesId: string;
+  startAt: string;
+  endAt: string;
+  status: string;
+  facilityIds: string[];
+  ministryId: string | null;
+}
+
+export interface RoomBlackoutImpactPreview {
+  confirmationRequired: boolean;
+  items: RoomBlackoutImpactOccurrence[];
+}
 
 // Rental rate applicability (lives on templates)
 export type RateApplicabilityLeaf =
@@ -625,6 +644,11 @@ class FacilityService {
   async getRoomBlackoutById(id: string): Promise<ApiResponse<RoomBlackoutItem>> {
     if (IS_MOCK_API) return { success: true, data: {} as RoomBlackoutItem };
     return httpClient.get(API_ENDPOINTS.FACILITY.ROOM_BLACKOUTS.DETAIL(id));
+  }
+
+  async previewRoomBlackoutImpact(payload: RoomBlackoutWrite): Promise<ApiResponse<RoomBlackoutImpactPreview>> {
+    if (IS_MOCK_API) return { success: true, data: { confirmationRequired: false, items: [] } };
+    return httpClient.post(API_ENDPOINTS.FACILITY.ROOM_BLACKOUTS.IMPACT, payload);
   }
 
   async createRoomBlackout(payload: RoomBlackoutCreate): Promise<ApiResponse<{ id: string }>> {

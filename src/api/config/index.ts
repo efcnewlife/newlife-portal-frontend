@@ -150,6 +150,7 @@ export const API_ENDPOINTS = {
     ROOM_BLACKOUTS: {
       PAGES: `${ADMIN_API_PREFIX}/facility/room-blackouts/pages`,
       LIST: `${ADMIN_API_PREFIX}/facility/room-blackouts/list`,
+      IMPACT: `${ADMIN_API_PREFIX}/facility/room-blackouts/impact`,
       CREATE: `${ADMIN_API_PREFIX}/facility/room-blackouts`,
       DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/room-blackouts/${id}`,
       UPDATE: (id: string) => `${ADMIN_API_PREFIX}/facility/room-blackouts/${id}`,
