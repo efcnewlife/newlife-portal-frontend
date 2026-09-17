@@ -72,6 +72,7 @@ export enum Resource {
   FacilityRentalRateTemplate = "facility:rental_rate_template",
   FacilityRentalRate = "facility:rental_rate",
   FacilityBooking = "facility:booking",
+  FacilityBookingPayment = "facility:booking_payment",
   FacilityBookingOverrideLog = "facility:booking_override_log",
 
   // Ministry

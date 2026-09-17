@@ -102,6 +102,10 @@ _Avoid_: Table (when meaning the Portal list page), DataGrid, Grid
 The facility-local duration after a Recurring Booking opening date during which that Recurring Booking period accepts new Series. Operators edit it on System Settings as `facility.recurring_booking_availability_window`: a positive amount plus `days`, `weeks`, or calendar-relative `months`. The saved value is `{amount, unit}`.
 _Avoid_: raw JSON key-value editor for this setting, hours or minutes as units, a bare day count with no unit
 
+**Booking Payment Confirmation**:
+The dedicated `facility:booking_payment` permission (Read to view, Modify to confirm) gating who may review and manually confirm Pending-payment Recurring Booking Series. Seeded as a hidden Facility child resource (`is_visible: false`, ADR 0021/0022), so it appears in Role Management's permission matrix but is not a sidebar menu item. The Portal surfaces it as a "Payment Confirmation" panel opened from Bookings, listing every actionable Pending-payment Series with total, occurrence count, and hold deadline, not as its own routed page.
+_Avoid_: general Booking Modify as the confirmation gate, a top-level sidebar route for this resource, hiding an expired or already-resolved Series from the list instead of surfacing the rejected-confirmation reason
+
 ### Operation feedback
 
 **Operation feedback**:

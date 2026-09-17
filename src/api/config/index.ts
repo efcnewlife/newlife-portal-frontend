@@ -200,6 +200,10 @@ export const API_ENDPOINTS = {
     BOOKING_OVERRIDE_LOGS: {
       PAGES: `${ADMIN_API_PREFIX}/facility/booking-override-logs/pages`,
     },
+    BOOKING_SERIES: {
+      PENDING_PAYMENT: `${ADMIN_API_PREFIX}/facility/booking-series/pending-payment`,
+      CONFIRM_PAYMENT: (id: string) => `${ADMIN_API_PREFIX}/facility/booking-series/${id}/confirm-payment`,
+    },
   },
 
   // Ministry (admin)
