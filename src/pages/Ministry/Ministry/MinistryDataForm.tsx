@@ -3,10 +3,7 @@ import type { MinistryScheduleItem } from "@/api/services/ministryService";
 import { orgService, type AssignablePositionItem } from "@/api/services/orgService";
 import TranslationTabsForm from "@/components/translation/TranslationTabsForm";
 import { useActiveLocales } from "@/hooks/useActiveLocales";
-import MinistryMembersEditor, {
-  type MinistryMemberDraft,
-  validateMinistryMembers,
-} from "@/pages/Ministry/components/MinistryMembersEditor";
+import MinistryMembersEditor, { type MinistryMemberDraft } from "@/pages/Ministry/components/MinistryMembersEditor";
 import { withMinistryQueryId } from "@/pages/Ministry/MinistryMember/stewardDirectorySelection";
 import MinistrySchedulesEditor, {
   scheduleDraftToItem,
@@ -17,9 +14,9 @@ import {
   buildTranslationPayload,
   createEmptyTranslationMap,
   hydrateTranslationMap,
-  validateDefaultLocaleName,
   type TranslationMap,
 } from "@/utils/translationForm";
+import { buildMinistryFormPayload, validateMinistryFormFields } from "./ministryFormSubmission";
 import { Checkbox, Select } from "@efcnewlife/newlife-ui";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -30,7 +27,6 @@ const ALL_AGES_CODE = "all_ages";
 export interface MinistryFormValues {
   name?: string;
   ownerPositionId?: string;
-  ministryTypeId?: string;
   targetAudienceIds?: string[];
   schedules?: MinistryScheduleItem[];
   hasPriorityBooking?: boolean;
@@ -60,26 +56,21 @@ const MinistryDataForm = forwardRef<
   const { locales, defaultLocaleId, loading, error } = useActiveLocales();
 
   const [ownerPositionId, setOwnerPositionId] = useState(defaultValues?.ownerPositionId || "");
-  const [ministryTypeId, setMinistryTypeId] = useState(defaultValues?.ministryTypeId || "");
   const [targetAudienceIds, setTargetAudienceIds] = useState<string[]>(defaultValues?.targetAudienceIds || []);
   const [schedules, setSchedules] = useState<MinistryScheduleDraft[]>(() =>
     (defaultValues?.schedules || []).map(scheduleItemToDraft)
   );
   const [positions, setPositions] = useState<AssignablePositionItem[]>([]);
-  const [ministryTypes, setMinistryTypes] = useState<MinistryCatalogItem[]>([]);
   const [targetAudiences, setTargetAudiences] = useState<MinistryCatalogItem[]>([]);
   const [hasPriorityBooking, setHasPriorityBooking] = useState(defaultValues?.hasPriorityBooking ?? false);
   const [isActive, setIsActive] = useState(defaultValues?.isActive ?? true);
   const [translationMap, setTranslationMap] = useState<TranslationMap>({});
   const [members, setMembers] = useState<MinistryMemberDraft[]>(defaultValues?.members || []);
-  const [errors, setErrors] = useState<{ name?: string; members?: string; ministryTypeId?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; members?: string }>({});
 
   useEffect(() => {
     void orgService.getAssignablePositions().then((res) => {
       if (res.success) setPositions(res.data.items || []);
-    });
-    void ministryCatalogService.getMinistryTypes().then((res) => {
-      if (res.success) setMinistryTypes(res.data.items || []);
     });
     void ministryCatalogService.getTargetAudiences().then((res) => {
       if (res.success) setTargetAudiences(res.data.items || []);
@@ -89,7 +80,6 @@ const MinistryDataForm = forwardRef<
   useEffect(() => {
     if (locales.length === 0) return;
     setOwnerPositionId(defaultValues?.ownerPositionId || "");
-    setMinistryTypeId(defaultValues?.ministryTypeId || "");
     setTargetAudienceIds(defaultValues?.targetAudienceIds || []);
     setSchedules((defaultValues?.schedules || []).map(scheduleItemToDraft));
     setHasPriorityBooking(defaultValues?.hasPriorityBooking ?? false);
@@ -126,14 +116,6 @@ const MinistryDataForm = forwardRef<
     [positions, t, tOrg]
   );
 
-  const ministryTypeOptions = useMemo(
-    () => [
-      { value: "", label: t("ministry.form.ministryTypePlaceholder") },
-      ...ministryTypes.map((item) => ({ value: item.id, label: item.name || item.code })),
-    ],
-    [ministryTypes, t]
-  );
-
   const targetAudienceOptions = useMemo(
     () => targetAudiences.map((item) => ({ value: item.id, label: item.name || item.code })),
     [targetAudiences]
@@ -152,33 +134,25 @@ const MinistryDataForm = forwardRef<
 
   useImperativeHandle(ref, () => ({
     validate: () => {
-      const next: { name?: string; members?: string; ministryTypeId?: string } = {};
-      const name_error_key = validateDefaultLocaleName(translationMap, defaultLocaleId);
-      if (name_error_key) next.name = tCommon(name_error_key);
-      if (!ministryTypeId) next.ministryTypeId = t("ministry.form.ministryTypeRequired");
-      if (showMembers && validateMembers) {
-        const member_error = validateMinistryMembers(
-          members.filter((m) => m.userId),
-          t
-        );
-        if (member_error) next.members = member_error;
-      }
+      const next = validateMinistryFormFields(
+        { translationMap, defaultLocaleId, members, showMembers, validateMembers },
+        t,
+        tCommon
+      );
       setErrors(next);
       return Object.keys(next).length === 0;
     },
-    getValues: () => {
-      const translations = buildTranslationPayload(translationMap);
-      return {
-        ownerPositionId: ownerPositionId || undefined,
-        ministryTypeId: ministryTypeId || undefined,
+    getValues: () =>
+      buildMinistryFormPayload({
+        ownerPositionId,
         targetAudienceIds,
         schedules: schedules.map(scheduleDraftToItem),
         hasPriorityBooking,
         isActive,
-        translations,
-        members: showMembers ? members.filter((m) => m.userId) : undefined,
-      };
-    },
+        translationMap,
+        members,
+        showMembers,
+      }),
   }));
 
   return (
@@ -196,14 +170,6 @@ const MinistryDataForm = forwardRef<
           name: t("ministry.form.name"),
           scheduleNote: t("ministry.form.scheduleNote"),
         }}
-      />
-      <Select
-        id="ministry-type"
-        label={t("ministry.form.ministryTypeId")}
-        options={ministryTypeOptions}
-        value={ministryTypeId}
-        onChange={(v) => setMinistryTypeId(String(v))}
-        error={errors.ministryTypeId}
       />
       <Select
         id="ministry-target-audiences"

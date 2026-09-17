@@ -16,7 +16,6 @@
     },
     "table": {
       "name": "名稱",
-      "ministryType": "類型",
       "targetAudiences": "對象",
       "status": "狀態",
       "ownerPosition": "負責職位",
@@ -36,9 +35,6 @@
     },
     "form": {
       "name": "名稱",
-      "ministryTypeId": "事工類型",
-      "ministryTypePlaceholder": "請選擇事工類型",
-      "ministryTypeRequired": "請選擇事工類型",
       "targetAudiences": "適合對象",
       "scheduleNote": "時段備註",
       "schedules": "時段",
