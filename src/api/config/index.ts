@@ -203,6 +203,10 @@ export const API_ENDPOINTS = {
     BOOKING_SERIES: {
       PENDING_PAYMENT: `${ADMIN_API_PREFIX}/facility/booking-series/pending-payment`,
       CONFIRM_PAYMENT: (id: string) => `${ADMIN_API_PREFIX}/facility/booking-series/${id}/confirm-payment`,
+      PREVIEW: `${ADMIN_API_PREFIX}/facility/booking-series/preview`,
+      CREATE: `${ADMIN_API_PREFIX}/facility/booking-series`,
+      DETAIL: (id: string) => `${ADMIN_API_PREFIX}/facility/booking-series/${id}`,
+      CANCEL: (id: string) => `${ADMIN_API_PREFIX}/facility/booking-series/${id}/cancel`,
     },
   },
 

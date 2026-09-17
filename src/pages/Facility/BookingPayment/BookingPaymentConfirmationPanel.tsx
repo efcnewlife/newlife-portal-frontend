@@ -6,11 +6,13 @@ import { Badge, Button, Modal } from "@efcnewlife/newlife-ui";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MdRefresh } from "react-icons/md";
+import { useNavigate } from "react-router";
 import { resolveConfirmPaymentErrorMessage } from "./pendingPaymentConfirmError";
 import { canConfirmPendingPayment } from "./pendingPaymentPermission";
 
 const BookingPaymentConfirmationPanel = () => {
   const { t } = useTranslation(["facility", "common"]);
+  const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const canConfirm = canConfirmPendingPayment(hasPermission);
 
@@ -110,6 +112,9 @@ const BookingPaymentConfirmationPanel = () => {
                   )}
                 </div>
                 <div className="flex shrink-0 gap-1">
+                  <Button variant="outline" size="sm" onClick={() => navigate(`/facility/booking-series/${item.id}`)}>
+                    {t("facility:bookingPayment.panel.viewSeries")}
+                  </Button>
                   {canConfirm && (
                     <Button variant="primary" size="sm" onClick={() => setConfirming(item)}>
                       {t("facility:bookingPayment.modal.confirmAction")}

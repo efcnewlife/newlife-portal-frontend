@@ -1,4 +1,5 @@
 import BookingManagement from "@/pages/Facility/Booking/BookingManagement";
+import RecurringSeriesManagement from "@/pages/Facility/BookingSeries/RecurringSeriesManagement";
 import OverrideLogManagement from "@/pages/Facility/OverrideLog/OverrideLogManagement";
 import RentalRateManagement from "@/pages/Facility/RentalRate/RentalRateManagement";
 import RoomManagement from "@/pages/Facility/Room/RoomManagement";
@@ -55,6 +56,16 @@ export const facilityRoutes: AppRoute[] = [
       description: "Facility booking management",
       requiresAuth: true,
       breadcrumb: ["Facility", "Bookings"],
+    },
+  },
+  {
+    path: "/facility/booking-series/:seriesId",
+    element: <RecurringSeriesManagement />,
+    meta: {
+      title: "Recurring Booking Series",
+      description: "Recurring Booking Series detail and cancellation",
+      requiresAuth: true,
+      breadcrumb: ["Facility", "Bookings", "Series"],
     },
   },
   {
