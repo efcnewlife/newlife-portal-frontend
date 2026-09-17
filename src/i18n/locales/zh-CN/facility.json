@@ -279,7 +279,8 @@
       "description": "檢視與管理場地预订"
     },
     "toolbar": {
-      "paymentConfirmation": "付款确认"
+      "paymentConfirmation": "付款确认",
+      "createSeries": "建立系列"
     },
     "table": {
       "user": "使用者",
@@ -366,7 +367,8 @@
       "draft": "草稿",
       "confirmed": "已确认",
       "cancelled": "已取消",
-      "overridden": "已覆盖"
+      "overridden": "已覆盖",
+      "pending_payment": "待付款"
     },
     "bookingType": {
       "one_time": "单次",
@@ -389,7 +391,8 @@
     "panel": {
       "loading": "加载待付款系列中…",
       "empty": "目前没有待付款的系列。",
-      "refresh": "刷新"
+      "refresh": "刷新",
+      "viewSeries": "查看系列"
     },
     "table": {
       "booker": "预订人",
@@ -467,6 +470,122 @@
     },
     "filter": {
       "ministry": "事工"
+    }
+  },
+  "bookingSeries": {
+    "page": {
+      "title": "循环预订系列",
+      "description": "系列详情、场次状态、覆盖记录与取消"
+    },
+    "form": {
+      "booker": "预订人",
+      "bookerRequired": "请选择预订人",
+      "bookerSearchPlaceholder": "依姓名或邮箱搜索预订人",
+      "ministry": "事工",
+      "noMinistry": "无事工",
+      "priorityMinistryHint": "此事工具有教会活动优先权：未来的租借冲突可能会被覆盖。",
+      "firstOccurrenceDate": "首次场次日期",
+      "firstOccurrenceRequired": "请选择首次场次日期",
+      "lastOccurrenceDate": "最后场次日期",
+      "lastOccurrenceRequired": "请选择最后场次日期",
+      "lastAfterFirst": "最后场次日期须晚于或等于首次场次日期",
+      "weekdayMismatch": "首次与最后场次必须为同一星期几",
+      "usePeriodMismatch": "首次与最后场次必须落在同一个一月至六月或七月至十二月周期内",
+      "localStartTime": "当地开始时间",
+      "startTimeRequired": "请选择开始时间",
+      "localEndTime": "当地结束时间",
+      "endTimeRequired": "请选择结束时间",
+      "endAfterStart": "结束时间必须晚于开始时间",
+      "occurrenceCount": "共 {{count}} 个每周场次",
+      "rooms": "场地",
+      "roomsRequired": "请至少选择一个场地",
+      "roomsMax": "最多可选择 {{count}} 个场地",
+      "roomsMaxHint": "最多 {{count}} 个场地，所有场次共用",
+      "missionAligned": "宣教相关",
+      "surcharges": "附加费用",
+      "remark": "备注"
+    },
+    "conflicts": {
+      "priorityTitle": "教会活动优先权",
+      "priorityIntro": "部分场次与现有预订冲突。可覆盖的租借冲突将自动取消；事工冲突与场地封锁必须排除或另行处理。",
+      "rentalTitle": "发现冲突",
+      "rentalIntro": "部分场次与现有预订、事工系列或场地封锁冲突。请排除受影响日期，或修改场地与时间后再建立此系列。",
+      "occurrenceSummary": "将建立 {{total}} 个场次中的 {{remaining}} 个",
+      "exclude": "排除此日期",
+      "mustResolve": "此日期必须被排除后才能建立系列",
+      "stewardLabel": "事工联络人：",
+      "kindOccupancyOverridable": "可覆盖",
+      "kindOccupancyOverridableBody": "此时段已有租借预订占用，教会活动优先权将自动取消该预订。",
+      "kindOccupancyBlocked": "已占用",
+      "kindOccupancyBlockedBody": "此场地与时段已被其他预订占用。",
+      "kindMinistry": "事工冲突",
+      "kindMinistryBody": "此时段已被其他事工系列占用，无法覆盖。",
+      "kindBlackout": "场地封锁",
+      "kindBlackoutBody": "此场地在此日期与时段已关闭，无法覆盖。",
+      "kindWeeklyQuota": "每周配额",
+      "kindWeeklyQuotaBody": "此预订人在该场地当地周内已有租借预订。"
+    },
+    "modal": {
+      "createTitle": "建立循环预订系列",
+      "reviewConflictsTitle": "检视冲突",
+      "previewAction": "预览",
+      "previewing": "预览中…",
+      "back": "上一步",
+      "createAction": "建立系列"
+    },
+    "cancel": {
+      "title": "取消系列",
+      "intro": "请选择要取消的范围。",
+      "scopeOccurrence": "仅此场次",
+      "scopeThisAndFuture": "此场次及往后所有场次",
+      "scopeEntireSeries": "整个系列",
+      "chooseOccurrence": "选择场次",
+      "noneCancellable": "已无可取消的场次。",
+      "affectedTitle": "将取消 {{count}} 个场次",
+      "noneAffected": "此范围不会影响任何场次。",
+      "reason": "取消原因",
+      "confirm": "确认取消"
+    },
+    "detail": {
+      "title": "系列详情",
+      "back": "返回预订列表",
+      "notFound": "找不到此系列。",
+      "priorityBadge": "教会活动",
+      "cancelAction": "取消系列",
+      "range": "场次期间",
+      "timeWindow": "当地时段",
+      "occurrenceCount": "场次数",
+      "total": "总额",
+      "holdDeadline": "付款保留截止时间",
+      "occurrencesTitle": "场次列表",
+      "overrideHistoryTitle": "覆盖记录",
+      "overrideHistoryEmpty": "此系列没有教会活动优先权覆盖记录。",
+      "overriddenBy": "覆盖操作人"
+    },
+    "errors": {
+      "notEligible": "此预订人不符合建立循环预订系列的资格",
+      "roomsRequired": "请至少选择一个场地",
+      "invalidTimeRange": "场次日期或时间无效",
+      "maxRooms": "单一系列选择的场地数量过多",
+      "weekdayMismatch": "首次与最后场次必须为同一星期几",
+      "usePeriod": "首次与最后场次必须落在同一个一月至六月或七月至十二月周期内",
+      "availabilityWindow": "此周期目前尚未开放循环预订",
+      "minOccurrences": "排除后剩余场次数低于最低要求",
+      "dstNonexistent": "此当地时间在其中一个场次日期不存在（夏令时间变更）",
+      "ministryInactive": "此事工目前未启用",
+      "weeklyQuota": "此预订人在该场地当地周内已有租借预订",
+      "schedulingConflict": "{{room}} 在此时段与其他预订冲突",
+      "schedulingConflictGeneric": "此时段与其他预订冲突",
+      "roomBlackout": "{{room}} 在此时段不可使用",
+      "roomBlackoutGeneric": "此时段不可使用",
+      "invalidExclusion": "排除的日期与此系列目前的冲突不符，请重新预览",
+      "ministryConflict": "此时段已被其他事工系列占用。联络人：{{steward}}",
+      "ministryConflictGeneric": "此时段已被其他事工系列占用",
+      "seriesNotFound": "找不到此系列",
+      "invalidCancellationScope": "该取消范围无效",
+      "occurrenceRequired": "请为此取消范围选择一个场次",
+      "occurrenceNotFound": "在此系列中找不到该场次",
+      "historicalOccurrence": "该场次已经开始，无法取消"
     }
   }
 }

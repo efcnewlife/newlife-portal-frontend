@@ -279,7 +279,8 @@
       "description": "View and manage facility bookings"
     },
     "toolbar": {
-      "paymentConfirmation": "Payment Confirmation"
+      "paymentConfirmation": "Payment Confirmation",
+      "createSeries": "Create Series"
     },
     "table": {
       "user": "User",
@@ -366,7 +367,8 @@
       "draft": "Draft",
       "confirmed": "Confirmed",
       "cancelled": "Cancelled",
-      "overridden": "Overridden"
+      "overridden": "Overridden",
+      "pending_payment": "Pending payment"
     },
     "bookingType": {
       "one_time": "One-time",
@@ -389,7 +391,8 @@
     "panel": {
       "loading": "Loading Pending-payment Series…",
       "empty": "No Pending-payment Series right now.",
-      "refresh": "Refresh"
+      "refresh": "Refresh",
+      "viewSeries": "View Series"
     },
     "table": {
       "booker": "Booker",
@@ -467,6 +470,124 @@
     },
     "filter": {
       "ministry": "Ministry"
+    }
+  },
+  "bookingSeries": {
+    "page": {
+      "title": "Recurring Booking Series",
+      "description": "Series detail, occurrence status, override history, and cancellation"
+    },
+    "form": {
+      "booker": "Booker",
+      "bookerRequired": "Booker is required",
+      "bookerSearchPlaceholder": "Search booker by name or email",
+      "ministry": "Ministry",
+      "noMinistry": "No ministry",
+      "priorityMinistryHint": "This Ministry has Church Activity priority: future Rental conflicts may be overridden.",
+      "firstOccurrenceDate": "First occurrence",
+      "firstOccurrenceRequired": "First occurrence date is required",
+      "lastOccurrenceDate": "Last occurrence",
+      "lastOccurrenceRequired": "Last occurrence date is required",
+      "lastAfterFirst": "Last occurrence must be on or after the first occurrence",
+      "weekdayMismatch": "First and last occurrence must fall on the same weekday",
+      "usePeriodMismatch": "First and last occurrence must fall within the same Jan-Jun or Jul-Dec period",
+      "localStartTime": "Local start time",
+      "startTimeRequired": "Start time is required",
+      "localEndTime": "Local end time",
+      "endTimeRequired": "End time is required",
+      "endAfterStart": "End must be after start",
+      "occurrenceCount": "{{count}} weekly occurrence",
+      "occurrenceCount_other": "{{count}} weekly occurrences",
+      "rooms": "Rooms",
+      "roomsRequired": "Select at least one room",
+      "roomsMax": "Select at most {{count}} rooms",
+      "roomsMaxHint": "Up to {{count}} rooms, shared across every occurrence",
+      "missionAligned": "Mission aligned",
+      "surcharges": "Surcharges",
+      "remark": "Remark"
+    },
+    "conflicts": {
+      "priorityTitle": "Church Activity priority",
+      "priorityIntro": "Some occurrences conflict with existing bookings. Overridable Rental conflicts will be cancelled automatically; Ministry conflicts and Blackouts must be excluded or resolved.",
+      "rentalTitle": "Conflicts found",
+      "rentalIntro": "Some occurrences conflict with existing bookings, Ministry Series, or Blackouts. Exclude the affected dates or revise the rooms and time before creating this Series.",
+      "occurrenceSummary": "{{remaining}} of {{total}} occurrences will be created",
+      "exclude": "Exclude this date",
+      "mustResolve": "This date must be excluded before the Series can be created",
+      "stewardLabel": "Ministry contact:",
+      "kindOccupancyOverridable": "Overridable",
+      "kindOccupancyOverridableBody": "A Rental booking occupies this slot and will be cancelled automatically by Church Activity priority.",
+      "kindOccupancyBlocked": "Occupied",
+      "kindOccupancyBlockedBody": "Another booking already occupies this room and time.",
+      "kindMinistry": "Ministry conflict",
+      "kindMinistryBody": "Another Ministry Series occupies this slot and cannot be overridden.",
+      "kindBlackout": "Blackout",
+      "kindBlackoutBody": "This room is closed for this date and time; it cannot be overridden.",
+      "kindWeeklyQuota": "Weekly quota",
+      "kindWeeklyQuotaBody": "The Booker already has a Rental booking in this facility-local week."
+    },
+    "modal": {
+      "createTitle": "Create Recurring Booking Series",
+      "reviewConflictsTitle": "Review conflicts",
+      "previewAction": "Preview",
+      "previewing": "Previewing…",
+      "back": "Back",
+      "createAction": "Create Series"
+    },
+    "cancel": {
+      "title": "Cancel Series",
+      "intro": "Choose how much of this Series to cancel.",
+      "scopeOccurrence": "This occurrence only",
+      "scopeThisAndFuture": "This and all future occurrences",
+      "scopeEntireSeries": "Entire Series",
+      "chooseOccurrence": "Choose an occurrence",
+      "noneCancellable": "No occurrence is still cancellable.",
+      "affectedTitle": "{{count}} occurrence will be cancelled",
+      "affectedTitle_other": "{{count}} occurrences will be cancelled",
+      "noneAffected": "No occurrence will be affected by this scope.",
+      "reason": "Cancel reason",
+      "confirm": "Confirm cancellation"
+    },
+    "detail": {
+      "title": "Series detail",
+      "back": "Back to Bookings",
+      "notFound": "This Series was not found.",
+      "priorityBadge": "Church Activity",
+      "cancelAction": "Cancel Series",
+      "range": "Occurrence range",
+      "timeWindow": "Local time window",
+      "occurrenceCount": "Occurrences",
+      "total": "Total",
+      "holdDeadline": "Payment hold deadline",
+      "occurrencesTitle": "Occurrences",
+      "overrideHistoryTitle": "Override history",
+      "overrideHistoryEmpty": "No Priority Ministry overrides for this Series.",
+      "overriddenBy": "Overridden by"
+    },
+    "errors": {
+      "notEligible": "This Booker is not eligible to create a Recurring Booking Series",
+      "roomsRequired": "Select at least one room",
+      "invalidTimeRange": "The occurrence dates or times are invalid",
+      "maxRooms": "Too many rooms selected for a single Series",
+      "weekdayMismatch": "First and last occurrence must fall on the same weekday",
+      "usePeriod": "First and last occurrence must fall within the same Jan-Jun or Jul-Dec period",
+      "availabilityWindow": "Recurring Booking is not currently open for this period",
+      "minOccurrences": "The remaining occurrences fall below the minimum required",
+      "dstNonexistent": "This local time does not exist on one of the occurrence dates (daylight saving change)",
+      "ministryInactive": "This Ministry is not active",
+      "weeklyQuota": "The Booker already has a Rental booking in this facility-local week",
+      "schedulingConflict": "{{room}} conflicts with another booking in this time slot",
+      "schedulingConflictGeneric": "This time slot conflicts with another booking",
+      "roomBlackout": "{{room}} is not available in this time slot",
+      "roomBlackoutGeneric": "This time slot is not available",
+      "invalidExclusion": "The excluded dates no longer match this Series' conflicts; preview again",
+      "ministryConflict": "Another Ministry Series occupies this slot. Contact: {{steward}}",
+      "ministryConflictGeneric": "Another Ministry Series occupies this slot",
+      "seriesNotFound": "This Series was not found",
+      "invalidCancellationScope": "That cancellation scope is not valid",
+      "occurrenceRequired": "Choose an occurrence for this cancellation scope",
+      "occurrenceNotFound": "That occurrence was not found in this Series",
+      "historicalOccurrence": "That occurrence has already started and cannot be cancelled"
     }
   }
 }

@@ -19,8 +19,17 @@ import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
 import { Button, ButtonGroup, Modal, ModalForm, type ModalFormHandle } from "@efcnewlife/newlife-ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MdAdd, MdCalendarMonth, MdCancel, MdGridOn, MdPayments, MdRefresh, MdViewList } from "react-icons/md";
-import { useSearchParams } from "react-router";
+import {
+  MdAdd,
+  MdCalendarMonth,
+  MdCancel,
+  MdEventRepeat,
+  MdGridOn,
+  MdPayments,
+  MdRefresh,
+  MdViewList,
+} from "react-icons/md";
+import { useNavigate, useSearchParams } from "react-router";
 import BookingCalendar from "./BookingCalendar";
 import BookingCancelForm from "./BookingCancelForm";
 import BookingDataForm, { type BookingDataFormHandle, type BookingFormValues } from "./BookingDataForm";
@@ -30,6 +39,7 @@ import { loadBookingsForVisibleRange } from "./bookingOccupancyLoad";
 import { resolveBookingSaveErrorMessage } from "./bookingSaveError";
 import BookingPaymentConfirmationPanel from "../BookingPayment/BookingPaymentConfirmationPanel";
 import { PENDING_PAYMENT_READ_PERMISSION } from "../BookingPayment/pendingPaymentPermission";
+import RecurringSeriesCreateModal from "../BookingSeries/RecurringSeriesCreateModal";
 
 type BookingRow = BookingListItem & Record<string, unknown>;
 type BookingViewMode = "list" | "calendar" | "grid";
@@ -62,6 +72,7 @@ const toIsoDate = (date: Date): string => {
 
 const BookingDataPage = () => {
   const { t } = useTranslation("facility");
+  const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const canCreate = hasPermission(`${Resource.FacilityBooking}:${Verb.Create}`);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -87,6 +98,7 @@ const BookingDataPage = () => {
   const { isOpen: isCancelOpen, openModal: openCancel, closeModal: closeCancel } = useModal(false);
   const { isOpen: isCreateOpen, openModal: openCreate, closeModal: closeCreate } = useModal(false);
   const { isOpen: isPaymentOpen, openModal: openPayment, closeModal: closePayment } = useModal(false);
+  const { isOpen: isSeriesCreateOpen, openModal: openSeriesCreate, closeModal: closeSeriesCreate } = useModal(false);
 
   const formRef = useRef<BookingDataFormHandle>(null);
   const modalRef = useRef<ModalFormHandle>(null);
@@ -278,6 +290,14 @@ const BookingDataPage = () => {
     () => [
       CommonPageButton.ADD(() => openCreateModal(null)),
       {
+        key: "createSeries",
+        text: t("booking.toolbar.createSeries"),
+        icon: <MdEventRepeat className="size-4" />,
+        onClick: openSeriesCreate,
+        outline: true,
+        permission: `${Resource.FacilityBooking}:${Verb.Create}`,
+      },
+      {
         key: "paymentConfirmation",
         text: t("booking.toolbar.paymentConfirmation"),
         icon: <MdPayments className="size-4" />,
@@ -289,7 +309,7 @@ const BookingDataPage = () => {
         void refreshCurrentView();
       }),
     ],
-    [openCreateModal, openPayment, refreshCurrentView, t]
+    [openCreateModal, openPayment, openSeriesCreate, refreshCurrentView, t]
   );
 
   const rowActions: MenuButtonType<BookingRow>[] = useMemo(
@@ -561,6 +581,13 @@ const BookingDataPage = () => {
       >
         <BookingPaymentConfirmationPanel />
       </Modal>
+
+      <RecurringSeriesCreateModal
+        isOpen={isSeriesCreateOpen}
+        rooms={rooms}
+        onClose={closeSeriesCreate}
+        onCreated={(series) => navigate(`/facility/booking-series/${series.id}`)}
+      />
     </div>
   );
 };

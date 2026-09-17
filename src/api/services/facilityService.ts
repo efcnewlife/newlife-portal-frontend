@@ -420,6 +420,81 @@ export interface PendingPaymentSeriesItem {
   isPriority: boolean;
 }
 
+// Recurring Booking Series: admin on-behalf creation, detail, and cancellation
+export type RecurringConflictKind = "occupancy" | "ministry" | "blackout" | "weekly_quota";
+
+export interface RecurringBookingSeriesRoomInput {
+  facilityId: string;
+  sequence?: number;
+}
+
+export interface PreviewRecurringBookingSeriesPayload {
+  userId: string;
+  ministryId?: string | null;
+  firstOccurrenceDate: string;
+  lastOccurrenceDate: string;
+  localStartTime: string;
+  localEndTime: string;
+  isMissionAligned?: boolean;
+  rooms: RecurringBookingSeriesRoomInput[];
+  surchargeCodes?: string[];
+  remark?: string;
+}
+
+export type CreateRecurringBookingSeriesPayload = PreviewRecurringBookingSeriesPayload & {
+  excludedDates?: string[];
+};
+
+export interface RecurringBookingConflict {
+  occurrenceDate: string;
+  kind: RecurringConflictKind;
+  facilityIds: string[];
+  isOverridable: boolean;
+  ministryId: string | null;
+  ministryStewardDisplayName: string | null;
+  ministryStewardEmail: string | null;
+}
+
+export interface RecurringBookingSeriesPreview {
+  conflicts: RecurringBookingConflict[];
+}
+
+export interface RecurringBookingSeriesOccurrence {
+  id: string;
+  startAt: string;
+  endAt: string;
+  status: string;
+  quotedAmount: string | number;
+  currency: string;
+  facilityIds: string[];
+}
+
+export interface RecurringBookingSeriesDetail {
+  id: string;
+  userId: string;
+  ministryId: string | null;
+  firstOccurrenceDate: string;
+  lastOccurrenceDate: string;
+  localStartTime: string;
+  localEndTime: string;
+  status: string;
+  paymentHoldExpiresAt: string | null;
+  quotedAmount: string | number;
+  currency: string;
+  occurrenceCount: number;
+  isPriority: boolean;
+  confirmedById: string | null;
+  occurrences: RecurringBookingSeriesOccurrence[];
+}
+
+export type RecurringCancellationScope = "occurrence" | "this_and_future" | "entire_series";
+
+export interface CancelRecurringBookingSeriesPayload {
+  scope: RecurringCancellationScope;
+  occurrenceId?: string | null;
+  cancelReason?: string | null;
+}
+
 // Override log
 export interface OverrideLogPagesParams extends PagesParams {
   facilityId?: string;
@@ -773,6 +848,34 @@ class FacilityService {
   async confirmSeriesPayment(seriesId: string): Promise<ApiResponse<void>> {
     if (IS_MOCK_API) return { success: true, data: undefined as void };
     return httpClient.post(API_ENDPOINTS.FACILITY.BOOKING_SERIES.CONFIRM_PAYMENT(seriesId));
+  }
+
+  // Recurring Booking Series: admin on-behalf creation, detail, and cancellation
+  async previewBookingSeries(
+    payload: PreviewRecurringBookingSeriesPayload
+  ): Promise<ApiResponse<RecurringBookingSeriesPreview>> {
+    if (IS_MOCK_API) return { success: true, data: { conflicts: [] } };
+    return httpClient.post(API_ENDPOINTS.FACILITY.BOOKING_SERIES.PREVIEW, payload);
+  }
+
+  async createBookingSeries(
+    payload: CreateRecurringBookingSeriesPayload
+  ): Promise<ApiResponse<RecurringBookingSeriesDetail>> {
+    if (IS_MOCK_API) return { success: true, data: {} as RecurringBookingSeriesDetail };
+    return httpClient.post(API_ENDPOINTS.FACILITY.BOOKING_SERIES.CREATE, payload);
+  }
+
+  async getBookingSeriesById(id: string): Promise<ApiResponse<RecurringBookingSeriesDetail>> {
+    if (IS_MOCK_API) return { success: true, data: {} as RecurringBookingSeriesDetail };
+    return httpClient.get(API_ENDPOINTS.FACILITY.BOOKING_SERIES.DETAIL(id));
+  }
+
+  async cancelBookingSeries(
+    id: string,
+    payload: CancelRecurringBookingSeriesPayload
+  ): Promise<ApiResponse<RecurringBookingSeriesDetail>> {
+    if (IS_MOCK_API) return { success: true, data: {} as RecurringBookingSeriesDetail };
+    return httpClient.post(API_ENDPOINTS.FACILITY.BOOKING_SERIES.CANCEL(id), payload);
   }
 }
 
