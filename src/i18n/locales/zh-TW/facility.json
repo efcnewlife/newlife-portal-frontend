@@ -156,6 +156,21 @@
       "popoverTitle": "搜尋不開放時段",
       "keywordLabel": "關鍵字",
       "keywordPlaceholder": "搜尋名稱或原因"
+    },
+    "impact": {
+      "title": "確認不開放時段影響",
+      "alertTitle": "將取消 {{count}} 筆場次",
+      "alertTitle_other": "將取消 {{count}} 筆場次",
+      "alertBody": "新增此不開放時段將取消以下未來的每週重複預約場次,此動作無法復原。",
+      "series": "系列 {{id}}",
+      "ministry": "事工系列",
+      "rental": "個人租借",
+      "confirm": "確認並新增",
+      "cancelledCount": "已取消 {{count}} 筆場次",
+      "cancelledCount_other": "已取消 {{count}} 筆場次",
+      "errors": {
+        "stale": "自預覽後不開放時段的影響已改變,請重新開啟「新增不開放時段」再次檢視"
+      }
     }
   },
   "rentalRateTemplate": {
