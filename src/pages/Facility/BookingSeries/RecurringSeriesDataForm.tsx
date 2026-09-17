@@ -7,6 +7,7 @@ import ministryService, { type MinistryListItem } from "@/api/services/ministryS
 import userService, { type UserBase } from "@/api/services/userService";
 import { usePickerLabels } from "@/hooks/usePickerLabels";
 import { apiTimeToDayjs, dayjsToApiDate, dayjsToApiTime } from "@/utils/dayjsApi";
+import { buildRecurringSeriesPreviewPayload } from "./recurringSeriesPayload";
 import { isSameWeekday, occurrencePeriodForDate, weeklyOccurrenceDates } from "./recurringSeriesScheduling";
 import { Checkbox, ComboBox, DatePicker, Select, TextArea, TimePicker } from "@efcnewlife/newlife-ui";
 import type { Dayjs } from "dayjs";
@@ -184,24 +185,19 @@ const RecurringSeriesDataForm = forwardRef<RecurringSeriesDataFormHandle, Props>
       setErrors(next);
       return Object.keys(next).length === 0;
     },
-    getPreviewPayload: () => {
-      if (!userId || !firstDateStr || !lastDateStr || !facilityIds.length) return null;
-      const localStart = dayjsToApiTime(localStartTime);
-      const localEnd = dayjsToApiTime(localEndTime);
-      if (!localStart || !localEnd) return null;
-      return {
+    getPreviewPayload: () =>
+      buildRecurringSeriesPreviewPayload({
         userId,
         ministryId: ministryId || null,
         firstOccurrenceDate: firstDateStr,
         lastOccurrenceDate: lastDateStr,
-        localStartTime: localStart,
-        localEndTime: localEnd,
+        localStartTime: dayjsToApiTime(localStartTime) ?? null,
+        localEndTime: dayjsToApiTime(localEndTime) ?? null,
+        facilityIds,
         isMissionAligned,
-        rooms: facilityIds.map((facilityId, index) => ({ facilityId, sequence: index })),
         surchargeCodes,
-        remark: remark.trim() || undefined,
-      };
-    },
+        remark,
+      }),
     getOccurrenceCount: () => occurrenceDates.length,
     isPriorityMinistry: () => isPriorityMinistry,
   }));

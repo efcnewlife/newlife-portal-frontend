@@ -13,3 +13,7 @@ export const filterOverrideLogsForOccurrences = (
   const occurrenceIds = new Set(occurrences.map((occurrence) => occurrence.id));
   return logs.filter((log) => occurrenceIds.has(log.facilityBookingId));
 };
+
+/** Every room used by any occurrence, so the override-log query can be scoped per facility instead of pulling every facility's rows for the date window. */
+export const uniqueOccurrenceFacilityIds = (occurrences: RecurringBookingSeriesOccurrence[]): string[] =>
+  Array.from(new Set(occurrences.flatMap((occurrence) => occurrence.facilityIds)));

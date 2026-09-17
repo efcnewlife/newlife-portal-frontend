@@ -22,7 +22,7 @@ import { useTranslation } from "react-i18next";
 import { MdArrowBack } from "react-icons/md";
 import { useNavigate, useParams } from "react-router";
 import RecurringSeriesCancelModal from "./RecurringSeriesCancelModal";
-import { filterOverrideLogsForOccurrences } from "./recurringSeriesOverrideHistory";
+import { filterOverrideLogsForOccurrences, uniqueOccurrenceFacilityIds } from "./recurringSeriesOverrideHistory";
 import { resolveRecurringSeriesErrorMessage } from "./recurringSeriesErrorCode";
 
 type StatusBadgeColor = "success" | "warning" | "error" | "light";
@@ -35,6 +35,9 @@ const STATUS_BADGE_COLOR: Record<string, StatusBadgeColor> = {
 };
 
 const OVERRIDE_LOG_PAGE_SIZE = 100;
+
+const isApiError = (error: unknown): error is ApiError =>
+  Boolean(error && typeof error === "object" && "code" in error && typeof (error as ApiError).code === "number");
 
 const RecurringSeriesDetailPage = () => {
   const { t } = useTranslation(["facility", "common"]);
@@ -64,8 +67,7 @@ const RecurringSeriesDetailPage = () => {
       const res = await facilityService.getBookingSeriesById(seriesId);
       detail = res.data;
     } catch (error) {
-      const apiError = error as Partial<ApiError>;
-      if (apiError && typeof apiError === "object" && apiError.code === 404) {
+      if (isApiError(error) && error.code === 404) {
         setNotFound(true);
       } else {
         notifyApiError(error, {
@@ -88,12 +90,16 @@ const RecurringSeriesDetailPage = () => {
 
       const dateFrom = DateUtil.format(detail.firstOccurrenceDate, "YYYY-MM-DD");
       const dateTo = DateUtil.format(detail.lastOccurrenceDate, "YYYY-MM-DD");
-      const logsRes = await facilityService
-        .getOverrideLogPages({ page: 0, page_size: OVERRIDE_LOG_PAGE_SIZE, dateFrom, dateTo })
-        .catch(() => null);
-      setOverrideLogs(
-        logsRes?.success ? filterOverrideLogsForOccurrences(logsRes.data.items || [], detail.occurrences) : []
+      const facilityIds = uniqueOccurrenceFacilityIds(detail.occurrences);
+      const logsResList = await Promise.all(
+        facilityIds.map((facilityId) =>
+          facilityService
+            .getOverrideLogPages({ page: 0, page_size: OVERRIDE_LOG_PAGE_SIZE, facilityId, dateFrom, dateTo })
+            .catch(() => null)
+        )
       );
+      const logs = logsResList.flatMap((logsRes) => (logsRes?.success ? logsRes.data.items || [] : []));
+      setOverrideLogs(filterOverrideLogsForOccurrences(logs, detail.occurrences));
     } finally {
       setLoading(false);
     }
