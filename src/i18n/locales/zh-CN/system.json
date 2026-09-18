@@ -655,7 +655,15 @@
         "keyPlaceholder": "键",
         "valuePlaceholder": "值",
         "objectHint": "新增键值对。数字、true/false、JSON 会自动识别。",
-        "arrayHint": "按顺序新增项目。数字、true/false、JSON 会自动识别。"
+        "arrayHint": "按顺序新增项目。数字、true/false、JSON 会自动识别。",
+        "testWindowOverrideHint": "仅限非正式环境。启用后，Recurring Booking availability window 会对所有 Booker 开放，且不会更改原本设置的区间。"
+      },
+      "testBookerAllowlist": {
+        "emailAddressesLabel": "测试 Booker email 列表",
+        "emailSuffixesLabel": "测试 Booker 域名后缀列表",
+        "emailAddressPlaceholder": "qa@example.com",
+        "emailSuffixPlaceholder": "@stg.example.com",
+        "hint": "仅限非正式环境。Booker 的 email 完全匹配列表中的地址，或匹配完整域名后缀时，即可创建 Recurring Booking Series。"
       },
       "availabilityWindow": {
         "amountLabel": "数量",
@@ -688,7 +696,9 @@
         "amountInvalid": "数量必须为正整数",
         "unitRequired": "请选择天、周或月",
         "unitInvalid": "单位必须为天、周或日历相对月份",
-        "availabilityWindowRejected": "此 Recurring Booking availability window 无效。请使用正整数数量，以及天、周或日历相对月份。"
+        "availabilityWindowRejected": "此 Recurring Booking availability window 无效。请使用正整数数量，以及天、周或日历相对月份。",
+        "emailSuffixInvalid": "域名后缀必须以 @ 开头，并指定完整域名",
+        "testBookerAllowlistRejected": "此测试 Booker 允许列表无效。域名后缀必须以 @ 开头，并指定完整域名。"
       }
     }
   }

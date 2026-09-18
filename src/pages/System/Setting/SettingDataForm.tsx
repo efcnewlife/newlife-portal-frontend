@@ -12,6 +12,13 @@ import {
   type RecurringAvailabilityUnit,
   validateRecurringBookingAvailabilityWindow,
 } from "./recurringBookingAvailabilityWindow";
+import {
+  buildRecurringBookingTestBookerAllowlistValue,
+  isRecurringBookingTestBookerAllowlistSetting,
+  isRecurringBookingTestWindowOverrideSetting,
+  parseRecurringBookingTestBookerAllowlist,
+  validateRecurringBookingTestBookerAllowlistSuffixes,
+} from "./recurringBookingTestControls";
 
 export interface SettingFormValues {
   namespace: string;
@@ -104,6 +111,78 @@ const arrayToRows = (value: unknown): ArrayRow[] => {
   }));
 };
 
+interface RowListEditorProps {
+  idPrefix: string;
+  label: string;
+  addLabel: string;
+  removeRowLabel: string;
+  placeholder: string;
+  rows: ArrayRow[];
+  onChange: (rows: ArrayRow[]) => void;
+  error?: string;
+  showIndex?: boolean;
+}
+
+const RowListEditor = ({
+  idPrefix,
+  label,
+  addLabel,
+  removeRowLabel,
+  placeholder,
+  rows,
+  onChange,
+  error,
+  showIndex,
+}: RowListEditorProps) => (
+  <div className="space-y-2">
+    <div className="flex items-center justify-between gap-2">
+      <Label>{label}</Label>
+      <Button
+        btnType="button"
+        variant="outline"
+        size="sm"
+        startIcon={<MdAdd className="size-4" />}
+        onClick={() => onChange([...rows, { id: newRowId(), value: "" }])}
+      >
+        {addLabel}
+      </Button>
+    </div>
+    <div className="space-y-2">
+      {rows.map((row, index) => (
+        <div key={row.id} className="flex items-center gap-2">
+          {showIndex && (
+            <span className="flex h-11 min-w-11 shrink-0 items-center justify-center rounded-lg border border-outline px-2 text-sm font-medium text-on-surface shadow-theme-xs">
+              {index + 1}
+            </span>
+          )}
+          <div className="flex-1 min-w-0">
+            <Input
+              id={`${idPrefix}-${row.id}`}
+              type="text"
+              value={row.value}
+              onChange={(e) =>
+                onChange(rows.map((item) => (item.id === row.id ? { ...item, value: e.target.value } : item)))
+              }
+              placeholder={placeholder}
+            />
+          </div>
+          <button
+            type="button"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-500/10"
+            onClick={() =>
+              onChange(rows.length <= 1 ? [{ id: newRowId(), value: "" }] : rows.filter((item) => item.id !== row.id))
+            }
+            aria-label={removeRowLabel}
+          >
+            <MdDelete className="size-4" />
+          </button>
+        </div>
+      ))}
+    </div>
+    {error ? <p className="text-sm text-error-500">{error}</p> : null}
+  </div>
+);
+
 const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(function SettingDataForm(
   { mode, setting },
   ref
@@ -123,12 +202,15 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
   const [isActive, setIsActive] = useState(true);
   const [windowAmount, setWindowAmount] = useState("");
   const [windowUnit, setWindowUnit] = useState<RecurringAvailabilityUnit | "">("");
+  const [testEmailRows, setTestEmailRows] = useState<ArrayRow[]>([{ id: newRowId(), value: "" }]);
+  const [testSuffixRows, setTestSuffixRows] = useState<ArrayRow[]>([{ id: newRowId(), value: "" }]);
   const [errors, setErrors] = useState<{
     namespace?: string;
     settingKey?: string;
     value?: string;
     amount?: string;
     unit?: string;
+    emailSuffixes?: string;
   }>({});
 
   useEffect(() => {
@@ -144,6 +226,8 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
       setArrayRows([{ id: newRowId(), value: "" }]);
       setWindowAmount("");
       setWindowUnit("");
+      setTestEmailRows([{ id: newRowId(), value: "" }]);
+      setTestSuffixRows([{ id: newRowId(), value: "" }]);
       setRemark("");
       setIsActive(true);
       return;
@@ -163,6 +247,9 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
         unit: t("system:setting.form.validation.unitInvalid"),
       });
     }
+    const parsedAllowlist = parseRecurringBookingTestBookerAllowlist(setting.value);
+    setTestEmailRows(arrayToRows(parsedAllowlist?.emailAddresses ?? []));
+    setTestSuffixRows(arrayToRows(parsedAllowlist?.emailSuffixes ?? []));
     if (setting.valueType === "string") {
       setStringValue(typeof setting.value === "string" ? setting.value : String(setting.value ?? ""));
     } else if (setting.valueType === "number") {
@@ -182,6 +269,9 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
   const editorSettingKey = isCreate ? settingKey : (setting?.settingKey ?? settingKey);
   const isTimezoneSetting = editorNamespace === "facility" && editorSettingKey === "timezone";
   const isAvailabilityWindowSetting = isRecurringBookingAvailabilityWindowSetting(editorNamespace, editorSettingKey);
+  const isTestBookerAllowlistSetting = isRecurringBookingTestBookerAllowlistSetting(editorNamespace, editorSettingKey);
+  const isTestWindowOverrideSetting = isRecurringBookingTestWindowOverrideSetting(editorNamespace, editorSettingKey);
+  const hasCustomValueEditor = isAvailabilityWindowSetting || isTestBookerAllowlistSetting;
   const availabilityUnitOptions = useMemo(
     () =>
       RECURRING_AVAILABILITY_UNITS.map((unit) => ({
@@ -209,6 +299,12 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
     if (isAvailabilityWindowSetting) {
       return buildRecurringBookingAvailabilityWindowValue(windowAmount, windowUnit);
     }
+    if (isTestBookerAllowlistSetting) {
+      return buildRecurringBookingTestBookerAllowlistValue(
+        testEmailRows.map((row) => row.value),
+        testSuffixRows.map((row) => row.value)
+      );
+    }
     if (valueType === "string") return stringValue;
     if (valueType === "number") return Number(numberValue);
     if (valueType === "boolean") return booleanValue;
@@ -223,6 +319,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
       value?: string;
       amount?: string;
       unit?: string;
+      emailSuffixes?: string;
     } = {};
     if (isCreate) {
       if (!namespace.trim()) {
@@ -243,6 +340,13 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
         nextErrors.unit = t("system:setting.form.validation.unitRequired");
       } else if (windowErrors.unit === "invalid") {
         nextErrors.unit = t("system:setting.form.validation.unitInvalid");
+      }
+    } else if (isTestBookerAllowlistSetting) {
+      const allowlistErrors = validateRecurringBookingTestBookerAllowlistSuffixes(
+        testSuffixRows.map((row) => row.value)
+      );
+      if (allowlistErrors.emailSuffixes) {
+        nextErrors.emailSuffixes = t("system:setting.form.validation.emailSuffixInvalid");
       }
     } else if (valueType === "string") {
       if (!stringValue.trim()) {
@@ -273,7 +377,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
   const getValues = (): SettingFormValues => ({
     namespace: namespace.trim(),
     settingKey: settingKey.trim(),
-    valueType: isAvailabilityWindowSetting ? "object" : valueType,
+    valueType: hasCustomValueEditor ? "object" : valueType,
     value: resolveValue(),
     remark: remark.trim() ? remark.trim() : null,
     isActive,
@@ -311,7 +415,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
         />
       </div>
 
-      {isCreate && !isAvailabilityWindowSetting ? (
+      {isCreate && !hasCustomValueEditor ? (
         <Select
           id="setting-value-type"
           label={t("system:setting.form.valueType.label")}
@@ -333,7 +437,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
           id="setting-value-type"
           label={t("system:setting.form.valueType.label")}
           type="text"
-          value={isAvailabilityWindowSetting ? "object" : valueType}
+          value={hasCustomValueEditor ? "object" : valueType}
           disabled
         />
       )}
@@ -374,7 +478,37 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
         </div>
       )}
 
-      {!isAvailabilityWindowSetting && valueType === "string" && (
+      {isTestBookerAllowlistSetting && (
+        <div className="space-y-4">
+          <RowListEditor
+            idPrefix="setting-test-allowlist-email"
+            label={t("system:setting.form.testBookerAllowlist.emailAddressesLabel")}
+            addLabel={t("system:setting.form.value.addRow")}
+            removeRowLabel={t("system:setting.form.value.removeRow")}
+            placeholder={t("system:setting.form.testBookerAllowlist.emailAddressPlaceholder")}
+            rows={testEmailRows}
+            onChange={setTestEmailRows}
+          />
+          <RowListEditor
+            idPrefix="setting-test-allowlist-suffix"
+            label={t("system:setting.form.testBookerAllowlist.emailSuffixesLabel")}
+            addLabel={t("system:setting.form.value.addRow")}
+            removeRowLabel={t("system:setting.form.value.removeRow")}
+            placeholder={t("system:setting.form.testBookerAllowlist.emailSuffixPlaceholder")}
+            rows={testSuffixRows}
+            onChange={(rows) => {
+              setTestSuffixRows(rows);
+              setErrors((prev) => ({ ...prev, emailSuffixes: undefined }));
+            }}
+            error={errors.emailSuffixes}
+          />
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {t("system:setting.form.testBookerAllowlist.hint")}
+          </p>
+        </div>
+      )}
+
+      {!hasCustomValueEditor && valueType === "string" && (
         <Input
           id="setting-value-string"
           label={t("system:setting.form.value.label")}
@@ -388,7 +522,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
         />
       )}
 
-      {!isAvailabilityWindowSetting && valueType === "number" && (
+      {!hasCustomValueEditor && valueType === "number" && (
         <Input
           id="setting-value-number"
           label={t("system:setting.form.value.label")}
@@ -400,7 +534,7 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
         />
       )}
 
-      {!isAvailabilityWindowSetting && valueType === "boolean" && (
+      {!hasCustomValueEditor && valueType === "boolean" && (
         <div className="space-y-2">
           <Label>{t("system:setting.form.value.label")}</Label>
           <Checkbox
@@ -409,10 +543,15 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
             checked={booleanValue}
             onChange={setBooleanValue}
           />
+          {isTestWindowOverrideSetting && (
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {t("system:setting.form.value.testWindowOverrideHint")}
+            </p>
+          )}
         </div>
       )}
 
-      {!isAvailabilityWindowSetting && valueType === "object" && (
+      {!hasCustomValueEditor && valueType === "object" && (
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <Label>{t("system:setting.form.value.label")}</Label>
@@ -477,55 +616,19 @@ const SettingDataForm = forwardRef<SettingDataFormHandle, SettingDataFormProps>(
         </div>
       )}
 
-      {!isAvailabilityWindowSetting && valueType === "array" && (
+      {!hasCustomValueEditor && valueType === "array" && (
         <div className="space-y-2">
-          <div className="flex items-center justify-between gap-2">
-            <Label>{t("system:setting.form.value.label")}</Label>
-            <Button
-              btnType="button"
-              variant="outline"
-              size="sm"
-              startIcon={<MdAdd className="size-4" />}
-              onClick={() => setArrayRows((rows) => [...rows, { id: newRowId(), value: "" }])}
-            >
-              {t("system:setting.form.value.addRow")}
-            </Button>
-          </div>
-          <div className="space-y-2">
-            {arrayRows.map((row, index) => (
-              <div key={row.id} className="flex items-center gap-2">
-                <span className="flex h-11 min-w-11 shrink-0 items-center justify-center rounded-lg border border-outline px-2 text-sm font-medium text-on-surface shadow-theme-xs">
-                  {index + 1}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <Input
-                    id={`setting-array-value-${row.id}`}
-                    type="text"
-                    value={row.value}
-                    onChange={(e) =>
-                      setArrayRows((rows) =>
-                        rows.map((item) => (item.id === row.id ? { ...item, value: e.target.value } : item))
-                      )
-                    }
-                    placeholder={t("system:setting.form.value.valuePlaceholder")}
-                  />
-                </div>
-                <button
-                  type="button"
-                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-500/10"
-                  onClick={() =>
-                    setArrayRows((rows) =>
-                      rows.length <= 1 ? [{ id: newRowId(), value: "" }] : rows.filter((item) => item.id !== row.id)
-                    )
-                  }
-                  aria-label={t("system:setting.form.value.removeRow")}
-                >
-                  <MdDelete className="size-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-          {errors.value ? <p className="text-sm text-error-500">{errors.value}</p> : null}
+          <RowListEditor
+            idPrefix="setting-array-value"
+            label={t("system:setting.form.value.label")}
+            addLabel={t("system:setting.form.value.addRow")}
+            removeRowLabel={t("system:setting.form.value.removeRow")}
+            placeholder={t("system:setting.form.value.valuePlaceholder")}
+            rows={arrayRows}
+            onChange={setArrayRows}
+            error={errors.value}
+            showIndex
+          />
           <p className="text-xs text-gray-500 dark:text-gray-400">{t("system:setting.form.value.arrayHint")}</p>
         </div>
       )}

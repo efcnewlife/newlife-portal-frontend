@@ -16,6 +16,10 @@ import {
   isRecurringBookingAvailabilityWindowSetting,
   resolveRecurringBookingAvailabilityWindowSaveError,
 } from "./recurringBookingAvailabilityWindow";
+import {
+  isRecurringBookingTestBookerAllowlistSetting,
+  resolveRecurringBookingTestBookerAllowlistSaveError,
+} from "./recurringBookingTestControls";
 
 type SettingRow = SettingItem & Record<string, unknown>;
 
@@ -335,10 +339,13 @@ const SettingDataPage = () => {
               title: t("common:feedback.saveFailed"),
               fallbackDescription: t("common:feedback.saveFailedDesc"),
               resolveDescription: (err) => {
-                if (!isRecurringBookingAvailabilityWindowSetting(values.namespace, values.settingKey)) {
-                  return undefined;
+                if (isRecurringBookingAvailabilityWindowSetting(values.namespace, values.settingKey)) {
+                  return resolveRecurringBookingAvailabilityWindowSaveError(err, (key) => t(`system:${key}`));
                 }
-                return resolveRecurringBookingAvailabilityWindowSaveError(err, (key) => t(`system:${key}`));
+                if (isRecurringBookingTestBookerAllowlistSetting(values.namespace, values.settingKey)) {
+                  return resolveRecurringBookingTestBookerAllowlistSaveError(err, (key) => t(`system:${key}`));
+                }
+                return undefined;
               },
             });
           } finally {

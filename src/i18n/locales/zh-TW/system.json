@@ -655,7 +655,15 @@
         "keyPlaceholder": "鍵",
         "valuePlaceholder": "值",
         "objectHint": "新增鍵值對。數字、true/false、JSON 會自動辨識。",
-        "arrayHint": "依序新增項目。數字、true/false、JSON 會自動辨識。"
+        "arrayHint": "依序新增項目。數字、true/false、JSON 會自動辨識。",
+        "testWindowOverrideHint": "僅限非正式環境。啟用後，Recurring Booking availability window 會對所有 Booker 開放，且不會更動原本設定的區間。"
+      },
+      "testBookerAllowlist": {
+        "emailAddressesLabel": "測試 Booker email 清單",
+        "emailSuffixesLabel": "測試 Booker 網域後綴清單",
+        "emailAddressPlaceholder": "qa@example.com",
+        "emailSuffixPlaceholder": "@stg.example.com",
+        "hint": "僅限非正式環境。Booker 的 email 完全符合清單中的地址，或符合完整網域後綴時，即可建立 Recurring Booking Series。"
       },
       "availabilityWindow": {
         "amountLabel": "數量",
@@ -688,7 +696,9 @@
         "amountInvalid": "數量必須為正整數",
         "unitRequired": "請選擇天、週或月",
         "unitInvalid": "單位必須為天、週或日曆相對月份",
-        "availabilityWindowRejected": "此 Recurring Booking availability window 無效。請使用正整數數量，以及天、週或日曆相對月份。"
+        "availabilityWindowRejected": "此 Recurring Booking availability window 無效。請使用正整數數量，以及天、週或日曆相對月份。",
+        "emailSuffixInvalid": "網域後綴必須以 @ 開頭，並指定完整網域",
+        "testBookerAllowlistRejected": "此測試 Booker 允許清單無效。網域後綴必須以 @ 開頭，並指定完整網域。"
       }
     }
   }
