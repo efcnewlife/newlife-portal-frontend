@@ -655,7 +655,15 @@
         "keyPlaceholder": "Key",
         "valuePlaceholder": "Value",
         "objectHint": "Add key-value pairs. Numbers, true/false, and JSON are auto-detected.",
-        "arrayHint": "Add items in order. Numbers, true/false, and JSON are auto-detected."
+        "arrayHint": "Add items in order. Numbers, true/false, and JSON are auto-detected.",
+        "testWindowOverrideHint": "Non-production only. When enabled, the Recurring Booking availability window is open for every Booker without changing the configured window."
+      },
+      "testBookerAllowlist": {
+        "emailAddressesLabel": "Test Booker email addresses",
+        "emailSuffixesLabel": "Test Booker domain suffixes",
+        "emailAddressPlaceholder": "qa@example.com",
+        "emailSuffixPlaceholder": "@stg.example.com",
+        "hint": "Non-production only. A Booker becomes eligible for a Recurring Booking Series when they match an exact email address or a complete domain suffix here."
       },
       "availabilityWindow": {
         "amountLabel": "Amount",
@@ -688,7 +696,9 @@
         "amountInvalid": "Amount must be a positive integer",
         "unitRequired": "Select days, weeks, or months",
         "unitInvalid": "Unit must be days, weeks, or calendar-relative months",
-        "availabilityWindowRejected": "This Recurring Booking availability window is invalid. Use a positive amount and days, weeks, or calendar-relative months."
+        "availabilityWindowRejected": "This Recurring Booking availability window is invalid. Use a positive amount and days, weeks, or calendar-relative months.",
+        "emailSuffixInvalid": "Domain suffixes must start with @ and name a complete domain",
+        "testBookerAllowlistRejected": "This test Booker allowlist is invalid. Domain suffixes must start with @ and name a complete domain."
       }
     }
   }
