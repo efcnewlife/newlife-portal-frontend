@@ -1,10 +1,5 @@
 import ministryService, { type MinistryListItem } from "@/api/services/ministryService";
-import {
-  facilityService,
-  type BookingCreate,
-  type BookingDetail,
-  type BookingListItem,
-} from "@/api/services/facilityService";
+import { facilityService, type BookingDetail, type BookingListItem } from "@/api/services/facilityService";
 import type { CalendarView } from "@/components/calendar";
 import PageToolbar from "@/components/common/PageToolbar";
 import type { DataTableColumn, MenuButtonType, PageButtonType } from "@/components/DataPage";
@@ -37,6 +32,7 @@ import { useNavigate, useSearchParams } from "react-router";
 import BookingCalendar from "./BookingCalendar";
 import BookingCancelForm from "./BookingCancelForm";
 import BookingDataForm, { type BookingDataFormHandle, type BookingFormValues } from "./BookingDataForm";
+import { buildOneTimeBookingCreatePayload } from "./bookingCreatePayload";
 import BookingDetailDrawer from "./BookingDetailDrawer";
 import BookingGrid from "./BookingGrid";
 import BookingListFilters from "./BookingListFilters";
@@ -665,19 +661,15 @@ const BookingDataPage = () => {
           const startAt = dayjsToApiUtcIso(values.startAt);
           const endAt = dayjsToApiUtcIso(values.endAt);
           if (!startAt || !endAt) return;
-          const payload: BookingCreate = {
+          const payload = buildOneTimeBookingCreatePayload({
             userId: values.userId,
             startAt,
             endAt,
-            isMissionAligned: values.isMissionAligned,
-            ministryId: values.ministryId || undefined,
-            rooms: values.facilityIds.map((facilityId, index) => ({
-              facilityId,
-              sequence: index,
-            })),
+            ministryId: values.ministryId,
+            facilityIds: values.facilityIds,
             surchargeCodes: values.surchargeCodes,
-            remark: values.remark.trim() || undefined,
-          };
+            remark: values.remark,
+          });
           setSubmitting(true);
           try {
             await facilityService.createBooking(payload);

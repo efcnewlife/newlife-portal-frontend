@@ -13,6 +13,15 @@
     "searchChipKeyword": "Keyword:",
     "searchChipRoom": "Room:"
   },
+  "discountEligibility": {
+    "selectBooker": "Select a Booker to see the Booking Discount.",
+    "checking": "Checking discount eligibility…",
+    "failed": "Could not load discount eligibility.",
+    "ministry": "Ministry discount ({{percent}}%)",
+    "recurring": "Recurring discount ({{percent}}%)",
+    "applied": "Discount ({{percent}}%)",
+    "none": "No discount"
+  },
   "room": {
     "page": {
       "title": "Rooms",
@@ -363,7 +372,6 @@
       "endAfterStart": "End must be after start",
       "ministry": "Ministry",
       "noMinistry": "No ministry",
-      "missionAligned": "Mission aligned",
       "surcharges": "Surcharges",
       "remark": "Remark",
       "previewQuote": "Preview quote",
@@ -533,7 +541,6 @@
       "roomsRequired": "Select at least one room",
       "roomsMax": "Select at most {{count}} rooms",
       "roomsMaxHint": "Up to {{count}} rooms, shared across every occurrence",
-      "missionAligned": "Mission aligned",
       "surcharges": "Surcharges",
       "remark": "Remark"
     },

@@ -242,7 +242,8 @@ export interface PreviewQuoteRoomLine {
 
 export interface PreviewQuoteRequest {
   bookingType: string;
-  isMissionAligned?: boolean;
+  ministryId?: string | null;
+  userId?: string;
   currency?: string;
   asOfDate?: string;
   roomLines?: PreviewQuoteRoomLine[];
@@ -406,7 +407,6 @@ export interface BookingCreate {
   userId: string;
   startAt: string;
   endAt: string;
-  isMissionAligned?: boolean;
   ministryId?: string;
   rooms: BookingRoomInput[];
   surchargeCodes?: string[];
@@ -416,7 +416,6 @@ export interface BookingCreate {
 export interface BookingUpdate {
   startAt: string;
   endAt: string;
-  isMissionAligned?: boolean;
   ministryId?: string;
   rooms?: BookingRoomInput[];
   surchargeCodes?: string[];
@@ -425,6 +424,17 @@ export interface BookingUpdate {
 export interface BookingCancel {
   scope?: string;
   cancelReason?: string;
+}
+
+export interface DiscountEligibilityRequest {
+  bookingType: string;
+  ministryId?: string | null;
+  userId: string;
+}
+
+export interface DiscountEligibilityResponse {
+  discountCode: string | null;
+  discountPercent: string | number;
 }
 
 // Recurring Booking Series payment confirmation
@@ -457,7 +467,6 @@ export interface PreviewRecurringBookingSeriesPayload {
   lastOccurrenceDate: string;
   localStartTime: string;
   localEndTime: string;
-  isMissionAligned?: boolean;
   rooms: RecurringBookingSeriesRoomInput[];
   surchargeCodes?: string[];
   remark?: string;
@@ -843,6 +852,15 @@ class FacilityService {
   async getBookingById(id: string): Promise<ApiResponse<BookingDetail>> {
     if (IS_MOCK_API) return { success: true, data: {} as BookingDetail };
     return httpClient.get(API_ENDPOINTS.FACILITY.BOOKINGS.DETAIL(id));
+  }
+
+  async evaluateDiscountEligibility(
+    payload: DiscountEligibilityRequest
+  ): Promise<ApiResponse<DiscountEligibilityResponse>> {
+    if (IS_MOCK_API) {
+      return { success: true, data: { discountCode: null, discountPercent: "0" } };
+    }
+    return httpClient.post(API_ENDPOINTS.FACILITY.BOOKINGS.DISCOUNT_ELIGIBILITY, payload);
   }
 
   async createBooking(payload: BookingCreate): Promise<ApiResponse<{ id: string }>> {

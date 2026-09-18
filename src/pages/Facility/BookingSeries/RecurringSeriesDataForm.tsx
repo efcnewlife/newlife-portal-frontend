@@ -6,10 +6,12 @@ import {
 import ministryService, { type MinistryListItem } from "@/api/services/ministryService";
 import userService, { type UserBase } from "@/api/services/userService";
 import { usePickerLabels } from "@/hooks/usePickerLabels";
+import DiscountEligibilityNotice from "@/pages/Facility/shared/DiscountEligibilityNotice";
+import { useDiscountEligibility } from "@/pages/Facility/shared/useDiscountEligibility";
 import { apiTimeToDayjs, dayjsToApiDate, dayjsToApiTime } from "@/utils/dayjsApi";
 import { buildRecurringSeriesPreviewPayload } from "./recurringSeriesPayload";
 import { isSameWeekday, occurrencePeriodForDate, weeklyOccurrenceDates } from "./recurringSeriesScheduling";
-import { Checkbox, ComboBox, DatePicker, Select, TextArea, TimePicker } from "@efcnewlife/newlife-ui";
+import { ComboBox, DatePicker, Select, TextArea, TimePicker } from "@efcnewlife/newlife-ui";
 import type { Dayjs } from "dayjs";
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -44,7 +46,6 @@ const RecurringSeriesDataForm = forwardRef<RecurringSeriesDataFormHandle, Props>
   const [localStartTime, setLocalStartTime] = useState<Dayjs | null>(apiTimeToDayjs("09:00"));
   const [localEndTime, setLocalEndTime] = useState<Dayjs | null>(apiTimeToDayjs("11:00"));
   const [facilityIds, setFacilityIds] = useState<string[]>([]);
-  const [isMissionAligned, setIsMissionAligned] = useState(false);
   const [surchargeCodes, setSurchargeCodes] = useState<string[]>([]);
   const [remark, setRemark] = useState("");
 
@@ -53,6 +54,7 @@ const RecurringSeriesDataForm = forwardRef<RecurringSeriesDataFormHandle, Props>
   const [usersLoading, setUsersLoading] = useState(false);
   const [ministries, setMinistries] = useState<MinistryListItem[]>([]);
   const [surcharges, setSurcharges] = useState<SurchargeItem[]>([]);
+  const eligibility = useDiscountEligibility("recurring", ministryId || null, userId);
 
   const [errors, setErrors] = useState<{
     userId?: string;
@@ -194,7 +196,6 @@ const RecurringSeriesDataForm = forwardRef<RecurringSeriesDataFormHandle, Props>
         localStartTime: dayjsToApiTime(localStartTime) ?? null,
         localEndTime: dayjsToApiTime(localEndTime) ?? null,
         facilityIds,
-        isMissionAligned,
         surchargeCodes,
         remark,
       }),
@@ -231,6 +232,7 @@ const RecurringSeriesDataForm = forwardRef<RecurringSeriesDataFormHandle, Props>
         onChange={(v) => setMinistryId(String(v || ""))}
         hint={isPriorityMinistry ? t("bookingSeries.form.priorityMinistryHint") : undefined}
       />
+      <DiscountEligibilityNotice eligibility={eligibility} />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <DatePicker
           id="booking-series-first-occurrence"
@@ -305,12 +307,6 @@ const RecurringSeriesDataForm = forwardRef<RecurringSeriesDataFormHandle, Props>
         error={errors.facilityIds}
         hint={t("bookingSeries.form.roomsMaxHint", { count: MAX_RECURRING_SERIES_ROOMS })}
         required
-      />
-      <Checkbox
-        id="booking-series-mission-aligned"
-        label={t("bookingSeries.form.missionAligned")}
-        checked={isMissionAligned}
-        onChange={setIsMissionAligned}
       />
       <Select
         id="booking-series-surcharges"

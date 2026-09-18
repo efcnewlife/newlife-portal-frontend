@@ -13,6 +13,15 @@
     "searchChipKeyword": "关键字：",
     "searchChipRoom": "场地："
   },
+  "discountEligibility": {
+    "selectBooker": "请先选择预订人，以显示预订折扣。",
+    "checking": "正在确认折扣资格…",
+    "failed": "无法载入折扣资格。",
+    "ministry": "事工折扣（{{percent}}%）",
+    "recurring": "循环预订折扣（{{percent}}%）",
+    "applied": "折扣（{{percent}}%）",
+    "none": "无折扣"
+  },
   "room": {
     "page": {
       "title": "場地管理",
@@ -363,7 +372,6 @@
       "endAfterStart": "结束时间必须晚于开始时间",
       "ministry": "事工",
       "noMinistry": "不指定事工",
-      "missionAligned": "宣教对齐",
       "surcharges": "附加费",
       "remark": "备注",
       "previewQuote": "预览报价",
@@ -532,7 +540,6 @@
       "roomsRequired": "请至少选择一个场地",
       "roomsMax": "最多可选择 {{count}} 个场地",
       "roomsMaxHint": "最多 {{count}} 个场地，所有场次共用",
-      "missionAligned": "宣教相关",
       "surcharges": "附加费用",
       "remark": "备注"
     },

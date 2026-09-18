@@ -2,12 +2,15 @@ import { facilityService, type PreviewQuoteResponse, type SurchargeItem } from "
 import ministryService, { type MinistryListItem } from "@/api/services/ministryService";
 import userService, { type UserBase } from "@/api/services/userService";
 import { usePickerLabels } from "@/hooks/usePickerLabels";
+import DiscountEligibilityNotice from "@/pages/Facility/shared/DiscountEligibilityNotice";
+import { useDiscountEligibility } from "@/pages/Facility/shared/useDiscountEligibility";
 import { DateUtil } from "@/utils/dateUtil";
 import { getLocalTimezone } from "@/utils/dayjsApi";
-import { Button, Checkbox, ComboBox, DateTimePicker, Select, TextArea } from "@efcnewlife/newlife-ui";
+import { Button, ComboBox, DateTimePicker, Select, TextArea } from "@efcnewlife/newlife-ui";
 import type { Dayjs } from "dayjs";
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { buildOneTimePreviewQuoteRequest } from "./bookingCreatePayload";
 
 export interface BookingFormValues {
   userId: string;
@@ -15,7 +18,6 @@ export interface BookingFormValues {
   startAt: Dayjs | null;
   endAt: Dayjs | null;
   ministryId: string | null;
-  isMissionAligned: boolean;
   surchargeCodes: string[];
   remark: string;
 }
@@ -56,7 +58,6 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
   const [startAt, setStartAt] = useState<Dayjs | null>(defaultValues?.startAt ?? null);
   const [endAt, setEndAt] = useState<Dayjs | null>(defaultValues?.endAt ?? null);
   const [ministryId, setMinistryId] = useState<string>(defaultValues?.ministryId || "");
-  const [isMissionAligned, setIsMissionAligned] = useState(defaultValues?.isMissionAligned ?? false);
   const [surchargeCodes, setSurchargeCodes] = useState<string[]>(defaultValues?.surchargeCodes || []);
   const [remark, setRemark] = useState(defaultValues?.remark || "");
   const [users, setUsers] = useState<UserBase[]>([]);
@@ -74,13 +75,19 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
     endAt?: string;
   }>({});
 
+  const eligibility = useDiscountEligibility("one_time", ministryId || null, userId);
+
+  useEffect(() => {
+    setQuote(null);
+    setQuoteError(null);
+  }, [userId, ministryId]);
+
   useEffect(() => {
     setUserId(defaultValues?.userId || "");
     setFacilityIds(defaultValues?.facilityIds || []);
     setStartAt(defaultValues?.startAt ?? null);
     setEndAt(defaultValues?.endAt ?? null);
     setMinistryId(defaultValues?.ministryId || "");
-    setIsMissionAligned(defaultValues?.isMissionAligned ?? false);
     setSurchargeCodes(defaultValues?.surchargeCodes || []);
     setRemark(defaultValues?.remark || "");
     setSelectedUser(null);
@@ -216,13 +223,16 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
       startAt,
       endAt,
       ministryId: ministryId || null,
-      isMissionAligned,
       surchargeCodes,
       remark,
     }),
   }));
 
   const handlePreviewQuote = async () => {
+    if (!userId) {
+      setQuoteError(t("booking.form.bookerRequired"));
+      return;
+    }
     if (!facilityIds.length || !startAt || !endAt) {
       setQuoteError(t("booking.form.quoteNeedTimesRooms"));
       return;
@@ -232,19 +242,21 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
       setQuoteError(t("booking.form.endAfterStart"));
       return;
     }
+    const payload = buildOneTimePreviewQuoteRequest({
+      userId,
+      ministryId: ministryId || null,
+      facilityIds,
+      billedHours: hours,
+      surchargeCodes,
+    });
+    if (!payload) {
+      setQuoteError(t("booking.form.quoteNeedTimesRooms"));
+      return;
+    }
     setQuoting(true);
     setQuoteError(null);
     try {
-      const res = await facilityService.previewQuote({
-        bookingType: "one_time",
-        isMissionAligned,
-        currency: "CAD",
-        roomLines: facilityIds.map((facilityId) => ({
-          facilityId,
-          billedHours: hours,
-        })),
-        surchargeCodes,
-      });
+      const res = await facilityService.previewQuote(payload);
       if (res.success) {
         setQuote(res.data);
       } else {
@@ -340,12 +352,7 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         value={ministryId}
         onChange={(v) => setMinistryId(String(v || ""))}
       />
-      <Checkbox
-        id="booking-mission-aligned"
-        label={t("booking.form.missionAligned")}
-        checked={isMissionAligned}
-        onChange={setIsMissionAligned}
-      />
+      <DiscountEligibilityNotice eligibility={eligibility} />
       <Select
         id="booking-surcharges"
         label={t("booking.form.surcharges")}
@@ -364,6 +371,9 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         {quote && (
           <span className="text-sm text-gray-600 dark:text-gray-300">
             {t("booking.form.quotedAmount")}: {quote.quotedAmount} {quote.currency}
+            {Number(quote.discountPercent) > 0
+              ? ` · ${t("discountEligibility.applied", { percent: quote.discountPercent })}`
+              : ` · ${t("discountEligibility.none")}`}
           </span>
         )}
       </div>
