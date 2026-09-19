@@ -1,4 +1,7 @@
-import type { PreviewRecurringBookingSeriesPayload } from "@/api/services/facilityService";
+import type {
+  CreateRecurringBookingSeriesPayload,
+  PreviewRecurringBookingSeriesPayload,
+} from "@/api/services/facilityService";
 
 export interface RecurringSeriesPayloadInput {
   userId: string;
@@ -43,3 +46,17 @@ export const buildRecurringSeriesPreviewPayload = (
     remark: input.remark.trim() || undefined,
   };
 };
+
+/**
+ * Adds the Series title, which the create endpoint requires but the preview endpoint's
+ * schema has no field for, so it can only be merged in at create time.
+ */
+export const buildRecurringSeriesCreatePayload = (
+  previewPayload: PreviewRecurringBookingSeriesPayload,
+  title: string,
+  excludedDates: string[]
+): CreateRecurringBookingSeriesPayload => ({
+  ...previewPayload,
+  title: title.trim(),
+  excludedDates,
+});

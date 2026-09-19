@@ -2,6 +2,7 @@ import type { BookingCreate, PreviewQuoteRequest } from "@/api/services/facility
 
 export interface OneTimeBookingCreateInput {
   userId: string;
+  title: string;
   startAt: string;
   endAt: string;
   ministryId: string | null;
@@ -20,6 +21,7 @@ export interface OneTimePreviewQuoteInput {
 
 export const buildOneTimeBookingCreatePayload = (input: OneTimeBookingCreateInput): BookingCreate => ({
   userId: input.userId,
+  title: input.title.trim(),
   startAt: input.startAt,
   endAt: input.endAt,
   ministryId: input.ministryId || undefined,

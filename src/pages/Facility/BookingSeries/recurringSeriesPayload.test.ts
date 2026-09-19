@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildRecurringSeriesPreviewPayload, type RecurringSeriesPayloadInput } from "./recurringSeriesPayload";
+import {
+  buildRecurringSeriesCreatePayload,
+  buildRecurringSeriesPreviewPayload,
+  type RecurringSeriesPayloadInput,
+} from "./recurringSeriesPayload";
 
 const validInput = (overrides: Partial<RecurringSeriesPayloadInput> = {}): RecurringSeriesPayloadInput => ({
   userId: "booker-1",
@@ -59,5 +63,17 @@ describe("buildRecurringSeriesPreviewPayload", () => {
 
   it.each(missingFieldCases)("returns null when %s is missing", (_field, overrides) => {
     expect(buildRecurringSeriesPreviewPayload(validInput(overrides))).toBeNull();
+  });
+});
+
+describe("buildRecurringSeriesCreatePayload", () => {
+  it("merges the title (trimmed) and excludedDates onto the preview payload, leaving it otherwise unchanged", () => {
+    const previewPayload = buildRecurringSeriesPreviewPayload(validInput())!;
+    const payload = buildRecurringSeriesCreatePayload(previewPayload, "  Youth Group  ", ["2026-01-11"]);
+    expect(payload).toEqual({
+      ...previewPayload,
+      title: "Youth Group",
+      excludedDates: ["2026-01-11"],
+    });
   });
 });

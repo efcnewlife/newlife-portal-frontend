@@ -11,13 +11,21 @@ import { useDiscountEligibility } from "@/pages/Facility/shared/useDiscountEligi
 import { apiTimeToDayjs, dayjsToApiDate, dayjsToApiTime } from "@/utils/dayjsApi";
 import { buildRecurringSeriesPreviewPayload } from "./recurringSeriesPayload";
 import { isSameWeekday, occurrencePeriodForDate, weeklyOccurrenceDates } from "./recurringSeriesScheduling";
-import { ComboBox, DatePicker, Select, TextArea, TimePicker } from "@efcnewlife/newlife-ui";
+import { ComboBox, DatePicker, Input, Select, TextArea, TimePicker } from "@efcnewlife/newlife-ui";
 import type { Dayjs } from "dayjs";
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { BOOKING_TITLE_MAX_LENGTH, validateBookingTitle } from "../Booking/bookingTitleValidation";
+
+const TITLE_ERROR_KEY = {
+  required: "bookingSeries.form.titleRequired",
+  tooLong: "bookingSeries.form.titleTooLong",
+  notPlainText: "bookingSeries.form.titleInvalid",
+} as const;
 
 export interface RecurringSeriesDataFormHandle {
   validate: () => boolean;
+  getTitle: () => string;
   getPreviewPayload: () => PreviewRecurringBookingSeriesPayload | null;
   getOccurrenceCount: () => number;
   isPriorityMinistry: () => boolean;
@@ -40,6 +48,8 @@ const RecurringSeriesDataForm = forwardRef<RecurringSeriesDataFormHandle, Props>
   const pickerLabels = usePickerLabels();
 
   const [userId, setUserId] = useState("");
+  const [title, setTitle] = useState("");
+  const [titleError, setTitleError] = useState<string | undefined>();
   const [ministryId, setMinistryId] = useState<string>("");
   const [firstOccurrenceDate, setFirstOccurrenceDate] = useState<Dayjs | null>(null);
   const [lastOccurrenceDate, setLastOccurrenceDate] = useState<Dayjs | null>(null);
@@ -164,6 +174,10 @@ const RecurringSeriesDataForm = forwardRef<RecurringSeriesDataFormHandle, Props>
     validate: () => {
       const next: typeof errors = {};
       if (!userId) next.userId = t("bookingSeries.form.bookerRequired");
+      const titleValidationError = validateBookingTitle(title);
+      setTitleError(
+        titleValidationError ? t(TITLE_ERROR_KEY[titleValidationError], { count: BOOKING_TITLE_MAX_LENGTH }) : undefined
+      );
       if (!facilityIds.length) next.facilityIds = t("bookingSeries.form.roomsRequired");
       else if (facilityIds.length > MAX_RECURRING_SERIES_ROOMS) {
         next.facilityIds = t("bookingSeries.form.roomsMax", { count: MAX_RECURRING_SERIES_ROOMS });
@@ -185,8 +199,9 @@ const RecurringSeriesDataForm = forwardRef<RecurringSeriesDataFormHandle, Props>
         next.localEndTime = t("bookingSeries.form.endAfterStart");
       }
       setErrors(next);
-      return Object.keys(next).length === 0;
+      return Object.keys(next).length === 0 && !titleValidationError;
     },
+    getTitle: () => title,
     getPreviewPayload: () =>
       buildRecurringSeriesPreviewPayload({
         userId,
@@ -222,6 +237,15 @@ const RecurringSeriesDataForm = forwardRef<RecurringSeriesDataFormHandle, Props>
         placeholder={t("bookingSeries.form.bookerSearchPlaceholder")}
         error={errors.userId}
         clearable
+        required
+      />
+      <Input
+        id="booking-series-title"
+        label={t("bookingSeries.form.title")}
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        error={titleError}
+        hint={t("bookingSeries.form.titleHint", { count: BOOKING_TITLE_MAX_LENGTH })}
         required
       />
       <Select
