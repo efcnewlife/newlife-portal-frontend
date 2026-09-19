@@ -334,7 +334,8 @@
     "modal": {
       "detailTitle": "预订详情",
       "cancelTitle": "取消预订",
-      "createTitle": "创建预订"
+      "createTitle": "创建预订",
+      "editTitle": "编辑预订"
     },
     "detail": {
       "userEmail": "电子邮件",
@@ -361,6 +362,12 @@
       "booker": "预订人",
       "bookerRequired": "必须选择预订人",
       "bookerSearchPlaceholder": "以姓名或 email 搜寻预订人",
+      "title": "标题",
+      "titleRequired": "标题为必填",
+      "titleTooLong": "标题最多 {{count}} 个字符",
+      "titleInvalid": "标题必须为纯文本",
+      "titleHint": "最多 {{count}} 个字符，纯文本",
+      "editRoomsTimeNotice": "此处不支持变更场地与时间，如需变更请联系工作人员以人工处理。",
       "rooms": "场地",
       "roomsRequired": "请至少选择一个场地",
       "roomsMax": "最多只能选择 {{count}} 个场地",
