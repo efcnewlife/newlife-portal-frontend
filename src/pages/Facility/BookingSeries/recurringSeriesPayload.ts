@@ -8,7 +8,6 @@ export interface RecurringSeriesPayloadInput {
   localStartTime: string | null;
   localEndTime: string | null;
   facilityIds: string[];
-  isMissionAligned: boolean;
   surchargeCodes: string[];
   remark: string;
 }
@@ -39,7 +38,6 @@ export const buildRecurringSeriesPreviewPayload = (
     lastOccurrenceDate: input.lastOccurrenceDate,
     localStartTime: input.localStartTime,
     localEndTime: input.localEndTime,
-    isMissionAligned: input.isMissionAligned,
     rooms: input.facilityIds.map((facilityId, index) => ({ facilityId, sequence: index })),
     surchargeCodes: input.surchargeCodes,
     remark: input.remark.trim() || undefined,

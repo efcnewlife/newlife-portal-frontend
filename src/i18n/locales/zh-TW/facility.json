@@ -13,6 +13,15 @@
     "searchChipKeyword": "關鍵字：",
     "searchChipRoom": "場地："
   },
+  "discountEligibility": {
+    "selectBooker": "請先選擇預訂人，以顯示預訂折扣。",
+    "checking": "正在確認折扣資格…",
+    "failed": "無法載入折扣資格。",
+    "ministry": "事工折扣（{{percent}}%）",
+    "recurring": "循環預訂折扣（{{percent}}%）",
+    "applied": "折扣（{{percent}}%）",
+    "none": "無折扣"
+  },
   "room": {
     "page": {
       "title": "場地管理",
@@ -363,7 +372,6 @@
       "endAfterStart": "結束時間必須晚於開始時間",
       "ministry": "事工",
       "noMinistry": "不指定事工",
-      "missionAligned": "宣教對齊",
       "surcharges": "附加費",
       "remark": "備註",
       "previewQuote": "預覽報價",
@@ -532,7 +540,6 @@
       "roomsRequired": "請至少選擇一個場地",
       "roomsMax": "最多可選擇 {{count}} 個場地",
       "roomsMaxHint": "最多 {{count}} 個場地，所有場次共用",
-      "missionAligned": "宣教相關",
       "surcharges": "附加費用",
       "remark": "備註"
     },

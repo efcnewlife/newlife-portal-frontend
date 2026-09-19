@@ -9,7 +9,6 @@ const validInput = (overrides: Partial<RecurringSeriesPayloadInput> = {}): Recur
   localStartTime: "09:00:00",
   localEndTime: "11:00:00",
   facilityIds: ["room-1", "room-2"],
-  isMissionAligned: false,
   surchargeCodes: ["cleaning"],
   remark: "  weekly youth group  ",
   ...overrides,
@@ -25,7 +24,6 @@ describe("buildRecurringSeriesPreviewPayload", () => {
       lastOccurrenceDate: "2026-01-25",
       localStartTime: "09:00:00",
       localEndTime: "11:00:00",
-      isMissionAligned: false,
       rooms: [
         { facilityId: "room-1", sequence: 0 },
         { facilityId: "room-2", sequence: 1 },
@@ -43,6 +41,11 @@ describe("buildRecurringSeriesPreviewPayload", () => {
   it("omits remark when it is blank after trimming", () => {
     const payload = buildRecurringSeriesPreviewPayload(validInput({ remark: "   " }));
     expect(payload?.remark).toBeUndefined();
+  });
+
+  it("does not send a client-controlled isMissionAligned flag", () => {
+    const payload = buildRecurringSeriesPreviewPayload(validInput());
+    expect(payload).not.toHaveProperty("isMissionAligned");
   });
 
   const missingFieldCases: Array<[string, Partial<RecurringSeriesPayloadInput>]> = [
