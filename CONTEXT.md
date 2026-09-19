@@ -42,6 +42,10 @@ _Avoid_: DateRangePicker as the default control for these fields, treating an op
 The start and end instants of a facility booking (`startAt` / `endAt` on the API as UTC ISO). The admin UI edits them as date-and-time values with a display timezone, not as date-only or time-only fields.
 _Avoid_: calendar-date-only booking, wall-clock string as the domain meaning of the instant
 
+**Booking title**:
+A required 1-30 character plain-text label on a one-time booking (`title` on the API). Server-validated as trimmed, non-empty, at most 30 characters, and free of HTML markup. It is the one field the constrained Admin Booking edit surface may change together with Ministry association and surcharge selection; editing it does not reprice the booking.
+_Avoid_: an optional or unbounded free-text field, treating this as the Recurring Booking Series title (Admin editing of a Series title is a separate, currently unsupported surface)
+
 **Calendar booking event**:
 The Calendar view's unit is one booking: a single block keyed by booking id, showing Booker and Booking start / Booking end. Time is the block's vertical span.
 _Avoid_: one block per room, duplicating the same booking across Calendar columns, treating Grid's Primary facility as the Calendar mapping rule

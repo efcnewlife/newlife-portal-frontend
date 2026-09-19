@@ -1,16 +1,13 @@
-import { facilityService, type BookingDetail, type SurchargeItem } from "@/api/services/facilityService";
-import ministryService, { type MinistryListItem } from "@/api/services/ministryService";
+import type { BookingDetail } from "@/api/services/facilityService";
+import { useMinistrySurchargeOptions } from "@/pages/Facility/shared/useMinistrySurchargeOptions";
 import { DateUtil } from "@/utils/dateUtil";
 import { Alert, Input, Select } from "@efcnewlife/newlife-ui";
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BOOKING_TITLE_MAX_LENGTH, validateBookingTitle } from "./bookingTitleValidation";
+import type { BookingUpdateInput } from "./bookingUpdatePayload";
 
-export interface BookingEditFormValues {
-  title: string;
-  ministryId: string | null;
-  surchargeCodes: string[];
-}
+export type BookingEditFormValues = BookingUpdateInput;
 
 export interface BookingEditFormHandle {
   validate: () => boolean;
@@ -38,25 +35,9 @@ const BookingEditForm = forwardRef<BookingEditFormHandle, Props>(function Bookin
   const [title, setTitle] = useState(booking.title || "");
   const [ministryId, setMinistryId] = useState(booking.ministryId || "");
   const [surchargeCodes, setSurchargeCodes] = useState<string[]>([]);
-  const [ministries, setMinistries] = useState<MinistryListItem[]>([]);
-  const [surcharges, setSurcharges] = useState<SurchargeItem[]>([]);
   const [titleError, setTitleError] = useState<string | undefined>();
 
-  useEffect(() => {
-    void (async () => {
-      try {
-        const [ministryRes, surchargeRes] = await Promise.all([
-          ministryService.getMinistryList(),
-          facilityService.listSurcharges(),
-        ]);
-        if (ministryRes.success) setMinistries((ministryRes.data.items || []).filter((m) => m.status === "active"));
-        if (surchargeRes.success) setSurcharges((surchargeRes.data.items || []).filter((s) => s.isActive));
-      } catch {
-        setMinistries([]);
-        setSurcharges([]);
-      }
-    })();
-  }, []);
+  const { ministries, surcharges } = useMinistrySurchargeOptions();
 
   const ministryOptions = useMemo(
     () => [
@@ -82,7 +63,7 @@ const BookingEditForm = forwardRef<BookingEditFormHandle, Props>(function Bookin
       return !error;
     },
     getValues: () => ({
-      title: title.trim(),
+      title,
       ministryId: ministryId || null,
       surchargeCodes,
     }),
