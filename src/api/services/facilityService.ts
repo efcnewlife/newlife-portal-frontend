@@ -406,6 +406,7 @@ export interface BookingRoomInput {
 
 export interface BookingCreate {
   userId: string;
+  title: string;
   startAt: string;
   endAt: string;
   ministryId?: string;
@@ -473,6 +474,7 @@ export interface PreviewRecurringBookingSeriesPayload {
 }
 
 export type CreateRecurringBookingSeriesPayload = PreviewRecurringBookingSeriesPayload & {
+  title: string;
   excludedDates?: string[];
 };
 

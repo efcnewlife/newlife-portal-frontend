@@ -686,6 +686,7 @@ const BookingDataPage = () => {
           if (!startAt || !endAt) return;
           const payload = buildOneTimeBookingCreatePayload({
             userId: values.userId,
+            title: values.title,
             startAt,
             endAt,
             ministryId: values.ministryId,

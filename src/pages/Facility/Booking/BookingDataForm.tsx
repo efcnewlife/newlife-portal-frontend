@@ -6,14 +6,22 @@ import { useDiscountEligibility } from "@/pages/Facility/shared/useDiscountEligi
 import { useMinistrySurchargeOptions } from "@/pages/Facility/shared/useMinistrySurchargeOptions";
 import { DateUtil } from "@/utils/dateUtil";
 import { getLocalTimezone } from "@/utils/dayjsApi";
-import { Button, ComboBox, DateTimePicker, Select, TextArea } from "@efcnewlife/newlife-ui";
+import { Button, ComboBox, DateTimePicker, Input, Select, TextArea } from "@efcnewlife/newlife-ui";
 import type { Dayjs } from "dayjs";
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { buildOneTimePreviewQuoteRequest } from "./bookingCreatePayload";
+import { BOOKING_TITLE_MAX_LENGTH, validateBookingTitle } from "./bookingTitleValidation";
+
+const TITLE_ERROR_KEY = {
+  required: "booking.form.titleRequired",
+  tooLong: "booking.form.titleTooLong",
+  notPlainText: "booking.form.titleInvalid",
+} as const;
 
 export interface BookingFormValues {
   userId: string;
+  title: string;
   facilityIds: string[];
   startAt: Dayjs | null;
   endAt: Dayjs | null;
@@ -54,6 +62,8 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
   const pickerLabels = usePickerLabels();
 
   const [userId, setUserId] = useState(defaultValues?.userId || "");
+  const [title, setTitle] = useState(defaultValues?.title || "");
+  const [titleError, setTitleError] = useState<string | undefined>();
   const [facilityIds, setFacilityIds] = useState<string[]>(defaultValues?.facilityIds || []);
   const [startAt, setStartAt] = useState<Dayjs | null>(defaultValues?.startAt ?? null);
   const [endAt, setEndAt] = useState<Dayjs | null>(defaultValues?.endAt ?? null);
@@ -83,6 +93,8 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
 
   useEffect(() => {
     setUserId(defaultValues?.userId || "");
+    setTitle(defaultValues?.title || "");
+    setTitleError(undefined);
     setFacilityIds(defaultValues?.facilityIds || []);
     setStartAt(defaultValues?.startAt ?? null);
     setEndAt(defaultValues?.endAt ?? null);
@@ -188,6 +200,10 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
     validate: () => {
       const next: typeof errors = {};
       if (!userId) next.userId = t("booking.form.bookerRequired");
+      const titleValidationError = validateBookingTitle(title);
+      setTitleError(
+        titleValidationError ? t(TITLE_ERROR_KEY[titleValidationError], { count: BOOKING_TITLE_MAX_LENGTH }) : undefined
+      );
       if (!facilityIds.length) next.facilityIds = t("booking.form.roomsRequired");
       else if (facilityIds.length > MAX_BOOKING_ROOMS) {
         next.facilityIds = t("booking.form.roomsMax", { count: MAX_BOOKING_ROOMS });
@@ -198,10 +214,11 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         next.endAt = t("booking.form.endAfterStart");
       }
       setErrors(next);
-      return Object.keys(next).length === 0;
+      return Object.keys(next).length === 0 && !titleValidationError;
     },
     getValues: () => ({
       userId,
+      title,
       facilityIds,
       startAt,
       endAt,
@@ -273,6 +290,15 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         placeholder={t("booking.form.bookerSearchPlaceholder")}
         error={errors.userId}
         clearable
+        required
+      />
+      <Input
+        id="booking-title"
+        label={t("booking.form.title")}
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        error={titleError}
+        hint={t("booking.form.titleHint", { count: BOOKING_TITLE_MAX_LENGTH })}
         required
       />
       <Select

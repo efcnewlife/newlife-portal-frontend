@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import RecurringSeriesConflictReview from "./RecurringSeriesConflictReview";
 import RecurringSeriesDataForm, { type RecurringSeriesDataFormHandle } from "./RecurringSeriesDataForm";
 import { canCreateRecurringSeriesWithExclusions } from "./recurringSeriesConflicts";
+import { buildRecurringSeriesCreatePayload } from "./recurringSeriesPayload";
 import { resolveRecurringSeriesErrorMessage } from "./recurringSeriesErrorCode";
 
 interface RoomOption {
@@ -31,6 +32,7 @@ type Phase = "form" | "conflicts";
 const RecurringSeriesCreateModal = ({ isOpen, rooms, onClose, onCreated }: RecurringSeriesCreateModalProps) => {
   const { t } = useTranslation(["facility", "common"]);
   const formRef = useRef<RecurringSeriesDataFormHandle>(null);
+  const titleRef = useRef("");
 
   const [resetKey, setResetKey] = useState(0);
   const [phase, setPhase] = useState<Phase>("form");
@@ -42,6 +44,7 @@ const RecurringSeriesCreateModal = ({ isOpen, rooms, onClose, onCreated }: Recur
   const [submitting, setSubmitting] = useState(false);
 
   const resetAndClose = () => {
+    titleRef.current = "";
     setPhase("form");
     setPreviewPayload(null);
     setConflicts([]);
@@ -55,7 +58,9 @@ const RecurringSeriesCreateModal = ({ isOpen, rooms, onClose, onCreated }: Recur
   const finishCreate = async (payload: PreviewRecurringBookingSeriesPayload, excluded: string[]) => {
     setSubmitting(true);
     try {
-      const res = await facilityService.createBookingSeries({ ...payload, excludedDates: excluded });
+      const res = await facilityService.createBookingSeries(
+        buildRecurringSeriesCreatePayload(payload, titleRef.current, excluded)
+      );
       if (res.success) {
         notifySuccess({ title: t("common:feedback.created") });
         onCreated(res.data);
@@ -76,6 +81,7 @@ const RecurringSeriesCreateModal = ({ isOpen, rooms, onClose, onCreated }: Recur
     if (!formRef.current?.validate()) return;
     const payload = formRef.current.getPreviewPayload();
     if (!payload) return;
+    titleRef.current = formRef.current.getTitle();
 
     setSubmitting(true);
     try {

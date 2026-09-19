@@ -5,6 +5,7 @@ describe("buildOneTimeBookingCreatePayload", () => {
   it("builds the create payload without a client-controlled isMissionAligned flag", () => {
     const payload = buildOneTimeBookingCreatePayload({
       userId: "booker-1",
+      title: "  Sunday Rehearsal  ",
       startAt: "2026-01-04T14:00:00.000Z",
       endAt: "2026-01-04T16:00:00.000Z",
       ministryId: "ministry-1",
@@ -14,6 +15,7 @@ describe("buildOneTimeBookingCreatePayload", () => {
     });
     expect(payload).toEqual({
       userId: "booker-1",
+      title: "Sunday Rehearsal",
       startAt: "2026-01-04T14:00:00.000Z",
       endAt: "2026-01-04T16:00:00.000Z",
       ministryId: "ministry-1",
@@ -30,6 +32,7 @@ describe("buildOneTimeBookingCreatePayload", () => {
   it("omits ministryId and remark when they are blank", () => {
     const payload = buildOneTimeBookingCreatePayload({
       userId: "booker-1",
+      title: "Sunday Rehearsal",
       startAt: "2026-01-04T14:00:00.000Z",
       endAt: "2026-01-04T16:00:00.000Z",
       ministryId: null,
