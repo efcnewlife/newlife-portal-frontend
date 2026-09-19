@@ -331,6 +331,7 @@ export interface BookingRangeParams {
 
 export interface BookingListItem {
   id: string;
+  title?: string;
   userId: string;
   userEmail?: string;
   userDisplayName?: string;
@@ -413,11 +414,10 @@ export interface BookingCreate {
   remark?: string;
 }
 
+/** Constrained Admin Booking update: title, Ministry, and surcharge selection only — no time or Room fields. */
 export interface BookingUpdate {
-  startAt: string;
-  endAt: string;
+  title: string;
   ministryId?: string;
-  rooms?: BookingRoomInput[];
   surchargeCodes?: string[];
 }
 

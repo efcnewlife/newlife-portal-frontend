@@ -334,7 +334,8 @@
     "modal": {
       "detailTitle": "Booking detail",
       "cancelTitle": "Cancel booking",
-      "createTitle": "Create booking"
+      "createTitle": "Create booking",
+      "editTitle": "Edit booking"
     },
     "detail": {
       "userEmail": "Email",
@@ -361,6 +362,12 @@
       "booker": "Booker",
       "bookerRequired": "Booker is required",
       "bookerSearchPlaceholder": "Search booker by name or email",
+      "title": "Title",
+      "titleRequired": "Title is required",
+      "titleTooLong": "Title must be at most {{count}} characters",
+      "titleInvalid": "Title must be plain text",
+      "titleHint": "Up to {{count}} characters, plain text",
+      "editRoomsTimeNotice": "Room and time changes are not supported here. Contact staff to make those changes.",
       "rooms": "Rooms",
       "roomsRequired": "Select at least one room",
       "roomsMax": "Select at most {{count}} rooms",

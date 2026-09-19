@@ -1,9 +1,9 @@
-import { facilityService, type PreviewQuoteResponse, type SurchargeItem } from "@/api/services/facilityService";
-import ministryService, { type MinistryListItem } from "@/api/services/ministryService";
+import { facilityService, type PreviewQuoteResponse } from "@/api/services/facilityService";
 import userService, { type UserBase } from "@/api/services/userService";
 import { usePickerLabels } from "@/hooks/usePickerLabels";
 import DiscountEligibilityNotice from "@/pages/Facility/shared/DiscountEligibilityNotice";
 import { useDiscountEligibility } from "@/pages/Facility/shared/useDiscountEligibility";
+import { useMinistrySurchargeOptions } from "@/pages/Facility/shared/useMinistrySurchargeOptions";
 import { DateUtil } from "@/utils/dateUtil";
 import { getLocalTimezone } from "@/utils/dayjsApi";
 import { Button, ComboBox, DateTimePicker, Select, TextArea } from "@efcnewlife/newlife-ui";
@@ -63,8 +63,6 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
   const [users, setUsers] = useState<UserBase[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserBase | null>(null);
   const [usersLoading, setUsersLoading] = useState(false);
-  const [ministries, setMinistries] = useState<MinistryListItem[]>([]);
-  const [surcharges, setSurcharges] = useState<SurchargeItem[]>([]);
   const [quote, setQuote] = useState<PreviewQuoteResponse | null>(null);
   const [quoteError, setQuoteError] = useState<string | null>(null);
   const [quoting, setQuoting] = useState(false);
@@ -76,6 +74,7 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
   }>({});
 
   const eligibility = useDiscountEligibility("one_time", ministryId || null, userId);
+  const { ministries, surcharges } = useMinistrySurchargeOptions();
 
   useEffect(() => {
     setQuote(null);
@@ -98,22 +97,6 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
 
   const userSearchRequestId = useRef(0);
   const userSearchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    void (async () => {
-      try {
-        const [ministryRes, surchargeRes] = await Promise.all([
-          ministryService.getMinistryList(),
-          facilityService.listSurcharges(),
-        ]);
-        if (ministryRes.success) setMinistries((ministryRes.data.items || []).filter((m) => m.status === "active"));
-        if (surchargeRes.success) setSurcharges((surchargeRes.data.items || []).filter((s) => s.isActive));
-      } catch {
-        setMinistries([]);
-        setSurcharges([]);
-      }
-    })();
-  }, []);
 
   useEffect(() => {
     return () => {
