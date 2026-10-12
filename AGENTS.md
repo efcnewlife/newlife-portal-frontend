@@ -55,7 +55,7 @@ CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile`, **`pnpm r
 
 ### Branch names
 
-Topic branches: `{type}/{issue-number}-{short-description}` (types: `feat` `fix` `hotfix` `refactor` `perf` `test` `docs` `chore` `build` `ci`). Exceptions: `release/x.y.z`, `spike/{short-description}`, plus `main` / `develop`. Local: `.githooks/pre-push` after install. Emergency: `git push --no-verify`. Consider marking `Branch name` required in GitHub branch protection.
+Topic branches: `{type}/{issue-number}-{short-description}` (types: `feat` `fix` `hotfix` `refactor` `perf` `test` `docs` `chore` `build` `ci`). For Linear tickets, `{issue-number}` is the lowercase Linear id (`efc-39`), e.g. `feat/efc-39-booking-grid`; bare digits are still accepted. Exceptions: `release/x.y.z`, `spike/{short-description}`, plus `main` / `develop`. Local: `.githooks/pre-push` after install. Emergency: `git push --no-verify`. Consider marking `Branch name` required in GitHub branch protection.
 
 ### Commit format hook
 
