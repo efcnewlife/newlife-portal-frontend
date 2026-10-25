@@ -1,4 +1,5 @@
 import type { BookingDetail } from "@/api/services/facilityService";
+import { isSavedFreeMinistryBooking } from "@/pages/Facility/shared/freeMinistryBooking";
 import { useMinistrySurchargeOptions } from "@/pages/Facility/shared/useMinistrySurchargeOptions";
 import { DateUtil } from "@/utils/dateUtil";
 import { Alert, Input, Select } from "@efcnewlife/newlife-ui";
@@ -33,19 +34,10 @@ const BookingEditForm = forwardRef<BookingEditFormHandle, Props>(function Bookin
   const { t } = useTranslation("facility");
 
   const [title, setTitle] = useState(booking.title || "");
-  const [ministryId, setMinistryId] = useState(booking.ministryId || "");
   const [surchargeCodes, setSurchargeCodes] = useState<string[]>([]);
   const [titleError, setTitleError] = useState<string | undefined>();
 
-  const { ministries, surcharges } = useMinistrySurchargeOptions();
-
-  const ministryOptions = useMemo(
-    () => [
-      { value: "", label: t("booking.form.noMinistry") },
-      ...ministries.map((ministry) => ({ value: ministry.id, label: ministry.name || ministry.id })),
-    ],
-    [ministries, t]
-  );
+  const { surcharges } = useMinistrySurchargeOptions();
 
   const surchargeOptions = useMemo(
     () =>
@@ -64,7 +56,6 @@ const BookingEditForm = forwardRef<BookingEditFormHandle, Props>(function Bookin
     },
     getValues: () => ({
       title,
-      ministryId: ministryId || null,
       surchargeCodes,
     }),
   }));
@@ -89,23 +80,25 @@ const BookingEditForm = forwardRef<BookingEditFormHandle, Props>(function Bookin
       <Input id="booking-edit-end" label={t("booking.form.endAt")} value={DateUtil.format(booking.endAt)} disabled />
       <Input id="booking-edit-rooms" label={t("booking.form.rooms")} value={roomLabel(booking)} disabled />
       <Alert variant="info" title={t("booking.form.editRoomsTimeNotice")} size="sm" width="full" />
-      <Select
+      <Input
         id="booking-edit-ministry"
         label={t("booking.form.ministry")}
-        options={ministryOptions}
-        value={ministryId}
-        onChange={(v) => setMinistryId(String(v || ""))}
+        value={booking.ministryId ? booking.ministryName || booking.ministryId : t("booking.form.noMinistry")}
+        hint={t("booking.form.ministryLockedNotice")}
+        disabled
       />
-      <Select
-        id="booking-edit-surcharges"
-        label={t("booking.form.surcharges")}
-        options={surchargeOptions}
-        value={surchargeCodes}
-        multiple
-        onChange={(v) =>
-          setSurchargeCodes((Array.isArray(v) ? v : [v]).map((item) => String(item || "")).filter(Boolean))
-        }
-      />
+      {!isSavedFreeMinistryBooking(booking) && (
+        <Select
+          id="booking-edit-surcharges"
+          label={t("booking.form.surcharges")}
+          options={surchargeOptions}
+          value={surchargeCodes}
+          multiple
+          onChange={(v) =>
+            setSurchargeCodes((Array.isArray(v) ? v : [v]).map((item) => String(item || "")).filter(Boolean))
+          }
+        />
+      )}
     </div>
   );
 });

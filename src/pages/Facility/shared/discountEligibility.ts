@@ -9,9 +9,10 @@ export interface DiscountEligibilityRequest {
 export interface DiscountEligibilityResult {
   discountCode: string | null;
   discountPercent: string | number;
+  isFreeMinistry: boolean;
 }
 
-export type DiscountEligibilityKind = "ministry" | "recurring" | "applied" | "none";
+export type DiscountEligibilityKind = "freeMinistry" | "recurring" | "applied" | "none";
 
 export interface DiscountEligibilityDisplay {
   kind: DiscountEligibilityKind;
@@ -19,7 +20,6 @@ export interface DiscountEligibilityDisplay {
   discountPercent: string;
 }
 
-export const MINISTRY_DISCOUNT_CODE = "mission_aligned";
 export const RECURRING_DISCOUNT_CODE = "recurring_weekly_monthly";
 
 /**
@@ -44,10 +44,11 @@ export const discountEligibilityDisplay = (result: DiscountEligibilityResult | n
   if (result == null) {
     return { kind: "none", discountCode: null, discountPercent: "0" };
   }
-  const discountPercent = percentString(result.discountPercent);
-  if (result.discountCode === MINISTRY_DISCOUNT_CODE) {
-    return { kind: "ministry", discountCode: result.discountCode, discountPercent };
+  // ADR 0037: an eligible Ministry booking is free, never a percentage discount.
+  if (result.isFreeMinistry) {
+    return { kind: "freeMinistry", discountCode: null, discountPercent: "0" };
   }
+  const discountPercent = percentString(result.discountPercent);
   if (result.discountCode === RECURRING_DISCOUNT_CODE) {
     return { kind: "recurring", discountCode: result.discountCode, discountPercent };
   }

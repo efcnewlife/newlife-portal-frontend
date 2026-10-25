@@ -6,7 +6,7 @@ interface Props {
 }
 
 const KIND_MESSAGE_KEY = {
-  ministry: "discountEligibility.ministry",
+  freeMinistry: "discountEligibility.freeMinistry",
   recurring: "discountEligibility.recurring",
   applied: "discountEligibility.applied",
   none: "discountEligibility.none",

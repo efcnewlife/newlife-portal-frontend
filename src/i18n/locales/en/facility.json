@@ -14,10 +14,10 @@
     "searchChipRoom": "Room:"
   },
   "discountEligibility": {
-    "selectBooker": "Select a Booker to see the Booking Discount.",
+    "selectBooker": "Select a Booker to see pricing.",
     "checking": "Checking discount eligibility…",
     "failed": "Could not load discount eligibility.",
-    "ministry": "Ministry discount ({{percent}}%)",
+    "freeMinistry": "Free Ministry booking: all charges and the total are 0",
     "recurring": "Recurring discount ({{percent}}%)",
     "applied": "Discount ({{percent}}%)",
     "none": "No discount"
@@ -343,6 +343,8 @@
       "status": "Status",
       "bookingType": "Booking type",
       "missionAligned": "Mission aligned",
+      "pricing": "Pricing",
+      "freeMinistry": "Free Ministry booking",
       "subtotal": "Subtotal",
       "discount": "Discount",
       "surcharge": "Surcharge",
@@ -385,7 +387,8 @@
       "quoting": "Calculating…",
       "quotedAmount": "Quoted amount",
       "quoteNeedTimesRooms": "Select rooms and times before preview",
-      "quoteFailed": "Failed to preview quote"
+      "quoteFailed": "Failed to preview quote",
+      "ministryLockedNotice": "The Ministry association can't be changed after a booking is created. To change it, cancel this booking and create a new one."
     },
     "view": {
       "label": "Booking view",
@@ -424,7 +427,8 @@
       "schedulingConflict": "{{room}} conflicts with another booking in this time slot",
       "schedulingConflictGeneric": "This time slot conflicts with another booking",
       "roomBlackout": "{{room}} is not available in this time slot",
-      "roomBlackoutGeneric": "This time slot is not available"
+      "roomBlackoutGeneric": "This time slot is not available",
+      "ministryAssociationLocked": "This booking's Ministry association can't be changed. Cancel it and create a new booking instead."
     }
   },
   "bookingPayment": {
@@ -603,6 +607,7 @@
       "back": "Back to Bookings",
       "notFound": "This Series was not found.",
       "priorityBadge": "Church Activity",
+      "freeMinistryBadge": "Free Ministry booking",
       "cancelAction": "Cancel Series",
       "range": "Occurrence range",
       "timeWindow": "Local time window",

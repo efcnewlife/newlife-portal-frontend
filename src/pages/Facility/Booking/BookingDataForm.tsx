@@ -380,9 +380,11 @@ const BookingDataForm = forwardRef<BookingDataFormHandle, Props>(function Bookin
         {quote && (
           <span className="text-sm text-gray-600 dark:text-gray-300">
             {t("booking.form.quotedAmount")}: {quote.quotedAmount} {quote.currency}
-            {Number(quote.discountPercent) > 0
-              ? ` · ${t("discountEligibility.applied", { percent: quote.discountPercent })}`
-              : ` · ${t("discountEligibility.none")}`}
+            {quote.isFreeMinistry
+              ? ` · ${t("discountEligibility.freeMinistry")}`
+              : Number(quote.discountPercent) > 0
+                ? ` · ${t("discountEligibility.applied", { percent: quote.discountPercent })}`
+                : ` · ${t("discountEligibility.none")}`}
           </span>
         )}
       </div>

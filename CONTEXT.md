@@ -43,8 +43,12 @@ The start and end instants of a facility booking (`startAt` / `endAt` on the API
 _Avoid_: calendar-date-only booking, wall-clock string as the domain meaning of the instant
 
 **Booking title**:
-A required 1-30 character plain-text label on a one-time booking (`title` on the API). Server-validated as trimmed, non-empty, at most 30 characters, and free of HTML markup. It is the one field the constrained Admin Booking edit surface may change together with Ministry association and surcharge selection; editing it does not reprice the booking.
+A required 1-30 character plain-text label on a one-time booking (`title` on the API). Server-validated as trimmed, non-empty, at most 30 characters, and free of HTML markup. It is the one field the constrained Admin Booking edit surface may change; editing it does not reprice the booking. The Ministry association is locked after creation (shown read-only; changing it means cancelling and creating a new booking).
 _Avoid_: an optional or unbounded free-text field, treating this as the Recurring Booking Series title (Admin editing of a Series title is a separate, currently unsupported surface)
+
+**Free Ministry Booking**:
+A One-time or Repeated booking for an Active Ministry by one of its Ministry Stewards, which is entirely free: zero charges and total, Confirmed on creation, no payment hold or payment actions. The server decides it (`isFreeMinistry` on quotes, discount eligibility, and Recurring preview); saved Booking and Series reads infer it from a Ministry association with a zero total until they carry the flag (EFC-275). See Core API ADR 0037.
+_Avoid_: Ministry discount, a percentage off, deciding it from `ministryId` alone on a proposal
 
 **Calendar booking event**:
 The Calendar view's unit is one booking: a single block keyed by booking id, showing Booker and Booking start / Booking end. Time is the block's vertical span.

@@ -63,6 +63,17 @@ describe("resolveBookingSaveErrorMessage", () => {
     expect(resolveBookingSaveErrorMessage(error, rooms, t)).toBe("booking.errors.roomBlackoutGeneric");
   });
 
+  it("returns the cancel-and-rebook toast when the Ministry association is locked", () => {
+    const error = apiError({
+      code: 409,
+      details: {
+        error_code: "FACILITY_BOOKING_MINISTRY_ASSOCIATION_LOCKED",
+        context: { booking_id: "booking-1" },
+      },
+    });
+    expect(resolveBookingSaveErrorMessage(error, rooms, t)).toBe("booking.errors.ministryAssociationLocked");
+  });
+
   it("returns undefined for other errors so notifyApiError can use the shared mapper", () => {
     const error = apiError({
       message: "end_at must be after start_at",

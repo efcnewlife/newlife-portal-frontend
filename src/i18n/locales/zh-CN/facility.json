@@ -14,10 +14,10 @@
     "searchChipRoom": "场地："
   },
   "discountEligibility": {
-    "selectBooker": "请先选择预订人，以显示预订折扣。",
+    "selectBooker": "请先选择预订人，以显示计价。",
     "checking": "正在确认折扣资格…",
     "failed": "无法载入折扣资格。",
-    "ministry": "事工折扣（{{percent}}%）",
+    "freeMinistry": "免费事工预订：所有费用与总额均为 0",
     "recurring": "循环预订折扣（{{percent}}%）",
     "applied": "折扣（{{percent}}%）",
     "none": "无折扣"
@@ -343,6 +343,8 @@
       "status": "状态",
       "bookingType": "预订类型",
       "missionAligned": "宣教对齐",
+      "pricing": "计价",
+      "freeMinistry": "免费事工预订",
       "subtotal": "小计",
       "discount": "折扣",
       "surcharge": "附加费",
@@ -385,7 +387,8 @@
       "quoting": "计算中…",
       "quotedAmount": "报价金额",
       "quoteNeedTimesRooms": "请先选择场地与时间再预览",
-      "quoteFailed": "预览报价失败"
+      "quoteFailed": "预览报价失败",
+      "ministryLockedNotice": "预订创建后就不能更改所属事工。如需更改，请取消此预订并重新创建。"
     },
     "view": {
       "label": "视图模式",
@@ -424,7 +427,8 @@
       "schedulingConflict": "{{room}} 此时段与其他预订冲突",
       "schedulingConflictGeneric": "此时段与其他预订冲突",
       "roomBlackout": "{{room}} 此时段不开放",
-      "roomBlackoutGeneric": "此时段不开放"
+      "roomBlackoutGeneric": "此时段不开放",
+      "ministryAssociationLocked": "此预订的所属事工无法更改。请取消后重新创建预订。"
     }
   },
   "bookingPayment": {
@@ -601,6 +605,7 @@
       "back": "返回预订列表",
       "notFound": "找不到此系列。",
       "priorityBadge": "教会活动",
+      "freeMinistryBadge": "免费事工预订",
       "cancelAction": "取消系列",
       "range": "场次期间",
       "timeWindow": "当地时段",
