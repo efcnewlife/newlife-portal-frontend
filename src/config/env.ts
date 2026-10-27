@@ -1,6 +1,8 @@
 // Environment variable configuration
 // Centralize all environment variables to avoid direct use of import.meta.env or process.env
 
+import { resolveTelemetryConfig } from "./telemetry";
+
 /**
  * Application environment type
  * - development: development environment (pnpm run dev)
@@ -52,6 +54,11 @@ export const ENV_CONFIG = {
   // Development tooling configuration
   ENABLE_DEBUG: import.meta.env.VITE_ENABLE_DEBUG === "true",
   LOG_LEVEL: import.meta.env.VITE_LOG_LEVEL || "info",
+
+  // Sentry telemetry (optional). Resolved into TELEMETRY_CONFIG below.
+  SENTRY_DSN: (import.meta.env.VITE_SENTRY_DSN as string | undefined) || "",
+  SENTRY_ENABLED: import.meta.env.VITE_SENTRY_ENABLED as string | undefined,
+  SENTRY_RELEASE_VERSION: (import.meta.env.VITE_SENTRY_RELEASE_VERSION as string | undefined) || "",
 } as const;
 
 console.log(ENV_CONFIG);
@@ -93,3 +100,11 @@ export const IS_MOCK_DEMO = IS_DEV && (ENV_CONFIG.USE_MOCK_DEMO || ENV_CONFIG.US
 /** True when VITE_AZURE_CLIENT_ID and VITE_AZURE_TENANT_ID are set (production/staging may enable without dev-only flags). */
 export const IS_MICROSOFT_LOGIN_ENABLED =
   Boolean(ENV_CONFIG.AZURE_CLIENT_ID?.trim()) && Boolean(ENV_CONFIG.AZURE_TENANT_ID?.trim());
+
+/** Sentry client settings; disabled for unknown modes (including tests) and opt-in in development. */
+export const TELEMETRY_CONFIG = resolveTelemetryConfig({
+  mode: import.meta.env.MODE,
+  dsn: ENV_CONFIG.SENTRY_DSN,
+  enabled: ENV_CONFIG.SENTRY_ENABLED,
+  releaseVersion: ENV_CONFIG.SENTRY_RELEASE_VERSION,
+});
