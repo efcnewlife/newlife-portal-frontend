@@ -34,7 +34,7 @@ import BookingCancelForm from "./BookingCancelForm";
 import BookingDataForm, { type BookingDataFormHandle, type BookingFormValues } from "./BookingDataForm";
 import { buildOneTimeBookingCreatePayload } from "./bookingCreatePayload";
 import BookingDetailDrawer from "./BookingDetailDrawer";
-import BookingEditForm, { type BookingEditFormHandle } from "./BookingEditForm";
+import BookingEditModal from "./BookingEditModal";
 import BookingGrid from "./BookingGrid";
 import BookingListFilters from "./BookingListFilters";
 import BookingSeriesExpandPanel from "./BookingSeriesExpandPanel";
@@ -42,7 +42,6 @@ import { filterBookingRowsByMinistry } from "./bookingListFilter";
 import { loadBookingsForVisibleRange } from "./bookingOccupancyLoad";
 import { resolveBookingSaveErrorMessage } from "./bookingSaveError";
 import { groupBookingsBySeries, type BookingSeriesGroupRow } from "./bookingSeriesGrouping";
-import { buildBookingUpdatePayload } from "./bookingUpdatePayload";
 import BookingPaymentConfirmationPanel from "../BookingPayment/BookingPaymentConfirmationPanel";
 import { PENDING_PAYMENT_READ_PERMISSION } from "../BookingPayment/pendingPaymentPermission";
 import RecurringSeriesCreateModal from "../BookingSeries/RecurringSeriesCreateModal";
@@ -120,8 +119,6 @@ const BookingDataPage = () => {
 
   const formRef = useRef<BookingDataFormHandle>(null);
   const modalRef = useRef<ModalFormHandle>(null);
-  const editFormRef = useRef<BookingEditFormHandle>(null);
-  const editModalRef = useRef<ModalFormHandle>(null);
 
   const setViewMode = useCallback(
     (next: BookingViewMode, date?: Date) => {
@@ -714,45 +711,13 @@ const BookingDataPage = () => {
         <BookingDataForm ref={formRef} defaultValues={formDefaults} rooms={rooms} />
       </ModalForm>
 
-      <ModalForm
-        ref={editModalRef}
+      <BookingEditModal
+        booking={editing}
         isOpen={isEditOpen}
+        rooms={rooms}
         onClose={closeEdit}
-        title={t("booking.modal.editTitle")}
-        className="max-w-2xl w-full mx-4 p-6"
-        footer={
-          <>
-            <Button variant="outline" size="sm" onClick={closeEdit} disabled={submitting}>
-              {t("common:cancel", { ns: "common" })}
-            </Button>
-            <Button variant="primary" size="sm" onClick={() => editModalRef.current?.submit()} disabled={submitting}>
-              {t("common:save", { ns: "common" })}
-            </Button>
-          </>
-        }
-        onSubmit={async (e) => {
-          e.preventDefault();
-          if (!editFormRef.current?.validate() || !editing) return;
-          const values = editFormRef.current.getValues();
-          const payload = buildBookingUpdatePayload(values);
-          setSubmitting(true);
-          try {
-            await facilityService.updateBooking(editing.id, payload);
-            notifySuccess({ title: t("common:feedback.updated") });
-            closeEdit();
-            await refreshCurrentView();
-          } catch (error) {
-            notifyApiError(error, {
-              title: t("common:feedback.saveFailed"),
-              fallbackDescription: t("common:feedback.saveFailedDesc"),
-            });
-          } finally {
-            setSubmitting(false);
-          }
-        }}
-      >
-        {editing && <BookingEditForm ref={editFormRef} booking={editing} />}
-      </ModalForm>
+        onSaved={refreshCurrentView}
+      />
 
       <Modal
         isOpen={isPaymentOpen}

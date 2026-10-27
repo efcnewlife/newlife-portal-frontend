@@ -250,12 +250,13 @@ export interface PreviewQuoteRequest {
   surchargeCodes?: string[];
 }
 
+/** Rate fields are null on a free Ministry line: no Rental Rate is resolved (ADR 0037). */
 export interface PreviewQuoteRoomLineResult {
   facilityId: string;
   billedHours: string | number;
-  rentalRateName: string;
-  billingUnit: string;
-  unitAmount: string | number;
+  rentalRateName: string | null;
+  billingUnit: string | null;
+  unitAmount: string | number | null;
   currency: string;
   applicability?: Record<string, unknown> | null;
   isDefault?: boolean;
@@ -269,6 +270,8 @@ export interface PreviewQuoteResponse {
   surchargeAmount: string | number;
   quotedAmount: string | number;
   currency: string;
+  /** Eligible Church Activity Booking: every charge and the total are zero. */
+  isFreeMinistry: boolean;
   roomLines: PreviewQuoteRoomLineResult[];
 }
 
@@ -415,9 +418,13 @@ export interface BookingCreate {
   remark?: string;
 }
 
-/** Constrained Admin Booking update: title, Ministry, and surcharge selection only — no time or Room fields. */
+/** Constrained Admin Booking update: title and surcharge selection only — no time or Room fields. */
 export interface BookingUpdate {
   title: string;
+  /**
+   * Immutable after creation: omit it (the stored association is kept) or resend the stored value.
+   * Any change is rejected with 409 FACILITY_BOOKING_MINISTRY_ASSOCIATION_LOCKED.
+   */
   ministryId?: string;
   surchargeCodes?: string[];
 }
@@ -436,6 +443,8 @@ export interface DiscountEligibilityRequest {
 export interface DiscountEligibilityResponse {
   discountCode: string | null;
   discountPercent: string | number;
+  /** Eligible Church Activity Booking: entirely free instead of any discount. */
+  isFreeMinistry: boolean;
 }
 
 // Recurring Booking Series payment confirmation
@@ -490,6 +499,9 @@ export interface RecurringBookingConflict {
 
 export interface RecurringBookingSeriesPreview {
   conflicts: RecurringBookingConflict[];
+  quotedAmount: string | number;
+  currency: string;
+  isFreeMinistry: boolean;
 }
 
 export interface RecurringBookingSeriesOccurrence {
@@ -860,7 +872,7 @@ class FacilityService {
     payload: DiscountEligibilityRequest
   ): Promise<ApiResponse<DiscountEligibilityResponse>> {
     if (IS_MOCK_API) {
-      return { success: true, data: { discountCode: null, discountPercent: "0" } };
+      return { success: true, data: { discountCode: null, discountPercent: "0", isFreeMinistry: false } };
     }
     return httpClient.post(API_ENDPOINTS.FACILITY.BOOKINGS.DISCOUNT_ELIGIBILITY, payload);
   }
@@ -901,7 +913,9 @@ class FacilityService {
   async previewBookingSeries(
     payload: PreviewRecurringBookingSeriesPayload
   ): Promise<ApiResponse<RecurringBookingSeriesPreview>> {
-    if (IS_MOCK_API) return { success: true, data: { conflicts: [] } };
+    if (IS_MOCK_API) {
+      return { success: true, data: { conflicts: [], quotedAmount: "0", currency: "CAD", isFreeMinistry: false } };
+    }
     return httpClient.post(API_ENDPOINTS.FACILITY.BOOKING_SERIES.PREVIEW, payload);
   }
 

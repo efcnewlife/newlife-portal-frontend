@@ -3,6 +3,7 @@ import type { ApiError } from "@/types/api";
 export const BOOKING_ERROR_CODE = {
   SCHEDULING_CONFLICT: "FACILITY_BOOKING_SCHEDULING_CONFLICT",
   ROOM_BLACKOUT: "FACILITY_BOOKING_ROOM_BLACKOUT",
+  MINISTRY_ASSOCIATION_LOCKED: "FACILITY_BOOKING_MINISTRY_ASSOCIATION_LOCKED",
 } as const;
 
 interface BookingRoomOption {
@@ -44,6 +45,10 @@ export const resolveBookingSaveErrorMessage = (
 
   if (errorCode === BOOKING_ERROR_CODE.ROOM_BLACKOUT) {
     return roomName ? t("booking.errors.roomBlackout", { room: roomName }) : t("booking.errors.roomBlackoutGeneric");
+  }
+
+  if (errorCode === BOOKING_ERROR_CODE.MINISTRY_ASSOCIATION_LOCKED) {
+    return t("booking.errors.ministryAssociationLocked");
   }
 
   return undefined;

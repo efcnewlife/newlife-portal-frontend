@@ -19,7 +19,7 @@ This document helps AI agents quickly understand the **Newlife Portal** admin SP
 | **i18n**            | `i18next` + `react-i18next` (`en`, `zh-TW`, `zh-CN`)                                                                |
 | **Dates**           | `dayjs` (UTC + timezone plugins)                                                                                    |
 | **Package manager** | pnpm only (`.npmrc`, `pnpm-lock.yaml`)                                                                              |
-| **Tests**           | Vitest (`src/**/*.test.ts`, Node environment)                                                                       |
+| **Tests**           | Vitest: `src/**/*.test.ts` (Node) and rendered `src/**/*.test.tsx` (jsdom + Testing Library)                        |
 
 ### Related repositories
 
@@ -346,7 +346,7 @@ Files that use HTML / `ReactNode` / `JSX.Element` must use `.tsx`. Prefer arrow 
 
 ## 14. Testing
 
-Vitest is configured in `vite.config.ts` (`environment: "node"`, `include: ["src/**/*.test.ts"]`).
+Vitest is configured in `vite.config.ts` as two projects: `unit` (`environment: "node"`, `src/**/*.test.ts`) and `flow` (`environment: "jsdom"`, `src/**/*.test.tsx`, Testing Library). Flow tests mock `@efcnewlife/newlife-ui` and services at the module boundary (see `BookingEditModal.test.tsx`).
 
 ```bash
 pnpm run test
@@ -360,7 +360,7 @@ pnpm run test:watch
 | `src/components/DataPage/getDataTableRowClassName.test.ts` | Row class names                 |
 | `src/pages/Facility/Booking/bookingSaveError.test.ts`      | Booking save error mapping      |
 
-No Testing Library / DOM suite. Co-locate `*.test.ts` next to the unit under test. CI does not run vitest yet — still run tests locally for calendar/utils/booking logic.
+Co-locate `*.test.ts` / `*.test.tsx` next to the unit under test. CI does not run vitest yet — still run tests locally for calendar/utils/booking logic.
 
 ---
 

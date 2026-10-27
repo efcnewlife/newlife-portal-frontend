@@ -12,6 +12,7 @@ import { Resource, Verb } from "@/const/enums";
 import { usePermissions } from "@/context/AuthContext";
 import { useModal } from "@/hooks/useModal";
 import { bookingStatusBadgeColor } from "@/pages/Facility/shared/bookingStatusBadge";
+import { isSavedFreeMinistryBooking } from "@/pages/Facility/shared/freeMinistryBooking";
 import { useRoomListOptions } from "@/pages/Facility/shared/useRoomListOptions";
 import { DateUtil } from "@/utils/dateUtil";
 import { notifyApiError, notifySuccess } from "@/utils/operationFeedback";
@@ -144,6 +145,7 @@ const RecurringSeriesDetailPage = () => {
   }
 
   const canCancelSeries = Boolean(series && series.status !== "cancelled");
+  const isFreeMinistry = Boolean(series && isSavedFreeMinistryBooking(series));
   const row = (label: string, value: ReactNode) => (
     <div className="grid grid-cols-3 gap-2 border-b border-gray-100 py-1 dark:border-gray-800">
       <dt className="col-span-1 text-sm text-gray-500">{label}</dt>
@@ -171,6 +173,7 @@ const RecurringSeriesDetailPage = () => {
             <Badge color={bookingStatusBadgeColor(series.status)}>
               {t(`booking.status.${series.status}`, { defaultValue: series.status })}
             </Badge>
+            {isFreeMinistry ? <Badge color="light">{t("bookingSeries.detail.freeMinistryBadge")}</Badge> : null}
             {series.isPriority ? <Badge color="info">{t("bookingSeries.detail.priorityBadge")}</Badge> : null}
             {canCancel && canCancelSeries ? (
               <Button variant="outline" size="sm" className="ml-auto text-red-600 border-red-300" onClick={openCancel}>
@@ -192,10 +195,12 @@ const RecurringSeriesDetailPage = () => {
             )}
             {row(t("bookingSeries.detail.occurrenceCount"), series.occurrenceCount)}
             {row(t("bookingSeries.detail.total"), `${series.quotedAmount} ${series.currency}`)}
-            {row(
-              t("bookingSeries.detail.holdDeadline"),
-              series.paymentHoldExpiresAt ? DateUtil.format(series.paymentHoldExpiresAt) : "-"
-            )}
+            {isFreeMinistry
+              ? null
+              : row(
+                  t("bookingSeries.detail.holdDeadline"),
+                  series.paymentHoldExpiresAt ? DateUtil.format(series.paymentHoldExpiresAt) : "-"
+                )}
           </dl>
 
           <div>

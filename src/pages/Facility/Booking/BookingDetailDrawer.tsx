@@ -1,5 +1,6 @@
 import type { BookingDetail, RateApplicabilityRule } from "@/api/services/facilityService";
 import { formatApplicabilitySummary } from "@/pages/Facility/RentalRateTemplate/applicabilityFormat";
+import { isSavedFreeMinistryBooking } from "@/pages/Facility/shared/freeMinistryBooking";
 import { DateUtil } from "@/utils/dateUtil";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -32,6 +33,7 @@ const BookingDetailDrawer = ({ booking }: BookingDetailDrawerProps) => {
       {row(t("booking.table.startAt"), DateUtil.format(booking.startAt))}
       {row(t("booking.table.endAt"), DateUtil.format(booking.endAt))}
       {row(t("booking.detail.missionAligned"), booking.isMissionAligned ? t("shared.yes") : t("shared.no"))}
+      {isSavedFreeMinistryBooking(booking) && row(t("booking.detail.pricing"), t("booking.detail.freeMinistry"))}
       {row(
         t("booking.detail.subtotal"),
         booking.subtotalAmount != null ? `${booking.subtotalAmount} ${booking.currency || ""}` : "-"

@@ -27,7 +27,24 @@ export default defineConfig({
     strictPort: true,
   },
   test: {
-    environment: "node",
-    include: ["src/**/*.test.ts"],
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "unit",
+          environment: "node",
+          include: ["src/**/*.test.ts"],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: "flow",
+          server: { deps: { inline: ["@efcnewlife/newlife-ui"] } },
+          environment: "jsdom",
+          include: ["src/**/*.test.tsx"],
+        },
+      },
+    ],
   },
 });

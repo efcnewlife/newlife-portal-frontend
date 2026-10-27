@@ -63,12 +63,18 @@ describe("buildDiscountEligibilityRequest", () => {
 });
 
 describe("discountEligibilityDisplay", () => {
-  it("shows Ministry Discount when the server selected mission_aligned", () => {
-    expect(discountEligibilityDisplay({ discountCode: "mission_aligned", discountPercent: "30" })).toEqual({
-      kind: "ministry",
-      discountCode: "mission_aligned",
-      discountPercent: "30",
+  it("shows the fixed-free Ministry policy when the server says the proposal is a free Ministry booking", () => {
+    expect(discountEligibilityDisplay({ discountCode: null, discountPercent: "0", isFreeMinistry: true })).toEqual({
+      kind: "freeMinistry",
+      discountCode: null,
+      discountPercent: "0",
     });
+  });
+
+  it("never presents a Ministry percentage discount, even if a stale mission_aligned code arrives", () => {
+    expect(
+      discountEligibilityDisplay({ discountCode: "mission_aligned", discountPercent: "30", isFreeMinistry: true }).kind
+    ).toBe("freeMinistry");
   });
 
   it("shows Recurring Discount when the server selected the Recurring fallback", () => {
@@ -76,6 +82,7 @@ describe("discountEligibilityDisplay", () => {
       discountEligibilityDisplay({
         discountCode: "recurring_weekly_monthly",
         discountPercent: 20,
+        isFreeMinistry: false,
       })
     ).toEqual({
       kind: "recurring",
@@ -85,7 +92,7 @@ describe("discountEligibilityDisplay", () => {
   });
 
   it("shows no discount when the server selected none", () => {
-    expect(discountEligibilityDisplay({ discountCode: null, discountPercent: "0" })).toEqual({
+    expect(discountEligibilityDisplay({ discountCode: null, discountPercent: "0", isFreeMinistry: false })).toEqual({
       kind: "none",
       discountCode: null,
       discountPercent: "0",
@@ -101,7 +108,9 @@ describe("discountEligibilityDisplay", () => {
   });
 
   it("still shows the server percent when the discount code is not one of the known catalog values", () => {
-    expect(discountEligibilityDisplay({ discountCode: "custom_rule", discountPercent: "15" })).toEqual({
+    expect(
+      discountEligibilityDisplay({ discountCode: "custom_rule", discountPercent: "15", isFreeMinistry: false })
+    ).toEqual({
       kind: "applied",
       discountCode: "custom_rule",
       discountPercent: "15",
