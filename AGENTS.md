@@ -84,6 +84,7 @@ For local `newlife-ui` development, temporarily set `"@efcnewlife/newlife-ui": "
 │   ├── layout/             # AppLayout, AppHeader, AppSidebar
 │   ├── pages/              # System/, Facility/, Ministry/, Org/, Member/, Content/, AuthPages/, Demo/
 │   ├── routes/             # index.ts + modules/
+│   ├── telemetry/          # Sentry bootstrap (initTelemetry); config in config/telemetry.ts
 │   ├── types/
 │   └── utils/              # route-registry, route-filter-manager, component-registry, jwt, cn, …
 ├── docs/agents/            # Matt Pocock skill config
@@ -379,9 +380,10 @@ Centralized in `src/config/env.ts`. Never use `import.meta.env` elsewhere.
 | `VITE_AZURE_CLIENT_ID` / `TENANT_ID` / `REDIRECT_URI` | MSAL                                  |
 | `VITE_APP_NAME` / `TITLE` / `VERSION`                 | Branding                              |
 | `VITE_ENABLE_DEBUG` / `VITE_LOG_LEVEL`                | Dev tooling                           |
+| `VITE_SENTRY_DSN` / `ENABLED` / `RELEASE_VERSION`     | Optional Sentry; see README           |
 | `NODE_AUTH_TOKEN`                                     | pnpm GitHub Packages (not a Vite var) |
 
-Derived flags: `IS_DEV`, `IS_STAGING`, `IS_PROD`, `IS_SKIP_AUTH`, `IS_SHOW_DEV_LOGIN`, `IS_MOCK_API`, `IS_MOCK_DEMO`, `IS_MICROSOFT_LOGIN_ENABLED`.
+Derived flags: `IS_DEV`, `IS_STAGING`, `IS_PROD`, `IS_SKIP_AUTH`, `IS_SHOW_DEV_LOGIN`, `IS_MOCK_API`, `IS_MOCK_DEMO`, `IS_MICROSOFT_LOGIN_ENABLED`. `TELEMETRY_CONFIG` (Sentry) is resolved by `src/config/telemetry.ts` and initialized once in `main.tsx` via `src/telemetry/initTelemetry.ts`; telemetry side effects stay in this app, not in `newlife-ui`.
 
 ---
 

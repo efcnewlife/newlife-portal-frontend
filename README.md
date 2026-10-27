@@ -38,6 +38,27 @@ Important flags:
 - `VITE_USE_MOCK_DEMO=true`: Demo page data is returned from `demoService` in-memory mocks.
 - `VITE_SKIP_AUTH=true`: Developer shortcut mode that skips auth guarding and uses a placeholder token for API calls.
 
+### Sentry telemetry (optional)
+
+The app runs normally without any Sentry settings. `src/main.tsx` initializes the client once from `TELEMETRY_CONFIG` (`src/config/env.ts`).
+
+| Variable                      | Purpose                                                                                                                      |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_SENTRY_DSN`             | Public project DSN. Empty → telemetry off.                                                                                   |
+| `VITE_SENTRY_ENABLED`         | `development`: export only when `true`. `staging` / `production`: export when unset or `true`; any other value turns it off. |
+| `VITE_SENTRY_RELEASE_VERSION` | Deployed builds only. `production`: `x.y.z`. `staging`: short commit SHA (7–12 lowercase hex).                               |
+
+| Vite mode     | Environment | Release                                |
+| ------------- | ----------- | -------------------------------------- |
+| `development` | `dev`       | `newlife-portal-frontend@local`        |
+| `staging`     | `stg`       | `newlife-portal-frontend@<short-sha>`  |
+| `production`  | `prod`      | `newlife-portal-frontend@<x.y.z>`      |
+| anything else | —           | telemetry off (includes Vitest `test`) |
+
+A deployed build with a missing or mismatched release version stays off rather than reporting a placeholder release. A future deployment pipeline must pass the same release value to the SDK build and to any release / source-map upload.
+
+This phase sends only explicit captures: automatic errors, breadcrumbs, sessions, tracing, logs, and Replay are not enabled. Never commit a real DSN or any Sentry auth token.
+
 ## Start
 
 ```bash
