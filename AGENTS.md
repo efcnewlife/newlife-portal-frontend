@@ -84,7 +84,7 @@ For local `newlife-ui` development, temporarily set `"@efcnewlife/newlife-ui": "
 │   ├── layout/             # AppLayout, AppHeader, AppSidebar
 │   ├── pages/              # System/, Facility/, Ministry/, Org/, Member/, Content/, AuthPages/, Demo/
 │   ├── routes/             # index.ts + modules/
-│   ├── telemetry/          # Sentry bootstrap (initTelemetry); config in config/telemetry.ts
+│   ├── telemetry/          # Sentry bootstrap, error/identity reporting, privacy filters; config in config/telemetry.ts
 │   ├── types/
 │   └── utils/              # route-registry, route-filter-manager, component-registry, jwt, cn, …
 ├── docs/agents/            # Matt Pocock skill config
@@ -104,6 +104,7 @@ Path alias: `@` → `src/` (`vite.config.ts` and tsconfig). Keep them in sync.
 
 ```
 main.tsx
+  → initTelemetry() → createRoot(…, telemetryRootOptions)
   → ThemeProvider → AppWrapper → App
 App
   → AuthProvider → MenuProvider → NotificationProvider
@@ -347,7 +348,7 @@ Files that use HTML / `ReactNode` / `JSX.Element` must use `.tsx`. Prefer arrow 
 
 ## 14. Testing
 
-Vitest is configured in `vite.config.ts` as two projects: `unit` (`environment: "node"`, `src/**/*.test.ts`) and `flow` (`environment: "jsdom"`, `src/**/*.test.tsx`, Testing Library). Flow tests mock `@efcnewlife/newlife-ui` and services at the module boundary (see `BookingEditModal.test.tsx`).
+Vitest is configured in `vite.config.ts` as two projects: `unit` (`environment: "node"`, `src/**/*.test.ts`) and `flow` (`environment: "jsdom"`, `src/**/*.test.tsx`, Testing Library). Flow tests mock `@efcnewlife/newlife-ui` and services at the module boundary (see `BookingEditModal.test.tsx`). Exception: `src/telemetry/errorCapture.test.tsx` runs real services and the real SDK against a fake axios adapter and a captured transport, because telemetry is what those layers emit.
 
 ```bash
 pnpm run test
@@ -384,6 +385,18 @@ Centralized in `src/config/env.ts`. Never use `import.meta.env` elsewhere.
 | `NODE_AUTH_TOKEN`                                     | pnpm GitHub Packages (not a Vite var) |
 
 Derived flags: `IS_DEV`, `IS_STAGING`, `IS_PROD`, `IS_SKIP_AUTH`, `IS_SHOW_DEV_LOGIN`, `IS_MOCK_API`, `IS_MOCK_DEMO`, `IS_MICROSOFT_LOGIN_ENABLED`. `TELEMETRY_CONFIG` (Sentry) is resolved by `src/config/telemetry.ts` and initialized once in `main.tsx` via `src/telemetry/initTelemetry.ts`; telemetry side effects stay in this app, not in `newlife-ui`.
+
+What is enabled when Sentry is on:
+
+| Channel      | Source                                                                                                                                | Notes                                                                                                                                                                                                                                                                                |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Errors       | React root `onCaughtError` / `onUncaughtError` (`telemetryRootOptions`), `window.onerror`, unhandled rejections, browser API wrappers | Captured once (SDK dedupe + `__sentry_captured__`). Exception text and `message` are always dropped, unlike Facility Booking's pattern scrub: Admin screens show member names no pattern can detect                                                                                  |
+| API failures | `httpClient` → `reportApiFailure` / `reportUnexpectedError`                                                                           | 5xx (grouped by method + route + status, no backend text; the SDK collapses consecutive identical failures) and faults in the client's own code and `authService`. 4xx, timeouts, and offline errors are not issues; `ApiError` / `AuthError` rejections are dropped in `beforeSend` |
+| Logs         | `console.warn` / `console.error`                                                                                                      | Info/debug never sent; only the authored template text, never arguments. `API Error: {}` from `httpClient` and logs with no text left are dropped. Do not interpolate personal data into console text: names are not detected                                                        |
+| Breadcrumbs  | console warn/error, clicks, navigation, fetch/XHR                                                                                     | Query strings, fragments, selector attribute values, and console arguments removed                                                                                                                                                                                                   |
+| User         | `AuthContext` / `authService` → `setTelemetryUser`                                                                                    | Internal Administrator ID only; cleared with breadcrumbs on logout, `authService.clearAuth()`, and any unauthenticated transition                                                                                                                                                    |
+
+Every channel passes through `src/telemetry/privacy.ts` (`beforeSend`, `beforeBreadcrumb`, `beforeSendLog`) and SDK `dataCollection` keeps personal and request data off. `Sentry.captureMessage` text is not exported; report defects with an `Error`. Not enabled: tracing and Replay (EFC-286), sessions, metrics, client reports. Flow tests use the real SDK with `createCapturedTransport` (`src/telemetry/testSupport.ts`, test-only).
 
 ---
 

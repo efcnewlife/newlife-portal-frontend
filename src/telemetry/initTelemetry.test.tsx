@@ -5,9 +5,7 @@ import { StrictMode, useEffect } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { TelemetryConfig } from "@/config/telemetry";
 import { initTelemetry } from "./initTelemetry";
-
-type Transport = ReturnType<NonNullable<Sentry.BrowserOptions["transport"]>>;
-type Envelope = Parameters<Transport["send"]>[0];
+import { createCapturedTransport, resetTelemetryForTests } from "./testSupport";
 
 const ENABLED_CONFIG: TelemetryConfig = {
   enabled: true,
@@ -18,68 +16,47 @@ const ENABLED_CONFIG: TelemetryConfig = {
 
 const SYNTHETIC_MESSAGE = "telemetry synthetic probe";
 
-// Test-only transport: records outbound envelopes and never reaches Sentry ingestion.
-const captureTransport = (sent: Envelope[], { fail = false } = {}) => {
-  return (): Transport => ({
-    send: async (envelope) => {
-      sent.push(envelope);
-      if (fail) throw new Error("ingestion unavailable");
-      return {};
-    },
-    flush: async () => true,
-  });
-};
-
-const sentItems = (sent: Envelope[]) =>
-  sent.flatMap(([, items]) => items.map(([header, payload]) => ({ type: header.type, payload })));
-
-const sentEvents = (sent: Envelope[]) =>
-  sentItems(sent)
-    .filter((item) => item.type === "event")
-    .map((item) => item.payload as Sentry.Event);
-
 afterEach(async () => {
   cleanup();
-  await Sentry.close();
-  Sentry.getCurrentScope().setClient(undefined);
+  await resetTelemetryForTests();
 });
 
 describe("initTelemetry", () => {
   it("sends a synthetic event tagged with canonical environment and release", async () => {
-    const sent: Envelope[] = [];
+    const captured = createCapturedTransport();
 
-    expect(initTelemetry(ENABLED_CONFIG, { transport: captureTransport(sent) })).toBe(true);
+    expect(initTelemetry(ENABLED_CONFIG, { transport: captured.transport })).toBe(true);
     Sentry.captureMessage(SYNTHETIC_MESSAGE);
     await Sentry.flush(2000);
 
-    const events = sentEvents(sent);
+    const events = captured.events();
     expect(events).toHaveLength(1);
     expect(events[0]).toMatchObject({
-      message: SYNTHETIC_MESSAGE,
       environment: "stg",
       release: "newlife-portal-frontend@5ba2c79",
     });
   });
 
-  it("does not export automatic context before the privacy contract exists", async () => {
-    const sent: Envelope[] = [];
+  it("exports no identity by default and leaves tracing, Replay, and sessions off", async () => {
+    const captured = createCapturedTransport();
 
-    initTelemetry(ENABLED_CONFIG, { transport: captureTransport(sent) });
-    console.warn("console breadcrumb marker");
+    initTelemetry(ENABLED_CONFIG, { transport: captured.transport });
     Sentry.captureMessage(SYNTHETIC_MESSAGE);
     await Sentry.flush(2000);
 
-    expect(sentItems(sent).map((item) => item.type)).toEqual(["event"]);
-    const [event] = sentEvents(sent);
-    expect(event.breadcrumbs ?? []).toEqual([]);
-    expect(event.request).toBeUndefined();
-    expect(event.user).toBeUndefined();
-    expect(Sentry.getClient()?.getOptions()).toMatchObject({ integrations: [], sendClientReports: false });
+    expect(captured.items.map((item) => item.type)).toEqual(["event"]);
+    expect(captured.events()[0]).not.toHaveProperty("user");
+    const client = Sentry.getClient();
+    expect(client?.getOptions()).toMatchObject({ sendClientReports: false });
+    expect(client?.getOptions().tracesSampleRate).toBeUndefined();
+    for (const integration of ["BrowserTracing", "Replay", "BrowserSession", "CaptureConsole"]) {
+      expect(client?.getIntegrationByName(integration)).toBeUndefined();
+    }
   });
 
   it("initializes one client under StrictMode and repeated startup", async () => {
-    const sent: Envelope[] = [];
-    const transport = captureTransport(sent);
+    const captured = createCapturedTransport();
+    const { transport } = captured;
 
     initTelemetry(ENABLED_CONFIG, { transport });
     const firstClient = Sentry.getClient();
@@ -100,7 +77,7 @@ describe("initTelemetry", () => {
     expect(Sentry.getClient()).toBe(firstClient);
     Sentry.captureMessage(SYNTHETIC_MESSAGE);
     await Sentry.flush(2000);
-    expect(sentEvents(sent)).toHaveLength(1);
+    expect(captured.events()).toHaveLength(1);
   });
 
   it.each<TelemetryConfig>([
@@ -108,25 +85,25 @@ describe("initTelemetry", () => {
     { enabled: false, reason: "missing_dsn" },
     { enabled: false, reason: "unknown_mode" },
   ])("leaves the SDK uninitialized when configuration is $reason", async (config) => {
-    const sent: Envelope[] = [];
+    const captured = createCapturedTransport();
 
-    expect(initTelemetry(config, { transport: captureTransport(sent) })).toBe(false);
+    expect(initTelemetry(config, { transport: captured.transport })).toBe(false);
     Sentry.captureMessage(SYNTHETIC_MESSAGE);
     await Sentry.flush(2000);
 
     expect(Sentry.isInitialized()).toBe(false);
-    expect(sent).toEqual([]);
+    expect(captured.sendAttempts()).toBe(0);
   });
 
   it("keeps the application running when ingestion rejects events", async () => {
-    const sent: Envelope[] = [];
+    const captured = createCapturedTransport({ unavailable: true });
 
-    initTelemetry(ENABLED_CONFIG, { transport: captureTransport(sent, { fail: true }) });
+    initTelemetry(ENABLED_CONFIG, { transport: captured.transport });
     expect(() => Sentry.captureMessage(SYNTHETIC_MESSAGE)).not.toThrow();
     await expect(Sentry.flush(2000)).resolves.toBeDefined();
     render(<p>admin portal</p>);
 
-    expect(sentEvents(sent)).toHaveLength(1);
+    expect(captured.sendAttempts()).toBe(1);
     expect(screen.getByText("admin portal")).toBeInTheDocument();
   });
 

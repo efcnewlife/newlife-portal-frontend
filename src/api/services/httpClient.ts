@@ -1,6 +1,7 @@
 // HTTP client service based on axios
 import { API_ENDPOINTS, REQUEST_CONFIG } from "@/api";
 import i18n from "@/i18n";
+import { reportApiFailure, reportUnexpectedError } from "@/telemetry/reporting";
 import type { ApiError, ApiResponse, TokenResponse } from "@/types/api";
 import { deep_keys_to_snake_case } from "@/utils/caseConvert";
 import { notificationManager } from "@/utils/notificationManager";
@@ -264,13 +265,24 @@ class HttpClient {
           } else {
             finalError = this.handleError(retryError as AxiosError);
           }
+          this.reportFailure(retryError, config);
           const processedFinalError = await this.executeErrorInterceptors(finalError);
           throw processedFinalError;
         }
       }
 
+      this.reportFailure(error, config);
       const processedError = await this.executeErrorInterceptors(apiError);
       throw processedError;
+    }
+  }
+
+  // Plain ApiError causes are skipped: refreshAccessToken reports its own failure once for all waiting requests.
+  private reportFailure(cause: unknown, config: AxiosRequestConfig): void {
+    if (axios.isAxiosError(cause)) {
+      reportApiFailure(cause.response?.status ?? 0, cause.config ?? config);
+    } else if (cause instanceof Error) {
+      reportUnexpectedError(cause);
     }
   }
 
@@ -450,6 +462,7 @@ class HttpClient {
           const message =
             (typeof backend_detail === "string" && backend_detail) || fallback_message || this.getErrorMessage(status);
 
+          reportApiFailure(status, { method: "POST", url: API_ENDPOINTS.AUTH.REFRESH });
           throw {
             code: status,
             message,

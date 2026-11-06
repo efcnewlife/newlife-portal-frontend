@@ -2,6 +2,7 @@ import { localeService } from "@/api";
 import { ensure_msal_ready, MSAL_LOGIN_SCOPES } from "@/auth/msalInstance";
 import { IS_SKIP_AUTH } from "@/config/env";
 import i18n, { build_locale_code, change_app_language } from "@/i18n";
+import { setTelemetryUser } from "@/telemetry/reporting";
 import { getRolesFromToken, getScopesFromToken, hasPermissionInScopes } from "@/utils/jwt";
 import { resolve_locale_id_for_language_code } from "@/utils/localeResolve";
 import { createContext, ReactNode, useContext, useEffect, useReducer } from "react";
@@ -91,6 +92,11 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  const telemetryUserId = state.isAuthenticated ? (state.user?.id ?? null) : null;
+
+  useEffect(() => {
+    setTelemetryUser(telemetryUserId);
+  }, [telemetryUserId]);
 
   const syncPreferredLanguageFromAuthUser = async (user: User) => {
     if (!user.preferredLocaleId) {
