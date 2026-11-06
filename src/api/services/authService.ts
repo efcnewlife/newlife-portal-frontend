@@ -3,6 +3,7 @@ import { API_ENDPOINTS, HTTP_STATUS } from "@/api/config";
 import i18n from "@/i18n";
 import type { ApiError, ApiResponse, TokenResponse } from "@/types/api";
 import { IS_SKIP_AUTH } from "@/config/env";
+import { reportUnexpectedError, setTelemetryUser } from "@/telemetry/reporting";
 import type { AuthError, LoginCredentials, LoginResponse, User } from "@/types/auth";
 import { notifyApiError } from "@/utils/operationFeedback";
 import { getScopesFromToken, getRolesFromToken, parseJWT, hasPermissionInScopes } from "@/utils/jwt";
@@ -448,6 +449,9 @@ class AuthService {
     sessionStorage.removeItem(this.TOKEN_KEY);
     sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
     sessionStorage.removeItem(this.USER_KEY);
+
+    // Not every caller dispatches an auth state change, so AuthContext alone would keep the identity.
+    setTelemetryUser(null);
   }
 
   // Handle auth errors (convert ApiError to AuthError for backward compatibility)
@@ -473,6 +477,9 @@ class AuthService {
     }
 
     // Handle other error types
+    if (error instanceof Error) {
+      reportUnexpectedError(error);
+    }
     return {
       code: "UNKNOWN_ERROR",
       message: error instanceof Error ? error.message : i18n.t("errors:unknown"),

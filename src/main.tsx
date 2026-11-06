@@ -7,10 +7,11 @@ import { ThemeProvider } from "./context/ThemeContext.tsx";
 import { TELEMETRY_CONFIG } from "./config/env";
 import "./i18n";
 import { initTelemetry } from "./telemetry/initTelemetry";
+import { telemetryRootOptions } from "./telemetry/reporting";
 
 initTelemetry(TELEMETRY_CONFIG);
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById("root")!, telemetryRootOptions).render(
   <StrictMode>
     <ThemeProvider>
       <AppWrapper>

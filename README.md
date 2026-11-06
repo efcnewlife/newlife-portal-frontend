@@ -57,7 +57,17 @@ The app runs normally without any Sentry settings. `src/main.tsx` initializes th
 
 A deployed build with a missing or mismatched release version stays off rather than reporting a placeholder release. A future deployment pipeline must pass the same release value to the SDK build and to any release / source-map upload.
 
-This phase sends only explicit captures: automatic errors, breadcrumbs, sessions, tracing, logs, and Replay are not enabled. Never commit a real DSN or any Sentry auth token.
+What is sent when telemetry is on (no other options are required):
+
+| Channel      | Source                                                         | Notes                                                                                                                                                  |
+| ------------ | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Errors       | React root error hooks, `window.onerror`, unhandled rejections | Exception text is dropped; types and stack frames remain                                                                                               |
+| API failures | `httpClient`                                                   | 5xx only, grouped by method + route + status; the SDK collapses consecutive identical failures. 4xx, timeouts, and offline errors do not create issues |
+| Logs         | `console.warn` / `console.error`                               | Authored text only, never arguments. The API client's own failure log is not sent                                                                      |
+| Breadcrumbs  | Console warn/error, clicks, navigation, fetch/XHR              | No query strings, fragments, selector attribute values, or console arguments                                                                           |
+| User         | `AuthContext`                                                  | Internal Administrator ID only; cleared with breadcrumbs on logout and any unauthenticated transition                                                  |
+
+Every channel passes through `src/telemetry/privacy.ts` before it leaves the browser. Bodies, credentials, tokens, names, email addresses, phone numbers, and remarks are excluded. Tracing and Replay are not enabled yet; sessions, metrics, and client reports are not part of this integration. Never commit a real DSN or any Sentry auth token.
 
 ## Start
 
