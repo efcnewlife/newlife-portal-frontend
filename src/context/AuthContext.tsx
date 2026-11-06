@@ -229,7 +229,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
       const auth_result = await msal.loginPopup({ scopes: MSAL_LOGIN_SCOPES });
-      console.log(auth_result);
       if (auth_result.account) {
         msal.setActiveAccount(auth_result.account);
       }
