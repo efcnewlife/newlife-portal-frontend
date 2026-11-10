@@ -42,11 +42,14 @@ Important flags:
 
 The app runs normally without any Sentry settings. `src/main.tsx` initializes the client once from `TELEMETRY_CONFIG` (`src/config/env.ts`).
 
-| Variable                      | Purpose                                                                                                                      |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `VITE_SENTRY_DSN`             | Public project DSN. Empty → telemetry off.                                                                                   |
-| `VITE_SENTRY_ENABLED`         | `development`: export only when `true`. `staging` / `production`: export when unset or `true`; any other value turns it off. |
-| `VITE_SENTRY_RELEASE_VERSION` | Deployed builds only. `production`: `x.y.z`. `staging`: short commit SHA (7–12 lowercase hex).                               |
+| Variable                                   | Purpose                                                                                                                      |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_SENTRY_DSN`                          | Public project DSN. Empty → telemetry off.                                                                                   |
+| `VITE_SENTRY_ENABLED`                      | `development`: export only when `true`. `staging` / `production`: export when unset or `true`; any other value turns it off. |
+| `VITE_SENTRY_RELEASE_VERSION`              | Deployed builds only. `production`: `x.y.z`. `staging`: short commit SHA (7–12 lowercase hex).                               |
+| `VITE_SENTRY_TRACES_SAMPLE_RATE`           | Optional `0..1`. Unset keeps tracing off. Set to trace page loads, navigation, and requests, connected to Core API.          |
+| `VITE_SENTRY_REPLAYS_SESSION_SAMPLE_RATE`  | Optional `0..1`. Share of sessions recorded as masked Replay. Unset (with the next one unset) keeps Replay off.              |
+| `VITE_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE` | Optional `0..1`. Share of sessions whose last minute is kept and sent when an error occurs.                                  |
 
 | Vite mode     | Environment | Release                                |
 | ------------- | ----------- | -------------------------------------- |
@@ -67,7 +70,27 @@ What is sent when telemetry is on (no other options are required):
 | Breadcrumbs  | Console warn/error, clicks, navigation, fetch/XHR              | No query strings, fragments, selector attribute values, or console arguments                                                                           |
 | User         | `AuthContext`                                                  | Internal Administrator ID only; cleared with breadcrumbs on logout and any unauthenticated transition                                                  |
 
-Every channel passes through `src/telemetry/privacy.ts` before it leaves the browser. Bodies, credentials, tokens, names, email addresses, phone numbers, and remarks are excluded. Tracing and Replay are not enabled yet; sessions, metrics, and client reports are not part of this integration. Never commit a real DSN or any Sentry auth token.
+Every channel passes through `src/telemetry/privacy.ts` before it leaves the browser. Bodies, credentials, tokens, names, email addresses, phone numbers, and remarks are excluded. Sessions, metrics, client reports, and Profiling are not part of this integration. Never commit a real DSN or any Sentry auth token.
+
+#### Tracing and Replay (optional)
+
+Off unless their sample rates are set; an invalid rate leaves that channel off. No sampling targets are prescribed; choose rates per environment. Use `1` only for local verification unless you choose otherwise.
+
+| Channel | Enabled by                                 | Notes                                                                                                                                                                                        |
+| ------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tracing | `VITE_SENTRY_TRACES_SAMPLE_RATE`           | Page load, navigation, and request spans (SDK default streamed spans). Query strings, fragments, selector attribute values, and user attributes other than the internal ID are removed       |
+| Replay  | either `VITE_SENTRY_REPLAYS_*_SAMPLE_RATE` | All text and inputs masked; images, SVG, and video blocked; `title`, `placeholder`, `aria-label`, `alt` masked; no network headers or bodies. Page and link URLs keep scheme, host, and path |
+
+Trace propagation:
+
+- Sentry-native `sentry-trace` and `baggage` headers, which Core API continues (`SENTRY_TRACES_SAMPLE_RATE` set there too). W3C `traceparent` is off (`propagateTraceparent: false`); no OpenTelemetry bridge in the browser.
+- Headers go only to `${VITE_API_BASE_URL}/admin/api/v1…` (anchored match). MSAL, `/api/v1`, `/healthz`, file hosts, and other origins never receive them. Core API's CORS already allows any request header. `VITE_API_BASE_URL` must be an absolute URL; otherwise no request receives trace headers and browser traces stay unconnected.
+
+Replay recordings are sent uncompressed: the SDK masks text but not `href` / `src`, so the transport rewrites those URLs (and the page URL rrweb records) before sending. A recording that cannot be read is dropped, not sent.
+
+Logout or an account change ends the previous Administrator's trace and Replay; the next one starts fresh in the mode sampling chose at page load.
+
+Local check: run Core API with `SENTRY_ENABLED=true SENTRY_TRACES_SAMPLE_RATE=1.0`, then the Portal with `VITE_SENTRY_ENABLED=true VITE_SENTRY_TRACES_SAMPLE_RATE=1 VITE_SENTRY_REPLAYS_SESSION_SAMPLE_RATE=1`. Point both DSNs at a local collector (or a dev Sentry project) and confirm a browser `http.client` span is the parent of Core's `http.server` transaction.
 
 ## Start
 

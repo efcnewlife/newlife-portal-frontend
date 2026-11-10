@@ -370,19 +370,20 @@ Co-locate `*.test.ts` / `*.test.tsx` next to the unit under test. CI does not ru
 
 Centralized in `src/config/env.ts`. Never use `import.meta.env` elsewhere.
 
-| Variable                                              | Role                                  |
-| ----------------------------------------------------- | ------------------------------------- |
-| `VITE_API_BASE_URL`                                   | Default `http://127.0.0.1:8000`       |
-| `VITE_API_TIMEOUT`                                    | Default `90000`                       |
-| `VITE_SKIP_AUTH`                                      | Dev skip auth                         |
-| `VITE_SHOW_DEV_LOGIN`                                 | Dev email/password on sign-in         |
-| `VITE_USE_MOCK_API`                                   | Dev service stubs                     |
-| `VITE_USE_MOCK_DEMO`                                  | Demo page mocks                       |
-| `VITE_AZURE_CLIENT_ID` / `TENANT_ID` / `REDIRECT_URI` | MSAL                                  |
-| `VITE_APP_NAME` / `TITLE` / `VERSION`                 | Branding                              |
-| `VITE_ENABLE_DEBUG` / `VITE_LOG_LEVEL`                | Dev tooling                           |
-| `VITE_SENTRY_DSN` / `ENABLED` / `RELEASE_VERSION`     | Optional Sentry; see README           |
-| `NODE_AUTH_TOKEN`                                     | pnpm GitHub Packages (not a Vite var) |
+| Variable                                                   | Role                                   |
+| ---------------------------------------------------------- | -------------------------------------- |
+| `VITE_API_BASE_URL`                                        | Default `http://127.0.0.1:8000`        |
+| `VITE_API_TIMEOUT`                                         | Default `90000`                        |
+| `VITE_SKIP_AUTH`                                           | Dev skip auth                          |
+| `VITE_SHOW_DEV_LOGIN`                                      | Dev email/password on sign-in          |
+| `VITE_USE_MOCK_API`                                        | Dev service stubs                      |
+| `VITE_USE_MOCK_DEMO`                                       | Demo page mocks                        |
+| `VITE_AZURE_CLIENT_ID` / `TENANT_ID` / `REDIRECT_URI`      | MSAL                                   |
+| `VITE_APP_NAME` / `TITLE` / `VERSION`                      | Branding                               |
+| `VITE_ENABLE_DEBUG` / `VITE_LOG_LEVEL`                     | Dev tooling                            |
+| `VITE_SENTRY_DSN` / `ENABLED` / `RELEASE_VERSION`          | Optional Sentry; see README            |
+| `VITE_SENTRY_TRACES_SAMPLE_RATE` / `REPLAYS_*_SAMPLE_RATE` | Optional tracing / Replay; unset = off |
+| `NODE_AUTH_TOKEN`                                          | pnpm GitHub Packages (not a Vite var)  |
 
 Derived flags: `IS_DEV`, `IS_STAGING`, `IS_PROD`, `IS_SKIP_AUTH`, `IS_SHOW_DEV_LOGIN`, `IS_MOCK_API`, `IS_MOCK_DEMO`, `IS_MICROSOFT_LOGIN_ENABLED`. `TELEMETRY_CONFIG` (Sentry) is resolved by `src/config/telemetry.ts` and initialized once in `main.tsx` via `src/telemetry/initTelemetry.ts`; telemetry side effects stay in this app, not in `newlife-ui`.
 
@@ -396,7 +397,7 @@ What is enabled when Sentry is on:
 | Breadcrumbs  | console warn/error, clicks, navigation, fetch/XHR                                                                                     | Query strings, fragments, selector attribute values, and console arguments removed                                                                                                                                                                                                   |
 | User         | `AuthContext` / `authService` → `setTelemetryUser`                                                                                    | Internal Administrator ID only; cleared with breadcrumbs on logout, `authService.clearAuth()`, and any unauthenticated transition                                                                                                                                                    |
 
-Every channel passes through `src/telemetry/privacy.ts` (`beforeSend`, `beforeBreadcrumb`, `beforeSendLog`) and SDK `dataCollection` keeps personal and request data off. `Sentry.captureMessage` text is not exported; report defects with an `Error`. Not enabled: tracing and Replay (EFC-286), sessions, metrics, client reports. Flow tests use the real SDK with `createCapturedTransport` (`src/telemetry/testSupport.ts`, test-only).
+Every channel passes through `src/telemetry/privacy.ts` (`beforeSend`, `beforeBreadcrumb`, `beforeSendLog`) and SDK `dataCollection` keeps personal and request data off. `Sentry.captureMessage` text is not exported; report defects with an `Error`. Tracing and Replay are on only when their sample rates are set: trace headers go to the Admin API only (`tracePropagationTargets`, Sentry-native, no `traceparent`), spans pass `sanitizeSpan`, Replay masks all text/inputs and blocks media, and recordings are sent uncompressed so the transport can rewrite rrweb `href`/`src` URLs (`sanitizeReplayEnvelope`). Logout or an account change restarts trace and Replay (`setTelemetryUser`). The SDK does not record Replay under Node, so Replay payloads are verified in a real browser. Not enabled: sessions, metrics, client reports, Profiling. Flow tests use the real SDK with `createCapturedTransport` (`src/telemetry/testSupport.ts`, test-only).
 
 ---
 

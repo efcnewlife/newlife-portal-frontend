@@ -43,6 +43,7 @@ const LOCAL_OPT_IN: TelemetryConfig = {
   dsn: "https://public@o0.ingest.example.test/1",
   environment: "dev",
   release: "newlife-portal-frontend@local",
+  tracePropagationTargets: [],
 };
 
 const ADMIN_A_ID = "admin-a-7f3e";

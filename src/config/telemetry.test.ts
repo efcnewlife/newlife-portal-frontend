@@ -9,8 +9,14 @@ const input = (overrides: Partial<TelemetryConfigInput>): TelemetryConfigInput =
   dsn: DSN,
   enabled: undefined,
   releaseVersion: "0.2.33",
+  apiBaseUrl: "https://core.example.test",
+  tracesSampleRate: undefined,
+  replaysSessionSampleRate: undefined,
+  replaysOnErrorSampleRate: undefined,
   ...overrides,
 });
+
+const ADMIN_API_TARGET = /^https:\/\/core\.example\.test\/admin\/api\/v1(?:[/?#]|$)/;
 
 describe("resolveTelemetryConfig", () => {
   it.each([
@@ -23,6 +29,7 @@ describe("resolveTelemetryConfig", () => {
       dsn: DSN,
       environment,
       release,
+      tracePropagationTargets: [ADMIN_API_TARGET],
     });
   });
 
@@ -90,5 +97,73 @@ describe("resolveTelemetryConfig", () => {
       dsn: DSN,
       release: "newlife-portal-frontend@0.2.33",
     });
+  });
+
+  it("leaves tracing and Replay off unless their sample rates are configured", () => {
+    const config = resolveTelemetryConfig(input({}));
+    expect(config).not.toHaveProperty("tracesSampleRate");
+    expect(config).not.toHaveProperty("replaysSessionSampleRate");
+    expect(config).not.toHaveProperty("replaysOnErrorSampleRate");
+  });
+
+  it("passes configured sample rates through without a default policy", () => {
+    expect(
+      resolveTelemetryConfig(
+        input({ tracesSampleRate: "0.25", replaysSessionSampleRate: " 0 ", replaysOnErrorSampleRate: "1" })
+      )
+    ).toMatchObject({ tracesSampleRate: 0.25, replaysSessionSampleRate: 0, replaysOnErrorSampleRate: 1 });
+  });
+
+  it.each(["", " ", "abc", "-0.1", "1.5", "NaN", "Infinity", "0x1"])(
+    "turns a channel off for an unusable sample rate %j",
+    (rate) => {
+      const config = resolveTelemetryConfig(
+        input({ tracesSampleRate: rate, replaysSessionSampleRate: rate, replaysOnErrorSampleRate: rate })
+      );
+      expect(config).toMatchObject({ enabled: true });
+      expect(config).not.toHaveProperty("tracesSampleRate");
+      expect(config).not.toHaveProperty("replaysSessionSampleRate");
+      expect(config).not.toHaveProperty("replaysOnErrorSampleRate");
+    }
+  );
+});
+
+describe("trace propagation targets", () => {
+  const targetsFor = (apiBaseUrl: string) => {
+    const config = resolveTelemetryConfig(input({ apiBaseUrl }));
+    return config.enabled ? config.tracePropagationTargets : [];
+  };
+  const propagates = (apiBaseUrl: string, url: string) => targetsFor(apiBaseUrl).some((target) => target.test(url));
+
+  it.each([
+    "https://core.example.test/admin/api/v1",
+    "https://core.example.test/admin/api/v1/auth/me",
+    "https://core.example.test/admin/api/v1/facility/bookings?page=1",
+  ])("propagates to the Admin API at %s", (url) => {
+    expect(propagates("https://core.example.test", url)).toBe(true);
+  });
+
+  it.each([
+    "https://login.microsoftonline.com/tenant/oauth2/v2.0/token",
+    "https://core.example.test/api/v1/org",
+    "https://core.example.test/healthz",
+    "https://core.example.test/admin/api/v10/auth/me",
+    "https://core.example.test/admin/api/v1-legacy",
+    "https://core.example.test.evil.test/admin/api/v1/auth/me",
+    "http://core.example.test/admin/api/v1/auth/me",
+    "https://evil.test/?next=https://core.example.test/admin/api/v1/auth/me",
+    "/admin/api/v1/auth/me",
+  ])("does not propagate to %s", (url) => {
+    expect(propagates("https://core.example.test", url)).toBe(false);
+  });
+
+  it("keeps a path prefix and port in the configured API base URL", () => {
+    expect(propagates("http://127.0.0.1:8000/", "http://127.0.0.1:8000/admin/api/v1/auth/me")).toBe(true);
+    expect(propagates("https://example.test/core", "https://example.test/core/admin/api/v1/role/list")).toBe(true);
+    expect(propagates("https://example.test/core", "https://example.test/admin/api/v1/role/list")).toBe(false);
+  });
+
+  it.each(["", "not a url", "/relative"])("propagates nowhere for an unusable API base URL %j", (apiBaseUrl) => {
+    expect(targetsFor(apiBaseUrl)).toEqual([]);
   });
 });
