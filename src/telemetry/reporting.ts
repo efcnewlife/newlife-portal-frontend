@@ -17,11 +17,46 @@ const apiRoute = (url: string) =>
     .map((segment) => (STATIC_SEGMENT.test(segment) ? segment : "{id}"))
     .join("/");
 
+let currentAdministratorId: string | null = null;
+
+// 32 lowercase hex characters; `getRandomValues` also works outside secure contexts, unlike `randomUUID`.
+const newTraceId = () =>
+  Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) => byte.toString(16).padStart(2, "0")).join("");
+
+const SEPARATION_FAILED = "Telemetry could not separate Administrator activity";
+
+// Ends the previous Administrator's trace and Replay before the identity changes, so neither continues into
+// the next Administrator's activity or carries their ID. Replay restarts in the mode sampling chose at page
+// load; its unsent tail segment is dropped rather than sent under the next identity. Telemetry faults are
+// logged and never break login or logout.
+const separateAdministratorActivity = () => {
+  try {
+    const activeSpan = Sentry.getActiveSpan();
+    if (activeSpan) Sentry.getRootSpan(activeSpan).end();
+    Sentry.getCurrentScope().setPropagationContext({ traceId: newTraceId(), sampleRand: Math.random() });
+
+    const replay = Sentry.getReplay();
+    const mode = replay?.getRecordingMode();
+    if (!replay || !mode) return;
+    replay
+      .stop({ flush: false })
+      .then(() => (mode === "session" ? replay.start() : replay.startBuffering()))
+      .catch(() => console.warn(SEPARATION_FAILED));
+  } catch {
+    console.warn(SEPARATION_FAILED);
+  }
+};
+
 /**
  * Sets the telemetry user to the internal Administrator ID only; `null` clears it. Breadcrumbs are
  * dropped too: they hold the previous Administrator's URLs and clicks, and logout does not reload the page.
+ * Logout or an account change also ends the previous Administrator's trace and Replay.
  */
 export const setTelemetryUser = (administratorId: string | null) => {
+  if (currentAdministratorId && currentAdministratorId !== administratorId) {
+    separateAdministratorActivity();
+  }
+  currentAdministratorId = administratorId;
   Sentry.setUser(administratorId ? { id: administratorId } : null);
   Sentry.getIsolationScope().clearBreadcrumbs();
 };

@@ -1,4 +1,4 @@
-import type { Breadcrumb, ErrorEvent, Log } from "@sentry/react";
+import type { Breadcrumb, BrowserOptions, ErrorEvent, Event, Log, replayIntegration } from "@sentry/react";
 import { describe, expect, it } from "vitest";
 import {
   ApiFailureError,
@@ -7,6 +7,10 @@ import {
   sanitizeBreadcrumb,
   sanitizeEvent,
   sanitizeLog,
+  sanitizeRecordingEvent,
+  sanitizeReplayEnvelope,
+  sanitizeReplayEvent,
+  sanitizeSpan,
   sanitizeUrl,
   scrubText,
 } from "./privacy";
@@ -321,5 +325,282 @@ describe("sanitizeEvent", () => {
 
   it("removes the user when no internal ID is set", () => {
     expect(sanitizeEvent({ type: undefined, user: { ip_address: "{{auto}}" } }, {})).toEqual({ type: undefined });
+  });
+});
+
+type StreamedSpan = Parameters<NonNullable<BrowserOptions["beforeSendSpan"]>>[0];
+type RecordingEvent = Parameters<
+  NonNullable<NonNullable<Parameters<typeof replayIntegration>[0]>["beforeAddRecordingEvent"]>
+>[0];
+
+describe("sanitizeSpan", () => {
+  const span = (overrides: Partial<StreamedSpan>): StreamedSpan => ({
+    trace_id: "a".repeat(32),
+    span_id: "b".repeat(16),
+    name: "span",
+    start_timestamp: 1,
+    end_timestamp: 2,
+    status: "ok",
+    is_segment: false,
+    attributes: {},
+    ...overrides,
+  });
+
+  it("keeps method, status, and route while dropping query strings and fragments", () => {
+    const sanitized = sanitizeSpan(
+      span({
+        name: `GET https://core.example.test/admin/api/v1/member/person/list?search=${NAME}`,
+        attributes: {
+          "sentry.op": "http.client",
+          "http.request.method": "GET",
+          "http.response.status_code": 200,
+          "url.full": `https://core.example.test/admin/api/v1/member/person/list?search=${NAME}`,
+          url: `/admin/api/v1/member/person/list?search=${NAME}`,
+          "http.query": `?search=${NAME}`,
+          "http.fragment": `#${JWT}`,
+          "server.address": "core.example.test",
+        },
+      })
+    );
+
+    expect(sanitized.name).toBe("GET https://core.example.test/admin/api/v1/member/person/list");
+    expect(sanitized.attributes).toEqual({
+      "sentry.op": "http.client",
+      "http.request.method": "GET",
+      "http.response.status_code": 200,
+      "url.full": "https://core.example.test/admin/api/v1/member/person/list",
+      url: "/admin/api/v1/member/person/list",
+      "server.address": "core.example.test",
+    });
+  });
+
+  it("drops the reset token from a page load URL", () => {
+    const sanitized = sanitizeSpan(
+      span({
+        name: "/reset-password",
+        is_segment: true,
+        attributes: { "sentry.op": "pageload", "url.full": `http://localhost:5173/reset-password?token=${JWT}` },
+      })
+    );
+    expect(JSON.stringify(sanitized)).not.toContain(JWT);
+  });
+
+  it("drops selector attribute values from interaction spans", () => {
+    expect(
+      sanitizeSpan(
+        span({ name: `body > button.edit[title="Edit ${NAME}"]`, attributes: { "sentry.op": "ui.interaction.click" } })
+      ).name
+    ).toBe("body > button.edit");
+  });
+
+  it("drops selector attribute values from web vital element attributes", () => {
+    expect(
+      sanitizeSpan(
+        span({
+          attributes: {
+            "browser.web_vital.lcp.element": `img.preview[alt="${NAME}.png"]`,
+            "browser.web_vital.inp.target": `div > button.edit[title="Edit ${NAME}"]`,
+          },
+        })
+      ).attributes
+    ).toEqual({ "browser.web_vital.lcp.element": "img.preview", "browser.web_vital.inp.target": "div > button.edit" });
+  });
+
+  it("keeps only the internal user ID and scrubs free-form attributes", () => {
+    expect(
+      sanitizeSpan(
+        span({
+          attributes: {
+            "user.id": "admin-1",
+            "user.email": EMAIL,
+            "user.name": NAME,
+            "user.ip_address": "203.0.113.7",
+            note: `sent to ${EMAIL}`,
+          },
+        })
+      ).attributes
+    ).toEqual({ "user.id": "admin-1", note: `sent to ${FILTERED}` });
+  });
+});
+
+describe("sanitizeReplayEvent", () => {
+  it("keeps scheme, host, and path of visited URLs and the internal user ID only", () => {
+    const event = {
+      type: "replay_event",
+      urls: [`http://localhost:5173/reset-password?token=${JWT}`, `http://localhost:5173/org/members#${NAME}`],
+      user: { id: "admin-1", email: EMAIL },
+      request: {
+        url: `http://localhost:5173/org/members?search=${NAME}`,
+        headers: { "User-Agent": "UA", Cookie: "c" },
+      },
+      extra: { remark: "remark marker" },
+    } as Event;
+
+    expect(sanitizeReplayEvent(event)).toEqual({
+      type: "replay_event",
+      urls: ["http://localhost:5173/reset-password", "http://localhost:5173/org/members"],
+      user: { id: "admin-1" },
+      request: { url: "http://localhost:5173/org/members", headers: { "User-Agent": "UA" } },
+    });
+  });
+
+  it("leaves other event types to their own callbacks", () => {
+    const event = { type: "transaction", extra: { kept: true } } as Event;
+    expect(sanitizeReplayEvent(event)).toBe(event);
+  });
+});
+
+describe("sanitizeRecordingEvent", () => {
+  const frame = (tag: string, payload: unknown) =>
+    ({ type: 5, timestamp: 1, data: { tag, payload } }) as unknown as RecordingEvent;
+  const payloadOf = (event: RecordingEvent | null | undefined) => (event?.data as { payload: unknown }).payload;
+
+  it("keeps only method, status, sizes, and the sanitized URL of network spans", () => {
+    const sanitized = sanitizeRecordingEvent(
+      frame("performanceSpan", {
+        op: "resource.xhr",
+        description: `https://core.example.test/admin/api/v1/member/person/list?search=${NAME}`,
+        startTimestamp: 1,
+        endTimestamp: 2,
+        data: {
+          method: "GET",
+          statusCode: 200,
+          request: { size: 10, headers: { authorization: `Bearer ${JWT}` }, body: { remark: "remark marker" } },
+          response: { size: 20, body: { items: [{ name: NAME, email: EMAIL }] } },
+        },
+      })
+    );
+
+    expect(payloadOf(sanitized)).toEqual({
+      op: "resource.xhr",
+      description: "https://core.example.test/admin/api/v1/member/person/list",
+      startTimestamp: 1,
+      endTimestamp: 2,
+      data: { method: "GET", statusCode: 200, request: { size: 10 }, response: { size: 20 } },
+    });
+  });
+
+  it("sanitizes navigation span URLs", () => {
+    const sanitized = sanitizeRecordingEvent(
+      frame("performanceSpan", {
+        op: "navigation.push",
+        description: `http://localhost:5173/reset-password?token=${JWT}`,
+        startTimestamp: 1,
+        endTimestamp: 1,
+      })
+    );
+    expect(payloadOf(sanitized)).toMatchObject({ description: "http://localhost:5173/reset-password" });
+  });
+
+  it("keeps only the node reference of Replay click breadcrumbs", () => {
+    const sanitized = sanitizeRecordingEvent(
+      frame("breadcrumb", {
+        type: "default",
+        category: "ui.click",
+        timestamp: 1,
+        message: `div > button.edit[aria-label="Edit ${NAME}"]`,
+        data: {
+          nodeId: 42,
+          node: { id: 42, tagName: "button", textContent: NAME, attributes: { "aria-label": `Edit ${NAME}` } },
+        },
+      })
+    );
+
+    expect(payloadOf(sanitized)).toEqual({
+      type: "default",
+      category: "ui.click",
+      timestamp: 1,
+      message: "div > button.edit",
+      data: { nodeId: 42, node: { id: 42, tagName: "button" } },
+    });
+  });
+
+  it("applies breadcrumb filtering to console and navigation frames", () => {
+    expect(
+      payloadOf(
+        sanitizeRecordingEvent(
+          frame("breadcrumb", {
+            category: "navigation",
+            timestamp: 1,
+            data: { from: "/signin", to: `/org?search=${NAME}` },
+          })
+        )
+      )
+    ).toEqual({ category: "navigation", timestamp: 1, data: { from: "/signin", to: "/org" } });
+    expect(
+      payloadOf(
+        sanitizeRecordingEvent(
+          frame("breadcrumb", {
+            category: "console",
+            level: "error",
+            timestamp: 1,
+            message: `{"remark":"remark marker"}`,
+            data: { arguments: [{ remark: "remark marker" }], logger: "console" },
+          })
+        )
+      )
+    ).toEqual({ category: "console", level: "error", timestamp: 1, message: FILTERED, data: { logger: "console" } });
+  });
+
+  it("passes SDK option frames through", () => {
+    const options = frame("options", { maskAllText: true });
+    expect(sanitizeRecordingEvent(options)).toBe(options);
+  });
+});
+
+describe("sanitizeReplayEnvelope", () => {
+  type Envelope = Parameters<typeof sanitizeReplayEnvelope>[0];
+  const envelope = (items: unknown[]) => [{ event_id: "1" }, items] as unknown as Envelope;
+  const recording = (events: unknown) => `{"segment_id":0}\n${JSON.stringify(events)}`;
+  const itemsOf = (value: Envelope | null) =>
+    (value as unknown as [unknown, Array<[Record<string, unknown>, string]>])[1];
+
+  it("keeps scheme, host, and path of the page and link URLs rrweb records", () => {
+    const events = [
+      { type: 4, data: { href: `http://localhost:5173/reset-password?token=${JWT}#${NAME}`, width: 1, height: 1 } },
+      {
+        type: 2,
+        data: { node: { childNodes: [{ tagName: "a", attributes: { href: `mailto:${EMAIL}`, class: "x" } }] } },
+      },
+      {
+        type: 3,
+        data: { source: 0, attributes: [{ id: 3, attributes: { src: `https://cdn.example.test/a.png?sig=${JWT}` } }] },
+      },
+      {
+        type: 3,
+        data: {
+          source: 0,
+          attributes: [{ id: 4, attributes: { poster: `/v.jpg?n=${NAME}`, action: `/f?e=${EMAIL}` } }],
+        },
+      },
+    ];
+    const [[header, payload]] = itemsOf(
+      sanitizeReplayEnvelope(envelope([[{ type: "replay_recording", length: 1 }, recording(events)]]))
+    );
+
+    expect(payload).not.toContain(JWT);
+    expect(payload).not.toContain(NAME);
+    expect(payload).not.toContain(EMAIL);
+    expect(JSON.parse(payload.slice(payload.indexOf("\n") + 1))).toEqual([
+      { type: 4, data: { href: "http://localhost:5173/reset-password", width: 1, height: 1 } },
+      {
+        type: 2,
+        data: { node: { childNodes: [{ tagName: "a", attributes: { href: `mailto:${FILTERED}`, class: "x" } }] } },
+      },
+      { type: 3, data: { source: 0, attributes: [{ id: 3, attributes: { src: "https://cdn.example.test/a.png" } }] } },
+      { type: 3, data: { source: 0, attributes: [{ id: 4, attributes: { poster: "/v.jpg", action: "/f" } }] } },
+    ]);
+    expect(payload.startsWith('{"segment_id":0}\n')).toBe(true);
+    expect(header).toEqual({ type: "replay_recording", length: new TextEncoder().encode(payload).length });
+  });
+
+  it("drops a recording it cannot read instead of sending it unchecked", () => {
+    const compressed = new Uint8Array([0x78, 0x9c, 0x01, 0x02]);
+    expect(sanitizeReplayEnvelope(envelope([[{ type: "replay_recording", length: 4 }, compressed]]))).toBeNull();
+  });
+
+  it("passes envelopes without recordings through unchanged", () => {
+    const events = envelope([[{ type: "event" }, { message: "x" }]]);
+    expect(sanitizeReplayEnvelope(events)).toBe(events);
   });
 });

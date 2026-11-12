@@ -59,6 +59,9 @@ export const ENV_CONFIG = {
   SENTRY_DSN: (import.meta.env.VITE_SENTRY_DSN as string | undefined) || "",
   SENTRY_ENABLED: import.meta.env.VITE_SENTRY_ENABLED as string | undefined,
   SENTRY_RELEASE_VERSION: (import.meta.env.VITE_SENTRY_RELEASE_VERSION as string | undefined) || "",
+  SENTRY_TRACES_SAMPLE_RATE: import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE as string | undefined,
+  SENTRY_REPLAYS_SESSION_SAMPLE_RATE: import.meta.env.VITE_SENTRY_REPLAYS_SESSION_SAMPLE_RATE as string | undefined,
+  SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE: import.meta.env.VITE_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE as string | undefined,
 } as const;
 
 console.log(ENV_CONFIG);
@@ -107,4 +110,8 @@ export const TELEMETRY_CONFIG = resolveTelemetryConfig({
   dsn: ENV_CONFIG.SENTRY_DSN,
   enabled: ENV_CONFIG.SENTRY_ENABLED,
   releaseVersion: ENV_CONFIG.SENTRY_RELEASE_VERSION,
+  apiBaseUrl: ENV_CONFIG.API_BASE_URL,
+  tracesSampleRate: ENV_CONFIG.SENTRY_TRACES_SAMPLE_RATE,
+  replaysSessionSampleRate: ENV_CONFIG.SENTRY_REPLAYS_SESSION_SAMPLE_RATE,
+  replaysOnErrorSampleRate: ENV_CONFIG.SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE,
 });

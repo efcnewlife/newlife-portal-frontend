@@ -1,4 +1,15 @@
-import type { Breadcrumb, BreadcrumbHint, ErrorEvent, EventHint, Exception, Log, StackFrame } from "@sentry/react";
+import type {
+  Breadcrumb,
+  BreadcrumbHint,
+  BrowserOptions,
+  ErrorEvent,
+  Event,
+  EventHint,
+  Exception,
+  Log,
+  replayIntegration,
+  StackFrame,
+} from "@sentry/react";
 
 /**
  * Privacy contract applied to every Sentry channel before transmission. Telemetry keeps code
@@ -26,6 +37,12 @@ const ERROR_TEXT = /^([\w$.]*Error):/;
 
 // httpClient logs every ApiError: its 5xx is already an event and its 4xx is not an issue.
 const API_CLIENT_LOG_TEMPLATE = "API Error: {}";
+
+type StreamedSpan = Parameters<NonNullable<BrowserOptions["beforeSendSpan"]>>[0];
+export type TelemetryTransport = NonNullable<BrowserOptions["transport"]>;
+type Envelope = Parameters<ReturnType<TelemetryTransport>["send"]>[0];
+type ReplayOptions = NonNullable<Parameters<typeof replayIntegration>[0]>;
+type RecordingEvent = Parameters<NonNullable<ReplayOptions["beforeAddRecordingEvent"]>>[0];
 
 const LOG_LEVELS = new Set<Log["level"]>(["warn", "error", "fatal"]);
 const LOG_ATTRIBUTES = new Set([
@@ -78,6 +95,8 @@ const pickDefined = <T extends Record<string, unknown>>(record: T): Partial<T> =
 
 const sanitizeOptionalUrl = (value: unknown) => (typeof value === "string" ? sanitizeUrl(value) : undefined);
 
+const stripSelectorAttributes = (selector: string) => scrubText(selector.replace(SELECTOR_ATTRIBUTE, ""));
+
 export const sanitizeBreadcrumb = (breadcrumb: Breadcrumb, hint?: BreadcrumbHint): Breadcrumb => {
   const { data, message, ...rest } = breadcrumb;
   const category = breadcrumb.category ?? "";
@@ -100,7 +119,7 @@ export const sanitizeBreadcrumb = (breadcrumb: Breadcrumb, hint?: BreadcrumbHint
     return { ...rest, data: pickDefined({ from: sanitizeOptionalUrl(data?.from), to: sanitizeOptionalUrl(data?.to) }) };
   }
   if (category.startsWith("ui.")) {
-    return pickDefined({ ...rest, message: message && scrubText(message.replace(SELECTOR_ATTRIBUTE, "")) });
+    return pickDefined({ ...rest, message: message && stripSelectorAttributes(message) });
   }
   return pickDefined({ ...rest, message: message && scrubText(message) });
 };
@@ -163,11 +182,10 @@ const sanitizeException = ({ value, stacktrace, ...exception }: Exception, keepV
     stacktrace: stacktrace && { ...stacktrace, frames: stacktrace.frames?.map(sanitizeFrame) },
   });
 
-export const sanitizeEvent = (event: ErrorEvent, hint: EventHint): ErrorEvent | null => {
-  if (isApiClientRejection(hint.originalException)) return null;
-
+// Fields every event type shares: identity, request, transaction name, tags, contexts, and breadcrumbs.
+const sanitizeSharedFields = <T extends Event>(event: T): T => {
   const { user, request, ...rest } = event;
-  const sanitized: ErrorEvent = rest;
+  const sanitized = rest as T;
   delete sanitized.extra;
   delete sanitized.logentry;
   // The SDK copies thrown strings here, indistinguishably from captureMessage text.
@@ -184,9 +202,16 @@ export const sanitizeEvent = (event: ErrorEvent, hint: EventHint): ErrorEvent | 
     });
   }
   if (event.transaction) sanitized.transaction = scrubText(event.transaction);
-  if (event.tags) sanitized.tags = scrubDeep(event.tags) as ErrorEvent["tags"];
-  if (event.contexts) sanitized.contexts = scrubDeep(event.contexts) as ErrorEvent["contexts"];
+  if (event.tags) sanitized.tags = scrubDeep(event.tags) as T["tags"];
+  if (event.contexts) sanitized.contexts = scrubDeep(event.contexts) as T["contexts"];
   if (event.breadcrumbs) sanitized.breadcrumbs = event.breadcrumbs.map((breadcrumb) => sanitizeBreadcrumb(breadcrumb));
+  return sanitized;
+};
+
+export const sanitizeEvent = (event: ErrorEvent, hint: EventHint): ErrorEvent | null => {
+  if (isApiClientRejection(hint.originalException)) return null;
+
+  const sanitized = sanitizeSharedFields(event);
   if (event.exception?.values) {
     const keepValue = hint.originalException instanceof ApiFailureError;
     sanitized.exception = {
@@ -195,4 +220,152 @@ export const sanitizeEvent = (event: ErrorEvent, hint: EventHint): ErrorEvent | 
     };
   }
   return sanitized;
+};
+
+// The SDK splits query strings and fragments into their own span attributes.
+const DROPPED_SPAN_ATTRIBUTES = new Set(["http.query", "http.fragment", "url.query", "url.fragment"]);
+const URL_SPAN_ATTRIBUTE = /(?:^|[._])url(?:\.full)?$/i;
+// Web vital attributes name the element as a selector, e.g. `img.preview[alt="<file name>"]`.
+const SELECTOR_SPAN_ATTRIBUTE = /^browser\.web_vital\./;
+
+const sanitizeSpanAttribute = (key: string, value: unknown): unknown => {
+  if (typeof value !== "string") return scrubDeep(value);
+  if (URL_SPAN_ATTRIBUTE.test(key)) return sanitizeUrl(value);
+  return SELECTOR_SPAN_ATTRIBUTE.test(key) ? stripSelectorAttributes(value) : scrubText(value);
+};
+
+/**
+ * Streamed spans keep timing, operation, method, status, route paths, and sanitized URLs. Query strings,
+ * fragments, selector attribute values, and any user attribute other than the internal ID are removed.
+ */
+export const sanitizeSpan = (span: StreamedSpan): StreamedSpan => {
+  const isUiSpan = String(span.attributes["sentry.op"] ?? "").startsWith("ui.");
+  return {
+    ...span,
+    name: isUiSpan ? stripSelectorAttributes(span.name) : scrubText(span.name),
+    attributes: Object.fromEntries(
+      Object.entries(span.attributes)
+        .filter(([key]) => !DROPPED_SPAN_ATTRIBUTES.has(key) && (!key.startsWith("user.") || key === "user.id"))
+        .map(([key, value]) => [key, sanitizeSpanAttribute(key, value)])
+    ),
+  };
+};
+
+/** Replay events list every page URL the replay visited; only scheme, host, and path remain. */
+export const sanitizeReplayEvent = (event: Event): Event => {
+  if (event.type !== "replay_event") return event;
+  const sanitized = sanitizeSharedFields(event) as Event & { urls?: unknown };
+  if (Array.isArray(sanitized.urls)) {
+    sanitized.urls = sanitized.urls.map((url) => (typeof url === "string" ? sanitizeUrl(url) : FILTERED));
+  }
+  return sanitized;
+};
+
+interface RecordingSpan {
+  op: string;
+  description: string;
+  data?: Record<string, unknown>;
+}
+
+const sizeOnly = (detail: unknown) =>
+  detail && typeof detail === "object" ? pickDefined({ size: (detail as { size?: unknown }).size }) : undefined;
+
+const sanitizeRecordingSpan = (span: RecordingSpan): RecordingSpan => {
+  const { op, description, data } = span;
+  if (op === "resource.fetch" || op === "resource.xhr") {
+    return {
+      ...span,
+      description: sanitizeUrl(description),
+      data: pickDefined({
+        method: data?.method,
+        statusCode: data?.statusCode,
+        request: sizeOnly(data?.request),
+        response: sizeOnly(data?.response),
+      }),
+    };
+  }
+  const isUrl = op.startsWith("navigation.") || op.startsWith("resource.");
+  return {
+    ...span,
+    description: isUrl ? sanitizeUrl(description) : scrubText(description),
+    ...(data ? { data: scrubDeep(data) as Record<string, unknown> } : {}),
+  };
+};
+
+// Replay adds the clicked node's text and attributes to its own UI breadcrumbs; only the node reference stays.
+const sanitizeRecordingBreadcrumb = (breadcrumb: Breadcrumb): Breadcrumb => {
+  const sanitized = sanitizeBreadcrumb(breadcrumb);
+  if (!breadcrumb.category?.startsWith("ui.")) return sanitized;
+  const { nodeId, node } = (breadcrumb.data ?? {}) as { nodeId?: unknown; node?: { id?: unknown; tagName?: unknown } };
+  return {
+    ...sanitized,
+    ...(nodeId !== undefined || node
+      ? { data: pickDefined({ nodeId, node: node && pickDefined({ id: node.id, tagName: node.tagName }) }) }
+      : {}),
+  };
+};
+
+/**
+ * Replay's own recording frames: breadcrumbs, network and navigation spans, and SDK options. DOM snapshots
+ * cannot be changed here; masking and blocking in `initTelemetry` cover them.
+ */
+export const sanitizeRecordingEvent = (event: RecordingEvent): RecordingEvent => {
+  const { tag, payload } = event.data as { tag: string; payload: unknown };
+  if (tag === "breadcrumb") {
+    return {
+      ...event,
+      data: { ...event.data, payload: sanitizeRecordingBreadcrumb(payload as Breadcrumb) },
+    } as RecordingEvent;
+  }
+  if (tag === "performanceSpan") {
+    return {
+      ...event,
+      data: { ...event.data, payload: sanitizeRecordingSpan(payload as RecordingSpan) },
+    } as RecordingEvent;
+  }
+  return event;
+};
+
+// rrweb records the page URL (meta events) and link, media, and form URLs (DOM attributes) unmasked, and
+// `beforeAddRecordingEvent` never sees its events. Each of these keeps scheme, host, and path only.
+const URL_RECORDING_KEYS = new Set(["href", "src", "poster", "action"]);
+
+const sanitizeRecordingUrls = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(sanitizeRecordingUrls);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nested]) => [
+        key,
+        URL_RECORDING_KEYS.has(key) && typeof nested === "string" ? sanitizeUrl(nested) : sanitizeRecordingUrls(nested),
+      ])
+    );
+  }
+  return value;
+};
+
+// An uncompressed recording item is `{"segment_id":n}\n[...events]`.
+const sanitizeRecordingPayload = (payload: unknown): string => {
+  const text = typeof payload === "string" ? payload : new TextDecoder().decode(payload as Uint8Array);
+  const newline = text.indexOf("\n");
+  const events = JSON.parse(text.slice(newline + 1)) as unknown;
+  return `${text.slice(0, newline)}\n${JSON.stringify(sanitizeRecordingUrls(events))}`;
+};
+
+/**
+ * Rewrites URLs inside Replay recording items before transmission. Returns `null` when a recording cannot be
+ * read (for example compressed), so it is dropped rather than sent unchecked.
+ */
+export const sanitizeReplayEnvelope = (envelope: Envelope): Envelope | null => {
+  const [headers, items] = envelope as unknown as [unknown, Array<[{ type?: string; length?: number }, unknown]>];
+  if (!items.some(([header]) => header.type === "replay_recording")) return envelope;
+  try {
+    const sanitizedItems = items.map(([header, payload]) => {
+      if (header.type !== "replay_recording") return [header, payload];
+      const sanitized = sanitizeRecordingPayload(payload);
+      return [{ ...header, length: new TextEncoder().encode(sanitized).length }, sanitized];
+    });
+    return [headers, sanitizedItems] as unknown as Envelope;
+  } catch {
+    return null;
+  }
 };
