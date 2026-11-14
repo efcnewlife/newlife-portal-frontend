@@ -38,6 +38,10 @@ Important flags:
 - `VITE_USE_MOCK_DEMO=true`: Demo page data is returned from `demoService` in-memory mocks.
 - `VITE_SKIP_AUTH=true`: Developer shortcut mode that skips auth guarding and uses a placeholder token for API calls.
 
+### Microsoft Entra ID (optional)
+
+Set `VITE_AZURE_CLIENT_ID`, `VITE_AZURE_TENANT_ID`, and optional `VITE_AZURE_REDIRECT_URI` to enable "Sign in with Microsoft". Use the same SPA app registration client ID as `AZURE_APP_CLIENT_ID` on the Core API (and the same value Facility Booking uses — the API accepts one client ID per environment). See `.env.example` and the Core API README Microsoft Entra section.
+
 ### Sentry telemetry (optional)
 
 The app runs normally without any Sentry settings. `src/main.tsx` initializes the client once from `TELEMETRY_CONFIG` (`src/config/env.ts`).
