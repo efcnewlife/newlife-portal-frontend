@@ -47,11 +47,10 @@ pnpm run format:check     # prettier --check .
 pnpm run build            # tsc -b && vite build
 pnpm run build:stg        # --mode staging
 pnpm run build:prod       # --mode production
-./scripts/check-branch-name.test.sh
-./scripts/format-staged.test.sh
+for t in scripts/*.test.sh; do "$t"; done   # branch names, format hook, release target, staging deploy (fake sentry-cli/wrangler/curl)
 ```
 
-CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile`, **`pnpm run format:check`**, and **`pnpm run type-check`** on PRs/pushes to `main` and `develop`. It does not run `test` or `lint`. PRs also run `.github/workflows/branch-name.yml` (`Branch name` check).
+CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile`, **`pnpm run format:check`**, **`pnpm run type-check`**, **`pnpm run test`**, the script tests, and a staging build on every PR and on pushes to `main`, `develop`, `release/**`, and tags. It does not run `lint`. `main` and `x.y.z` tags on a `release/*` branch also upload source maps to Sentry and deploy staging to Cloudflare (see README, _Staging hosting_); agents never trigger that. PRs also run `.github/workflows/branch-name.yml` (`Branch name` check).
 
 ### Branch names
 
@@ -355,14 +354,15 @@ pnpm run test
 pnpm run test:watch
 ```
 
-| Location                                                   | Role                            |
-| ---------------------------------------------------------- | ------------------------------- |
-| `src/components/calendar/*.test.ts`                        | Lane packing, event time format |
-| `src/utils/dateUtil.test.ts`, `dayjsApi.test.ts`           | Date helpers                    |
-| `src/components/DataPage/getDataTableRowClassName.test.ts` | Row class names                 |
-| `src/pages/Facility/Booking/bookingSaveError.test.ts`      | Booking save error mapping      |
+| Location                                                   | Role                                                                |
+| ---------------------------------------------------------- | ------------------------------------------------------------------- |
+| `src/components/calendar/*.test.ts`                        | Lane packing, event time format                                     |
+| `src/utils/dateUtil.test.ts`, `dayjsApi.test.ts`           | Date helpers                                                        |
+| `src/components/DataPage/getDataTableRowClassName.test.ts` | Row class names                                                     |
+| `src/pages/Facility/Booking/bookingSaveError.test.ts`      | Booking save error mapping                                          |
+| `src/config/stagingHosting.test.ts`                        | Staging hosting contract (repo-root Wrangler, env, `public/` files) |
 
-Co-locate `*.test.ts` / `*.test.tsx` next to the unit under test. CI does not run vitest yet — still run tests locally for calendar/utils/booking logic.
+Co-locate `*.test.ts` / `*.test.tsx` next to the unit under test (repo-root deployment files are covered from `src/config/`, the only test root). CI runs `pnpm run test` on every PR.
 
 ---
 
@@ -426,6 +426,8 @@ Every channel passes through `src/telemetry/privacy.ts` (`beforeSend`, `beforeBr
 | `.cursor/rules/standard.mdc`                         | Naming, DataPage, routing, i18n rules  |
 | `CONTEXT.md`                                         | Domain language (calendar, DataTable)  |
 | `src/config/env.ts`                                  | All env flags                          |
+| `wrangler.staging.jsonc`, `.env.staging`             | Staging hosting and build settings     |
+| `scripts/deploy-staging.sh`                          | Source-map gate, deploy, smoke         |
 | `src/App.tsx`                                        | Provider + router bootstrap            |
 | `src/routes/index.ts`                                | Module registration                    |
 | `src/utils/route-filter-manager.tsx`                 | Menu → routes                          |
