@@ -62,7 +62,7 @@ The app runs normally without any Sentry settings. `src/main.tsx` initializes th
 | `production`  | `prod`      | `newlife-portal-frontend@<x.y.z>`      |
 | anything else | —           | telemetry off (includes Vitest `test`) |
 
-A deployed build with a missing or mismatched release version stays off rather than reporting a placeholder release. A future deployment pipeline must pass the same release value to the SDK build and to any release / source-map upload.
+A deployed build with a missing or mismatched release version stays off rather than reporting a placeholder release. The staging pipeline passes the same release value to the SDK build and to the source-map upload (see _Staging hosting_).
 
 What is sent when telemetry is on (no other options are required):
 
@@ -95,6 +95,21 @@ Replay recordings are sent uncompressed: the SDK masks text but not `href` / `sr
 Logout or an account change ends the previous Administrator's trace and Replay; the next one starts fresh in the mode sampling chose at page load.
 
 Local check: run Core API with `SENTRY_ENABLED=true SENTRY_TRACES_SAMPLE_RATE=1.0`, then the Portal with `VITE_SENTRY_ENABLED=true VITE_SENTRY_TRACES_SAMPLE_RATE=1 VITE_SENTRY_REPLAYS_SESSION_SAMPLE_RATE=1`. Point both DSNs at a local collector (or a dev Sentry project) and confirm a browser `http.client` span is the parent of Core's `http.server` transaction.
+
+## Staging hosting (Cloudflare)
+
+Staging is served at `https://portal-dev.efcnewlife.com` by the Worker `newlife-portal-frontend-stg` on Cloudflare Workers Static Assets: built files only, no Worker script. `dev` in the hostname means staging.
+
+| File                        | Role                                                                                                                            |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `wrangler.staging.jsonc`    | `dist/`, SPA fallback (unknown paths get `index.html`), the `portal-dev` custom domain only; `workers.dev` and Preview URLs off |
+| `.env.staging`              | Public build values: staging API, Entra **NewLife STG** client/tenant, exact redirect URI. Never a token                        |
+| `public/_headers`           | `/assets/*` cached for a year (hashed names); `index.html` revalidates on every load; baseline browser headers                  |
+| `public/.assetsignore`      | `*.map` is never uploaded; source maps go to Sentry only (`vite build` writes hidden maps)                                      |
+| `scripts/release-target.sh` | Which refs deploy: `main` and `x.y.z` tags on a `release/*` branch                                                              |
+| `scripts/deploy-staging.sh` | Upload maps to Sentry (fails → no deploy), `wrangler deploy`, smoke: release, deep link, bundle, maps not public                |
+
+CI keeps each deployable build as the artifact `portal-staging-<main-sha12 | x.y.z>` (with `dist/release.json`) for 90 days, plus a release record. Later `main` runs replace staging; there is no freeze. Deployment stays off until the operator sets the repository variable `CLOUDFLARE_ACCOUNT_ID`. Cloudflare account, token, DNS, security rules, Entra, live acceptance, and rollback are human steps in [newlife-infra `docs/cloudflare-portal-staging.md`](https://github.com/efcnewlife/newlife-infra/blob/main/docs/cloudflare-portal-staging.md).
 
 ## Start
 

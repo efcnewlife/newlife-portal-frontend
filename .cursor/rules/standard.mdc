@@ -136,7 +136,7 @@ alwaysApply: true
 
 ## Git and Collaboration
 
-- Merge into `main` / `develop` via Pull Request and wait for CI (type-check) to pass.
+- Merge into `main` / `develop` via Pull Request and wait for CI (format, type-check, tests, staging build) to pass.
 - Agents / automation: do not run `git commit`, `git push`, `git merge`, or similar git operations unless the user explicitly asks.
 
 ## Code Quality

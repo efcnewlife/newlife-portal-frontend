@@ -1,0 +1,16 @@
+// Admin Portal staging on Cloudflare Workers Static Assets (EFC-312). Assets only: no Worker script runs.
+// Deployed by CI (.github/workflows/ci.yml) or by hand: wrangler deploy --config wrangler.staging.jsonc
+// Operator setup, alternate-URL checks and rollback: newlife-infra docs/cloudflare-portal-staging.md
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "newlife-portal-frontend-stg",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application",
+  },
+  // Only the custom domain serves this Worker: no *.workers.dev, Version or Preview URLs.
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "portal-dev.efcnewlife.com", "custom_domain": true }],
+}
