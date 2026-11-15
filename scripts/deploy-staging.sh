@@ -41,7 +41,8 @@ for name in SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT; do
 done
 
 sentry_release="newlife-portal-frontend@${release}"
-if ! sentry-cli sourcemaps upload --release "${sentry_release}" "${DIST}"; then
+# Tool chatter goes to stderr: stdout carries only key=value lines for $GITHUB_OUTPUT.
+if ! sentry-cli sourcemaps upload --release "${sentry_release}" "${DIST}" >&2; then
   echo "Source-map upload for ${sentry_release} failed; staging still serves the previous build" >&2
   exit 1
 fi

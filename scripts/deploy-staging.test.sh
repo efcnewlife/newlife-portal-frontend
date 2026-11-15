@@ -23,6 +23,7 @@ fail_count=0
 cat >"${WORK}/bin/sentry-cli" <<'EOF'
 #!/usr/bin/env bash
 echo "sentry-cli $*" >>"$FAKE_LOG"
+echo "> Found 2 files"
 [[ -z "${FAKE_SENTRY_FAIL:-}" ]]
 EOF
 cat >"${WORK}/bin/wrangler" <<'EOF'
@@ -63,11 +64,12 @@ run_deploy() {
   export FAKE_LOG="${WORK}/calls.log" FAKE_SITE="${WORK}/site" FAKE_VERSION_ID="${VERSION_ID}"
   : >"${FAKE_LOG}"
   set +e
-  output="$(PATH="${WORK}/bin:${PATH}" SMOKE_TRIES=2 SMOKE_INTERVAL=0 \
+  stdout="$(PATH="${WORK}/bin:${PATH}" SMOKE_TRIES=2 SMOKE_INTERVAL=0 \
     SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN-test-token}" SENTRY_ORG=efcnewlife SENTRY_PROJECT=newlife-portal-frontend \
-    "${DEPLOY}" "$@" 2>&1)"
+    "${DEPLOY}" "$@" 2>"${WORK}/stderr")"
   actual_exit=$?
   set -e
+  output="${stdout}"$'\n'"$(cat "${WORK}/stderr")"
   calls="$(cat "${FAKE_LOG}")"
 }
 
@@ -100,6 +102,8 @@ check "deploys the staging config with the label as tag" \
 check "reports the new Worker version" grep -qx "version_id=${VERSION_ID}" <<<"${output}"
 check "reports the Sentry release" grep -qx "sentry_release=newlife-portal-frontend@${RELEASE}" <<<"${output}"
 check "reports a passing smoke" grep -qx "smoke=passed" <<<"${output}"
+# CI appends stdout to $GITHUB_OUTPUT, which rejects anything but key=value lines.
+check "prints only key=value lines on stdout" bash -c '! grep -vE "^[a-z_]+=" <<<"$1"' _ "${stdout}"
 check "smoke loads a deep link through SPA fallback" grep -q "curl .*/__smoke/deep/link" <<<"${calls}"
 check "smoke loads the entry bundle" grep -q "curl .*/assets/index-AbC123.js$" <<<"${calls}"
 
