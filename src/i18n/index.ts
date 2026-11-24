@@ -1,5 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import { safeStorage } from "@/utils/safeStorage";
 import enCommon from "./locales/en/common.json";
 import enAuth from "./locales/en/auth.json";
 import enErrors from "./locales/en/errors.json";
@@ -39,6 +40,8 @@ import { sync_dayjs_locale } from "./dayjs_locale_sync";
 export type AppLocale = "en" | "zh-TW" | "zh-CN";
 
 export const LOCALE_STORAGE_KEY = "app_locale";
+
+const localStore = safeStorage("local");
 
 export const normalize_locale_code = (value: string | null): AppLocale | null => {
   if (!value) return null;
@@ -93,7 +96,7 @@ const browser_default_locale = (): AppLocale => {
 };
 
 const getInitialLanguage = (): AppLocale => {
-  const stored = normalize_locale_code(localStorage.getItem(LOCALE_STORAGE_KEY));
+  const stored = normalize_locale_code(localStore.getItem(LOCALE_STORAGE_KEY));
   if (stored) {
     return stored;
   }
@@ -168,7 +171,7 @@ void i18n.use(initReactI18next).init({
 sync_dayjs_locale(i18n.language);
 
 i18n.on("languageChanged", (lng) => {
-  localStorage.setItem(LOCALE_STORAGE_KEY, lng);
+  localStore.setItem(LOCALE_STORAGE_KEY, lng);
   sync_dayjs_locale(lng);
 });
 

@@ -7,6 +7,7 @@ import { reportUnexpectedError, setTelemetryUser } from "@/telemetry/reporting";
 import type { AuthError, LoginCredentials, LoginResponse, User } from "@/types/auth";
 import { notifyApiError } from "@/utils/operationFeedback";
 import { getScopesFromToken, getRolesFromToken, parseJWT, hasPermissionInScopes } from "@/utils/jwt";
+import { safeStorage } from "@/utils/safeStorage";
 import { httpClient } from "./httpClient";
 
 // Backend response types (admin auth API)
@@ -54,6 +55,9 @@ function mapAdminToUser(admin: AdminInfoResponse, token?: string | null): User {
   };
 }
 
+const localStore = safeStorage("local");
+const sessionStore = safeStorage("session");
+
 // Authentication service class
 class AuthService {
   private readonly TOKEN_KEY = "auth_token";
@@ -89,16 +93,16 @@ class AuthService {
         // Clear stale token/user in opposite storage to avoid reading outdated token later
         if (credentials.rememberMe) {
           // Use localStorage; clear sessionStorage leftovers
-          sessionStorage.removeItem(this.TOKEN_KEY);
-          sessionStorage.removeItem(this.USER_KEY);
-          sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
+          sessionStore.removeItem(this.TOKEN_KEY);
+          sessionStore.removeItem(this.USER_KEY);
+          sessionStore.removeItem(this.REFRESH_TOKEN_KEY);
         } else {
           // Use sessionStorage; clear localStorage leftovers
-          localStorage.removeItem(this.TOKEN_KEY);
-          localStorage.removeItem(this.USER_KEY);
+          localStore.removeItem(this.TOKEN_KEY);
+          localStore.removeItem(this.USER_KEY);
           // refresh_token is used only in rememberMe mode; ensure no leftovers
-          localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-          localStorage.removeItem(`${this.REFRESH_TOKEN_KEY}_expiry`);
+          localStore.removeItem(this.REFRESH_TOKEN_KEY);
+          localStore.removeItem(`${this.REFRESH_TOKEN_KEY}_expiry`);
         }
 
         // Store refresh token only when "Keep me logged in" is enabled
@@ -154,14 +158,14 @@ class AuthService {
         this.setToken(accessToken);
 
         if (remember_me) {
-          sessionStorage.removeItem(this.TOKEN_KEY);
-          sessionStorage.removeItem(this.USER_KEY);
-          sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
+          sessionStore.removeItem(this.TOKEN_KEY);
+          sessionStore.removeItem(this.USER_KEY);
+          sessionStore.removeItem(this.REFRESH_TOKEN_KEY);
         } else {
-          localStorage.removeItem(this.TOKEN_KEY);
-          localStorage.removeItem(this.USER_KEY);
-          localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-          localStorage.removeItem(`${this.REFRESH_TOKEN_KEY}_expiry`);
+          localStore.removeItem(this.TOKEN_KEY);
+          localStore.removeItem(this.USER_KEY);
+          localStore.removeItem(this.REFRESH_TOKEN_KEY);
+          localStore.removeItem(`${this.REFRESH_TOKEN_KEY}_expiry`);
         }
 
         if (refreshToken && remember_me) {
@@ -322,11 +326,11 @@ class AuthService {
     }
 
     // Check sessionStorage first (normal login mode has priority)
-    const sessionToken = sessionStorage.getItem(this.TOKEN_KEY);
+    const sessionToken = sessionStore.getItem(this.TOKEN_KEY);
     if (sessionToken) return sessionToken;
 
     // Then check localStorage (rememberMe mode)
-    const localToken = localStorage.getItem(this.TOKEN_KEY);
+    const localToken = localStore.getItem(this.TOKEN_KEY);
     if (!localToken) return null;
 
     // Optional: return token directly when exp is not stored (refresh logic is in httpClient)
@@ -338,10 +342,10 @@ class AuthService {
     const rememberMe = this.getRememberMe();
     if (rememberMe) {
       // rememberMe: use localStorage
-      localStorage.setItem(this.TOKEN_KEY, token);
+      localStore.setItem(this.TOKEN_KEY, token);
     } else {
       // normal login: use sessionStorage
-      sessionStorage.setItem(this.TOKEN_KEY, token);
+      sessionStore.setItem(this.TOKEN_KEY, token);
     }
   }
 
@@ -352,14 +356,14 @@ class AuthService {
     if (!rememberMe) return null;
 
     // Check expiration
-    const expiryTime = localStorage.getItem(`${this.REFRESH_TOKEN_KEY}_expiry`);
+    const expiryTime = localStore.getItem(`${this.REFRESH_TOKEN_KEY}_expiry`);
     if (expiryTime && Date.now() > parseInt(expiryTime)) {
       // Expired, clear storage
       this.clearAuth();
       return null;
     }
 
-    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+    return localStore.getItem(this.REFRESH_TOKEN_KEY);
   }
 
   // Set refresh token
@@ -370,18 +374,18 @@ class AuthService {
 
     // Use localStorage and set expiry time
     const expiryTime = Date.now() + this.REMEMBER_ME_EXPIRY;
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, token);
-    localStorage.setItem(`${this.REFRESH_TOKEN_KEY}_expiry`, expiryTime.toString());
+    localStore.setItem(this.REFRESH_TOKEN_KEY, token);
+    localStore.setItem(`${this.REFRESH_TOKEN_KEY}_expiry`, expiryTime.toString());
   }
 
   // Get user info
   getUser(): User | null {
     // Check localStorage first (rememberMe mode)
-    let userData = localStorage.getItem(this.USER_KEY);
+    let userData = localStore.getItem(this.USER_KEY);
 
     // Then check sessionStorage (normal login mode)
     if (!userData) {
-      userData = sessionStorage.getItem(this.USER_KEY);
+      userData = sessionStore.getItem(this.USER_KEY);
     }
 
     if (!userData) return null;
@@ -414,41 +418,41 @@ class AuthService {
     const rememberMe = this.getRememberMe();
     if (rememberMe) {
       // rememberMe: use localStorage
-      localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+      localStore.setItem(this.USER_KEY, JSON.stringify(user));
     } else {
       // normal login: use sessionStorage
-      sessionStorage.setItem(this.USER_KEY, JSON.stringify(user));
+      sessionStore.setItem(this.USER_KEY, JSON.stringify(user));
     }
   }
 
   // Get rememberMe state
   getRememberMe(): boolean {
-    const stored = localStorage.getItem(this.REMEMBER_ME_KEY);
+    const stored = localStore.getItem(this.REMEMBER_ME_KEY);
     return stored === "true";
   }
 
   // Set rememberMe state
   setRememberMe(rememberMe: boolean): void {
     if (rememberMe) {
-      localStorage.setItem(this.REMEMBER_ME_KEY, "true");
+      localStore.setItem(this.REMEMBER_ME_KEY, "true");
     } else {
-      localStorage.removeItem(this.REMEMBER_ME_KEY);
+      localStore.removeItem(this.REMEMBER_ME_KEY);
     }
   }
 
   // Clear auth state
   clearAuth(): void {
     // Clear localStorage
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    localStorage.removeItem(`${this.REFRESH_TOKEN_KEY}_expiry`);
-    localStorage.removeItem(this.USER_KEY);
-    localStorage.removeItem(this.REMEMBER_ME_KEY);
+    localStore.removeItem(this.TOKEN_KEY);
+    localStore.removeItem(this.REFRESH_TOKEN_KEY);
+    localStore.removeItem(`${this.REFRESH_TOKEN_KEY}_expiry`);
+    localStore.removeItem(this.USER_KEY);
+    localStore.removeItem(this.REMEMBER_ME_KEY);
 
     // Clear sessionStorage
-    sessionStorage.removeItem(this.TOKEN_KEY);
-    sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    sessionStorage.removeItem(this.USER_KEY);
+    sessionStore.removeItem(this.TOKEN_KEY);
+    sessionStore.removeItem(this.REFRESH_TOKEN_KEY);
+    sessionStore.removeItem(this.USER_KEY);
 
     // Not every caller dispatches an auth state change, so AuthContext alone would keep the identity.
     setTelemetryUser(null);

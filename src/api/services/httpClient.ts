@@ -5,6 +5,7 @@ import { reportApiFailure, reportUnexpectedError } from "@/telemetry/reporting";
 import type { ApiError, ApiResponse, TokenResponse } from "@/types/api";
 import { deep_keys_to_snake_case } from "@/utils/caseConvert";
 import { notificationManager } from "@/utils/notificationManager";
+import { safeStorage } from "@/utils/safeStorage";
 import axios, {
   AxiosError,
   AxiosHeaders,
@@ -14,6 +15,9 @@ import axios, {
   HttpStatusCode,
   InternalAxiosRequestConfig,
 } from "axios";
+
+const localStore = safeStorage("local");
+const sessionStore = safeStorage("session");
 
 // Interceptor types
 type RequestInterceptor = (config: AxiosRequestConfig) => AxiosRequestConfig | Promise<AxiosRequestConfig>;
@@ -414,7 +418,7 @@ class HttpClient {
   // Call backend to exchange refresh token for a new access token
   private async refreshAccessToken(): Promise<string> {
     // Only remember-me mode stores refresh token
-    const storedRefreshToken = localStorage.getItem("refresh_token");
+    const storedRefreshToken = localStore.getItem("refresh_token");
 
     if (!storedRefreshToken) {
       throw {
@@ -441,11 +445,11 @@ class HttpClient {
       }
 
       // Store new access token (remember-me mode)
-      localStorage.setItem("auth_token", newAccessToken);
+      localStore.setItem("auth_token", newAccessToken);
 
       // Store new refresh token if provided
       if (newRefreshToken) {
-        localStorage.setItem("refresh_token", newRefreshToken);
+        localStore.setItem("refresh_token", newRefreshToken);
       }
 
       return newAccessToken;
@@ -483,11 +487,11 @@ class HttpClient {
   // Get token from storage (supports rememberMe)
   private getTokenFromStorage(): string | null {
     // Check sessionStorage first (normal login mode has priority)
-    const sessionToken = sessionStorage.getItem("auth_token");
+    const sessionToken = sessionStore.getItem("auth_token");
     if (sessionToken) return sessionToken;
 
     // Then check localStorage (remember-me mode)
-    return localStorage.getItem("auth_token");
+    return localStore.getItem("auth_token");
   }
 }
 

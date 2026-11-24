@@ -347,7 +347,7 @@ Files that use HTML / `ReactNode` / `JSX.Element` must use `.tsx`. Prefer arrow 
 
 ## 14. Testing
 
-Vitest is configured in `vite.config.ts` as two projects: `unit` (`environment: "node"`, `src/**/*.test.ts`) and `flow` (`environment: "jsdom"`, `src/**/*.test.tsx`, Testing Library). Flow tests mock `@efcnewlife/newlife-ui` and services at the module boundary (see `BookingEditModal.test.tsx`). Exception: `src/telemetry/errorCapture.test.tsx` runs real services and the real SDK against a fake axios adapter and a captured transport, because telemetry is what those layers emit.
+Vitest is configured in `vite.config.ts` as two projects: `unit` (`environment: "node"`, `src/**/*.test.ts`) and `flow` (`environment: "jsdom"`, `src/**/*.test.tsx`, Testing Library). Flow tests mock `@efcnewlife/newlife-ui` and services at the module boundary (see `BookingEditModal.test.tsx`). Exceptions: `src/telemetry/errorCapture.test.tsx` runs real services and the real SDK against a fake axios adapter and a captured transport, because telemetry is what those layers emit. `src/App.test.tsx` boots the real app and real auth services against blocked browser storage, because that boot is what must survive.
 
 ```bash
 pnpm run test
@@ -411,6 +411,7 @@ Every channel passes through `src/telemetry/privacy.ts` (`beforeSend`, `beforeBr
 | Reimplement newlife-ui controls                             | Host consumes the library                                |
 | Invent a second routing system                              | Modules + registry + filter manager + component-registry |
 | Trust permissions from `localStorage`                       | Parse JWT scopes                                         |
+| Touch `localStorage` / `sessionStorage` directly            | Use `safeStorage` (`src/utils/safeStorage.ts`)           |
 | Call member `/api/v1` from this app                         | Admin prefix only                                        |
 | Skip `component-registry` when adding a backend-driven page | Menu key will render `Blank`                             |
 | Check/format with eslint as a required agent step           | Project standard                                         |

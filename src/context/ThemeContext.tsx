@@ -1,5 +1,6 @@
 "use client";
 
+import { safeStorage } from "@/utils/safeStorage";
 import type React from "react";
 import { createContext, useState, useContext, useEffect } from "react";
 
@@ -10,6 +11,8 @@ type ThemeContextType = {
   toggleTheme: () => void;
 };
 
+const localStore = safeStorage("local");
+
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -18,7 +21,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     // This code will only run on the client side
-    const savedTheme = localStorage.getItem("theme") as Theme | null;
+    const savedTheme = localStore.getItem("theme") as Theme | null;
     const initialTheme = savedTheme || "light"; // Default to light theme
 
     setTheme(initialTheme);
@@ -27,7 +30,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     if (isInitialized) {
-      localStorage.setItem("theme", theme);
+      localStore.setItem("theme", theme);
       if (theme === "dark") {
         document.documentElement.classList.add("dark");
       } else {
